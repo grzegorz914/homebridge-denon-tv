@@ -1,14 +1,14 @@
 {
-  "pluginAlias": "OpenWebIfTv",
+  "pluginAlias": "DenonTv",
   "pluginType": "accessory",
-  "footerDisplay": "This plugin works with Sat receivers with OpenWebIf interface which is available [here](https://github.com/grzegorz914/homebridge-openwebif-tv).",
+  "footerDisplay": "This plugin works with Denon/Marantz AVR-X which is available [here](https://github.com/grzegorz914/homebridge-denon-tv).",
   "schema": {
     "type": "object",
     "properties": {
       "name": {
         "title": "Name",
         "type": "string",
-        "default": "Sat receiver",
+        "default": "Wzmacniacz",
         "required": true
       },
       "host": {
@@ -20,7 +20,7 @@
       "port": {
         "title": "Port",
         "type": "integer",
-        "default": 80,
+        "default": 8080,
         "maximum": 65535,
         "required": true
       },
@@ -29,44 +29,23 @@
         "type": "boolean",
         "default": true
       },
-      "bouquets": {
-        "title": "Bouquets",
+      "inputs": {
+        "title": "Inputs",
         "type": "array",
         "items": {
           "type": "object",
           "properties": {
             "name": {
-              "title": "Bouquet name",
+              "title": "Input name",
               "type": "string",
               "default": "Polskie",
               "required": true
             },
             "reference": {
-              "title": "Bouquet reference",
+              "title": "Input reference",
               "type": "string",
-               "default": "1:7:1:0:0:0:0:0:0:1:FRO BOUQUET \"userbouquet.dbe1a.tv\" ORDER BY bouquet",
+               "default": "SAT/CBL",
               "required": false
-            },
-             "channels": {
-        "title": "Channels",
-          "type": "array",
-        "items": {
-          "type": "object",
-          "properties": {
-            "name": {
-              "title": "Channel name",
-              "type": "string",
-               "default": "TVN 24",
-              "required": false
-            },
-            "reference": {
-              "title": "Chanel reference",
-              "type": "string",
-               "default": "1:0:1:3DD2:640:13E:820000:0:0:0:",
-              "required": false
-            }
-            }
-            }
             }
           }
         }
