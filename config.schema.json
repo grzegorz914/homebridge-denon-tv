@@ -12,7 +12,7 @@
         "required": true
       },
       "host": {
-        "title": "IP Address / Hostname",
+        "title": "IP Address/Hostname",
         "type": "string",
         "required": true,
         "format": "hostname"
