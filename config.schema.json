@@ -1,14 +1,14 @@
 {
   "pluginAlias": "DenonTv",
   "pluginType": "accessory",
-  "footerDisplay": "This plugin works with Denon/Marantz AVR-X which is available [here](https://github.com/grzegorz914/homebridge-denon-tv).",
+  "footerDisplay": "This plugin works with Denon/Marantz AV Receivers series AVR-X which is available [here](https://github.com/grzegorz914/homebridge-denon-tv).",
   "schema": {
     "type": "object",
     "properties": {
       "name": {
         "title": "Name",
         "type": "string",
-        "default": "Wzmacniacz",
+        "default": "AV Receiver",
         "required": true
       },
       "host": {
