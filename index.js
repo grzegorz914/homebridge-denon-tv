@@ -10,10 +10,10 @@ module.exports = function(homebridge) {
         Service = homebridge.hap.Service;
         Characteristic = homebridge.hap.Characteristic;
 
-	homebridge.registerAccessory("homebridge-openwebif-tv", "OpenWebIfTv", OpenWebIfTvAccessory);
+	homebridge.registerAccessory("homebridge-denon-tv", "DenonTv", DenonTvAccessory);
 };
 
-function OpenWebIfTvAccessory(log, config) {
+function DenonTvAccessory(log, config) {
 	this.log = log;
 	this.config = config
 	this.name = config["name"];
@@ -26,7 +26,7 @@ function OpenWebIfTvAccessory(log, config) {
 	var me = this;
 }
 
-OpenWebIfTvAccessory.prototype = {
+DenonTvAccessory.prototype = {
 
 	generateTVService() {
 		var me = this;
@@ -295,7 +295,7 @@ OpenWebIfTvAccessory.prototype = {
 				callback(error)
 			  } else {
 				try {
-				  var result = JSON.stringify(responseBody, function(err, data) {
+				  var result = parseString(responseBody, function(err, data) {
 					if (err) {
 					  callback(err)
 					} else {
@@ -325,24 +325,6 @@ OpenWebIfTvAccessory.prototype = {
 		},
 		function(error, response, body) {
 		  callback(error, response, body);
-		});
-	  },
-	  
-	  getDiscSpace(callback) {
-		var me = this;
-		this._httpGetForMethod("/api/about", function(error,data) {
-		  if (error){
-			callback(error)
-		  } else {
-			var json = JSON.parse(data);
-			var freeDiscSpaceValue = json.info.hdd[0].free;
-			var freeDouble = parseFloat(freeDiscSpaceValue);
-			var capacityDiscSpaceValue = json.info.hdd[0].capacity;
-			var capacityDouble = parseFloat(capacityDiscSpaceValue);
-			var percentage = (freeDouble / capacityDouble) * 100;
-			me.log('getDiscSpace() succeded, free: %s', percentage);
-			callback(null, percentage);
-		  }
 		});
 	  },
 
