@@ -15,7 +15,8 @@
         "title": "IP Address/Hostname",
         "type": "string",
         "required": true,
-        "format": "hostname"
+        "format": "hostname",
+        "required": true
       },
       "port": {
         "title": "Port",
@@ -45,7 +46,7 @@
               "title": "Input reference",
               "type": "string",
                "default": "SAT/CBL",
-              "required": false
+              "required": true
             }
           }
         }
