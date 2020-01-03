@@ -1,0 +1,76 @@
+{
+  "pluginAlias": "OpenWebIfTv",
+  "pluginType": "accessory",
+  "footerDisplay": "This plugin works with Sat receivers with OpenWebIf interface which is available [here](https://github.com/grzegorz914/homebridge-openwebif-tv).",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "title": "Name",
+        "type": "string",
+        "default": "Sat receiver",
+        "required": true
+      },
+      "host": {
+        "title": "IP Address / Hostname",
+        "type": "string",
+        "required": true,
+        "format": "hostname"
+      },
+      "port": {
+        "title": "Port",
+        "type": "integer",
+        "default": 80,
+        "maximum": 65535,
+        "required": true
+      },
+      "speakerService": {
+        "title": "Speaker service",
+        "type": "boolean",
+        "default": true
+      },
+      "bouquets": {
+        "title": "Bouquets",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "title": "Bouquet name",
+              "type": "string",
+              "default": "Polskie",
+              "required": true
+            },
+            "reference": {
+              "title": "Bouquet reference",
+              "type": "string",
+               "default": "1:7:1:0:0:0:0:0:0:1:FRO BOUQUET \"userbouquet.dbe1a.tv\" ORDER BY bouquet",
+              "required": false
+            },
+             "channels": {
+        "title": "Channels",
+          "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "title": "Channel name",
+              "type": "string",
+               "default": "TVN 24",
+              "required": false
+            },
+            "reference": {
+              "title": "Chanel reference",
+              "type": "string",
+               "default": "1:0:1:3DD2:640:13E:820000:0:0:0:",
+              "required": false
+            }
+            }
+            }
+            }
+          }
+        }
+      }
+    }
+  }
+}
