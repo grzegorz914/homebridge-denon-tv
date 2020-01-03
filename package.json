@@ -1,16 +1,16 @@
 {
-  "name": "homebridge-openwebif-tv",
-  "version": "1.2.0",
-  "description": "Plugin for Homebridge (https://github.com/nfarina/homebridge) to controll Sat receivers with openwebif interface.",
+  "name": "homebridge-denon-tv",
+  "version": "0.0.1",
+  "description": "Plugin for Homebridge (https://github.com/nfarina/homebridge) to controll Denon/Marantz AV Receivers series X.",
   "license": "MIT",
   "author": "grzegorz914",
-  "homepage": "https://github.com/grzegorz914/homebridge-openwebif-tv#readme",
+  "homepage": "https://github.com/grzegorz914/homebridge-denon-tv#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/grzegorz914/homebridge-openwebif-tv.git"
+    "url": "git+https://github.com/grzegorz914/homebridge-denon-tv.git"
   },
   "bugs": {
-    "url": "https://github.com/grzegorz914/homebridge-openwebif-tv/issues"
+    "url": "https://github.com/grzegorz914/homebridge-denon-tv/issues"
   },
   "main": "index.js",
   "engines": {
