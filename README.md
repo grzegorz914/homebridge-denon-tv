@@ -18,7 +18,7 @@ HomeBridge: https://github.com/nfarina/homebridge
 "accessories": [
         {
             "accessory": "DenonTv",
-            "name": "Wzmacniacz",
+            "name": "AV Receiver",
             "host": "192.168.1.10",
             "port": 8080,
             "speakerService": true,
