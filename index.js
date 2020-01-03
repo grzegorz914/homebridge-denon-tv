@@ -1,5 +1,6 @@
 const net = require('net');
 const request = require('request');
+var parseString = require('xml2js');
 
 var Service, Characteristic;
 var inherits = require('util').inherits;
