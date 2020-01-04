@@ -2,7 +2,7 @@
 [![npm](https://img.shields.io/npm/dt/homebridge-denon-tv.svg)](https://www.npmjs.com/package/homebridge-denon-tv) [![npm](https://img.shields.io/npm/v/homebridge-denon-tv.svg)](https://www.npmjs.com/package/homebridge-denon-tv)
 
 Plugin to control Denon/Marantz Receivers, tested with AVR-X4300H, present in HomeKit as TV service.
-Can operate as a TV service, read/switch channels, change volume, power on/off.
+Can operate as a TV service, read/switch channels, change volume, power on/off, remote controll.
 
 HomeBridge: https://github.com/nfarina/homebridge
 
