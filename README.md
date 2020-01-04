@@ -18,12 +18,28 @@ HomeBridge: https://github.com/nfarina/homebridge
 "accessories": [
         {
             "accessory": "DenonTv",
-            "name": "AV Receiver",
-            "host": "192.168.1.10",
+            "name": "Kino domowe",
+            "host": "192.168.1.5",
             "port": 8080,
             "speakerService": true,
-            "inputs": []
-   
+            "inputs": [
+                {
+                    "name": "Xbox One",
+                    "reference": "GAME"
+                },
+                {
+                    "name": "Telewizor",
+                    "reference": "TV"
+                },
+                {
+                    "name": "Tuner Sat",
+                    "reference": "SAT/CBL"
+                },
+                {
+                    "name": "CD",
+                    "reference": "CD"
+                }
+            ]
         }
     ]
 </pre>
