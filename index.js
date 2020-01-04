@@ -38,25 +38,25 @@ DenonTvAccessory.prototype = {
 		.on('get', this.getPowerState.bind(this))
 		.on('set', this.setPowerState.bind(this));
 
-		// Identifier of Current Active imput.
+		// Identifier of Active imput.
 		this.tvService.getCharacteristic(Characteristic.ActiveIdentifier)
 		.on('set', (inputIdentifier, callback) => {
 			this.log("new input " + inputIdentifier);
-			var reference = this.inputReference[inputIdentifier]
-			this.setInput(reference, callback);
+			var source = this.inputReference[inputIdentifier]
+			this.setInput(source.reference, callback);
 		})
 		.on('get', (callback) => {
 			me.log.error("received information");
 			me.getInput(function(error, ref) {
 				for (var i = 0; i < me.inputReference.length; i++) {
-					 var reference = me.inputReference[i];
-					 if (reference == ref) {
-						me.log("current input: " + i + " " + reference.name + " reference: " + ref);
+					 var source = me.inputReference[i];
+					 if (source.reference == ref) {
+						me.log("current input: " + i + " " + source.name + " reference: " + ref);
 						callback(null, i);
 						return;
 					}
 				}
-				callback("no reference found");
+				callback("no input found");
 			});
 		});
 
@@ -89,14 +89,14 @@ DenonTvAccessory.prototype = {
 
 		this.inputName = new Array();
 		this.inputReference = new Array();
-		var counter = 0;
-		this.inputs.forEach((reference, i) => {
-				this.log("Adding input " + reference.name);
+               var counter = 0;
+		this.inputs.forEach((source, i) => {
+				this.log("Adding input " + source.name);
 		
-				let tmpInput = new Service.InputSource(reference.name, "inputLink" + counter);
+				let tmpInput = new Service.InputSource(source.name, "inputLink" + counter);
 				tmpInput
 				.setCharacteristic(Characteristic.Identifier, counter)
-				.setCharacteristic(Characteristic.ConfiguredName, reference.name)
+				.setCharacteristic(Characteristic.ConfiguredName, source.name)
 				.setCharacteristic(Characteristic.IsConfigured, Characteristic.IsConfigured.CONFIGURED)
 				.setCharacteristic(Characteristic.InputSourceType, Characteristic.InputSourceType.TV)
 				.setCharacteristic(Characteristic.CurrentVisibilityState, Characteristic.CurrentVisibilityState.SHOWN);
@@ -107,9 +107,9 @@ DenonTvAccessory.prototype = {
 					callback()
 				});
 		
-				this.inputReference.push(reference);
+				this.inputReference.push(source);
 				this.inputName.push(tmpInput);
-				counter++;
+                             counter++;
 			});
 		return this.inputName;
 },
@@ -119,10 +119,10 @@ DenonTvAccessory.prototype = {
 		var command = 0;
 		switch (remoteKey) {
 			case Characteristic.VolumeSelector.INCREMENT:
-			command = 115;
+			command = MVUP;
 			break;
 			case Characteristic.VolumeSelector.DECREMENT:
-			command = 114;
+			command = MVDOWN;
 			break;
 		}
 		this.sendRemoteControlCommand(command, callback);
@@ -133,43 +133,43 @@ DenonTvAccessory.prototype = {
 		var command = 0;
 		switch (remoteKey) {
 			case Characteristic.RemoteKey.REWIND:
-			command = 168;
+			command = MN9E;
 			break;
 			case Characteristic.RemoteKey.FAST_FORWARD:
-			command = 159;
+			command = MN9D;
 			break;
 			case Characteristic.RemoteKey.NEXT_TRACK:
-			command = 407;
+			command = MN9F;
 			break;
 			case Characteristic.RemoteKey.PREVIOUS_TRACK:
-			command = 412;
+			command = MN9G;
 			break;
 			case Characteristic.RemoteKey.ARROW_UP:
-			command = 103;
+			command = MNCUP;
 			break;
 			case Characteristic.RemoteKey.ARROW_DOWN:
-			command = 108;
+			command = MNCDN;
 			break;
 			case Characteristic.RemoteKey.ARROW_LEFT:
-			command = 105;
+			command = MNCLT;
 			break;
 			case Characteristic.RemoteKey.ARROW_RIGHT:
-			command = 106;
+			command = MNCRT;
 			break;
 			case Characteristic.RemoteKey.SELECT:
-			command = 352;
+			command = MNENT;
 			break;
 			case Characteristic.RemoteKey.BACK:
-			command = 174;
+			command = MNRTN;
 			break;
 			case Characteristic.RemoteKey.EXIT:
-			command = 174;
+			command = MNRTN;
 			break;
 			case Characteristic.RemoteKey.PLAY_PAUSE:
-			command = 164;
+			command = NS94;
 			break;
 			case Characteristic.RemoteKey.INFORMATION:
-			command = 139;
+			command = MNINF;
 			break;
 		}
 		this.sendRemoteControlCommand(command, callback);
@@ -316,7 +316,7 @@ DenonTvAccessory.prototype = {
 	  },
 	  
 	  setPowerState(state, callback) {
-		var state = state? true : false; //number to boolean
+		var state = state? "ON": "STANDBY"; //number to boolean
 		var me = this;
 		me.getPowerState(function(error, currentState) {
 		  if(error){
@@ -352,7 +352,7 @@ DenonTvAccessory.prototype = {
 	  },
 	  
 	  setMute(state, callback) {
-		var state = state? false : true; //number to boolean
+		var state = state? "ON" : "OFF"; //number to boolean
 		var me = this;
 		me.getMute(function(error, currentState) {
 		  if (error){
@@ -480,7 +480,7 @@ DenonTvAccessory.prototype = {
 	  
 	  sendRemoteControlCommand(command, callback) {
 		var me = this;
-		this.httpGetForMethod("/api/remotecontrol?command=" + command, function(error) {
+		this.httpGetForMethod("/goform/formiPhoneAppDirect.xml?" + command, function(error) {
 		  if (error){
 			 callback(error)
 		  } else { 
@@ -491,5 +491,7 @@ DenonTvAccessory.prototype = {
 	  }
 
 };
+
+
 
 
