@@ -1,9 +1,9 @@
 const net = require('net');
 const request = require('request');
-var parseString = require('xml2js');
 
 var Service, Characteristic;
 var inherits = require('util').inherits;
+var parseString = require('xml2js').parseString;
 
 module.exports = function(homebridge) {
 
@@ -19,11 +19,11 @@ function DenonTvAccessory(log, config) {
 	this.name = config["name"];
 
 	//required
+	var me = this;
 	this.host = config["host"];
 	this.port = config["port"] || 80;
 	this.speakerService = config["speakerService"] || true;
-	this.bouquets = config["bouquets"];
-	var me = this;
+	this.inputs = config["inputs"];
 }
 
 DenonTvAccessory.prototype = {
@@ -42,16 +42,16 @@ DenonTvAccessory.prototype = {
 		this.tvService.getCharacteristic(Characteristic.ActiveIdentifier)
 		.on('set', (inputIdentifier, callback) => {
 			this.log("new input " + inputIdentifier);
-			var channel = this.inputChannels[inputIdentifier]
-			this.setCurrentChannelWithsRef(channel.reference, callback);
+			var reference = this.inputReference[inputIdentifier]
+			this.setInput(reference, callback);
 		})
 		.on('get', (callback) => {
 			me.log.error("received information");
-			me.getCurrentChannelWithsRef(function(error, ref) {
-				for (var i = 0; i < me.inputChannels.length; i++) {
-					 var channel = me.inputChannels[i];
-					 if (channel.reference == ref) {
-						me.log("current channel: " + i + " " + channel.name + " reference: " + ref);
+			me.getInput(function(error, ref) {
+				for (var i = 0; i < me.inputReference.length; i++) {
+					 var reference = me.inputReference[i];
+					 if (reference == ref) {
+						me.log("current input: " + i + " " + reference.name + " reference: " + ref);
 						callback(null, i);
 						return;
 					}
@@ -62,8 +62,6 @@ DenonTvAccessory.prototype = {
 
 		this.tvService.getCharacteristic(Characteristic.RemoteKey)
 		    .on('set', this.remoteKeyPress.bind(this));
-		this.tvService.addCharacteristic(this.makeDiscSpaceCharacteristic())
-		    .on('get', this.getDiscSpace.bind(this))
 
 		if (this.config["includeIP"] || false) {
 			this.tvService.setCharacteristic(this.makeIPCharacteristic(this.host), this.host);
@@ -88,40 +86,33 @@ DenonTvAccessory.prototype = {
 	},
 
 	generateInputServices() {
-                // TODO load persisted Names
 
-		this.inputServices = new Array();
-		this.inputChannels = new Array();
+		this.inputName = new Array();
+		this.inputReference = new Array();
 		var counter = 0;
-		this.bouquets.forEach((bouquet, i) => {
-			 bouquet.channels.forEach((channel, i) => {
-				this.log("Adding Channel " + channel.name);
-
-				let tmpInput = new Service.InputSource(channel.name, "channelLink" + counter);
+		this.inputs.forEach((reference, i) => {
+				this.log("Adding input " + reference.name);
+		
+				let tmpInput = new Service.InputSource(reference.name, "inputLink" + counter);
 				tmpInput
 				.setCharacteristic(Characteristic.Identifier, counter)
-				.setCharacteristic(Characteristic.ConfiguredName, channel.name)
+				.setCharacteristic(Characteristic.ConfiguredName, reference.name)
 				.setCharacteristic(Characteristic.IsConfigured, Characteristic.IsConfigured.CONFIGURED)
 				.setCharacteristic(Characteristic.InputSourceType, Characteristic.InputSourceType.TV)
 				.setCharacteristic(Characteristic.CurrentVisibilityState, Characteristic.CurrentVisibilityState.SHOWN);
-
+		
 				tmpInput
 				.getCharacteristic(Characteristic.ConfiguredName)
 				.on('set', (name, callback) => {
-					// TODO: persist name
 					callback()
 				});
-
-				this.inputChannels.push(channel);
-				this.inputServices.push(tmpInput);
+		
+				this.inputReference.push(reference);
+				this.inputName.push(tmpInput);
 				counter++;
 			});
-		});
-		if (counter == 0){
-			this._printBouquets()
-		}
-		return this.inputServices;
-	},
+		return this.inputName;
+},
 
 	volumeSelectorPress(remoteKey, callback) {
 		this.log('remote key pressed: %d', remoteKey);
@@ -201,8 +192,8 @@ DenonTvAccessory.prototype = {
 		var tvService  = this.generateTVService();
 		var services = [informationService, tvService];
 
-		var inputServices = this.generateInputServices();
-		inputServices.forEach((service, i) => {
+		var inputName = this.generateInputServices();
+		inputName.forEach((service, i) => {
 			tvService.addLinkedService(service);
 			services.push(service);
 		});
@@ -214,23 +205,6 @@ DenonTvAccessory.prototype = {
 			tvService.addLinkedService(speakerService);
 		}
 		return services;
-	},
-
-	makeDiscSpaceCharacteristic() {
-		var discSpaceChar = function() {
-			Characteristic.call(this, 'DiscSpace', 'B795302F-FFBA-41D9-9076-337986B81D27');
-			this.setProps({
-				format: Characteristic.Formats.INT,
-				unit: Characteristic.Units.PERCENTAGE,
-				maxValue: 100,
-				minValue: 0,
-				minStep: 1,
-				perms: [Characteristic.Perms.READ, Characteristic.Perms.NOTIFY]
-			});
-			this.value = 0;
-		}
-		inherits(discSpaceChar, Characteristic);
-		return discSpaceChar;
 	},
 
 	makeIPCharacteristic(ip) {
@@ -246,7 +220,7 @@ DenonTvAccessory.prototype = {
 		return volumeCharacteristic;
 	},
 
-	_checkHostIsReachable(host, port, callback) {
+	checkHostIsReachable(host, port, callback) {
 		var timeout = 2000;
 		var callbackCalled = false;
 		
@@ -278,7 +252,7 @@ DenonTvAccessory.prototype = {
 		}, timeout);
 	  },
 	  
-	  _httpGetForMethod(method, callback) {
+	  httpGetForMethod(method, callback) {
 		if (!this.host) {
 		  this.log.error("No Host defined in method: " + method);
 		  callback(new Error("No host defined."));
@@ -288,9 +262,9 @@ DenonTvAccessory.prototype = {
 		  callback(new Error("No port defined."));
 		}
 		var me = this;
-		me._checkHostIsReachable(this.host, this.port, function(reachable) {
+		me.checkHostIsReachable(this.host, this.port, function(reachable) {
 		  if (reachable) {
-			me._httpRequest('http://' + me.host + ':' + me.port + method , '', 'GET', function(error, response, responseBody) {
+			me.httpRequest('http://' + me.host + ':' + me.port + method , '', 'GET', function(error, response, responseBody) {
 			  if (error) {
 				callback(error)
 			  } else {
@@ -316,7 +290,7 @@ DenonTvAccessory.prototype = {
 		});
 	  },
 	  
-	  _httpRequest(url, body, method, callback) {
+	  httpRequest(url, body, method, callback) {
 		request({
 		  url: url,
 		  body: body,
@@ -327,33 +301,15 @@ DenonTvAccessory.prototype = {
 		  callback(error, response, body);
 		});
 	  },
-
-	  getDeviceInfo(callback) {
-		var me = this;
-		this._httpGetForMethod("/api/about", function(error,data) {
-		  if (error){
-			callback(error)
-		  } else {
-			var json = JSON.parse(data);
-			var brand = json.brand;
-			var model = json.info.bname;
-			var firmware = json.info.enigmaver;
-			var serial = json.ifaces[0].mac;
-			me.log('getDeviceInfo() succeded, free: %s', data);
-			callback(null, data);
-		  }
-		});
-	  },
 	  
 	  getPowerState(callback) {
 		var me = this;
-		this._httpGetForMethod("/api/statusinfo", function(error,data) {
+		this.httpGetForMethod("/goform/formMainZone_MainZoneXmlStatusLite.xml", function(error,data) {
 		  if (error){
 			callback(error)
 		  } else {
-			var json = JSON.parse(data); 
-			var state = (json.inStandby == "false");
-			me.log('getPowerState() succeded: %s', state? 'ON':'OFF');
+			var state = (data.item.Power[0].value[0] == "ON");
+			me.log('getPowerState() succeded: %s', state? 'ON':'STANDBY');
 			callback(null, state);
 		  }
 		});
@@ -369,11 +325,11 @@ DenonTvAccessory.prototype = {
 			if (currentState == state) { //state like expected
 			  callback(null, state);
 			} else { //set new state
-			  me._httpGetForMethod("/api/powerstate?newstate=0", function(error) {
+			  me.httpGetForMethod("/goform/formiPhoneAppDirect.xml?PW" + state, function(error) {
 				if (error){
 				  callback(error)
 				} else {
-				  me.log('setPowerState() succeded %s', state? 'ON':'OFF');
+				  me.log('setPowerState() succeded %s', state? 'ON':'STANDBY');
 				  callback(null, state);
 				}
 			  });
@@ -384,13 +340,12 @@ DenonTvAccessory.prototype = {
 	  
 	  getMute(callback) {
 		var me = this;
-		this._httpGetForMethod("/api/statusinfo", function(error,data) {
+		this.httpGetForMethod("/goform/formMainZone_MainZoneXmlStatusLite.xml", function(error,data) {
 		  if (error){
 			  callback(error)
 		  } else {
-			var json = JSON.parse(data);
-			var state = (json.muted == false);
-			me.log('getMute() succeded: %s', state? 'OFF':'ON');
+			var state = (data.item.Mute[0].value[0] == "ON");
+			me.log('getMute() succeded: %s', state? 'ON':'OFF');
 			callback(null, state);
 		  }
 		});
@@ -406,11 +361,11 @@ DenonTvAccessory.prototype = {
 			if (currentState == state) { //state like expected
 				callback(null, state);
 			} else { //set new state
-			  me._httpGetForMethod("/api/vol?set=mute", function(error) {
+			  me.httpGetForMethod("/goform/formiPhoneAppDirect.xml?MU" + state, function(error) {
 				if (error){
 					callback(error)
 				} else {
-				  me.log('setMute() succeded %s',  state? 'OFF':'ON');
+				  me.log('setMute() succeded %s',  state? 'ON':'OFF');
 				  callback(null, state);
 				}
 			  });
@@ -421,12 +376,11 @@ DenonTvAccessory.prototype = {
 	  
 	  getVolume(callback) {
 		var me = this;
-		this._httpGetForMethod("/api/statusinfo", function(error,data) {
+		this.httpGetForMethod("/goform/formMainZone_MainZoneXmlStatusLite.xml", function(error,data) {
 		  if (error){
 			callback(error)
 		  } else {
-			var json = JSON.parse(data);
-			var volume = parseFloat(json.volume);
+			var volume = parseInt(data.item.MasterVolume[0].value[0]) + 80;
 			me.log('getVolume() succeded: %s', volume);
 			callback(null, volume);
 		  }
@@ -435,8 +389,8 @@ DenonTvAccessory.prototype = {
 	  
 	  setVolume(volume, callback) {
 		var me = this;
-		var targetVolume = parseInt(volume);
-		this._httpGetForMethod("/api/vol?set=set" + targetVolume, function(error) {
+		var targetVolume = (volume - 80).toFixed(1); 
+		this.httpGetForMethod("/goform/formiPhoneAppDirect.xml?MV" + targetVolume, function(error) {
 		  if (error){
 			callback(error)
 		  } else {
@@ -445,86 +399,88 @@ DenonTvAccessory.prototype = {
 		  }
 		});
 	  },
-	  
-	  _printBouquets() {
+		  
+	  getInput(callback) {
 		var me = this;
-		this._httpGetForMethod("/api/getservices", function(error,data) {
-		  if (error){
-		  } else {
-			var json = JSON.parse(data);
-			var servicesList = json.services;
-			me._printBouquetsDetail(servicesList, new Array());
-			var arrayLength = servicesList.length;
-			for (var i = 0; i < arrayLength; i++) {
-			var service = servicesList[i];
-			}
-		  }
-		});
-	  },
-	  
-	  _printBouquetsDetail(bouquets, printArray) {
-		if (bouquets == undefined || bouquets == null || bouquets.length <= 0) {
-		  var string =  JSON.stringify(printArray, null, 2);
-		  this.log('JSON for adding to bouquet array in config in openwebif accessory under key bouquets: %s', string);
-		  return;
-		}
-		let bouquet = bouquets[0];
-		bouquets.shift();
-	  
-		let name = bouquet.servicename;
-		let ref = bouquet.servicereference;
-		var me = this;
-		this._httpGetForMethod("/api/getservices?sRef=" + ref, function(error,data) {
-		  if (error){
-		  } else {
-			var json = JSON.parse(data);
-			var servicesList = json.services;
-			var arr = [];
-			var arrayLength = servicesList.length;
-			for (var i = 0; i < arrayLength; i++) {
-			  var service = servicesList[i];
-			  let name = service.servicename;
-			  let ref = service.servicereference;
-			  var object = {"name": name, "reference": ref};
-			  arr.push(object);
-			}
-			var jsonobj = {"name": name, "reference": ref, "channels": arr };
-			printArray.push(jsonobj)
-			me.log('Adding this to bouquet array in config: %s', string);
-			me._printBouquetsDetail(bouquets, printArray);
-		  }
-		});
-	  },
-	  
-	  getCurrentChannelWithsRef(callback) {
-		var me = this;
-		this._httpGetForMethod("/api/statusinfo", function(error,data) {
+		this.httpGetForMethod("/goform/formMainZone_MainZoneXmlStatusLite.xml", function(error,data) {
 		  if (error){
 			 callback(error)
 		  } else {
-			var json = JSON.parse(data);
-			var ref = json.currservice_serviceref;
-			me.log('getCurrentChannelWithsRef() succeded: %s', ref); 
-			callback(null, String(ref));
+			var ref = data.item.InputFuncSelect[0].value[0];
+			me.log('getInput() succeded: %s', ref); 
+			callback(null, ref);
 			}
 		});
 	  },
 	  
-	  setCurrentChannelWithsRef(ref, callback){
+	  setInput(ref, callback){
 		var me = this;
-		this._httpGetForMethod("/api/zap?sRef=" + ref,  function(error) {
+		this.httpGetForMethod("/goform/formiPhoneAppDirect.xml?SI" + ref,  function(error) {
 		  if (error){
 			 callback(error)
 		  } else { 
-			   me.log('setCurrentChannelWithsRef() succeded: %s', ref);     
+			   me.log('setInput() succeded: %s', ref);     
 			   callback(null, ref);
 		  } 
+		});
+	  },
+
+	  getModelInfo(callback) {
+		var me = this;
+		this.httpGetForMethod("/goform/formMainZone_MainZoneXmlStatusLite.xml", function(error,data) {
+		  if (error){
+			 callback(error)
+		  } else {
+			var name = data.item.FriendlyName[0].value[0];
+			var brand = data.item.BrandId[0].value[0];
+			me.log('getModelInfo() succeded: %s', name, brand); 
+			callback(null, name, brand);
+			}
+		});
+	  },
+
+	  getName(callback) {
+		var me = this;
+		this.httpGetForMethod("/goform/formMainZone_MainZoneXmlStatusLite.xml", function(error,data) {
+		  if (error){
+			 callback(error)
+		  } else {
+			var name = data.item.FriendlyName[0].value[0];
+			me.log('getName() succeded: %s', name); 
+			callback(null, name);
+			}
+		});
+	  },
+
+	  getBrand(callback) {
+		var me = this;
+		this.httpGetForMethod("/goform/formMainZone_MainZoneXmlStatusLite.xml", function(error,data) {
+		  if (error){
+			 callback(error)
+		  } else {
+			var brand = data.item.BrandId[0].value[0];
+			me.log('getBrand() succeded: %s', brand); 
+			callback(null, brand);
+			}
+		});
+	  },
+
+	  getSurround(callback) {
+		var me = this;
+		this.httpGetForMethod("/goform/formMainZone_MainZoneXmlStatusLite.xml", function(error,data) {
+		  if (error){
+			 callback(error)
+		  } else {
+			var surround = data.item.selectSurround[0].value[0];
+			me.log('getSurround() succeded: %s', surround); 
+			callback(null, surround);
+			}
 		});
 	  },
 	  
 	  sendRemoteControlCommand(command, callback) {
 		var me = this;
-		this._httpGetForMethod("/api/remotecontrol?command=" + command, function(error) {
+		this.httpGetForMethod("/api/remotecontrol?command=" + command, function(error) {
 		  if (error){
 			 callback(error)
 		  } else { 
