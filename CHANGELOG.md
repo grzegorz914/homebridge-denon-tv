@@ -1,8 +1,10 @@
 # Change Log
 
-All notable changes to this project will be documented in this file.
+## 0.0.4 (06.01.2020)
+- code cleanup
+- some small fixes
 
-## 0.0.3 (04.01.2019)
+## 0.0.3 (04.01.2020)
 - fixed sources list
 - some other fixes
 
