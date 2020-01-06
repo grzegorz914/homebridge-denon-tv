@@ -1,5 +1,6 @@
 const net = require('net');
 const request = require('request');
+var Package = require('./package.json');
 
 var Service, Characteristic;
 var inherits = require('util').inherits;
@@ -38,25 +39,25 @@ DenonTvAccessory.prototype = {
 		.on('get', this.getPowerState.bind(this))
 		.on('set', this.setPowerState.bind(this));
 
-		// Identifier of Active imput.
+		// Identifier of Active input.
 		this.tvService.getCharacteristic(Characteristic.ActiveIdentifier)
 		.on('set', (inputIdentifier, callback) => {
-			this.log("new input " + inputIdentifier);
-			var source = this.inputReference[inputIdentifier]
-			this.setInput(source.reference, callback);
+			var input = this.inputReference[inputIdentifier]
+                      me.log("new source: %s" + source);
+			this.setInput(input.reference, callback);
 		})
 		.on('get', (callback) => {
-			me.log.error("received information");
-			me.getInput(function(error, ref) {
+			me.getInput(function(error, inputReference) {
 				for (var i = 0; i < me.inputReference.length; i++) {
-					 var source = me.inputReference[i];
-					 if (source.reference == ref) {
-						me.log("current input: " + i + " " + source.name + " reference: " + ref);
+					 var input = me.inputReference[i];
+					 if (input.reference == inputReference) {
+						me.log("current input nr.: " + i + " name: " + input.name + " reference: " + inputReference);
 						callback(null, i);
 						return;
 					}
 				}
-				callback("no input found");
+                             me.log("received information: %s", error);
+				callback("no source found");
 			});
 		});
 
@@ -64,7 +65,7 @@ DenonTvAccessory.prototype = {
 		    .on('set', this.remoteKeyPress.bind(this));
 
 		if (this.config["includeIP"] || false) {
-			this.tvService.setCharacteristic(this.makeIPCharacteristic(this.host), this.host);
+		    this.tvService.setCharacteristic(this.makeIPCharacteristic(this.host), this.host);
 		}
 		return this.tvService;
 	},
@@ -81,8 +82,7 @@ DenonTvAccessory.prototype = {
 		    .on('set', this.setMute.bind(this));
 
 		this.speakerService.setCharacteristic(Characteristic.VolumeControlType, Characteristic.VolumeControlType.ABSOLUTE);
-
-		return this.speakerService;
+              return this.speakerService;
 	},
 
 	generateInputServices() {
@@ -90,13 +90,13 @@ DenonTvAccessory.prototype = {
 		this.inputName = new Array();
 		this.inputReference = new Array();
                var counter = 0;
-		this.inputs.forEach((source, i) => {
-				this.log("Adding input " + source.name);
+		this.inputs.forEach((input, i) => {
+				this.log("adding source " + input.name);
 		
-				let tmpInput = new Service.InputSource(source.name, "inputLink" + counter);
+				let tmpInput = new Service.InputSource(input.name, "inputLink" + counter);
 				tmpInput
 				.setCharacteristic(Characteristic.Identifier, counter)
-				.setCharacteristic(Characteristic.ConfiguredName, source.name)
+				.setCharacteristic(Characteristic.ConfiguredName, input.name)
 				.setCharacteristic(Characteristic.IsConfigured, Characteristic.IsConfigured.CONFIGURED)
 				.setCharacteristic(Characteristic.InputSourceType, Characteristic.InputSourceType.TV)
 				.setCharacteristic(Characteristic.CurrentVisibilityState, Characteristic.CurrentVisibilityState.SHOWN);
@@ -107,7 +107,7 @@ DenonTvAccessory.prototype = {
 					callback()
 				});
 		
-				this.inputReference.push(source);
+				this.inputReference.push(input);
 				this.inputName.push(tmpInput);
                              counter++;
 			});
@@ -115,7 +115,7 @@ DenonTvAccessory.prototype = {
 },
 
 	volumeSelectorPress(remoteKey, callback) {
-		this.log('remote key pressed: %d', remoteKey);
+               var me = this;
 		var command = 0;
 		switch (remoteKey) {
 			case Characteristic.VolumeSelector.INCREMENT:
@@ -125,11 +125,12 @@ DenonTvAccessory.prototype = {
 			command = MVDOWN;
 			break;
 		}
+               me.log('remote key pressed: %s', remoteKey, "remote command send: %s", command);
 		this.sendRemoteControlCommand(command, callback);
 	},
 
 	remoteKeyPress(remoteKey, callback) {
-		this.log('remote key pressed: %d', remoteKey);
+               var me = this;
 		var command = 0;
 		switch (remoteKey) {
 			case Characteristic.RemoteKey.REWIND:
@@ -172,22 +173,18 @@ DenonTvAccessory.prototype = {
 			command = MNINF;
 			break;
 		}
+               me.log('remote key pressed: %s', remoteKey, "remote command send: %s", command);
 		this.sendRemoteControlCommand(command, callback);
-	},
-
-    identify(callback) {
-		this.log("Identify requested!");
-		callback();
 	},
 
 	getServices() {
 		var me = this;
 		var informationService = new Service.AccessoryInformation();
 		informationService
-		.setCharacteristic(Characteristic.Manufacturer)
-		.setCharacteristic(Characteristic.Model)
-		.setCharacteristic(Characteristic.SerialNumber)
-		.setCharacteristic(Characteristic.FirmwareRevision);
+		.setCharacteristic(Characteristic.Manufacturer, "Denon/Marantz")
+		.setCharacteristic(Characteristic.Model, "AV Receiver")
+		.setCharacteristic(Characteristic.SerialNumber, "00000002")
+		.setCharacteristic(Characteristic.FirmwareRevision, Package.version);
 
 		var tvService  = this.generateTVService();
 		var services = [informationService, tvService];
@@ -199,7 +196,7 @@ DenonTvAccessory.prototype = {
 		});
 
 		if (this.speakerService){
-			this.log("Adding SpeakerService");
+			me.log("Adding SpeakerService");
 			let speakerService = this.generateSpeakerService();
 			services.push(speakerService);
 			tvService.addLinkedService(speakerService);
@@ -253,15 +250,15 @@ DenonTvAccessory.prototype = {
 	  },
 	  
 	  httpGetForMethod(method, callback) {
+               var me = this;
 		if (!this.host) {
-		  this.log.error("No Host defined in method: " + method);
+		  me.log.error("No Host defined in method: " + method);
 		  callback(new Error("No host defined."));
 		}
 		if (!this.port) {
-		  this.log.error("No port defined in method: " + method);
+		  me.log.error("No port defined in method: " + method);
 		  callback(new Error("No port defined."));
 		}
-		var me = this;
 		me.checkHostIsReachable(this.host, this.port, function(reachable) {
 		  if (reachable) {
 			me.httpRequest('http://' + me.host + ':' + me.port + method , '', 'GET', function(error, response, responseBody) {
@@ -273,7 +270,7 @@ DenonTvAccessory.prototype = {
 					if (err) {
 					  callback(err)
 					} else {
-					  me.log('result %s', data);
+					  //me.log('result %s', data);
 					  callback(null, data);
 					}
 				  });
@@ -316,8 +313,8 @@ DenonTvAccessory.prototype = {
 	  },
 	  
 	  setPowerState(state, callback) {
+               var me = this;
 		var state = state? "ON": "STANDBY"; //number to boolean
-		var me = this;
 		me.getPowerState(function(error, currentState) {
 		  if(error){
 			callback(null, state? false : true); //receiver is off
@@ -325,7 +322,7 @@ DenonTvAccessory.prototype = {
 			if (currentState == state) { //state like expected
 			  callback(null, state);
 			} else { //set new state
-			  me.httpGetForMethod("/goform/formiPhoneAppDirect.xml?PW" + state, function(error) {
+			  this.httpGetForMethod("/goform/formiPhoneAppDirect.xml?PW" + state, function(error) {
 				if (error){
 				  callback(error)
 				} else {
@@ -352,8 +349,8 @@ DenonTvAccessory.prototype = {
 	  },
 	  
 	  setMute(state, callback) {
+               var me = this;
 		var state = state? "ON" : "OFF"; //number to boolean
-		var me = this;
 		me.getMute(function(error, currentState) {
 		  if (error){
 			callback(null, state? true : false); //receiver is off
@@ -361,7 +358,7 @@ DenonTvAccessory.prototype = {
 			if (currentState == state) { //state like expected
 				callback(null, state);
 			} else { //set new state
-			  me.httpGetForMethod("/goform/formiPhoneAppDirect.xml?MU" + state, function(error) {
+			  this.httpGetForMethod("/goform/formiPhoneAppDirect.xml?MU" + state, function(error) {
 				if (error){
 					callback(error)
 				} else {
@@ -380,9 +377,9 @@ DenonTvAccessory.prototype = {
 		  if (error){
 			callback(error)
 		  } else {
-			var volume = parseInt(data.item.MasterVolume[0].value[0]) + 80;
-			me.log('getVolume() succeded: %s', volume);
-			callback(null, volume);
+			var currentVolume = parseInt(data.item.MasterVolume[0].value[0]) + 80;
+			me.log('getVolume() succeded: %s', currentVolume);
+			callback(null, currentVolume);
 		  }
 		});
 	  },
@@ -406,21 +403,21 @@ DenonTvAccessory.prototype = {
 		  if (error){
 			 callback(error)
 		  } else {
-			var ref = data.item.InputFuncSelect[0].value[0];
-			me.log('getInput() succeded: %s', ref); 
-			callback(null, ref);
+			var inputReference = data.item.InputFuncSelect[0].value[0];
+			me.log('getInput() succeded: %s', inputReference); 
+			callback(null, inputReference);
 			}
 		});
 	  },
 	  
 	  setInput(ref, callback){
 		var me = this;
-		this.httpGetForMethod("/goform/formiPhoneAppDirect.xml?SI" + ref,  function(error) {
+		this.httpGetForMethod("/goform/formiPhoneAppDirect.xml?SI" + inputReference,  function(error) {
 		  if (error){
 			 callback(error)
 		  } else { 
-			   me.log('setInput() succeded: %s', ref);     
-			   callback(null, ref);
+			   me.log('setInput() succeded: %s', inputReference);     
+			   callback(null, inputReference);
 		  } 
 		});
 	  },
@@ -431,10 +428,10 @@ DenonTvAccessory.prototype = {
 		  if (error){
 			 callback(error)
 		  } else {
-			var name = data.item.FriendlyName[0].value[0];
-			var brand = data.item.BrandId[0].value[0];
-			me.log('getModelInfo() succeded: %s', name, brand); 
-			callback(null, name, brand);
+			var deviceName = data.item.FriendlyName[0].value[0];
+			var deviceBrand = data.item.BrandId[0].value[0];
+			me.log('getModelInfo() succeded: %s', deviceName, deviceBrand); 
+			callback(null, deviceName, deviceBrand);
 			}
 		});
 	  },
@@ -445,9 +442,9 @@ DenonTvAccessory.prototype = {
 		  if (error){
 			 callback(error)
 		  } else {
-			var name = data.item.FriendlyName[0].value[0];
-			me.log('getName() succeded: %s', name); 
-			callback(null, name);
+			var deviceName = data.item.FriendlyName[0].value[0];
+			me.log('getName() succeded: %s', deviceName); 
+			callback(null, deviceName);
 			}
 		});
 	  },
@@ -458,9 +455,9 @@ DenonTvAccessory.prototype = {
 		  if (error){
 			 callback(error)
 		  } else {
-			var brand = data.item.BrandId[0].value[0];
-			me.log('getBrand() succeded: %s', brand); 
-			callback(null, brand);
+			var beviceBrand = data.item.BrandId[0].value[0];
+			me.log('getBrand() succeded: %s', deviceBrand); 
+			callback(null, deviceBrand);
 			}
 		});
 	  },
@@ -471,9 +468,9 @@ DenonTvAccessory.prototype = {
 		  if (error){
 			 callback(error)
 		  } else {
-			var surround = data.item.selectSurround[0].value[0];
-			me.log('getSurround() succeded: %s', surround); 
-			callback(null, surround);
+			var surroundMode = data.item.selectSurround[0].value[0];
+			me.log('getSurround() succeded: %s', surroundMode); 
+			callback(null, surroundMode);
 			}
 		});
 	  },
@@ -491,6 +488,8 @@ DenonTvAccessory.prototype = {
 	  }
 
 };
+
+
 
 
 
