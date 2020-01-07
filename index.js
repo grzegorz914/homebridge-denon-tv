@@ -43,21 +43,30 @@ DenonTvAccessory.prototype = {
 		this.tvService.getCharacteristic(Characteristic.ActiveIdentifier)
 		.on('set', (inputIdentifier, callback) => {
 			var input = this.inputReference[inputIdentifier]
-                      me.log("new source: %s" + source);
+            me.log("new source: %s" + source);
 			this.setInput(input.reference, callback);
 		})
 		.on('get', (callback) => {
+			me.getPowerState (function(error, state) {
+				this.receiverstate = state;
+			});
+
 			me.getInput(function(error, inputReference) {
-				for (var i = 0; i < me.inputReference.length; i++) {
-					 var input = me.inputReference[i];
-					 if (input.reference == inputReference) {
-						me.log("current input nr.: " + i + " name: " + input.name + " reference: " + inputReference);
-						callback(null, i);
-						return;
+				if (this.inputs == undefined || this.inputs == null || this.inputs.length <= 0) {
+                    callback(null);
+                    return;
+                } else {
+				    for (var i = 0; i < me.inputReference.length; i++) {
+					     var input = me.inputReference[i];
+					    if (input.reference == inputReference) {
+						    me.log("current input nr: " + i + " name: " + input.name + " reference: " + inputReference);
+						    callback(null, i);
+						    return;
+					   }
 					}
 				}
-                             me.log("received information: %s", error);
-				callback("no source found");
+                me.log("received information: %s", error);
+				callback("no inputs found");
 			});
 		});
 
@@ -89,11 +98,11 @@ DenonTvAccessory.prototype = {
 
 		this.inputName = new Array();
 		this.inputReference = new Array();
-               var counter = 0;
+        var counter = 0;
 		this.inputs.forEach((input, i) => {
-				this.log("adding source " + input.name);
+				this.log("Added input " + input.name);
 		
-				let tmpInput = new Service.InputSource(input.name, "inputLink" + counter);
+				let tmpInput = new Service.InputSource(input.name, "input nr: " + counter);
 				tmpInput
 				.setCharacteristic(Characteristic.Identifier, counter)
 				.setCharacteristic(Characteristic.ConfiguredName, input.name)
@@ -109,7 +118,7 @@ DenonTvAccessory.prototype = {
 		
 				this.inputReference.push(input);
 				this.inputName.push(tmpInput);
-                             counter++;
+                counter++;
 			});
 		return this.inputName;
 },
@@ -250,7 +259,7 @@ DenonTvAccessory.prototype = {
 	  },
 	  
 	  httpGetForMethod(method, callback) {
-               var me = this;
+        var me = this;
 		if (!this.host) {
 		  me.log.error("No Host defined in method: " + method);
 		  callback(new Error("No host defined."));
@@ -282,7 +291,8 @@ DenonTvAccessory.prototype = {
 			}.bind(this));
 		  } else {
 			me.log.error("Device not reachable" + me.host + ":" + me.port + " in method: " + method);
-			callback(new Error("device is off"), null); //receiver is off
+			callback(new Error("device is not reachable, please check connection and all config data"), null); //receiver is off
+			return;
 		  }
 		});
 	  },
@@ -488,6 +498,9 @@ DenonTvAccessory.prototype = {
 	  }
 
 };
+
+
+
 
 
 
