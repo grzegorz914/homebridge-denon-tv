@@ -1,8 +1,9 @@
 # homebridge-denon-tv
 [![npm](https://img.shields.io/npm/dt/homebridge-denon-tv.svg)](https://www.npmjs.com/package/homebridge-denon-tv) [![npm](https://img.shields.io/npm/v/homebridge-denon-tv.svg)](https://www.npmjs.com/package/homebridge-denon-tv)
 
-Plugin to control Denon/Marantz Receivers, tested with AVR-X6300H, present in HomeKit as TV service.
-Can operate as a TV service, read/switch channels, change volume, power on/off, remote controll.
+Plugin to control Denon/Marantz AV Receivers series X in HomeKit as TV service.
+Tested with AVR-X6300H.
+Can operate as TV service, switch and read channels.
 
 HomeBridge: https://github.com/nfarina/homebridge
 
