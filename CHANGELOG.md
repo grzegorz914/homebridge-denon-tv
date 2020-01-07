@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.0.5 (07.01.2019)
+- fixed some small bugs
+
 ## 0.0.4 (06.01.2020)
 - code cleanup
 - some small fixes
