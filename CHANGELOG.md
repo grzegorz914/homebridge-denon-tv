@@ -1,4 +1,10 @@
 # Change Log
+All notable changes to this project will be documented in this file.
+## 0.0.7 (08.01.2020)
+- fixed current input identyfication
+
+## 0.0.6 (08.01.2020)
+- some small changes
 
 ## 0.0.5 (07.01.2019)
 - fixed some small bugs
