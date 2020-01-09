@@ -42,6 +42,42 @@ module.exports = function(homebridge) {
 DenonTvPlatform.prototype.configureAccessory = function(accessory) {
 }
 
+DenonTvPlatform.prototype.didFinishLaunching = function() {
+  var me = this;
+  
+
+  if (me.config.receivers) {
+    var configuredAccessories = [];
+
+    var receivers = me.config.receivers;
+    receivers.forEach(function(receiverConfig) {
+      var receiverName = receiverConfig.name;
+
+      if (!receiverName) {
+        me.log("Missing receiver.");
+        return;
+      }
+
+      var uuid = UUIDGen.generate(receiverName);
+      var receiverAccessory = new Accessory(receiverName, uuid, hap.Accessory.Categories.TV);
+      var receiverAccessoryInfo = receiverAccessory.getService(Service.AccessoryInformation);
+      if (receiverConfig.manufacturer) {
+        receiverAccessoryInfo.setCharacteristic(Characteristic.Manufacturer, receiverConfig.manufacturer);
+      }
+      if (receiverConfig.model) {
+        receiverAccessoryInfo.setCharacteristic(Characteristic.Model, receiverConfig.model);
+      }
+      if (receiverConfig.serialNumber) {
+        receiverAccessoryInfo.setCharacteristic(Characteristic.SerialNumber, receiverConfig.serialNumber);
+      }
+      if (receiverConfig.firmwareRevision) {
+        receiverAccessoryInfo.setCharacteristic(Characteristic.FirmwareRevision, receiverConfig.firmwareRevision);
+      }
+
+    me.api.publishReceiverAccessories("DenonTv", configuredAccessories);
+  }
+};
+
 DenonTvPlatform.prototype = {
 
 	generateTVService() {
