@@ -40,6 +40,9 @@ module.exports = function(homebridge) {
 	   
     }
 
+DenonTvPlatform.prototype.configureAccessory = function(accessory) {
+}
+
 DenonTvAccessory.prototype = {
 
 	generateTVService() {
