@@ -1,3 +1,4 @@
+'use strict';
 const net = require('net');
 const request = require('request');
 var Package = require('./package.json');
