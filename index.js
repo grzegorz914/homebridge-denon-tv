@@ -179,15 +179,14 @@ DenonTvPlatform.prototype = {
 	getServices() {
 
 		var services  = this.generateTVService();
-
-		var inputName = this.generateInputServices();
-		inputName.forEach((service, i) => {
+                var inputName = this.generateInputServices();
+		    inputName.forEach((service, i) => {
 			tvService.addLinkedService(service);
 			services.push(service);
 		});
 
 		if (this.speakerService){
-			let speakerService = this.generateSpeakerService();
+		    let speakerService = this.generateSpeakerService();
 			services.push(speakerService);
 			tvService.addLinkedService(speakerService);
 		}
