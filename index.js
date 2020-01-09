@@ -177,10 +177,8 @@ DenonTvPlatform.prototype = {
     },
 
 	getServices() {
-		var me = this;
 
-		var tvService  = this.generateTVService();
-		var services = tvService;
+		var services  = this.generateTVService();
 
 		var inputName = this.generateInputServices();
 		inputName.forEach((service, i) => {
