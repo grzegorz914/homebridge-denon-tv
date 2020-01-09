@@ -1,8 +1,8 @@
 'use strict';
 const net = require('net');
 const request = require('request');
-var Package = require('./package.json');
 
+var Package = require('./package.json');
 var Accessory, Service, Characteristic, hap, UUIDGen;
 var parseString = require('xml2js').parseString;
 
@@ -178,16 +178,9 @@ DenonTvPlatform.prototype = {
 
 	getServices() {
 		var me = this;
-        this.log("Adding Information Service...")
-		var informationService = new Service.AccessoryInformation();
-		informationService
-		.setCharacteristic(Characteristic.Manufacturer, "Denon/Marantz")
-		.setCharacteristic(Characteristic.Model, "AV Receiver")
-		.setCharacteristic(Characteristic.SerialNumber, "00000002")
-		.setCharacteristic(Characteristic.FirmwareRevision, Package.version);
 
 		var tvService  = this.generateTVService();
-		var services = [informationService, tvService];
+		var services = tvService;
 
 		var inputName = this.generateInputServices();
 		inputName.forEach((service, i) => {
