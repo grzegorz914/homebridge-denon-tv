@@ -14,9 +14,10 @@ module.exports = function(homebridge) {
 	homebridge.registerAccessory("homebridge-denon-tv", "DenonTv", DenonTvAccessory);
 };
 
-    function DenonTvAccessory(log, config) {
+    function DenonTvAccessory(log, config, api) {
 	    this.log = log;
-	    this.config = config
+	    this.config = config;
+	    this.api = api;
 	    this.name = config["name"];
 
 	    //required
@@ -25,6 +26,7 @@ module.exports = function(homebridge) {
 	    this.port = config["port"] || 80;
 	    this.speakerService = config["speakerService"] || true;
 	    this.inputs = config["inputs"];
+	   
     }
 
 DenonTvAccessory.prototype = {
