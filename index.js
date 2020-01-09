@@ -73,6 +73,8 @@ DenonTvPlatform.prototype.didFinishLaunching = function() {
       if (receiverConfig.firmwareRevision) {
         receiverAccessoryInfo.setCharacteristic(Characteristic.FirmwareRevision, receiverConfig.firmwareRevision);
       }
+	    
+      configuredAccessories.push(receiverAccessory);
 
     me.api.publishReceiverAccessories("DenonTv", configuredAccessories);
   }
