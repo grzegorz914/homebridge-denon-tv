@@ -8,8 +8,11 @@ var parseString = require('xml2js').parseString;
 
 module.exports = function(homebridge) {
 
-        Service = homebridge.hap.Service;
-        Characteristic = homebridge.hap.Characteristic;
+          Accessory = homebridge.platformAccessory;
+          hap = homebridge.hap;
+          Service = homebridge.hap.Service;
+          Characteristic = homebridge.hap.Characteristic;
+          UUIDGen = homebridge.hap.uuid;
 
 	homebridge.registerAccessory("homebridge-denon-tv", "DenonTv", DenonTvAccessory);
 };
@@ -26,6 +29,14 @@ module.exports = function(homebridge) {
 	    this.port = config["port"] || 80;
 	    this.speakerService = config["speakerService"] || true;
 	    this.inputs = config["inputs"];
+	    
+	    if (api) {
+                me.api = api;
+            if (api.version < 2.1) {
+                throw new Error("Unexpected API version.");
+               }
+		me.api.on('didFinishLaunching', me.didFinishLaunching.bind(this));
+            }
 	   
     }
 
