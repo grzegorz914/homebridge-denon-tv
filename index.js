@@ -2,8 +2,7 @@ const net = require('net');
 const request = require('request');
 var Package = require('./package.json');
 
-var Service, Characteristic;
-var inherits = require('util').inherits;
+var Accessory, Service, Characteristic, hap, UUIDGen;
 var parseString = require('xml2js').parseString;
 
 module.exports = function(homebridge) {
@@ -14,10 +13,10 @@ module.exports = function(homebridge) {
           Characteristic = homebridge.hap.Characteristic;
           UUIDGen = homebridge.hap.uuid;
 
-	homebridge.registerAccessory("homebridge-denon-tv", "DenonTv", DenonTvAccessory);
+	homebridge.registerPlatform("homebridge-denon-tv", "DenonTv", DenonTvPlatform);
 };
 
-    function DenonTvAccessory(log, config, api) {
+    function DenonTvPlatform(log, config, api) {
 	    this.log = log;
 	    this.config = config;
 	    this.api = api;
@@ -43,7 +42,7 @@ module.exports = function(homebridge) {
 DenonTvPlatform.prototype.configureAccessory = function(accessory) {
 }
 
-DenonTvAccessory.prototype = {
+DenonTvPlatform.prototype = {
 
 	generateTVService() {
 		var me = this;
