@@ -76,6 +76,8 @@ DenonTvPlatform.prototype.didFinishLaunching = function() {
 	    
       configuredAccessories.push(receiverAccessory);
 
+      });
+
     me.api.publishReceiverAccessories("DenonTv", configuredAccessories);
   }
 };
