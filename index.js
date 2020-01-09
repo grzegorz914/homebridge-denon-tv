@@ -9,7 +9,7 @@ var parseString = require('xml2js').parseString;
 module.exports = function(homebridge) {
 
           Accessory = homebridge.platformAccessory;
-          hap = homebridge.hap;
+	  hap = homebridge.hap;
           Service = homebridge.hap.Service;
           Characteristic = homebridge.hap.Characteristic;
           UUIDGen = homebridge.hap.uuid;
@@ -18,13 +18,13 @@ module.exports = function(homebridge) {
 };
 
     function DenonTvPlatform(log, config, api) {
+	    var me = this;
+	    this.api = api;
+	    
+	    //config
 	    this.log = log;
 	    this.config = config;
-	    this.api = api;
 	    this.name = config["name"];
-
-	    //required
-	    var me = this;
 	    this.host = config["host"];
 	    this.port = config["port"] || 80;
 	    this.speakerService = config["speakerService"] || true;
@@ -46,7 +46,6 @@ DenonTvPlatform.prototype.configureAccessory = function(accessory) {
 DenonTvPlatform.prototype.didFinishLaunching = function() {
   var me = this;
   
-
   if (me.config.receivers) {
     var configuredAccessories = [];
 
