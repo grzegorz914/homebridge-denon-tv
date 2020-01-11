@@ -1,5 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
+## 0.0.9 (11.01.2020)
+- fix unresponse
+
+## 0.0.8 (11.01.2020)
+- code cleanup
+
 ## 0.0.7 (08.01.2020)
 - fixed current input identyfication
 
