@@ -1,5 +1,8 @@
 # Change Log
 All notable changes to this project will be documented in this file.
+## 0.0.10 (11.01.2020)
+- fix power off/on
+
 ## 0.0.9 (11.01.2020)
 - fix unresponse
 
