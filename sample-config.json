@@ -3,10 +3,6 @@
   "receivers": [
         {
             "name": "Kino domowe",
-            "manufacturer": "Denon",
-            "model": "AVR-X6300H",
-            "serialNumber": "1234567890",
-            "firmwareRevision": "1.0",
             "host": "192.168.1.5",
             "port": 8080,
             "speakerService": true,
