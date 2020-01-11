@@ -2,6 +2,7 @@ const request = require('request');
 var Package = require('./package.json');
 
 var Service, Characteristic;
+var inherits = require('util').inherits;
 var parseString = require('xml2js').parseString;
 
 module.exports = function(homebridge) {
@@ -87,20 +88,20 @@ DenonTvAccessory.prototype = {
 		    .on('set', this.setMute.bind(this));
 
 		this.speakerService.setCharacteristic(Characteristic.VolumeControlType, Characteristic.VolumeControlType.ABSOLUTE);
-             return this.speakerService;
+
+        return this.speakerService;
 	},
 
 	generateInputServices() {
 
 		this.inputName = new Array();
 		this.inputReference = new Array();
-        var counter = 0;
 		this.inputs.forEach((input, i) => {
 				
                 this.log("Adding Input Service..." + input.name);
-				let tmpInput = new Service.InputSource(input.name, "input nr: " + counter);
+				let tmpInput = new Service.InputSource(input.name, "input nr: " + i);
 				tmpInput
-				.setCharacteristic(Characteristic.Identifier, counter)
+				.setCharacteristic(Characteristic.Identifier, i)
 				.setCharacteristic(Characteristic.ConfiguredName, input.name)
 				.setCharacteristic(Characteristic.IsConfigured, Characteristic.IsConfigured.CONFIGURED)
 				.setCharacteristic(Characteristic.InputSourceType, Characteristic.InputSourceType.TV)
@@ -114,7 +115,6 @@ DenonTvAccessory.prototype = {
 		
 				this.inputReference.push(input);
 				this.inputName.push(tmpInput);
-                counter++;
 			});
 		return this.inputName;
     },
@@ -125,7 +125,7 @@ DenonTvAccessory.prototype = {
 		var informationService = new Service.AccessoryInformation();
 		informationService
 		.setCharacteristic(Characteristic.Manufacturer, "Denon/Marantz")
-		.setCharacteristic(Characteristic.Model, "AV Receiver")
+		.setCharacteristic(Characteristic.Model, "AV Receiver ")
 		.setCharacteristic(Characteristic.SerialNumber, "00000002")
 		.setCharacteristic(Characteristic.FirmwareRevision, Package.version);
 
@@ -133,38 +133,38 @@ DenonTvAccessory.prototype = {
 		var services = [informationService, tvService];
 
 		var inputName = this.generateInputServices();
-		inputName.forEach((service, i) => {
+		    inputName.forEach((service, i) => {
 			tvService.addLinkedService(service);
 			services.push(service);
 		});
 
 		if (this.speakerService){
-			let speakerService = this.generateSpeakerService();
+		let speakerService = this.generateSpeakerService();
 			services.push(speakerService);
 			tvService.addLinkedService(speakerService);
 		}
 		return services;
 	},
 	  
-	httpGet(apipath, callback) {
+	httpGET(apipath, callback) {
+        var me = this;
 		if (!this.host) {
-		  callback(new Error("No host defined."));
-		}
-		if (!this.port) {
-		  callback(new Error("No port defined."));
-		}
-
-		var me = this;
+			callback(new Error("No host defined."));
+		  }
+		  if (!this.port) {
+			callback(new Error("No port defined."));
+		  }
+		
 		me.httpRequest('http://' + me.host + ':' + me.port + apipath , '', 'GET', function(error, response, responseBody) {
-			if (error) {
-				me.log.error("Device not reachable " + me.host + ":" + me.port + apipath);
-				callback(error);
-				return;
-			} else {
+			  if (error) {
+				callback(error)
+			  } else {
 				try {
 				  var result = parseString(responseBody, function(err, data) {
 					if (err) {
-					  callback(err)
+						callback(error);
+						me.log.error("Device not reachable " + me.host + ":" + me.port + apipath);
+						return;
 					} else {
 					  //me.log('result %s', data);
 					  callback(null, data);
@@ -175,7 +175,7 @@ DenonTvAccessory.prototype = {
 				  me.log('error: ' + e);
 				}
 			}
-		}.bind(this)); 
+		}.bind(this));
 	},
 	  
 	httpRequest(url, body, apipath, callback) {
@@ -189,21 +189,9 @@ DenonTvAccessory.prototype = {
 		});
 	},
 	  
-	httpRequest(url, body, apipath, callback) {
-		request({
-		  url: url,
-		  body: body,
-		  method: apipath,
-		  rejectUnauthorized: false
-		},
-		function(error, response, body) {
-		  callback(error, response, body);
-		});
-	},
-	  
 	getPowerState(callback) {
 		var me = this;
-		this.httpGet("/goform/formMainZone_MainZoneXmlStatusLite.xml", function(error,data) {
+		this.httpGET("/goform/formMainZone_MainZoneXmlStatusLite.xml", function(error,data) {
 		  if (error){
 			callback(error)
 		  } else {
@@ -215,7 +203,7 @@ DenonTvAccessory.prototype = {
 	},
 	  
 	setPowerState(state, callback) {
-               var me = this;
+        var me = this;
 		var state = state? "ON": "STANDBY"; //number to boolean
 		me.getPowerState(function(error, currentState) {
 		  if(error){
@@ -224,7 +212,7 @@ DenonTvAccessory.prototype = {
 			if (currentState == state) { //state like expected
 			  callback(null, state);
 			} else { //set new state
-			  this.httpGet("/goform/formiPhoneAppDirect.xml?PW" + state, function(error) {
+			  me.httpGET("/goform/formiPhoneAppDirect.xml?PW" + state, function(error) {
 				if (error){
 				  callback(error)
 				} else {
@@ -239,7 +227,7 @@ DenonTvAccessory.prototype = {
 	  
 	getMute(callback) {
 		var me = this;
-		this.httpGet("/goform/formMainZone_MainZoneXmlStatusLite.xml", function(error,data) {
+		this.httpGET("/goform/formMainZone_MainZoneXmlStatusLite.xml", function(error,data) {
 		  if (error){
 			  callback(error)
 		  } else {
@@ -251,7 +239,7 @@ DenonTvAccessory.prototype = {
 	},
 	  
 	setMute(state, callback) {
-               var me = this;
+        var me = this;
 		var state = state? "ON" : "OFF"; //number to boolean
 		me.getMute(function(error, currentState) {
 		  if (error){
@@ -260,7 +248,7 @@ DenonTvAccessory.prototype = {
 			if (currentState == state) { //state like expected
 				callback(null, state);
 			} else { //set new state
-			  this.httpGet("/goform/formiPhoneAppDirect.xml?MU" + state, function(error) {
+			  me.httpGET("/goform/formiPhoneAppDirect.xml?MU" + state, function(error) {
 				if (error){
 					callback(error)
 				} else {
@@ -275,7 +263,7 @@ DenonTvAccessory.prototype = {
 	  
 	getVolume(callback) {
 		var me = this;
-		this.httpGet("/goform/formMainZone_MainZoneXmlStatusLite.xml", function(error,data) {
+		this.httpGET("/goform/formMainZone_MainZoneXmlStatusLite.xml", function(error,data) {
 		  if (error){
 			callback(error)
 		  } else {
@@ -289,7 +277,7 @@ DenonTvAccessory.prototype = {
 	setVolume(volume, callback) {
 		var me = this;
 		var targetVolume = (volume - 80).toFixed(1); 
-		this.httpGet("/goform/formiPhoneAppDirect.xml?MV" + targetVolume, function(error) {
+		this.httpGET("/goform/formiPhoneAppDirect.xml?MV" + targetVolume, function(error) {
 		  if (error){
 			callback(error)
 		  } else {
@@ -301,7 +289,7 @@ DenonTvAccessory.prototype = {
 		  
 	getInput(callback) {
 		var me = this;
-		this.httpGet("/goform/formMainZone_MainZoneXmlStatusLite.xml", function(error,data) {
+		this.httpGET("/goform/formMainZone_MainZoneXmlStatusLite.xml", function(error,data) {
 		  if (error){
 			 callback(error)
 		  } else {
@@ -314,7 +302,7 @@ DenonTvAccessory.prototype = {
 	  
 	setInput(ref, callback){
 		var me = this;
-		this.httpGet("/goform/formiPhoneAppDirect.xml?SI" + inputReference,  function(error) {
+		this.httpGET("/goform/formiPhoneAppDirect.xml?SI" + inputReference,  function(error) {
 		  if (error){
 			 callback(error)
 		  } else { 
@@ -326,7 +314,7 @@ DenonTvAccessory.prototype = {
 
 	getModelInfo(callback) {
 		var me = this;
-		this.httpGet("/goform/formMainZone_MainZoneXmlStatusLite.xml", function(error,data) {
+		this.httpGET("/goform/formMainZone_MainZoneXmlStatusLite.xml", function(error,data) {
 		  if (error){
 			 callback(error)
 		  } else {
@@ -340,7 +328,7 @@ DenonTvAccessory.prototype = {
 
 	getName(callback) {
 		var me = this;
-		this.httpGet("/goform/formMainZone_MainZoneXmlStatusLite.xml", function(error,data) {
+		this.httpGET("/goform/formMainZone_MainZoneXmlStatusLite.xml", function(error,data) {
 		  if (error){
 			 callback(error)
 		  } else {
@@ -353,7 +341,7 @@ DenonTvAccessory.prototype = {
 
 	getBrand(callback) {
 		var me = this;
-		this.httpGet("/goform/formMainZone_MainZoneXmlStatusLite.xml", function(error,data) {
+		this.httpGET("/goform/formMainZone_MainZoneXmlStatusLite.xml", function(error,data) {
 		  if (error){
 			 callback(error)
 		  } else {
@@ -366,7 +354,7 @@ DenonTvAccessory.prototype = {
 
 	getSurround(callback) {
 		var me = this;
-		this.httpGet("/goform/formMainZone_MainZoneXmlStatusLite.xml", function(error,data) {
+		this.httpGET("/goform/formMainZone_MainZoneXmlStatusLite.xml", function(error,data) {
 		  if (error){
 			 callback(error)
 		  } else {
@@ -442,7 +430,7 @@ DenonTvAccessory.prototype = {
 	  
 	sendRemoteControlCommand(command, callback) {
 		var me = this;
-		this.httpGet("/goform/formiPhoneAppDirect.xml?" + command, function(error) {
+		this.httpGET("/goform/formiPhoneAppDirect.xml?" + command, function(error) {
 		  if (error){
 			 callback(error)
 		  } else { 
@@ -451,5 +439,7 @@ DenonTvAccessory.prototype = {
 		  }
 		});
 	}
+
+};
 
 };
