@@ -1,6 +1,6 @@
 # homebridge-denon-tv
 [![npm](https://img.shields.io/npm/dt/homebridge-denon-tv.svg)](https://www.npmjs.com/package/homebridge-denon-tv) [![npm](https://img.shields.io/npm/v/homebridge-denon-tv.svg)](https://www.npmjs.com/package/homebridge-denon-tv) [![GitHub pull requests](https://img.shields.io/github/issues-pr/grzegorz914/homebridge-denon-tv.svg)](https://github.com/oznu/homebridge-denon-tv/pulls)
-[![GitHub issues](https://img.shields.io/github/issues/grzegorz914/homebridge-config-ui-x.svg)](https://github.com/oznu/homebridge-openwebif-tv/issues)
+[![GitHub issues](https://img.shields.io/github/issues/grzegorz914/homebridge-config-ui-x.svg)](https://github.com/grzegorz914/homebridge-denon-tv/issues)
 
 Plugin to control Denon/Marantz AV Receivers series X in HomeKit as TV service.
 Tested with AVR-X6300H.
