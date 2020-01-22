@@ -1,6 +1,6 @@
 {
   "name": "homebridge-denon-tv",
-  "version": "0.0.10",
+  "version": "1.0.0",
   "description": "Plugin for Homebridge (https://github.com/nfarina/homebridge) to controll Denon/Marantz AV Receivers series X.",
   "license": "MIT",
   "author": "grzegorz914",
@@ -15,14 +15,22 @@
   "main": "index.js",
   "engines": {
     "node": ">=10.0.0",
-    "homebridge": ">=0.4.5"
+    "homebridge": ">=0.4.48",
+    "hap-nodejs": ">=0.4.13"
   },
   "dependencies": {
-    "request": "^2.65.0",
-    "xml2js": "^0.4.23"
+  "xml2js": "^0.4.23",
+  "request": ">=2.81.8",
+  "fs": "",
+  "mkdirp": ">=0.5.1",
+  "persist-path": ">=1.0.2"
   },
   "keywords": [
-    "homebridge-plugin"
+    "homebridge",
+    "homebridge-plugin",
+    "HomeKit",
+    "homebridge-denon-tv",
+    "Denon TV"
   ],
   "contributors": [],
   "devDependencies": {},
