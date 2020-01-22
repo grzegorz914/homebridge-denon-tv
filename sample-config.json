@@ -1,29 +1,27 @@
 {
-  "platform": "DenonTv",
-  "receivers": [
+    "platform": "OpenWebIfTv",
+    "checkStateInterval": 5,
+    "devices": [{
+      "name": "AV Receiver",
+      "host": "192.168.0.4",
+      "port": 8080,
+      "switchInfoMenu": true,
+    "inputs": [
         {
-            "name": "Kino domowe",
-            "host": "192.168.1.5",
-            "port": 8080,
-            "speakerService": true,
-            "inputs": [
-                {
-                    "name": "Xbox One",
-                    "reference": "GAME"
-                },
-                {
-                    "name": "Telewizor",
-                    "reference": "TV"
-                },
-                {
-                    "name": "Tuner Sat",
-                    "reference": "SAT/CBL"
-                },
-                {
-                    "name": "CD",
-                    "reference": "CD"
-                }
-            ]
+            "name": "Xbox One",
+            "reference": "GAME"
+        },
+        {
+            "name": "Telewizor",
+            "reference": "TV"
+        },
+        {
+            "name": "Tuner Sat",
+            "reference": "SAT/CBL"
+        },
+        {
+            "name": "CD",
+            "references": "CD"
         }
     ]
 }
