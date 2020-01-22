@@ -1,52 +1,68 @@
 {
   "pluginAlias": "DenonTv",
-  "pluginType": "accessory",
-  "footerDisplay": "This plugin works with Denon/Marantz AV Receivers series AVR-X which is available [here](https://github.com/grzegorz914/homebridge-denon-tv).",
+  "pluginType": "platform",
+  "footerDisplay": "This plugin works with Sat receivers with OpenWebIf interface which is available [here](https://github.com/grzegorz914/homebridge-denon-tv).",
   "schema": {
     "type": "object",
     "properties": {
       "name": {
         "title": "Name",
         "type": "string",
-        "default": "AV Receiver",
+        "default": "AV receiver",
         "required": true
       },
-      "host": {
-        "title": "IP Address/Hostname",
-        "type": "string",
-        "required": true,
-        "format": "hostname",
-        "required": true
-      },
-      "port": {
-        "title": "Port",
+      "checkStateInterval": {
+        "title": "Check interval",
         "type": "integer",
-        "default": 8080,
-        "maximum": 65535,
+        "default": 5,
+        "maximum": 10,
         "required": true
       },
-      "speakerService": {
-        "title": "Speaker service",
-        "type": "boolean",
-        "default": true
-      },
-      "inputs": {
-        "title": "Inputs",
+      "devices": {
+        "title": "Devices",
         "type": "array",
         "items": {
           "type": "object",
           "properties": {
-            "name": {
-              "title": "Input name",
+            "host": {
+              "title": "IP Address/Hostname",
               "type": "string",
-              "default": "Polskie",
+              "required": true,
+              "format": "hostname"
+            },
+            "port": {
+              "title": "Port",
+              "type": "integer",
+              "default": 8080,
+              "maximum": 65535,
               "required": true
             },
-            "reference": {
-              "title": "Input reference",
-              "type": "string",
-               "default": "SAT/CBL",
+            "switchInfoMenu": {
+              "title": "Switch Info/Menu",
+              "type": "boolean",
+              "default": true,
               "required": true
+            },
+            "inputs": {
+              "title": "Inputs",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "title": "Input name",
+                    "type": "string",
+                    "default": "TVN 24",
+                    "required": false
+                  },
+                  "reference": {
+                    "title": "Input reference",
+                    "type": "string",
+                    "default": "DVD",
+                    "required": false
+                  }
+                }
+              }
             }
           }
         }
