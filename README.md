@@ -17,13 +17,15 @@ HomeBridge: https://github.com/nfarina/homebridge
 # Configuration
 
  <pre>
-"accessories": [
+{
+    "platform": "OpenWebIfTv",
+    "checkStateInterval": 5,
+    "devices": [
         {
-            "accessory": "DenonTv",
-            "name": "Kino domowe",
-            "host": "192.168.1.5",
+            "name": "AV Receiver",
+            "host": "192.168.0.4",
             "port": 8080,
-            "speakerService": true,
+            "switchInfoMenu": true,
             "inputs": [
                 {
                     "name": "Xbox One",
@@ -44,9 +46,11 @@ HomeBridge: https://github.com/nfarina/homebridge
             ]
         }
     ]
+}
 </pre>
 
 # Limitations:
 
 # Whats new:
 https://github.com/grzegorz914/homebridge-denon-tv/blob/master/CHANGELOG.md
+
