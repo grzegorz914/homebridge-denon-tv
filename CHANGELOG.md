@@ -1,5 +1,17 @@
 # Change Log
 All notable changes to this project will be documented in this file.
+## 1.0.0 (21.01.2020)
+- all moved to the platform and publisch as externall accessory
+- please update Yours config!!!
+
+## 0.0.13 (18.01.2020)
+- some fixes
+- removed possibility to disable speaker servive
+- stability and performance improvements
+
+## 0.0.11 (15.01.2020)
+- some fixes
+
 ## 0.0.10 (11.01.2020)
 - fix power off/on
 
