@@ -18,7 +18,7 @@ HomeBridge: https://github.com/nfarina/homebridge
 
  <pre>
 {
-    "platform": "OpenWebIfTv",
+    "platform": "DenonTv",
     "checkStateInterval": 5,
     "devices": [
         {
