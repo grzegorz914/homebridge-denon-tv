@@ -2,7 +2,7 @@
     "platform": "DenonTv",
     "checkStateInterval": 5,
     "devices": [{
-      "name": "AV Receiver",
+      "name": "AV receiver",
       "host": "192.168.0.4",
       "port": 8080,
       "switchInfoMenu": true,
