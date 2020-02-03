@@ -1,5 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file.
+## 1.1.0 (3.02.2020)
+- code cleanup
+- performance improvements
+- log corrections
+
+## 1.0.5 (1.01.2020)
+- some fixes and code cleanup
+
 ## 1.0.0 (21.01.2020)
 - all moved to the platform and publisch as externall accessory
 - please update Yours config!!!
