@@ -19,7 +19,6 @@ HomeBridge: https://github.com/nfarina/homebridge
  <pre>
 {
     "platform": "DenonTv",
-    "checkStateInterval": 5,
     "devices": [
         {
             "name": "AV Receiver",
