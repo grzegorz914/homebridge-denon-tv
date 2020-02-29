@@ -43,8 +43,7 @@ class denonTvPlatform {
 		var me = this;
 		setTimeout(function () {
 			me.log.debug('didFinishLaunching');
-		},
-			(this.devices.length + 1) * responseDelay);
+		}, (this.devices.length + 1) * responseDelay);
 	}
 }
 
@@ -63,14 +62,20 @@ class denonTvDevice {
 
 		//setup variables
 		this.connectionStatus = false;
+		this.inputReferences = new Array();
+		this.currentPowerState = false;
+		this.currentMuteState = false;
+		this.currentVolume = 0;
+		this.currentInputReference = null;
+		this.currentInfoMenuState = false;
 		this.prefDir = ppath('denonTv/');
 		this.inputsFile = this.prefDir + 'inputs_' + this.host.split('.').join('');
-		this.deviceInfoFile = this.prefDir + 'info_' + this.host.split('.').join('');
+		this.devInfoFile = this.prefDir + 'info_' + this.host.split('.').join('');
+		this.url = ('http://' + this.host + ':' + this.port);
 
 		//get Device info
-		this.getDeviceInfo();
 		this.manufacturer = device.manufacturer || 'Denon/Marantz';
-		this.modelName = device.model || 'homebridge-denon-tv';
+		this.modelName = device.modelName || 'homebridge-denon-tv';
 		this.serialNumber = device.serialNumber || 'SN000002';
 		this.firmwareRevision = device.firmwareRevision || 'FW000002';
 
@@ -87,58 +92,47 @@ class denonTvDevice {
 		//Check net state
 		setInterval(function () {
 			var me = this;
-			request('http://' + me.host + ':60006/upnp/desc/aios_device/aios_device.xml', function (error, response, body) {
+			request(me.url + '/goform/formMainZone_MainZoneXmlStatusLite.xml', function (error, response, data) {
 				if (error) {
 					me.log('Device: %s, name: %s, state: Offline', me.host, me.name);
 					me.connectionStatus = false;
-				} else {
-					if (!me.connectionStatus) {
-						me.log('Device: %s, name: %s, state: Online', me.host, me.name);
-						me.connectionStatus = true;
-
-					}
+				} else if (!me.connectionStatus) {
+					me.log('Device: %s, name: %s, state: Online', me.host, me.name);
+					me.getDeviceInfo();
+					me.connectionStatus = true;
 				}
 			});
 		}.bind(this), 5000);
 
 		//Delay to wait for device info
 		setTimeout(this.prepereTvService.bind(this), responseDelay);
-
-		var deviceName = this.name;
-		var uuid = UUIDGen.generate(deviceName);
-		this.tvAccesory = new Accessory(deviceName, uuid, hap.Accessory.Categories.TV);
-		this.log.debug('Device: %s, publishExternalAccessories: %s', this.host, this.name);
-		this.api.publishExternalAccessories('homebridge-denon-tv', [this.tvAccesory]);
 	}
 
-	//get device info
 	getDeviceInfo() {
 		var me = this;
 		setTimeout(() => {
-			request('http://' + me.host + ':60006/upnp/desc/aios_device/aios_device.xml', (error, response, body) => {
+			request('http://' + me.host + ':60006/upnp/desc/aios_device/aios_device.xml', (error, response, data) => {
 				if (error) {
 					me.log('Device: %s, name: %s, state: Offline', me.host, me.name);
 				} else {
-					body = body.replace(/:/g, '');
-					parseString(body, function (error, result) {
+					data = data.replace(/:/g, '');
+					parseString(data, function (error, result) {
 						if (error) {
 							me.log.debug('Device %s, getDeviceInfo parse string error: %s', me.host, error);
 						} else {
-							try {
+							setTimeout(() => {
 								me.manufacturer = result.root.device[0].manufacturer[0];
 								me.modelName = result.root.device[0].modelName[0];
 								me.serialNumber = 'SN0000002';
 								me.firmwareRevision = 'FW0000002';
 
-								me.log('-----Device %s-----', me.host);
+								me.log('-------- %s --------', me.name);
 								me.log('Manufacturer: %s', me.manufacturer);
 								me.log('Model: %s', me.modelName);
 								me.log('Serialnumber: %s', me.serialNumber);
 								me.log('Firmware: %s', me.firmwareRevision);
-								me.log('Device: %s, getDeviceInfo successfull.', me.host);
-							} catch (error) {
-								me.log.debug('Device: %s, getDeviceInfo error: %s', me.host, error);
-							}
+								me.log('----------------------------------');
+							}, 250);
 						}
 					});
 				}
@@ -149,6 +143,8 @@ class denonTvDevice {
 	//Prepare TV service 
 	prepereTvService() {
 		this.log.debug('prepereTvService');
+		this.tvAccesory = new Accessory(this.name, UUIDGen.generate(this.host + this.name));
+
 		this.tvService = new Service.Television(this.name, 'tvService');
 		this.tvService.setCharacteristic(Characteristic.ConfiguredName, this.name);
 		this.tvService.setCharacteristic(Characteristic.SleepDiscoveryMode, Characteristic.SleepDiscoveryMode.ALWAYS_DISCOVERABLE);
@@ -158,16 +154,16 @@ class denonTvDevice {
 			.on('set', this.setPowerState.bind(this));
 
 		this.tvService.getCharacteristic(Characteristic.ActiveIdentifier)
+			.on('get', this.getInput.bind(this))
 			.on('set', (inputIdentifier, callback) => {
 				this.setInput(callback, this.inputReferences[inputIdentifier]);
-			})
-			.on('get', this.getInput.bind(this));
+			});
 
 		this.tvService.getCharacteristic(Characteristic.RemoteKey)
 			.on('set', this.remoteKeyPress.bind(this));
 
 		this.tvService.getCharacteristic(Characteristic.PowerModeSelection)
-			.on('set', this.setPowerMode.bind(this));
+			.on('set', this.setPowerModeSelection.bind(this));
 
 
 		this.tvAccesory
@@ -178,13 +174,16 @@ class denonTvDevice {
 			.setCharacteristic(Characteristic.FirmwareRevision, this.firmwareRevision);
 
 		this.tvAccesory.addService(this.tvService);
-		this.prepereTvSpeakerService();
+		this.prepareTvSpeakerService();
 		this.prepareInputServices();
+
+		this.log.debug('Device: %s, publishExternalAccessories: %s', this.host, this.name);
+		this.api.publishExternalAccessories('homebridge-denon-tv', [this.tvAccesory]);
 	}
 
 	//Prepare speaker service
-	prepereTvSpeakerService() {
-		this.log.debug('prepereTvSpeakerService');
+	prepareTvSpeakerService() {
+		this.log.debug('prepareTvSpeakerService');
 		this.tvSpeakerService = new Service.TelevisionSpeaker(this.name, 'tvSpeakerService');
 		this.tvSpeakerService
 			.setCharacteristic(Characteristic.Active, Characteristic.Active.ACTIVE)
@@ -220,7 +219,6 @@ class denonTvDevice {
 			this.log.debug('Device: %s, inputs file does not exist', this.host)
 		}
 
-		this.inputReferences = new Array();
 		this.inputs.forEach((input, i) => {
 
 			//get input reference
@@ -275,323 +273,250 @@ class denonTvDevice {
 		});
 	}
 
-	httpGET(apipath, callback) {
-		var me = this;
-		me.httpRequest('http://' + me.host + ':' + me.port + apipath, '', 'GET', function (error, response, responseBody) {
-			if (error) {
-				me.log.debug('Device: %s, not reachable, error: %s', me.host, error);
-				callback(error);
-				return;
-			} else {
-				try {
-					var result = parseString(responseBody, function (error, data) {
-						if (error) {
-							me.log.debug('Device: %s, parseString error: %s', me.host, error);
-							callback(error);
-						} else {
-							me.log.debug('Device: %s, parseString successfull, result: %s', me.host, data);
-							callback(null, data);
-						}
-					});
-				} catch (e) {
-					callback(e, null);
-					me.log.debug('error: %s', e);
-				}
-			}
-			me.log('Device: %s, get data successfull.', me.host);
-		}.bind(this));
-	}
-
-	httpRequest(url, body, apipath, callback) {
-		request({
-			url: url,
-			body: body,
-			method: apipath
-		},
-			function (error, response, body) {
-				callback(error, response, body);
-			});
-	}
-
 	getPowerState(callback) {
 		var me = this;
-		if (me.connectionStatus) {
-			this.httpGET('/goform/formMainZone_MainZoneXmlStatusLite.xml', function (error, data) {
-				if (error) {
-					me.log.debug('Device: %s, can not get current Power state. Might be due to a wrong settings in config, error: %s', me.host, error);
-					if (callback)
-						callback(error);
-				} else {
-					var state = (data.item.Power[0].value[0] == 'ON');
-					me.log('Device: %s, get current Power state successfull: %s', me.host, state ? 'ON' : 'STANDBY');
-					callback(null, state);
-				}
-			});
-		} else {
-			me.log('Device: %s, get current Power state failed, not connected to network.', me.host);
-			callback(null, false);
-		}
+		request(me.url + '/goform/formMainZone_MainZoneXmlStatusLite.xml', function (error, response, data) {
+			if (error) {
+				me.log.debug('Device: %s, can not get current Power state. Might be due to a wrong settings in config, error: %s', me.host, error);
+				callback(error);
+			} else {
+				var result = parseString(data, function (error, result) {
+					if (error) {
+						me.log.debug('Device %s, getPowerState parse string error: %s', me.host, error);
+					} else {
+						var state = (result.item.Power[0].value[0] == 'ON');
+						me.log('Device: %s, get current Power state successfull: %s', me.host, state ? 'ON' : 'STANDBY');
+						me.currentPowerState = state;
+						callback(null, state);
+					}
+				});
+			}
+		});
 	}
 
 	setPowerState(state, callback) {
 		var me = this;
-		if (me.connectionStatus) {
+		if (me.currentPowerState == state) {
+			callback(null, state);
+			return;
+		} else {
 			var newState = state ? 'ON' : 'STANDBY';
-			me.httpGET('/goform/formiPhoneAppDirect.xml?PW' + newState, function (error) {
+			request(me.url + '/goform/formiPhoneAppDirect.xml?PW' + newState, function (error, response, data) {
 				if (error) {
 					me.log.debug('Device: %s, can not set new Power state. Might be due to a wrong settings in config, error: %s', me.host, error);
-					if (callback)
-						callback(error);
+					callback(error);
 				} else {
 					me.log('Device: %s, set new Power state successfull: %s', me.host, state ? 'ON' : 'STANDBY');
+					me.currentPowerState = state;
 					callback(null, state);
 				}
 			});
-		} else {
-			me.log('Device: %s, set new Power state failed, not connected to network.', me.host);
 		}
 	}
 
 	getMute(callback) {
 		var me = this;
-		if (me.connectionStatus) {
-			this.httpGET('/goform/formMainZone_MainZoneXmlStatusLite.xml', function (error, data) {
-				if (error) {
-					me.log.debug('Device: %s, can not get current Mute state. Might be due to a wrong settings in config, error: %s', me.host, error);
-					if (callback)
-						callback(error);
-				} else {
-					var state = (data.item.Mute[0].value[0] == 'ON');
-					me.log('Device: %s, get current Mute state successfull: %s', me.host, state ? 'ON' : 'OFF');
-					callback(null, state);
-				}
-			});
-		} else {
-			me.log('Device: %s, get current Mute failed, not connected to network.', me.host);
-			callback(null, false);
-		}
+		request(me.url + '/goform/formMainZone_MainZoneXmlStatusLite.xml', function (error, response, data) {
+			if (error) {
+				me.log.debug('Device: %s, can not get current Mute state. Might be due to a wrong settings in config, error: %s', me.host, error);
+				callback(error);
+			} else {
+				var result = parseString(data, function (error, result) {
+					if (error) {
+						me.log.debug('Device %s, getMute parse string error: %s', me.host, error);
+					} else {
+						var state = (result.item.Mute[0].value[0] == 'ON');
+						me.log('Device: %s, get current Mute state successfull: %s', me.host, state ? 'ON' : 'OFF');
+						me.currentMuteState = state;
+						callback(null, state);
+					}
+				});
+			}
+		});
 	}
 
 	setMute(state, callback) {
 		var me = this;
-		if (me.connectionStatus) {
-			var newState = state ? 'ON' : 'OFF';
-			me.httpGET('/goform/formiPhoneAppDirect.xml?MU' + newState, function (error) {
-				if (error) {
-					me.log.debug('Device: %s, can not set new Mute state. Might be due to a wrong settings in config, error: %s', me.host, error);
-					if (callback)
-						callback(error);
-				} else {
-					me.log('Device: %s, set new Mute state successfull: %s', me.host, state ? 'ON' : 'OFF');
-					callback(null, state);
-				}
-			});
+		if (me.currentMuteState == state) {
+			callback(null, state);
+			return;
 		} else {
-			me.log('Device: %s, set Mute failed, not connected to network.', me.host);
-		}
+		var newState = state ? 'ON' : 'OFF';
+		request(me.url + '/goform/formiPhoneAppDirect.xml?MU' + newState, function (error, response, data) {
+			if (error) {
+				me.log.debug('Device: %s, can not set new Mute state. Might be due to a wrong settings in config, error: %s', me.host, error);
+				callback(error);
+			} else {
+				me.log('Device: %s, set new Mute state successfull: %s', me.host, state ? 'ON' : 'OFF');
+				me.currentMuteState = state;
+				callback(null, state);
+			}
+		});
+          }
 	}
 
 	getVolume(callback) {
 		var me = this;
-		if (me.connectionStatus) {
-			this.httpGET('/goform/formMainZone_MainZoneXmlStatusLite.xml', function (error, data) {
-				if (error) {
-					me.log.debug('Device: %s, can not get current Volume level. Might be due to a wrong settings in config, error: %s', me.host, error);
-					if (callback)
-						callback(error);
-				} else {
-					var volume = parseInt(data.item.MasterVolume[0].value[0]) + 80;
-					me.log('Device: %s, get current Volume level successfull: %s', me.host, volume);
-					callback(null, volume);
-				}
-			});
-		} else {
-			me.log('Device: %s, get Volume level failed, not connected to network.', me.host);
-			callback(null, false);
-		}
+		request(me.url + '/goform/formMainZone_MainZoneXmlStatusLite.xml', function (error, response, data) {
+			if (error) {
+				me.log.debug('Device: %s, can not get current Volume level. Might be due to a wrong settings in config, error: %s', me.host, error);
+				callback(error);
+			} else {
+				var result = parseString(data, function (error, result) {
+					if (error) {
+						me.log.debug('Device %s, getVolume parse string error: %s', me.host, error);
+					} else {
+						var volume = parseInt(result.item.MasterVolume[0].value[0]) + 80;
+						me.log('Device: %s, get current Volume level successfull: %s', me.host, volume);
+						me.currentVolume = volume;
+						callback(null, me.currentVolume);
+					}
+				});
+			}
+		});
 	}
 
 	setVolume(volume, callback) {
 		var me = this;
-		if (me.connectionStatus) {
-			var targetVolume = (volume - 2).toString();
-			this.httpGET('/goform/formiPhoneAppDirect.xml?MV' + targetVolume, function (error) {
-				if (error) {
-					me.log.debug('Device: %s, can not set new Volume level. Might be due to a wrong settings in config, error: %s', me.host, error);
-					if (callback)
-						callback(error);
-				} else {
-					me.log('Device: %s, set new Volume level successfull: %s', me.host, targetVolume);
-					callback(null, volume);
-				}
-			});
-		} else {
-			me.log('Device: %s, set new Volume level failed, not connected to network.', me.host);
-		}
+		var targetVolume = (volume - 2).toString();
+		request(me.url + '/goform/formiPhoneAppDirect.xml?MV' + targetVolume, function (error, response, data) {
+			if (error) {
+				me.log.debug('Device: %s, can not set new Volume level. Might be due to a wrong settings in config, error: %s', me.host, error);
+				callback(error);
+			} else {
+				me.log('Device: %s, set new Volume level successfull: %s', me.host, targetVolume);
+				callback(null, volume);
+			}
+		});
 	}
 
 	getInput(callback) {
 		var me = this;
-		if (me.connectionStatus) {
-			this.httpGET('/goform/formMainZone_MainZoneXmlStatusLite.xml', function (error, data) {
-				if (error) {
-					me.log.debug('Device: %s, can not get current Input. Might be due to a wrong settings in config, error: %s', me.host, error);
-					if (callback)
-						callback(error);
-				} else {
-					let inputReference = data.item.InputFuncSelect[0].value[0];
-					for (let i = 0; i < me.inputReferences.length; i++) {
-						if (inputReference === me.inputReferences[i]) {
+		request(me.url + '/goform/formMainZone_MainZoneXmlStatusLite.xml', function (error, response, data) {
+			if (error) {
+				me.log.debug('Device: %s, can not get current Input. Might be due to a wrong settings in config, error: %s', me.host, error);
+				callback(error);
+			} else {
+				var result = parseString(data, function (error, result) {
+					if (error) {
+						me.log.debug('Device %s, getInput parse string error: %s', me.host, error);
+					} else {
+						var inputReference = result.item.InputFuncSelect[0].value[0];
+						if (!me.connectionStatus || inputReference === '' || inputReference === undefined || inputReference === null) {
 							me.tvService
 								.getCharacteristic(Characteristic.ActiveIdentifier)
-								.updateValue(i);
-							me.log('Device: %s, get current Input successfull: %s', me.host, inputReference);
+								.updateValue(0);
+							callback(null, inputReference);
+						} else {
+							for (let i = 0; i < me.inputReferences.length; i++) {
+								if (inputReference === me.inputReferences[i]) {
+									me.tvService
+										.getCharacteristic(Characteristic.ActiveIdentifier)
+										.updateValue(i);
+									me.log('Device: %s, get current Input successfull: %s', me.host, inputReference);
+									me.currentInputReference = inputReference;
+									callback(null, inputReference);
+								}
+							}
 						}
 					}
-					callback(null, inputReference);
-				}
-			});
-		} else {
-			me.log('Device: %s, get current Input failed, not connected to network.', me.host);
-			callback(null, false);
-		}
+				});
+			}
+		});
 	}
 
 	setInput(callback, inputReference) {
 		var me = this;
-		if (me.connectionStatus) {
-			me.getInput(function (error, currentInputReference) {
+		if (inputReference != me.currentInputReference) {
+			request(me.url + '/goform/formiPhoneAppDirect.xml?SI' + inputReference, function (error, response, data) {
 				if (error) {
-					me.log.debug('Device: %s, can not get current Input Reference. Might be due to a wrong settings in config, error: %s', me.host, error);
-					if (callback)
-						callback(error);
+					me.log.debug('Device: %s, can not set new Input. Might be due to a wrong settings in config, error: %s', me.host, error);
+					callback(error);
 				} else {
-					if (currentInputReference == inputReference) {
-						callback(null, inputReference);
-					} else {
-						this.httpGET('/goform/formiPhoneAppDirect.xml?SI' + inputReference, function (error, data) {
-							if (error) {
-								me.log.debug('Device: %s, can not set new Input. Might be due to a wrong settings in config, error: %s', me.host, error);
-								if (callback)
-									callback(error);
-							} else {
-								me.log('Device: %s, set new Input successfull: %s', me.host, inputReference);
-								callback(null, inputReference);
-							}
-						});
-					}
+					me.log('Device: %s, set new Input successfull: %s', me.host, inputReference);
+					me.currentInputReference = inputReference;
+					callback(null, inputReference);
 				}
 			});
-		} else {
-			me.log('Device: %s, set new Input failed, not connected to network.', me.host);
 		}
 	}
 
-	setPowerMode(callback, state) {
+	setPowerModeSelection(state, callback) {
 		var me = this;
-		if (me.connectionStatus) {
-			var command = this.menuButton ? 'MNINF' : 'MNMEN ON';
-			this.httpGET('/goform/formiPhoneAppDirect.xml?' + command, function (error, data) {
-				if (error) {
-					me.log.debug('Device: %s, can not set new Power Mode. Might be due to a wrong settings in config, error: %s', me.host, error);
-					if (callback)
-						callback(error);
-				} else {
-					me.log('Device: %s, set new Power Mode successfull, send command: %s', me.host, command);
-					callback(null, state);
-				}
-			});
+		var command = '';
+		if (me.currentInfoMenuState) {
+			command = 'MNRTN';
 		} else {
-			me.log('Device: %s, set new PowerModeSelection failed, not connected to network.', me.host);
+			command = me.switchInfoMenu ? 'MNMEN ON' : 'MNINF';
 		}
+		me.log('Device: %s, setPowerModeSelection successfull, state: %s, command: %s', me.host, me.currentInfoMenuState ? 'HIDDEN' : 'SHOW', command);
+		request(me.url + '/goform/formiPhoneAppDirect.xml?' + command, function (error, response, data) { });
+		me.currentInfoMenuState = !me.currentInfoMenuState;
+		callback(null, state);
 	}
 
 	volumeSelectorPress(remoteKey, callback) {
 		var me = this;
-		if (me.connectionStatus) {
-			var command = 0;
-			switch (remoteKey) {
-				case Characteristic.VolumeSelector.INCREMENT:
-					command = 'MVUP';
-					break;
-				case Characteristic.VolumeSelector.DECREMENT:
-					command = 'MVDOWN';
-					break;
-			}
-			me.log('Device: %s, key prssed: %s, command: %s', me.host, remoteKey, command);
-			this.sendRemoteControlCommand(command, callback);
-		} else {
-			me.log('Device: %s, set new Volume level failed, not connected to network.', me.host);
+		var command = '';
+		switch (remoteKey) {
+			case Characteristic.VolumeSelector.INCREMENT:
+				command = 'MVUP';
+				break;
+			case Characteristic.VolumeSelector.DECREMENT:
+				command = 'MVDOWN';
+				break;
 		}
+		me.log('Device: %s, key prssed: %s, command: %s', me.host, remoteKey, command);
+		request(me.url + '/goform/formiPhoneAppDirect.xml?' + command, function (error, response, data) { });
+		callback(null, remoteKey);
 	}
 
 	remoteKeyPress(remoteKey, callback) {
 		var me = this;
-		if (me.connectionStatus) {
-			var command = 0;
-			switch (remoteKey) {
-				case Characteristic.RemoteKey.REWIND:
-					command = 'MN9E';
-					break;
-				case Characteristic.RemoteKey.FAST_FORWARD:
-					command = 'MN9D';
-					break;
-				case Characteristic.RemoteKey.NEXT_TRACK:
-					command = 'MN9F';
-					break;
-				case Characteristic.RemoteKey.PREVIOUS_TRACK:
-					command = 'MN9G';
-					break;
-				case Characteristic.RemoteKey.ARROW_UP:
-					command = 'MNCUP';
-					break;
-				case Characteristic.RemoteKey.ARROW_DOWN:
-					command = 'MNCDN';
-					break;
-				case Characteristic.RemoteKey.ARROW_LEFT:
-					command = 'MNCLT';
-					break;
-				case Characteristic.RemoteKey.ARROW_RIGHT:
-					command = 'MNCRT';
-					break;
-				case Characteristic.RemoteKey.SELECT:
-					command = 'MNENT';
-					break;
-				case Characteristic.RemoteKey.BACK:
-					command = 'MNRTN';
-					break;
-				case Characteristic.RemoteKey.EXIT:
-					command = 'MNRTN';
-					break;
-				case Characteristic.RemoteKey.PLAY_PAUSE:
-					command = 'NS94';
-					break;
-				case Characteristic.RemoteKey.INFORMATION:
-					command = 'MNINF';
-					break;
-			}
-			me.log('Device: %s, key prssed: %s, command: %s', me.host, remoteKey, command);
-			this.sendRemoteControlCommand(command, callback);
-		} else {
-			me.log('Device: %s, set RemoteKey failed, not connected to network.', me.host);
+		var command = '';
+		switch (remoteKey) {
+			case Characteristic.RemoteKey.REWIND:
+				command = 'MN9E';
+				break;
+			case Characteristic.RemoteKey.FAST_FORWARD:
+				command = 'MN9D';
+				break;
+			case Characteristic.RemoteKey.NEXT_TRACK:
+				command = 'MN9F';
+				break;
+			case Characteristic.RemoteKey.PREVIOUS_TRACK:
+				command = 'MN9G';
+				break;
+			case Characteristic.RemoteKey.ARROW_UP:
+				command = 'MNCUP';
+				break;
+			case Characteristic.RemoteKey.ARROW_DOWN:
+				command = 'MNCDN';
+				break;
+			case Characteristic.RemoteKey.ARROW_LEFT:
+				command = 'MNCLT';
+				break;
+			case Characteristic.RemoteKey.ARROW_RIGHT:
+				command = 'MNCRT';
+				break;
+			case Characteristic.RemoteKey.SELECT:
+				command = 'MNENT';
+				break;
+			case Characteristic.RemoteKey.BACK:
+				command = 'MNRTN';
+				break;
+			case Characteristic.RemoteKey.EXIT:
+				command = 'MNRTN';
+				break;
+			case Characteristic.RemoteKey.PLAY_PAUSE:
+				command = 'NS94';
+				break;
+			case Characteristic.RemoteKey.INFORMATION:
+				command = me.switchInfoMenu ? 'MNINF' : 'MNMEN ON';
+				break;
 		}
-	}
-
-	sendRemoteControlCommand(command, callback) {
-		var me = this;
-		if (me.connectionStatus) {
-			this.httpGET('/goform/formiPhoneAppDirect.xml?' + command, function (error) {
-				if (error) {
-					me.log.debug('Device: %s, can not send RC command. Might be due to a wrong settings in config, error: %s', me.host, error);
-					callback(error);
-				} else {
-					me.log('Device: %s, send RC command successfull: %s', me.host, command);
-					callback(null, command);
-				}
-			});
-		} else {
-			me.log('Device: %s, send RC command failed, not connected to network.', me.host);
-			callback(null, false);
-		}
+		me.log('Device: %s, key prssed: %s, command: %s', me.host, remoteKey, command);
+		request(me.url + '/goform/formiPhoneAppDirect.xml?' + command, function (error, response, data) { });
+		callback(null, remoteKey);
 	}
 };
