@@ -9,14 +9,7 @@
         "title": "Name",
         "type": "string",
         "default": "AV receiver",
-        "required": true
-      },
-      "checkStateInterval": {
-        "title": "Check interval",
-        "type": "integer",
-        "default": 5,
-        "maximum": 10,
-        "required": true
+        "required": true,
       },
       "devices": {
         "title": "Devices",
