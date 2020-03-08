@@ -4,7 +4,7 @@ const fs = require('fs');
 const mkdirp = require('mkdirp');
 const xml2js = require('xml2js');
 const parseString = xml2js.parseString;
-const responseDelay = 1500;
+const responseDelay = 1000;
 
 var Accessory, Service, Characteristic, hap, UUIDGen;
 
@@ -92,35 +92,18 @@ class denonTvDevice {
 		//Check net state
 		setInterval(function () {
 			var me = this;
-			request(me.url + '/goform/formMainZone_MainZoneXmlStatusLite.xml', function (error, response, data) {
+			request('http://' + me.host + ':60006/upnp/desc/aios_device/aios_device.xml', function (error, response, data) {
 				if (error) {
 					me.log('Device: %s, name: %s, state: Offline', me.host, me.name);
 					me.connectionStatus = false;
 				} else if (!me.connectionStatus) {
 					me.log('Device: %s, name: %s, state: Online', me.host, me.name);
-					me.getDeviceInfo();
 					me.connectionStatus = true;
-				}
-			});
-		}.bind(this), 5000);
-
-		//Delay to wait for device info
-		setTimeout(this.prepereTvService.bind(this), responseDelay);
-	}
-
-	getDeviceInfo() {
-		var me = this;
-		setTimeout(() => {
-			request('http://' + me.host + ':60006/upnp/desc/aios_device/aios_device.xml', (error, response, data) => {
-				if (error) {
-					me.log('Device: %s, name: %s, state: Offline', me.host, me.name);
-                                     return;
-				} else {
 					data = data.replace(/:/g, '');
 					parseString(data, function (error, result) {
 						if (error) {
 							me.log.debug('Device %s, getDeviceInfo parse string error: %s', me.host, error);
-                                                    return;
+							return;
 						} else {
 							setTimeout(() => {
 								me.manufacturer = result.root.device[0].manufacturer[0];
@@ -134,12 +117,15 @@ class denonTvDevice {
 								me.log('Serialnumber: %s', me.serialNumber);
 								me.log('Firmware: %s', me.firmwareRevision);
 								me.log('----------------------------------');
-							}, 250);
+							}, 200);
 						}
 					});
 				}
 			});
-		}, 200);
+		}.bind(this), 5000);
+
+		//Delay to wait for device info
+		setTimeout(this.prepereTvService.bind(this), responseDelay);
 	}
 
 	//Prepare TV service 
@@ -298,22 +284,26 @@ class denonTvDevice {
 
 	setPowerState(state, callback) {
 		var me = this;
-		if (me.currentPowerState == state) {
-			callback(null, state);
-			return;
-		} else {
-			var newState = state ? 'ON' : 'STANDBY';
-			request(me.url + '/goform/formiPhoneAppDirect.xml?PW' + newState, function (error, response, data) {
-				if (error) {
-					me.log.debug('Device: %s, can not set new Power state. Might be due to a wrong settings in config, error: %s', me.host, error);
-					callback(error);
-				} else {
-					me.log('Device: %s, set new Power state successfull: %s', me.host, state ? 'ON' : 'STANDBY');
-					me.currentPowerState = state;
-					callback(null, state);
+		me.getPowerState(function (error, currentPowerState) {
+			if (error) {
+				me.log.debug('Device: %s, can not get current Power state. Might be due to a wrong settings in config, error: %s', me.host, error);
+				callback(error);
+			} else {
+				if (state !== currentPowerState) {
+					var newState = state ? 'ON' : 'STANDBY';
+					request(me.url + '/goform/formiPhoneAppDirect.xml?PW' + newState, function (error, response, data) {
+						if (error) {
+							me.log.debug('Device: %s, can not set new Power state. Might be due to a wrong settings in config, error: %s', me.host, error);
+							callback(error);
+						} else {
+							me.log('Device: %s, set new Power state successfull: %s', me.host, state ? 'ON' : 'STANDBY');
+							me.currentPowerState = state;
+							callback(null, state);
+						}
+					});
 				}
-			});
-		}
+			}
+		});
 	}
 
 	getMute(callback) {
@@ -339,22 +329,26 @@ class denonTvDevice {
 
 	setMute(state, callback) {
 		var me = this;
-		if (me.currentMuteState == state) {
-			callback(null, state);
-			return;
-		} else {
-		var newState = state ? 'ON' : 'OFF';
-		request(me.url + '/goform/formiPhoneAppDirect.xml?MU' + newState, function (error, response, data) {
+		me.getMute(function (error, currentMuteState) {
 			if (error) {
-				me.log.debug('Device: %s, can not set new Mute state. Might be due to a wrong settings in config, error: %s', me.host, error);
+				me.log.debug('Device: %s, can not get current Mute for new state. Might be due to a wrong settings in config, error: %s', me.host, error);
 				callback(error);
 			} else {
-				me.log('Device: %s, set new Mute state successfull: %s', me.host, state ? 'ON' : 'OFF');
-				me.currentMuteState = state;
-				callback(null, state);
+				if (state !== currentMuteState) {
+					var newState = state ? 'ON' : 'OFF';
+					request(me.url + '/goform/formiPhoneAppDirect.xml?MU' + newState, function (error, response, data) {
+						if (error) {
+							me.log.debug('Device: %s, can not set new Mute state. Might be due to a wrong settings in config, error: %s', me.host, error);
+							callback(error);
+						} else {
+							me.log('Device: %s, set new Mute state successfull: %s', me.host, state ? 'ON' : 'OFF');
+							me.currentMuteState = state;
+							callback(null, state);
+						}
+					});
+				}
 			}
 		});
-          }
 	}
 
 	getVolume(callback) {
@@ -429,18 +423,25 @@ class denonTvDevice {
 
 	setInput(callback, inputReference) {
 		var me = this;
-		if (inputReference != me.currentInputReference) {
-			request(me.url + '/goform/formiPhoneAppDirect.xml?SI' + inputReference, function (error, response, data) {
-				if (error) {
-					me.log.debug('Device: %s, can not set new Input. Might be due to a wrong settings in config, error: %s', me.host, error);
-					callback(error);
-				} else {
-					me.log('Device: %s, set new Input successfull: %s', me.host, inputReference);
-					me.currentInputReference = inputReference;
-					callback(null, inputReference);
+		me.getInput(function (error, currentInputReference) {
+			if (error) {
+				me.log.debug('Device: %s, can not get current Input. Might be due to a wrong settings in config, error: %s', me.host, error);
+				callback(error);
+			} else {
+				if (inputReference !== currentInputReference) {
+					request(me.url + '/goform/formiPhoneAppDirect.xml?SI' + inputReference, function (error, response, data) {
+						if (error) {
+							me.log.debug('Device: %s, can not set new Input. Might be due to a wrong settings in config, error: %s', me.host, error);
+							callback(error);
+						} else {
+							me.log('Device: %s, set new Input successfull: %s', me.host, inputReference);
+							me.currentInputReference = inputReference;
+							callback(null, inputReference);
+						}
+					});
 				}
-			});
-		}
+			}
+		});
 	}
 
 	setPowerModeSelection(state, callback) {
