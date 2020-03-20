@@ -6,7 +6,7 @@ Plugin to control Denon/Marantz AV Receivers series X in HomeKit as TV service.
 Tested with AVR-X6300H.
 Present as TV service, schange inputs, volume/mute control, power control.
 
-HomeBridge: https://github.com/nfarina/homebridge
+Homebridge: https://github.com/homebridge/homebridge
 
 # Installation
 
