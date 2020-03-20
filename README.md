@@ -8,15 +8,15 @@ Present as TV service, schange inputs, volume/mute control, power control.
 
 Homebridge: https://github.com/homebridge/homebridge
 
-# Installation
+## Installation
 
-1. Install homebridge using: npm install -g homebridge
-2. Install homebridge-denon-tv using: npm install -g homebridge-denon-tv
-3. Update your configuration file. See sample-config.json in this repository for a sample. 
+1. Follow the step-by-step instructions on the [Homebridge Wiki](https://github.com/homebridge/homebridge/wiki) for how to install Homebridge.
+2. Install homebridge-denon-tv using: `npm install -g homebridge-denon-tv`
+3. Update your configuration file. See `sample-config.json` in this repository for a sample. 
 
-# Configuration
+## Configuration
 
- <pre>
+```json
 {
     "platform": "DenonTv",
     "devices": [
@@ -46,7 +46,7 @@ Homebridge: https://github.com/homebridge/homebridge
         }
     ]
 }
-</pre>
+```
 
 # Limitations:
 
