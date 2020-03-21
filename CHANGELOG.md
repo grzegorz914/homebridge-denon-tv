@@ -1,5 +1,16 @@
 # Change Log
 All notable changes to this project will be documented in this file.
+## 1.2.17 (21.03.2020)
+- corrections for homebridge git
+- performance improvement
+
+## 1.1.2 (6.02.2020)
+- removed checkStateInterval in config
+- some fixes
+
+## 1.1.1 (3.02.2020)
+- fixed crash if save new Input name
+
 ## 1.1.0 (3.02.2020)
 - code cleanup
 - performance improvements
