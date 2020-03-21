@@ -1,10 +1,8 @@
 # homebridge-denon-tv
 [![npm](https://badgen.net/npm/dt/homebridge-denon-tv?color=purple)](https://www.npmjs.com/package/homebridge-denon-tv) [![npm](https://badgen.net/npm/v/homebridge-denon-tv?color=purple)](https://www.npmjs.com/package/homebridge-denon-tv) [![GitHub pull requests](https://img.shields.io/github/issues-pr/grzegorz914/homebridge-denon-tv.svg)](https://github.com/grzegorz914/homebridge-denon-tv/pulls)
-[![GitHub issues](https://img.shields.io/github/issues/grzegorz914/homebridge-config-ui-x.svg)](https://github.com/grzegorz914/homebridge-denon-tv/issues)
+[![GitHub issues](https://img.shields.io/github/issues/grzegorz914/homebridge-denon-tv.svg)](https://github.com/grzegorz914/homebridge-denon-tv/issues)
 
-Plugin to control Denon/Marantz AV Receivers series X in HomeKit as TV service.
-Tested with AVR-X6300H.
-Present as TV service, schange inputs, volume/mute control, power control.
+Plugin to control Denon/Marantz AV Receivers series X in HomeKit as TV service. Tested with AVR-X6300H. Present as TV service, change inputs, volume/mute control, power control.
 
 Homebridge: https://github.com/homebridge/homebridge
 
@@ -22,7 +20,7 @@ Homebridge: https://github.com/homebridge/homebridge
     "devices": [
         {
             "name": "AV Receiver",
-            "host": "192.168.0.4",
+            "host": "192.168.1.5",
             "port": 8080,
             "switchInfoMenu": true,
             "inputs": [
@@ -48,8 +46,8 @@ Homebridge: https://github.com/homebridge/homebridge
 }
 ```
 
-# Limitations:
+## Limitations:
 
-# Whats new:
+## Whats new:
 https://github.com/grzegorz914/homebridge-denon-tv/blob/master/CHANGELOG.md
 
