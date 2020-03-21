@@ -21,7 +21,7 @@
   "dependencies": {
     "xml2js": "^0.4.23",
     "request": ">=2.88",
-    "mkdirp": ">=0.5.1",
+    "mkdirp": ">=1.0.0",
     "persist-path": ">=1.0.2"
   },
   "keywords": [
@@ -36,5 +36,4 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   }
-}
 }
