@@ -4,7 +4,6 @@ const fs = require('fs');
 const mkdirp = require('mkdirp');
 const xml2js = require('xml2js');
 const parseString = xml2js.parseString;
-const responseDelay = 1000;
 
 var Accessory, Service, Characteristic, hap, UUIDGen;
 
@@ -41,10 +40,8 @@ class denonTvPlatform {
 	removeAccessory() { }
 	didFinishLaunching() {
 		var me = this;
-		setTimeout(function () {
-			me.log.debug('didFinishLaunching');
-		}, (this.devices.length + 1) * responseDelay);
-	}
+		me.log.debug('didFinishLaunching');
+	};
 }
 
 class denonTvDevice {
@@ -105,27 +102,23 @@ class denonTvDevice {
 							me.log.debug('Device %s, getDeviceInfo parse string error: %s', me.host, error);
 							return;
 						} else {
-							setTimeout(() => {
-								me.manufacturer = result.root.device[0].manufacturer[0];
-								me.modelName = result.root.device[0].modelName[0];
-								me.serialNumber = 'SN0000002';
-								me.firmwareRevision = 'FW0000002';
+							me.manufacturer = result.root.device[0].manufacturer[0];
+							me.modelName = result.root.device[0].modelName[0];
+							me.serialNumber = 'SN0000002';
+							me.firmwareRevision = 'FW0000002';
 
-								me.log('-------- %s --------', me.name);
-								me.log('Manufacturer: %s', me.manufacturer);
-								me.log('Model: %s', me.modelName);
-								me.log('Serialnumber: %s', me.serialNumber);
-								me.log('Firmware: %s', me.firmwareRevision);
-								me.log('----------------------------------');
-							}, 200);
+							me.log('-------- %s --------', me.name);
+							me.log('Manufacturer: %s', me.manufacturer);
+							me.log('Model: %s', me.modelName);
+							me.log('Serialnumber: %s', me.serialNumber);
+							me.log('Firmware: %s', me.firmwareRevision);
+							me.log('----------------------------------');
 						}
 					});
 				}
 			});
 		}.bind(this), 5000);
-
-		//Delay to wait for device info
-		setTimeout(this.prepereTvService.bind(this), responseDelay);
+		this.prepereTvService();
 	}
 
 	//Prepare TV service 
@@ -523,4 +516,3 @@ class denonTvDevice {
 		callback(null, remoteKey);
 	}
 };
-
