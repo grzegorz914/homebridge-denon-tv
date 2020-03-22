@@ -5,14 +5,13 @@ const mkdirp = require('mkdirp');
 const xml2js = require('xml2js');
 const parseString = xml2js.parseString;
 
-var Accessory, Service, Characteristic, hap, UUIDGen;
+var Accessory, Service, Characteristic, UUIDGen;
 
-module.exports = homebridge => {
+module.exports = function(homebridge) {
 	Service = homebridge.hap.Service;
 	Characteristic = homebridge.hap.Characteristic;
 	Accessory = homebridge.platformAccessory;
 	UUIDGen = homebridge.hap.uuid;
-	hap = homebridge.hap;
 
 	homebridge.registerPlatform('homebridge-denon-tv', 'DenonTv', denonTvPlatform, true);
 };
