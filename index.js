@@ -7,7 +7,7 @@ const parseString = xml2js.parseString;
 
 var Accessory, Service, Characteristic, UUIDGen;
 
-module.exports = function(homebridge) {
+module.exports = function (homebridge) {
 	Service = homebridge.hap.Service;
 	Characteristic = homebridge.hap.Characteristic;
 	Accessory = homebridge.platformAccessory;
@@ -245,8 +245,7 @@ class denonTvDevice {
 						callback()
 					});
 				this.tvAccesory.addService(tempInput);
-				if (!tempInput.linked)
-					this.tvService.addLinkedService(tempInput);
+				this.tvService.addLinkedService(tempInput);
 				this.inputReferences.push(inputReference);
 			}
 
@@ -390,21 +389,14 @@ class denonTvDevice {
 						me.log.debug('Device %s, getInput parse string error: %s', me.host, error);
 					} else {
 						var inputReference = result.item.InputFuncSelect[0].value[0];
-						if (!me.connectionStatus || inputReference === '' || inputReference === undefined || inputReference === null) {
-							me.tvService
-								.getCharacteristic(Characteristic.ActiveIdentifier)
-								.updateValue(0);
-							callback(null, inputReference);
-						} else {
-							for (let i = 0; i < me.inputReferences.length; i++) {
-								if (inputReference === me.inputReferences[i]) {
-									me.tvService
-										.getCharacteristic(Characteristic.ActiveIdentifier)
-										.updateValue(i);
-									me.log('Device: %s, get current Input successfull: %s', me.host, inputReference);
-									me.currentInputReference = inputReference;
-									callback(null, inputReference);
-								}
+						for (let i = 0; i < me.inputReferences.length; i++) {
+							if (inputReference == me.inputReferences[i]) {
+								me.tvService
+									.getCharacteristic(Characteristic.ActiveIdentifier)
+									.updateValue(i);
+								me.log('Device: %s, get current Input successfull: %s', me.host, inputReference);
+								me.currentInputReference = inputReference;
+								callback(null, inputReference);
 							}
 						}
 					}
