@@ -8,7 +8,7 @@ const xml2js = require('xml2js');
 const parseString = xml2js.parseString;
 
 
-module.exports = function (homebridge) {
+module.exports = homebridge => {
 	Service = homebridge.hap.Service;
 	Characteristic = homebridge.hap.Characteristic;
 	Accessory = homebridge.platformAccessory;
@@ -135,7 +135,7 @@ class denonTvDevice {
 	}
 
 	//Prepare TV service 
-	prepereTvService() {
+	prepareTvService() {
 		this.log.debug('prepereTvService');
 		this.tvService = new Service.Television(this.name, 'tvService');
 		this.tvService.setCharacteristic(Characteristic.ConfiguredName, this.name);
