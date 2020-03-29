@@ -1,5 +1,8 @@
 # Change Log
 All notable changes to this project will be documented in this file.
+## 1.2.20 (28.03.2020)
+- some small fixes
+
 ## 1.2.17 (21.03.2020)
 - corrections for homebridge git
 - performance improvement
