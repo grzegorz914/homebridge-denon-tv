@@ -5,20 +5,20 @@
   "schema": {
     "type": "object",
     "properties": {
-      "name": {
-        "title": "Name",
-        "type": "string",
-        "default": "AV Receiver",
-        "required": true
-      },
       "devices": {
         "title": "Devices",
         "type": "array",
         "items": {
           "type": "object",
           "properties": {
+            "name": {
+              "title": "Name",
+              "type": "string",
+              "default": "AV Receiver",
+              "required": true
+            },
             "host": {
-              "title": "IP Address/Hostname",
+              "title": "IP Address",
               "type": "string",
               "default": "192.168.1.5",
               "required": true,

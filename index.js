@@ -1,10 +1,10 @@
 'use strict';
 
 let Accessory, Service, Characteristic, hap, UUIDGen; const request = require('request');
-const ppath = require('persist-path');
 const fs = require('fs');
 const mkdirp = require('mkdirp');
 const xml2js = require('xml2js');
+const path = require('path');
 const parseString = xml2js.parseString;
 
 
@@ -20,7 +20,7 @@ module.exports = homebridge => {
 class denonTvPlatform {
 	constructor(log, config, api) {
 		// only load if configured
-		if (!config) {
+		if (!config || !Array.isArray(config.devices)) {
 			log('No configuration found for homebridge-denontv-tv');
 			return;
 		}
@@ -37,7 +37,11 @@ class denonTvPlatform {
 
 			for (let i = 0, len = this.config.devices.length; i < len; i++) {
 				let deviceName = this.config.devices[i];
-				this.tvAccessories.push(new denonTvDevice(log, deviceName, api));
+				if (!deviceName.name) {
+					this.log.warn('Device Name Missing')
+				} else {
+					this.tvAccessories.push(new denonTvDevice(log, deviceName, api));
+				}
 			}
 			this.api.on('didFinishLaunching', this.didFinishLaunching.bind(this));
 		}
@@ -72,9 +76,9 @@ class denonTvDevice {
 		this.currentVolume = 0;
 		this.currentInputReference = null;
 		this.currentInfoMenuState = false;
-		this.prefDir = ppath('denonTv/');
-		this.inputsFile = this.prefDir + 'inputs_' + this.host.split('.').join('');
-		this.devInfoFile = this.prefDir + 'info_' + this.host.split('.').join('');
+		this.prefDir = path.join(api.user.storagePath(), 'denonTv');
+		this.inputsFile = this.prefDir + '/' + 'inputs_' + this.host.split('.').join('');
+		this.devInfoFile = this.prefDir + '/' + 'info_' + this.host.split('.').join('');
 		this.url = ('http://' + this.host + ':' + this.port);
 
 		//get Device info
