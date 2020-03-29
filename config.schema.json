@@ -1,15 +1,15 @@
 {
   "pluginAlias": "DenonTv",
   "pluginType": "platform",
-  "footerDisplay": "This plugin works with Sat receivers with OpenWebIf interface which is available [here](https://github.com/grzegorz914/homebridge-denon-tv).",
+  "footerDisplay": "This plugin works with Denon/Marantz AV Receivers series X which is available [here](https://github.com/grzegorz914/homebridge-denon-tv).",
   "schema": {
     "type": "object",
     "properties": {
       "name": {
         "title": "Name",
         "type": "string",
-        "default": "AV receiver",
-        "required": true,
+        "default": "AV Receiver",
+        "required": true
       },
       "devices": {
         "title": "Devices",
@@ -20,6 +20,7 @@
             "host": {
               "title": "IP Address/Hostname",
               "type": "string",
+              "default": "192.168.1.5",
               "required": true,
               "format": "hostname"
             },
@@ -45,14 +46,14 @@
                   "name": {
                     "title": "Input name",
                     "type": "string",
-                    "default": "TVN 24",
-                    "required": false
+                    "default": "DVD",
+                    "required": true
                   },
                   "reference": {
                     "title": "Input reference",
                     "type": "string",
                     "default": "DVD",
-                    "required": false
+                    "required": true
                   }
                 }
               }
