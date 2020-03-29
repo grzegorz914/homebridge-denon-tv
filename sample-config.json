@@ -2,8 +2,8 @@
     "platform": "DenonTv",
     "devices": [
         {
-            "name": "AV receiver",
-            "host": "192.168.0.4",
+            "name": "AV Receiver",
+            "host": "192.168.1.5",
             "port": 8080,
             "switchInfoMenu": true,
             "inputs": [
@@ -25,3 +25,5 @@
                 }
             ]
         }
+    ]
+}
