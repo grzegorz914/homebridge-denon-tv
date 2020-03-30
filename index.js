@@ -21,7 +21,7 @@ class denonTvPlatform {
 	constructor(log, config, api) {
 		// only load if configured
 		if (!config || !Array.isArray(config.devices)) {
-			log('No configuration found for homebridge-denontv-tv');
+			log('No configuration found for homebridge-denon-tv');
 			return;
 		}
 		this.log = log;
