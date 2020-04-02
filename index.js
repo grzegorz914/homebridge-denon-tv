@@ -1,6 +1,7 @@
 'use strict';
 
-let Accessory, Service, Characteristic, hap, UUIDGen; const request = require('request');
+let Accessory, Service, Characteristic, UUIDGen; 
+const request = require('request');
 const fs = require('fs');
 const mkdirp = require('mkdirp');
 const xml2js = require('xml2js');
@@ -246,13 +247,13 @@ class denonTvDevice {
 
 				tempInput
 					.getCharacteristic(Characteristic.ConfiguredName)
-					.on('set', (name, callback) => {
-						this.inputs[inputReference] = name;
+					.on('set', (newInputName, callback) => {
+						this.inputs[inputReference] = newInputName;
 						fs.writeFile(this.inputsFile, JSON.stringify(this.inputs), (error) => {
 							if (error) {
 								this.log.debug('Device: %s, can not write new Input name, error: %s', this.host, error);
 							} else {
-								this.log('Device: %s, saved new Input successfull, name: %s reference: %s', this.host, name, inputReference);
+								this.log('Device: %s, saved new Input successfull, name: %s reference: %s', this.host, newInputName, inputReference);
 							}
 						});
 						callback()
