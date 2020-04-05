@@ -1,27 +1,46 @@
 {
-    "platform": "DenonTv",
-    "devices": [
+    "bridge": {
+        "name": "Homebridge",
+        "username": "AA:BB:CC:DD:EE:FF",
+        "manufacturer": "homebridge.io",
+        "model": "homebridge",
+        "port": 9100,
+        "pin": "123-45-678"
+    },
+    "description": "HomeKit Bridge",
+    "ports": {
+        "start": 9101,
+        "end": 9150,
+        "comment": "In this section set the port for Homebridge accessories."
+    },
+    "accessories": [],
+    "platforms": [
         {
-            "name": "AV Receiver",
-            "host": "192.168.1.5",
-            "port": 8080,
-            "switchInfoMenu": true,
-            "inputs": [
+            "platform": "DenonTv",
+            "devices": [
                 {
-                    "name": "Xbox One",
-                    "reference": "GAME"
-                },
-                {
-                    "name": "Telewizor",
-                    "reference": "TV"
-                },
-                {
-                    "name": "Tuner Sat",
-                    "reference": "SAT/CBL"
-                },
-                {
-                    "name": "CD",
-                    "references": "CD"
+                    "name": "AV Receiver",
+                    "host": "192.168.1.5",
+                    "port": 8080,
+                    "switchInfoMenu": true,
+                    "inputs": [
+                        {
+                            "name": "Xbox One",
+                            "reference": "GAME"
+                        },
+                        {
+                            "name": "Telewizor",
+                            "reference": "TV"
+                        },
+                        {
+                            "name": "Tuner Sat",
+                            "reference": "SAT/CBL"
+                        },
+                        {
+                            "name": "CD",
+                            "references": "CD"
+                        }
+                    ]
                 }
             ]
         }
