@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://github.com/grzegorz914/homebridge-denon-tv/blob/master/denon.png" height="140"></a>
+  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://github.com/grzegorz914/homebridge-denon-tv/blob/master//graphics/denon.png" height="140"></a>
 </p>
 
 <span align="center">
@@ -27,6 +27,9 @@ Control Denon/Marantz AV Receivers series X in HomeKit as TV service. Tested wit
 ## Configuration
 
 1. Use [Homebridge Config UI X](https://github.com/oznu/homebridge-config-ui-x) to configure the plugin (strongly recomended), or update your configuration file manually. See `sample-config.json` in this repository for a sample or add the bottom example to Your config.json file.
+<p align="left">
+  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://github.com/grzegorz914/homebridge-denon-tv/blob/master//graphics/ustawienia.png" height="50"></a>
+</p>
 
 ```json
 {
