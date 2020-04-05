@@ -3,19 +3,25 @@
 [![npm](https://badgen.net/npm/dt/homebridge-denon-tv?color=purple)](https://www.npmjs.com/package/homebridge-denon-tv) [![npm](https://badgen.net/npm/v/homebridge-denon-tv?color=purple)](https://www.npmjs.com/package/homebridge-denon-tv) [![GitHub pull requests](https://img.shields.io/github/issues-pr/grzegorz914/homebridge-denon-tv.svg)](https://github.com/grzegorz914/homebridge-denon-tv/pulls)
 [![GitHub issues](https://img.shields.io/github/issues/grzegorz914/homebridge-denon-tv.svg)](https://github.com/grzegorz914/homebridge-denon-tv/issues)
 
-Plugin to control Denon/Marantz AV Receivers series X in HomeKit as TV service. Tested with AVR-X6300H. Present as TV service, change inputs, volume/mute control, power control.
+## Description
+
+Control Denon/Marantz AV Receivers series X in HomeKit as TV service. Tested with AVR-X6300H. Present as TV service, change inputs, volume/mute control, power control.
+
+## Package
 
 1. Homebridge: https://github.com/homebridge/homebridge
 2. Homebridge Config UI X: https://github.com/oznu/homebridge-config-ui-x
+3. Plugin homebridge-denon-tv: `npm install -g homebridge-denon-tv`
 
 ## Installation
 
 1. Follow the step-by-step instructions on the [Homebridge Wiki](https://github.com/homebridge/homebridge/wiki) for how to install Homebridge.
 2. Follow the step-by-step instructions on the [Homebridge Config UI X](https://github.com/oznu/homebridge-config-ui-x/wiki) for how to install Homebridge Config UI X.
-3. Install homebridge-lgwebos-tv using: `npm install -g homebridge-denon-tv`
-4. Use Homebridge Config UI X to configure the plugin(strongly recomended) or update your configuration file manually. See `sample-config.json` in this repository for a sample. 
+3. Install homebridge-denon-tv using: `npm install -g homebridge-denon-tv` 
 
 ## Configuration
+
+1. Use Homebridge Config UI X to configure the plugin (strongly recomended), or update your configuration file manually. See `sample-config.json` in this repository for a sample on add the bottom example to Your config.json file.
 
 ```json
 {
