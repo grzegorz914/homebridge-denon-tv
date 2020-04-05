@@ -21,7 +21,7 @@ Control Denon/Marantz AV Receivers series X in HomeKit as TV service. Tested wit
 
 ## Configuration
 
-1. Use Homebridge Config UI X to configure the plugin (strongly recomended), or update your configuration file manually. See `sample-config.json` in this repository for a sample on add the bottom example to Your config.json file.
+1. Use Homebridge Config UI X to configure the plugin (strongly recomended), or update your configuration file manually. See `sample-config.json` in this repository for a sample or add the bottom example to Your config.json file.
 
 ```json
 {
