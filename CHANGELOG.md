@@ -1,5 +1,8 @@
 # Change Log
 All notable changes to this project will be documented in this file.
+## 1.2.32 (07.04.2020)
+- fixed store of positin in HomeKit fav.
+
 ## 1.2.30 (05.04.2020)
 - update README.md
 - update sample-config.json

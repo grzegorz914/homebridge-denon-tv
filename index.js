@@ -140,15 +140,13 @@ class denonTvDevice {
 
 		//Delay to wait for device info before publish
 		setTimeout(this.prepareTvService.bind(this), 1000);
-
-		this.tvAccesory = new Accessory(this.name, UUIDGen.generate(this.host + this.name));
-		this.log.debug('Device: %s, publishExternalAccessories: %s', this.host, this.name);
-		this.api.publishExternalAccessories('homebridge-denon-tv', [this.tvAccesory]);
 	}
 
 	//Prepare TV service 
 	prepareTvService() {
 		this.log.debug('prepereTvService');
+		this.tvAccesory = new Accessory(this.name, UUIDGen.generate(this.host + this.name));
+		
 		this.tvService = new Service.Television(this.name, 'tvService');
 		this.tvService.setCharacteristic(Characteristic.ConfiguredName, this.name);
 		this.tvService.setCharacteristic(Characteristic.SleepDiscoveryMode, Characteristic.SleepDiscoveryMode.ALWAYS_DISCOVERABLE);
@@ -180,6 +178,9 @@ class denonTvDevice {
 		this.tvAccesory.addService(this.tvService);
 		this.prepareTvSpeakerService();
 		this.prepareInputServices();
+
+		this.log.debug('Device: %s, publishExternalAccessories: %s', this.host, this.name);
+		this.api.publishExternalAccessories('homebridge-denon-tv', [this.tvAccesory]);
 	}
 
 	//Prepare speaker service
