@@ -76,24 +76,24 @@ class denonTvDevice {
 		this.switchInfoMenu = device.switchInfoMenu;
 		this.inputs = device.inputs;
 
-		//setup variables
-		this.connectionStatus = false;
-		this.inputReferences = new Array();
-		this.currentPowerState = false;
-		this.currentMuteState = false;
-		this.currentVolume = 0;
-		this.currentInputReference = null;
-		this.currentInfoMenuState = false;
-		this.prefDir = path.join(api.user.storagePath(), 'denonTv');
-		this.inputsFile = this.prefDir + '/' + 'inputs_' + this.host.split('.').join('');
-		this.devInfoFile = this.prefDir + '/' + 'info_' + this.host.split('.').join('');
-		this.url = ('http://' + this.host + ':' + this.port);
-
 		//get Device info
 		this.manufacturer = device.manufacturer || 'Denon/Marantz';
 		this.modelName = device.modelName || 'homebridge-denon-tv';
 		this.serialNumber = device.serialNumber || 'SN000002';
 		this.firmwareRevision = device.firmwareRevision || 'FW000002';
+
+		//setup variables
+		this.inputReferences = new Array();
+		this.connectionStatus = false;
+		this.currentPowerState = false;
+		this.currentMuteState = false;
+		this.currentVolume = 0;
+		this.currentInputReference = '';
+		this.currentInfoMenuState = false;
+		this.prefDir = path.join(api.user.storagePath(), 'denonTv');
+		this.inputsFile = this.prefDir + '/' + 'inputs_' + this.host.split('.').join('');
+		this.devInfoFile = this.prefDir + '/' + 'info_' + this.host.split('.').join('');
+		this.url = ('http://' + this.host + ':' + this.port);
 
 		//check if prefs directory ends with a /, if not then add it
 		if (this.prefDir.endsWith('/') === false) {
@@ -146,7 +146,7 @@ class denonTvDevice {
 	prepareTvService() {
 		this.log.debug('prepereTvService');
 		this.tvAccesory = new Accessory(this.name, UUIDGen.generate(this.host + this.name));
-		
+
 		this.tvService = new Service.Television(this.name, 'tvService');
 		this.tvService.setCharacteristic(Characteristic.ConfiguredName, this.name);
 		this.tvService.setCharacteristic(Characteristic.SleepDiscoveryMode, Characteristic.SleepDiscoveryMode.ALWAYS_DISCOVERABLE);
