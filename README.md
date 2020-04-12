@@ -34,8 +34,6 @@ Control Denon/Marantz AV Receivers series X in HomeKit as TV service. Tested wit
 2. Possible inputs reference:
 `PHONO, CD, TUNER, DVD, BD, TV, SAT/CBL, MPLAY, GAME, HDRADIO, NET, PANDORA, SIRIUSXM, SPOTIFY, LASTFM, FLICKR, IRADIO, SERVER, FAVORITES, AUX1, AUX2, AUX3, AUX4, AUX5, AUX6, AUX7, BT, USB/IPOD, USB, IPD, IRP, FVP `
 
-
-
 ```json
 {
     "platform": "DenonTv",
