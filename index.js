@@ -1,6 +1,6 @@
 'use strict';
 
-let Accessory, Service, Characteristic, UUIDGen; 
+let Accessory, Service, Characteristic, UUIDGen;
 const request = require('request');
 const fs = require('fs');
 const mkdirp = require('mkdirp');
@@ -281,9 +281,10 @@ class denonTvDevice {
 				me.log.debug('Device: %s, can not get current Power state. Might be due to a wrong settings in config, error: %s', me.host, error);
 				callback(error);
 			} else {
-				var result = parseString(data, function (error, result) {
+				parseString(data, function (error, result) {
 					if (error) {
 						me.log.debug('Device %s, getPowerState parse string error: %s', me.host, error);
+						callback(error);
 					} else {
 						var state = (result.item.Power[0].value[0] == 'ON');
 						me.log('Device: %s, get current Power state successfull: %s', me.host, state ? 'ON' : 'STANDBY');
@@ -326,7 +327,7 @@ class denonTvDevice {
 				me.log.debug('Device: %s, can not get current Mute state. Might be due to a wrong settings in config, error: %s', me.host, error);
 				callback(error);
 			} else {
-				var result = parseString(data, function (error, result) {
+				parseString(data, function (error, result) {
 					if (error) {
 						me.log.debug('Device %s, getMute parse string error: %s', me.host, error);
 					} else {
@@ -371,7 +372,7 @@ class denonTvDevice {
 				me.log.debug('Device: %s, can not get current Volume level. Might be due to a wrong settings in config, error: %s', me.host, error);
 				callback(error);
 			} else {
-				var result = parseString(data, function (error, result) {
+				parseString(data, function (error, result) {
 					if (error) {
 						me.log.debug('Device %s, getVolume parse string error: %s', me.host, error);
 					} else {
@@ -406,7 +407,7 @@ class denonTvDevice {
 				me.log.debug('Device: %s, can not get current Input. Might be due to a wrong settings in config, error: %s', me.host, error);
 				callback(error);
 			} else {
-				var result = parseString(data, function (error, result) {
+				parseString(data, function (error, result) {
 					if (error) {
 						me.log.debug('Device %s, getInput parse string error: %s', me.host, error);
 					} else {
