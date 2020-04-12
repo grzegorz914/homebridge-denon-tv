@@ -112,6 +112,7 @@ class denonTvDevice {
 				if (error) {
 					me.log('Device: %s, name: %s, state: Offline', me.host, me.name);
 					me.connectionStatus = false;
+					return;
 				} else if (!me.connectionStatus) {
 					me.log('Device: %s, name: %s, state: Online', me.host, me.name);
 					me.connectionStatus = true;
@@ -119,7 +120,6 @@ class denonTvDevice {
 					parseString(data, function (error, result) {
 						if (error) {
 							me.log.debug('Device %s, getDeviceInfo parse string error: %s', me.host, error);
-							return;
 						} else {
 							me.manufacturer = result.root.device[0].manufacturer[0];
 							me.modelName = result.root.device[0].modelName[0];
