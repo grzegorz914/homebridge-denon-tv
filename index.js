@@ -108,7 +108,7 @@ class denonTvDevice {
 		//Check net state
 		setInterval(function () {
 			var me = this;
-			request('http://' + me.host + ':60006/upnp/desc/aios_device/aios_device.xml', function (error, response, data) {
+			request(me.url + '/goform/formMainZone_MainZoneXmlStatusLite.xml', function (error, response, data) {
 				if (error) {
 					me.log('Device: %s, name: %s, state: Offline', me.host, me.name);
 					me.connectionStatus = false;
@@ -116,24 +116,7 @@ class denonTvDevice {
 				} else if (!me.connectionStatus) {
 					me.log('Device: %s, name: %s, state: Online', me.host, me.name);
 					me.connectionStatus = true;
-					data = data.replace(/:/g, '');
-					parseString(data, function (error, result) {
-						if (error) {
-							me.log.debug('Device %s, getDeviceInfo parse string error: %s', me.host, error);
-						} else {
-							me.manufacturer = result.root.device[0].manufacturer[0];
-							me.modelName = result.root.device[0].modelName[0];
-							me.serialNumber = 'SN0000002';
-							me.firmwareRevision = 'FW0000002';
-
-							me.log('-------- %s --------', me.name);
-							me.log('Manufacturer: %s', me.manufacturer);
-							me.log('Model: %s', me.modelName);
-							me.log('Serialnumber: %s', me.serialNumber);
-							me.log('Firmware: %s', me.firmwareRevision);
-							me.log('----------------------------------');
-						}
-					});
+                    me.getDeviceInfo();
 				}
 			});
 		}.bind(this), 5000);
@@ -271,6 +254,34 @@ class denonTvDevice {
 				this.inputReferences.push(inputReference);
 			}
 
+		});
+	}
+
+	getDeviceInfo() {
+		var me = this;
+		request('http://' + me.host + ':60006/upnp/desc/aios_device/aios_device.xml', function (error, response, data) {
+			if (error) {
+				me.log.debug('Device: %s, name: %s, getDeviceInfo eror: %s', me.host, me.name, error);
+			} else {
+				data = data.replace(/:/g, '');
+				parseString(data, function (error, result) {
+					if (error) {
+						me.log.debug('Device %s, getDeviceInfo parse string error: %s', me.host, error);
+					} else {
+						me.manufacturer = result.root.device[0].manufacturer[0];
+						me.modelName = result.root.device[0].modelName[0];
+						me.serialNumber = 'SN0000002';
+						me.firmwareRevision = 'FW0000002';
+
+						me.log('-------- %s --------', me.name);
+						me.log('Manufacturer: %s', me.manufacturer);
+						me.log('Model: %s', me.modelName);
+						me.log('Serialnumber: %s', me.serialNumber);
+						me.log('Firmware: %s', me.firmwareRevision);
+						me.log('----------------------------------');
+					}
+				});
+			}
 		});
 	}
 
