@@ -9,9 +9,15 @@
 [![npm](https://badgen.net/npm/dt/homebridge-denon-tv?color=purple)](https://www.npmjs.com/package/homebridge-denon-tv) [![npm](https://badgen.net/npm/v/homebridge-denon-tv?color=purple)](https://www.npmjs.com/package/homebridge-denon-tv) [![GitHub pull requests](https://img.shields.io/github/issues-pr/grzegorz914/homebridge-denon-tv.svg)](https://github.com/grzegorz914/homebridge-denon-tv/pulls)
 [![GitHub issues](https://img.shields.io/github/issues/grzegorz914/homebridge-denon-tv.svg)](https://github.com/grzegorz914/homebridge-denon-tv/issues)
 
-Control Denon/Marantz AV Receivers series X in HomeKit as TV service. Tested with AVR-X6300H. Present as TV service, change inputs, volume/mute control, power control, RC control, Siri control.
+Homebridge plugin to control Denon/Marantz AV Receivers series X in HomeKit as TV service. Tested with AVR-X6300H.
 
 </span>
+
+## Info
+1. The Volume/Mute and RC/Media is possible after You go to RC Control app on iPhone/iPad.
+2. Volume and Mute can be changed using hardware buttons on iPhone/iPad.
+3. RC/Media control function available from RC Control app on iPhone/iPad
+4. Siri control using siri command.
 
 ## Package
 
