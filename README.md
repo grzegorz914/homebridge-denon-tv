@@ -24,18 +24,15 @@ Homebridge plugin to control Denon/Marantz AV Receivers series X in HomeKit as T
 </p>
 
 ## Package
-
 1. [Homebridge](https://github.com/homebridge/homebridge)
 2. [Homebridge Config UI X](https://github.com/oznu/homebridge-config-ui-x)
 
 ## Installation
-
 1. Follow the step-by-step instructions on the [Homebridge Wiki](https://github.com/homebridge/homebridge/wiki) for how to install Homebridge.
 2. Follow the step-by-step instructions on the [Homebridge Config UI X](https://github.com/oznu/homebridge-config-ui-x/wiki) for how to install Homebridge Config UI X.
 3. Install homebridge-denon-tv using: `npm install -g homebridge-denon-tv` 
 
 ## Configuration
-
 1. Use [Homebridge Config UI X](https://github.com/oznu/homebridge-config-ui-x) to configure the plugin (strongly recomended), or update your configuration file manually. See `sample-config.json` in this repository for a sample or add the bottom example to Your config.json file.
 2. Possible inputs reference:
 `PHONO, CD, TUNER, DVD, BD, TV, SAT/CBL, MPLAY, GAME, HDRADIO, NET, PANDORA, SIRIUSXM, SPOTIFY, LASTFM, FLICKR, IRADIO, SERVER, FAVORITES, AUX1, AUX2, AUX3, AUX4, AUX5, AUX6, AUX7, BT, USB/IPOD, USB, IPD, IRP, FVP `
