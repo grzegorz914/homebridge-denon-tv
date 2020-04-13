@@ -31,7 +31,7 @@ Homebridge plugin to control Denon/Marantz AV Receivers series X in HomeKit as T
 1. Follow the step-by-step instructions on the [Homebridge Wiki](https://github.com/homebridge/homebridge/wiki) for how to install Homebridge.
 2. Follow the step-by-step instructions on the [Homebridge Config UI X](https://github.com/oznu/homebridge-config-ui-x/wiki) for how to install Homebridge Config UI X.
 3. Install homebridge-denon-tv using: `npm install -g homebridge-denon-tv` 
-5. Power ON/OFF short pres tile in HomeKit app.
+5. Power ON/OFF short press tile in HomeKit app.
 6. Change Inputs after loong press tile in HomeKit app.
 
 ## Configuration
