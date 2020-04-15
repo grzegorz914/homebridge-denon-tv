@@ -431,7 +431,6 @@ class denonTvDevice {
 									.updateValue(i);
 								me.log('Device: %s, get current Input successfull: %s', me.host, inputReference);
 								me.currentInputReference = inputReference;
-								callback(null, inputReference);
 							}
 						}
 						callback(null, inputReference);
