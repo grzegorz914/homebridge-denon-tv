@@ -19,7 +19,7 @@ Homebridge plugin to control Denon/Marantz AV Receivers series X in HomeKit as T
 3. Inputs can be changed after loong press tile in HomeKit app and select from the list.
 4. Volume/Mute can be changed using hardware buttons on iPhone/iPad.
 5. RC/Media control function available from RC app on iPhone/iPad.
-6. Siri control using siri command.
+6. Siri control using Siri command.
 
 <p align="left">
   <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://github.com/grzegorz914/homebridge-denon-tv/blob/master/graphics/homekit.png" height="300"></a>  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://github.com/grzegorz914/homebridge-denon-tv/blob/master/graphics/inputs.png" height="300"></a>  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://github.com/grzegorz914/homebridge-denon-tv/blob/master/graphics/RC.png" height="300"></a>
@@ -33,8 +33,6 @@ Homebridge plugin to control Denon/Marantz AV Receivers series X in HomeKit as T
 1. Follow the step-by-step instructions on the [Homebridge Wiki](https://github.com/homebridge/homebridge/wiki) for how to install Homebridge.
 2. Follow the step-by-step instructions on the [Homebridge Config UI X](https://github.com/oznu/homebridge-config-ui-x/wiki) for how to install Homebridge Config UI X.
 3. Install homebridge-denon-tv using: `npm install -g homebridge-denon-tv` 
-5. Power ON/OFF short press tile in HomeKit app.
-6. Change Inputs after loong press tile in HomeKit app.
 
 ## Configuration
 1. Use [Homebridge Config UI X](https://github.com/oznu/homebridge-config-ui-x) to configure the plugin (strongly recomended), or update your configuration file manually. See `sample-config.json` in this repository for a sample or add the bottom example to Your config.json file.
