@@ -19,7 +19,7 @@ Homebridge plugin to control Denon/Marantz AV Receivers series X in HomeKit as T
 3. Inputs can be changed after loong press tile in HomeKit app and select from the list.
 4. Volume/Mute can be changed using hardware buttons on iPhone/iPad.
 5. RC/Media control function available from RC app on iPhone/iPad.
-6. Siri control using Siri command.
+6. Siri control.
 
 <p align="left">
   <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://github.com/grzegorz914/homebridge-denon-tv/blob/master/graphics/homekit.png" height="300"></a>  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://github.com/grzegorz914/homebridge-denon-tv/blob/master/graphics/inputs.png" height="300"></a>  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://github.com/grzegorz914/homebridge-denon-tv/blob/master/graphics/RC.png" height="300"></a>
