@@ -32,7 +32,6 @@ class denonTvPlatform {
 
 		if (api) {
 			this.api = api;
-
 			if (this.version < 2.1) {
 				throw new Error('Unexpected API version.');
 			}
@@ -59,7 +58,7 @@ class denonTvPlatform {
 	}
 	removeAccessory(platformAccessory) {
 		this.log.debug('removeAccessory');
-		this.api.unregisterPlatformAccessories('homebridge-openwebif-tv', 'OpenWebIfTv', [platformAccessory]);
+		this.api.unregisterPlatformAccessories('homebridge-denon-tv', 'DenonTv', [platformAccessory]);
 	}
 }
 
@@ -72,7 +71,7 @@ class denonTvDevice {
 		this.device = device;
 		this.name = device.name;
 		this.host = device.host;
-		this.port = device.port || 8080;
+		this.port = device.port;
 		this.switchInfoMenu = device.switchInfoMenu;
 		this.inputs = device.inputs;
 
