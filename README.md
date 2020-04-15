@@ -43,7 +43,7 @@ Homebridge plugin to control Denon/Marantz AV Receivers series X in HomeKit as T
 3. If port `8080` not working check with port `80`, different receivers uses different ports, You need to check which one is correct for you.
 
 <p align="left">
-  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://github.com/grzegorz914/homebridge-denon-tv/blob/master/graphics/ustawienia.png" height="100"></a>
+  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://github.com/grzegorz914/homebridge-denon-tv/blob/master/graphics/ustawienia.png" height="150"></a>
 </p>
 
 ```json
