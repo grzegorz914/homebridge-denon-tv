@@ -1,6 +1,5 @@
 'use strict';
 
-let Accessory, Service, Characteristic, UUIDGen;
 const request = require('request');
 const fs = require('fs');
 const mkdirp = require('mkdirp');
@@ -8,6 +7,7 @@ const xml2js = require('xml2js');
 const path = require('path');
 const parseString = xml2js.parseString;
 
+let Accessory, Service, Characteristic, UUIDGen;
 
 module.exports = homebridge => {
 	Service = homebridge.hap.Service;
@@ -87,7 +87,7 @@ class denonTvDevice {
 		this.currentPowerState = false;
 		this.currentMuteState = false;
 		this.currentVolume = 0;
-		this.currentInputReference = '';
+		this.currentInputReference = null;
 		this.currentInfoMenuState = false;
 		this.prefDir = path.join(api.user.storagePath(), 'denonTv');
 		this.inputsFile = this.prefDir + '/' + 'inputs_' + this.host.split('.').join('');
@@ -255,7 +255,7 @@ class denonTvDevice {
 			}
 
 			//if reference not null or empty add the input
-			if (inputReference !== undefined && inputReference !== null && inputReference !== '') {
+			if (inputReference !== undefined && inputReference !== null) {
 				inputReference = inputReference.replace(/\s/g, ''); // remove all white spaces from the string
 
 				let tempInput = new Service.InputSource(inputReference, 'input' + i);
@@ -283,7 +283,6 @@ class denonTvDevice {
 				this.tvService.addLinkedService(tempInput);
 				this.inputReferences.push(inputReference);
 			}
-
 		});
 	}
 
@@ -426,7 +425,7 @@ class denonTvDevice {
 					} else {
 						var inputReference = result.item.InputFuncSelect[0].value[0];
 						for (let i = 0; i < me.inputReferences.length; i++) {
-							if (inputReference == me.inputReferences[i]) {
+							if (inputReference === me.inputReferences[i]) {
 								me.tvService
 									.getCharacteristic(Characteristic.ActiveIdentifier)
 									.updateValue(i);
@@ -435,6 +434,7 @@ class denonTvDevice {
 								callback(null, inputReference);
 							}
 						}
+						callback(null, inputReference);
 					}
 				});
 			}
