@@ -433,7 +433,7 @@ class denonTvDevice {
 								me.currentInputReference = inputReference;
 							}
 						}
-						callback(null, inputReference);
+						callback(null);
 					}
 				});
 			}
@@ -455,7 +455,7 @@ class denonTvDevice {
 						} else {
 							me.log('Device: %s, set new Input successfull: %s', me.host, inputReference);
 							me.currentInputReference = inputReference;
-							callback(null, inputReference);
+							callback();
 						}
 					});
 				}
