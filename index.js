@@ -474,10 +474,16 @@ class denonTvDevice {
 		} else {
 			command = me.switchInfoMenu ? 'MNMEN ON' : 'MNINF';
 		}
-		me.log('Device: %s, setPowerModeSelection successfull, state: %s, command: %s', me.host, me.currentInfoMenuState ? 'HIDDEN' : 'SHOW', command);
-		request(me.url + '/goform/formiPhoneAppDirect.xml?' + command, function (error, response, data) { });
-		me.currentInfoMenuState = !me.currentInfoMenuState;
-		callback(null, state);
+		request(me.url + '/goform/formiPhoneAppDirect.xml?' + command, function (error, response, data) { 
+                       if (error) {
+				me.log.debug('Device: %s can not setPowerModeSelection. Might be due to a wrong settings in config, error: %s', me.host, error);
+				callback(error);
+			} else {
+				me.log('Device: %s, setPowerModeSelection successfull, state: %s, command: %s', me.host, me.currentInfoMenuState ? 'HIDDEN' : 'SHOW', command);
+			       me.currentInfoMenuState = !me.currentInfoMenuState;
+		              callback(null, state);
+			}
+		});
 	}
 
 	volumeSelectorPress(remoteKey, callback) {
@@ -491,9 +497,15 @@ class denonTvDevice {
 				command = 'MVDOWN';
 				break;
 		}
-		me.log('Device: %s, key prssed: %s, command: %s', me.host, remoteKey, command);
-		request(me.url + '/goform/formiPhoneAppDirect.xml?' + command, function (error, response, data) { });
-		callback(null);
+		request(me.url + '/goform/formiPhoneAppDirect.xml?' + command, function (error, response, data) { 
+                       if (error) {
+				me.log.debug('Device: %s can not send RC Command (Volume button). Might be due to a wrong settings in config, error: %s', me.host, error);
+				callback(error);
+			} else {
+				me.log('Device: %s, send RC Command (Volume button) successfull, remoteKey: %s, command: %s', me.host, remoteKey, command);
+				callback(null);
+			}
+		});
 	}
 
 	remoteKeyPress(remoteKey, callback) {
@@ -540,8 +552,14 @@ class denonTvDevice {
 				command = me.switchInfoMenu ? 'MNINF' : 'MNMEN ON';
 				break;
 		}
-		me.log('Device: %s, key prssed: %s, command: %s', me.host, remoteKey, command);
-		request(me.url + '/goform/formiPhoneAppDirect.xml?' + command, function (error, response, data) { });
-		callback(null);
+		request(me.url + '/goform/formiPhoneAppDirect.xml?' + command, function (error, response, data) { 
+                      if (error) {
+				me.log.debug('Device: %s can not send RC Command. Might be due to a wrong settings in config, error: %s', me.host, error);
+				callback(error);
+			} else {
+				me.log('Device: %s, send RC Command successfull, remoteKey: %s, command: %s', me.host, remoteKey, command);
+				callback(null);
+			}
+		});
 	}
 };
