@@ -472,16 +472,16 @@ class denonTvDevice {
 		if (me.currentInfoMenuState) {
 			command = 'MNRTN';
 		} else {
-			command = me.switchInfoMenu ? 'MNMEN ON' : 'MNINF';
+			command = me.switchInfoMenu ? 'MNOPT' : 'MNINF';
 		}
-		request(me.url + '/goform/formiPhoneAppDirect.xml?' + command, function (error, response, data) { 
-                       if (error) {
+		request(me.url + '/goform/formiPhoneAppDirect.xml?' + command, function (error, response, data) {
+			if (error) {
 				me.log.debug('Device: %s can not setPowerModeSelection. Might be due to a wrong settings in config, error: %s', me.host, error);
 				callback(error);
 			} else {
 				me.log('Device: %s, setPowerModeSelection successfull, state: %s, command: %s', me.host, me.currentInfoMenuState ? 'HIDDEN' : 'SHOW', command);
-			       me.currentInfoMenuState = !me.currentInfoMenuState;
-		              callback(null, state);
+				me.currentInfoMenuState = !me.currentInfoMenuState;
+				callback(null, state);
 			}
 		});
 	}
@@ -497,8 +497,8 @@ class denonTvDevice {
 				command = 'MVDOWN';
 				break;
 		}
-		request(me.url + '/goform/formiPhoneAppDirect.xml?' + command, function (error, response, data) { 
-                       if (error) {
+		request(me.url + '/goform/formiPhoneAppDirect.xml?' + command, function (error, response, data) {
+			if (error) {
 				me.log.debug('Device: %s can not send RC Command (Volume button). Might be due to a wrong settings in config, error: %s', me.host, error);
 				callback(error);
 			} else {
@@ -549,11 +549,11 @@ class denonTvDevice {
 				command = 'NS94';
 				break;
 			case Characteristic.RemoteKey.INFORMATION:
-				command = me.switchInfoMenu ? 'MNINF' : 'MNMEN ON';
+				command = me.switchInfoMenu ? 'MNINF' : 'MNOPT';
 				break;
 		}
-		request(me.url + '/goform/formiPhoneAppDirect.xml?' + command, function (error, response, data) { 
-                      if (error) {
+		request(me.url + '/goform/formiPhoneAppDirect.xml?' + command, function (error, response, data) {
+			if (error) {
 				me.log.debug('Device: %s can not send RC Command. Might be due to a wrong settings in config, error: %s', me.host, error);
 				callback(error);
 			} else {
