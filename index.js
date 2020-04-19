@@ -393,7 +393,7 @@ class denonTvDevice {
 						var volume = parseInt(result.item.MasterVolume[0].value[0]) + 80;
 						me.log('Device: %s, get current Volume level successfull: %s', me.host, volume);
 						me.currentVolume = volume;
-						callback(null, me.currentVolume);
+						callback(null, volume);
 					}
 				});
 			}
