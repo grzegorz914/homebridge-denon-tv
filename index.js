@@ -479,7 +479,7 @@ class denonTvDevice {
 				me.log.debug('Device: %s can not setPowerModeSelection. Might be due to a wrong settings in config, error: %s', me.host, error);
 				callback(error);
 			} else {
-				me.log('Device: %s, setPowerModeSelection successfull, state: %s, command: %s', me.host, me.currentInfoMenuState ? 'HIDDEN' : 'SHOW', command);
+				me.log('Device: %s, setPowerModeSelection successfull, state: %s, command: %s', me.host, me.currentInfoMenuState ? 'HIDE' : 'SHOW', command);
 				me.currentInfoMenuState = !me.currentInfoMenuState;
 				callback(null, state);
 			}
