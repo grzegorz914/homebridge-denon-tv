@@ -480,7 +480,7 @@ class denonTvDevice {
 		callback(null, state);
 	}
 
-	volumeSelectorPress(state, callback) {
+	volumeSelectorPress(RemoteKey, callback) {
 		var me = this;
 		var command = 'MV?';
 		switch (remoteKey) {
@@ -493,10 +493,10 @@ class denonTvDevice {
 		}
 		me.log('Device: %s, key prssed: %s, command: %s', me.host, remoteKey, command);
 		request(me.url + '/goform/formiPhoneAppDirect.xml?' + command, function (error, response, data) { });
-		callback(null, state);
+		callback(null);
 	}
 
-	remoteKeyPress(state, callback) {
+	remoteKeyPress(RemoteKey, callback) {
 		var me = this;
 		var command = 'MEN?';
 		switch (remoteKey) {
@@ -542,6 +542,6 @@ class denonTvDevice {
 		}
 		me.log('Device: %s, key prssed: %s, command: %s', me.host, remoteKey, command);
 		request(me.url + '/goform/formiPhoneAppDirect.xml?' + command, function (error, response, data) { });
-		callback(null, state);
+		callback(null);
 	}
 };
