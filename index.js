@@ -480,7 +480,7 @@ class denonTvDevice {
 		callback(null, state);
 	}
 
-	volumeSelectorPress(RemoteKey, callback) {
+	volumeSelectorPress(remoteKey, callback) {
 		var me = this;
 		var command = 'MV?';
 		switch (remoteKey) {
@@ -496,7 +496,7 @@ class denonTvDevice {
 		callback(null);
 	}
 
-	remoteKeyPress(RemoteKey, callback) {
+	remoteKeyPress(remoteKey, callback) {
 		var me = this;
 		var command = 'MEN?';
 		switch (remoteKey) {
