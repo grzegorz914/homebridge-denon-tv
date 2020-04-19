@@ -342,6 +342,7 @@ class denonTvDevice {
 				parseString(data, function (error, result) {
 					if (error) {
 						me.log.debug('Device %s, getMute parse string error: %s', me.host, error);
+						callback(error);
 					} else {
 						var state = (result.item.Mute[0].value[0] == 'ON');
 						me.log('Device: %s, get current Mute state successfull: %s', me.host, state ? 'ON' : 'OFF');
@@ -387,6 +388,7 @@ class denonTvDevice {
 				parseString(data, function (error, result) {
 					if (error) {
 						me.log.debug('Device %s, getVolume parse string error: %s', me.host, error);
+						callback(error);
 					} else {
 						var volume = parseInt(result.item.MasterVolume[0].value[0]) + 80;
 						me.log('Device: %s, get current Volume level successfull: %s', me.host, volume);
@@ -422,6 +424,7 @@ class denonTvDevice {
 				parseString(data, function (error, result) {
 					if (error) {
 						me.log.debug('Device %s, getInput parse string error: %s', me.host, error);
+						callback(error);
 					} else {
 						var inputReference = result.item.InputFuncSelect[0].value[0];
 						for (let i = 0; i < me.inputReferences.length; i++) {
@@ -477,7 +480,7 @@ class denonTvDevice {
 		callback(null, state);
 	}
 
-	volumeSelectorPress(remoteKey, callback) {
+	volumeSelectorPress(state, callback) {
 		var me = this;
 		var command = 'MV?';
 		switch (remoteKey) {
@@ -490,10 +493,10 @@ class denonTvDevice {
 		}
 		me.log('Device: %s, key prssed: %s, command: %s', me.host, remoteKey, command);
 		request(me.url + '/goform/formiPhoneAppDirect.xml?' + command, function (error, response, data) { });
-		callback(null);
+		callback(null, state);
 	}
 
-	remoteKeyPress(remoteKey, callback) {
+	remoteKeyPress(state, callback) {
 		var me = this;
 		var command = 'MEN?';
 		switch (remoteKey) {
@@ -539,6 +542,6 @@ class denonTvDevice {
 		}
 		me.log('Device: %s, key prssed: %s, command: %s', me.host, remoteKey, command);
 		request(me.url + '/goform/formiPhoneAppDirect.xml?' + command, function (error, response, data) { });
-		callback(null);
+		callback(null, state);
 	}
 };
