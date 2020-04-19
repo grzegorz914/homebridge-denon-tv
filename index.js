@@ -455,7 +455,7 @@ class denonTvDevice {
 						} else {
 							me.log('Device: %s, set new Input successfull: %s', me.host, inputReference);
 							me.currentInputReference = inputReference;
-							callback();
+							callback(null);
 						}
 					});
 				}
@@ -465,7 +465,7 @@ class denonTvDevice {
 
 	setPowerModeSelection(state, callback) {
 		var me = this;
-		var command = '';
+		var command = 'MEN?';
 		if (me.currentInfoMenuState) {
 			command = 'MNRTN';
 		} else {
@@ -479,7 +479,7 @@ class denonTvDevice {
 
 	volumeSelectorPress(remoteKey, callback) {
 		var me = this;
-		var command = '';
+		var command = 'MV?';
 		switch (remoteKey) {
 			case Characteristic.VolumeSelector.INCREMENT:
 				command = 'MVUP';
@@ -490,12 +490,12 @@ class denonTvDevice {
 		}
 		me.log('Device: %s, key prssed: %s, command: %s', me.host, remoteKey, command);
 		request(me.url + '/goform/formiPhoneAppDirect.xml?' + command, function (error, response, data) { });
-		callback(null, remoteKey);
+		callback(null);
 	}
 
 	remoteKeyPress(remoteKey, callback) {
 		var me = this;
-		var command = '';
+		var command = 'MEN?';
 		switch (remoteKey) {
 			case Characteristic.RemoteKey.REWIND:
 				command = 'MN9E';
@@ -539,6 +539,6 @@ class denonTvDevice {
 		}
 		me.log('Device: %s, key prssed: %s, command: %s', me.host, remoteKey, command);
 		request(me.url + '/goform/formiPhoneAppDirect.xml?' + command, function (error, response, data) { });
-		callback(null, remoteKey);
+		callback(null);
 	}
 };
