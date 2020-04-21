@@ -156,7 +156,7 @@ class denonTvDevice {
 
 	//Prepare TV service 
 	prepareTvService() {
-		this.log.debug('prepereTvService');
+		this.log.debug('prepareTvService');
 		this.tvAccesory = new Accessory(this.name, UUIDGen.generate(this.name));
 
 		this.tvService = new Service.Television(this.name, 'tvService');

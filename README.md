@@ -55,20 +55,56 @@ Homebridge plugin to control Denon/Marantz AV Receivers series X in HomeKit as T
             "switchInfoMenu": true,
             "inputs": [
                 {
-                    "name": "Xbox One",
-                    "reference": "GAME"
+                "name": "Xbox One",
+                "reference": "GAME"
                 },
                 {
-                    "name": "Telewizor",
-                    "reference": "TV"
+                "name": "TV",
+                "reference": "TV"
                 },
                 {
-                    "name": "Tuner Sat",
+                    "name": "Sat Receiver",
                     "reference": "SAT/CBL"
                 },
                 {
                     "name": "CD",
                     "reference": "CD"
+                },
+                {
+                    "name": "DVD",
+                    "reference": "DVD"
+                },
+                {
+                    "name": "Bluray",
+                    "reference": "BD"
+                },
+                {
+                    "name": "Tuner",
+                    "reference": "TUNER"
+                },
+                {
+                    "name": "Spotify",
+                    "reference": "SPOTIFY"
+                },
+                {
+                    "name": "Net",
+                    "reference": "NET"
+                },
+                {
+                    "name": "Media Player",
+                    "reference": "MPLAY"
+                },
+                {
+                    "name": "USB iPod",
+                    "reference": "USB/IPOD"
+                },
+                {
+                    "name": "AUX1",
+                    "reference": "AUX1"
+                },
+                {
+                    "name": "AUX2",
+                    "reference": "AUX2"
                 }
             ]
         }

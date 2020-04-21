@@ -1,6 +1,6 @@
 # Change Log
 All notable changes to this project will be documented in this file.
-## 1.2.55 (21.04.2020)
+## 1.2.56 (21.04.2020)
 - different fixes.
 
 ## 1.2.42 (07.04.2020)
