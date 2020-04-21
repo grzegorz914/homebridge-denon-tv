@@ -468,7 +468,7 @@ class denonTvDevice {
 		});
 	}
 
-        setPictureMode(remoteKey, callback) {
+           setPictureMode(remoteKey, callback) {
 		var me = this;
 		var command;
 	        switch (remoteKey) {
@@ -497,9 +497,15 @@ class denonTvDevice {
 				command = 'BACK';
 				break;
 		}
-		this.pointerInputSocket.send('button', { name: command });
-		me.log('Device: %s, setPictureMode successfull, remoteKey: %s, command: %s', me.host, remoteKey, command);
-		callback(null, remoteKey);
+		request(me.url + '/goform/formiPhoneAppDirect.xml?' + command, function (error, response, data) {
+			if (error) {
+				me.log.debug('Device: %s can not setPictureMode. Might be due to a wrong settings in config, error: %s', me.host, error);
+				callback(error);
+			} else {
+				me.log('Device: %s, setPictureMode successfull, remoteKey: %s, command: %s', me.host, remoteKey, command);
+				callback(null, remoteKey);
+			}
+		});
 	}
 
 	setPowerModeSelection(remoteKey, callback) {
@@ -513,12 +519,18 @@ class denonTvDevice {
 				command = 'MNRTN';
 				break;
 		}
-		this.pointerInputSocket.send('button', { name: command });
-		me.log('Device: %s, setPowerModeSelection successfull, remoteKey: %s, command: %s', me.host, remoteKey, command);
-		callback(null, remoteKey);
+		request(me.url + '/goform/formiPhoneAppDirect.xml?' + command, function (error, response, data) {
+			if (error) {
+				me.log.debug('Device: %s can not setPowerModeSelection. Might be due to a wrong settings in config, error: %s', me.host, error);
+				callback(error);
+			} else {
+				me.log('Device: %s, setPowerModeSelection successfull, remoteKey: %s, command: %s', me.host, remoteKey, command);
+				callback(null, remoteKey);
+			}
+		});
 	}
 
-	volumeSelectorPress(remoteKey, callback) {
+	setVolumeSelector(remoteKey, callback) {
 		var me = this;
 		var command = 'MV?';
 		switch (remoteKey) {
@@ -531,16 +543,16 @@ class denonTvDevice {
 		}
 		request(me.url + '/goform/formiPhoneAppDirect.xml?' + command, function (error, response, data) {
 			if (error) {
-				me.log.debug('Device: %s can not send RC Command (Volume button). Might be due to a wrong settings in config, error: %s', me.host, error);
+				me.log.debug('Device: %s can not setVolumeSelector. Might be due to a wrong settings in config, error: %s', me.host, error);
 				callback(error);
 			} else {
-				me.log('Device: %s, send RC Command (Volume button) successfull, remoteKey: %s, command: %s', me.host, remoteKey, command);
+				me.log('Device: %s, setVolumeSelector successfull, remoteKey: %s, command: %s', me.host, remoteKey, command);
 				callback(null, remoteKey);
 			}
 		});
 	}
 
-	remoteKeyPress(remoteKey, callback) {
+	setRemoteKey(remoteKey, callback) {
 		var me = this;
 		var command = 'MEN?';
 		switch (remoteKey) {
@@ -586,10 +598,10 @@ class denonTvDevice {
 		}
 		request(me.url + '/goform/formiPhoneAppDirect.xml?' + command, function (error, response, data) {
 			if (error) {
-				me.log.debug('Device: %s can not send RC Command. Might be due to a wrong settings in config, error: %s', me.host, error);
+				me.log.debug('Device: %s can not setRemoteKey. Might be due to a wrong settings in config, error: %s', me.host, error);
 				callback(error);
 			} else {
-				me.log('Device: %s, send RC Command successfull, remoteKey: %s, command: %s', me.host, remoteKey, command);
+				me.log('Device: %s, setRemoteKey successfull, remoteKey: %s, command: %s', me.host, remoteKey, command);
 				callback(null, remoteKey);
 			}
 		});
