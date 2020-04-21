@@ -88,7 +88,6 @@ class denonTvDevice {
 		this.currentMuteState = false;
 		this.currentVolume = 0;
 		this.currentInputReference = null;
-		this.currentInfoMenuState = false;
 		this.prefDir = path.join(api.user.storagePath(), 'denonTv');
 		this.inputsFile = this.prefDir + '/' + 'inputs_' + this.host.split('.').join('');
 		this.devInfoFile = this.prefDir + '/' + 'info_' + this.host.split('.').join('');
@@ -158,7 +157,7 @@ class denonTvDevice {
 	//Prepare TV service 
 	prepareTvService() {
 		this.log.debug('prepereTvService');
-		this.tvAccesory = new Accessory(this.name, UUIDGen.generate(this.host + this.name));
+		this.tvAccesory = new Accessory(this.name, UUIDGen.generate(this.name));
 
 		this.tvService = new Service.Television(this.name, 'tvService');
 		this.tvService.setCharacteristic(Characteristic.ConfiguredName, this.name);
@@ -179,6 +178,9 @@ class denonTvDevice {
 
 		this.tvService.getCharacteristic(Characteristic.PowerModeSelection)
 			.on('set', this.setPowerModeSelection.bind(this));
+     
+               this.tvService.getCharacteristic(Characteristic.PictureMode)
+                     .on('set', this.setPictureMode.bind(this));
 
 
 		this.tvAccesory
@@ -466,24 +468,54 @@ class denonTvDevice {
 		});
 	}
 
-	setPowerModeSelection(state, callback) {
+        setPictureMode(remoteKey, callback) {
+		var me = this;
+		var command;
+	        switch (remoteKey) {
+			case Characteristic.PictureMode.OTHER:
+				command = 'INFO';
+				break;
+			case Characteristic.PictureModee.STANDARD:
+				command = 'BACK';
+				break;
+			case Characteristic.PictureMode.CALIBRATED:
+				command = 'INFO';
+				break;
+			case Characteristic.PictureModee.CALIBRATED_DARK:
+				command = 'BACK';
+				break;
+			case Characteristic.PictureMode.VIVID:
+				command = 'INFO';
+				break;
+			case Characteristic.PictureModee.GAME:
+				command = 'BACK';
+				break;
+			case Characteristic.PictureMode.COMPUTER:
+				command = 'INFO';
+				break;
+			case Characteristic.PictureModee.CUSTOM:
+				command = 'BACK';
+				break;
+		}
+		this.pointerInputSocket.send('button', { name: command });
+		me.log('Device: %s, setPictureMode successfull, remoteKey: %s, command: %s', me.host, remoteKey, command);
+		callback(null, remoteKey);
+	}
+
+	setPowerModeSelection(remoteKey, callback) {
 		var me = this;
 		var command = 'MEN?';
-		if (me.currentInfoMenuState) {
-			command = 'MNRTN';
-		} else {
-			command = me.switchInfoMenu ? 'MNOPT' : 'MNINF';
+	        switch (remoteKey) {
+			case Characteristic.PowerModeSelection.SHOW:
+				command = me.switchInfoMenu ? 'MNOPT' : 'MNINF';
+				break;
+			case Characteristic.PowerModeSelection.HIDE:
+				command = 'MNRTN';
+				break;
 		}
-		request(me.url + '/goform/formiPhoneAppDirect.xml?' + command, function (error, response, data) {
-			if (error) {
-				me.log.debug('Device: %s can not setPowerModeSelection. Might be due to a wrong settings in config, error: %s', me.host, error);
-				callback(error);
-			} else {
-				me.log('Device: %s, setPowerModeSelection successfull, state: %s, command: %s', me.host, me.currentInfoMenuState ? 'HIDE' : 'SHOW', command);
-				me.currentInfoMenuState = !me.currentInfoMenuState;
-				callback(null, state);
-			}
-		});
+		this.pointerInputSocket.send('button', { name: command });
+		me.log('Device: %s, setPowerModeSelection successfull, remoteKey: %s, command: %s', me.host, remoteKey, command);
+		callback(null, remoteKey);
 	}
 
 	volumeSelectorPress(remoteKey, callback) {
@@ -503,7 +535,7 @@ class denonTvDevice {
 				callback(error);
 			} else {
 				me.log('Device: %s, send RC Command (Volume button) successfull, remoteKey: %s, command: %s', me.host, remoteKey, command);
-				callback(null);
+				callback(null, remoteKey);
 			}
 		});
 	}
@@ -558,7 +590,7 @@ class denonTvDevice {
 				callback(error);
 			} else {
 				me.log('Device: %s, send RC Command successfull, remoteKey: %s, command: %s', me.host, remoteKey, command);
-				callback(null);
+				callback(null, remoteKey);
 			}
 		});
 	}
