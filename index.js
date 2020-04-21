@@ -174,7 +174,7 @@ class denonTvDevice {
 			});
 
 		this.tvService.getCharacteristic(Characteristic.RemoteKey)
-			.on('set', this.remoteKeyPress.bind(this));
+			.on('set', this.setRemoteKey.bind(this));
 
 		this.tvService.getCharacteristic(Characteristic.PowerModeSelection)
 			.on('set', this.setPowerModeSelection.bind(this));
@@ -206,7 +206,7 @@ class denonTvDevice {
 			.setCharacteristic(Characteristic.Active, Characteristic.Active.ACTIVE)
 			.setCharacteristic(Characteristic.VolumeControlType, Characteristic.VolumeControlType.ABSOLUTE);
 		this.tvSpeakerService.getCharacteristic(Characteristic.VolumeSelector)
-			.on('set', this.volumeSelectorPress.bind(this));
+			.on('set', this.setVolumeSelector.bind(this));
 		this.tvSpeakerService.getCharacteristic(Characteristic.Volume)
 			.on('get', this.getVolume.bind(this))
 			.on('set', this.setVolume.bind(this));
