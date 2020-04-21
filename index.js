@@ -178,9 +178,9 @@ class denonTvDevice {
 
 		this.tvService.getCharacteristic(Characteristic.PowerModeSelection)
 			.on('set', this.setPowerModeSelection.bind(this));
-     
-               this.tvService.getCharacteristic(Characteristic.PictureMode)
-                     .on('set', this.setPictureMode.bind(this));
+
+		this.tvService.getCharacteristic(Characteristic.PictureMode)
+			.on('set', this.setPictureMode.bind(this));
 
 
 		this.tvAccesory
@@ -276,7 +276,7 @@ class denonTvDevice {
 							if (error) {
 								this.log.debug('Device: %s, can not write new Input name, error: %s', this.host, error);
 							} else {
-								this.log('Device: %s, saved new Input successfull, name: %s reference: %s', this.host, newInputName, inputReference);
+								this.log('Device: %s, saved new Input successful, name: %s reference: %s', this.host, newInputName, inputReference);
 							}
 						});
 						callback()
@@ -301,7 +301,7 @@ class denonTvDevice {
 						callback(error);
 					} else {
 						var state = (result.item.Power[0].value[0] == 'ON');
-						me.log('Device: %s, get current Power state successfull: %s', me.host, state ? 'ON' : 'STANDBY');
+						me.log('Device: %s, get current Power state successful: %s', me.host, state ? 'ON' : 'STANDBY');
 						me.currentPowerState = state;
 						callback(null, state);
 					}
@@ -324,7 +324,7 @@ class denonTvDevice {
 							me.log.debug('Device: %s, can not set new Power state. Might be due to a wrong settings in config, error: %s', me.host, error);
 							callback(error);
 						} else {
-							me.log('Device: %s, set new Power state successfull: %s', me.host, state ? 'ON' : 'STANDBY');
+							me.log('Device: %s, set new Power state successful: %s', me.host, state ? 'ON' : 'STANDBY');
 							me.currentPowerState = state;
 							callback(null, state);
 						}
@@ -347,7 +347,7 @@ class denonTvDevice {
 						callback(error);
 					} else {
 						var state = (result.item.Mute[0].value[0] == 'ON');
-						me.log('Device: %s, get current Mute state successfull: %s', me.host, state ? 'ON' : 'OFF');
+						me.log('Device: %s, get current Mute state successful: %s', me.host, state ? 'ON' : 'OFF');
 						me.currentMuteState = state;
 						callback(null, state);
 					}
@@ -370,7 +370,7 @@ class denonTvDevice {
 							me.log.debug('Device: %s, can not set new Mute state. Might be due to a wrong settings in config, error: %s', me.host, error);
 							callback(error);
 						} else {
-							me.log('Device: %s, set new Mute state successfull: %s', me.host, state ? 'ON' : 'OFF');
+							me.log('Device: %s, set new Mute state successful: %s', me.host, state ? 'ON' : 'OFF');
 							me.currentMuteState = state;
 							callback(null, state);
 						}
@@ -393,7 +393,7 @@ class denonTvDevice {
 						callback(error);
 					} else {
 						var volume = parseInt(result.item.MasterVolume[0].value[0]) + 80;
-						me.log('Device: %s, get current Volume level successfull: %s', me.host, volume);
+						me.log('Device: %s, get current Volume level successful: %s', me.host, volume);
 						me.currentVolume = volume;
 						callback(null, volume);
 					}
@@ -410,7 +410,7 @@ class denonTvDevice {
 				me.log.debug('Device: %s, can not set new Volume level. Might be due to a wrong settings in config, error: %s', me.host, error);
 				callback(error);
 			} else {
-				me.log('Device: %s, set new Volume level successfull: %s', me.host, targetVolume);
+				me.log('Device: %s, set new Volume level successful: %s', me.host, targetVolume);
 				callback(null, volume);
 			}
 		});
@@ -434,7 +434,7 @@ class denonTvDevice {
 								me.tvService
 									.getCharacteristic(Characteristic.ActiveIdentifier)
 									.updateValue(i);
-								me.log('Device: %s, get current Input successfull: %s', me.host, inputReference);
+								me.log('Device: %s, get current Input successful: %s', me.host, inputReference);
 								me.currentInputReference = inputReference;
 							}
 						}
@@ -458,7 +458,7 @@ class denonTvDevice {
 							me.log.debug('Device: %s, can not set new Input. Might be due to a wrong settings in config, error: %s', me.host, error);
 							callback(error);
 						} else {
-							me.log('Device: %s, set new Input successfull: %s', me.host, inputReference);
+							me.log('Device: %s, set new Input successful: %s', me.host, inputReference);
 							me.currentInputReference = inputReference;
 							callback(null);
 						}
@@ -468,10 +468,10 @@ class denonTvDevice {
 		});
 	}
 
-           setPictureMode(remoteKey, callback) {
+	setPictureMode(remoteKey, callback) {
 		var me = this;
 		var command;
-	        switch (remoteKey) {
+		switch (remoteKey) {
 			case Characteristic.PictureMode.OTHER:
 				command = 'INFO';
 				break;
@@ -502,7 +502,7 @@ class denonTvDevice {
 				me.log.debug('Device: %s can not setPictureMode. Might be due to a wrong settings in config, error: %s', me.host, error);
 				callback(error);
 			} else {
-				me.log('Device: %s, setPictureMode successfull, remoteKey: %s, command: %s', me.host, remoteKey, command);
+				me.log('Device: %s, setPictureMode successful, remoteKey: %s, command: %s', me.host, remoteKey, command);
 				callback(null, remoteKey);
 			}
 		});
@@ -511,7 +511,7 @@ class denonTvDevice {
 	setPowerModeSelection(remoteKey, callback) {
 		var me = this;
 		var command = 'MEN?';
-	        switch (remoteKey) {
+		switch (remoteKey) {
 			case Characteristic.PowerModeSelection.SHOW:
 				command = me.switchInfoMenu ? 'MNOPT' : 'MNINF';
 				break;
@@ -524,7 +524,7 @@ class denonTvDevice {
 				me.log.debug('Device: %s can not setPowerModeSelection. Might be due to a wrong settings in config, error: %s', me.host, error);
 				callback(error);
 			} else {
-				me.log('Device: %s, setPowerModeSelection successfull, remoteKey: %s, command: %s', me.host, remoteKey, command);
+				me.log('Device: %s, setPowerModeSelection successful, remoteKey: %s, command: %s', me.host, remoteKey, command);
 				callback(null, remoteKey);
 			}
 		});
@@ -546,7 +546,7 @@ class denonTvDevice {
 				me.log.debug('Device: %s can not setVolumeSelector. Might be due to a wrong settings in config, error: %s', me.host, error);
 				callback(error);
 			} else {
-				me.log('Device: %s, setVolumeSelector successfull, remoteKey: %s, command: %s', me.host, remoteKey, command);
+				me.log('Device: %s, setVolumeSelector successful, remoteKey: %s, command: %s', me.host, remoteKey, command);
 				callback(null, remoteKey);
 			}
 		});
@@ -601,7 +601,7 @@ class denonTvDevice {
 				me.log.debug('Device: %s can not setRemoteKey. Might be due to a wrong settings in config, error: %s', me.host, error);
 				callback(error);
 			} else {
-				me.log('Device: %s, setRemoteKey successfull, remoteKey: %s, command: %s', me.host, remoteKey, command);
+				me.log('Device: %s, setRemoteKey successful, remoteKey: %s, command: %s', me.host, remoteKey, command);
 				callback(null, remoteKey);
 			}
 		});
