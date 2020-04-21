@@ -15,8 +15,8 @@
   "main": "index.js",
   "engines": {
     "node": ">=10.17.0",
-    "homebridge": ">=0.6.4",
-    "hap-nodejs": ">=0.4.53"
+    "homebridge": ">=0.4.63",
+    "hap-nodejs": ">=0.6.4"
   },
   "dependencies": {
     "xml2js": "^0.4.23",
