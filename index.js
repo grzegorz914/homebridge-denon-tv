@@ -445,7 +445,7 @@ class denonTvDevice {
 		});
 	}
 
-	setInput(callback, inputReference) {
+	setInput(inputReference, callback) {
 		var me = this;
 		me.getInput(function (error, currentInputReference) {
 			if (error) {
