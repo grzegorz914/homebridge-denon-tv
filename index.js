@@ -170,7 +170,7 @@ class denonTvDevice {
 		this.tvService.getCharacteristic(Characteristic.ActiveIdentifier)
 			.on('get', this.getInput.bind(this))
 			.on('set', (inputIdentifier, callback) => {
-				this.setInput(callback, this.inputReferences[inputIdentifier]);
+				this.setInput(this.inputReferences[inputIdentifier], callback);
 			});
 
 		this.tvService.getCharacteristic(Characteristic.RemoteKey)
