@@ -431,14 +431,11 @@ class denonTvDevice {
 						var inputReference = result.item.InputFuncSelect[0].value[0];
 						for (let i = 0; i < me.inputReferences.length; i++) {
 							if (inputReference === me.inputReferences[i]) {
-								me.tvService
-									.getCharacteristic(Characteristic.ActiveIdentifier)
-									.updateValue(i);
 								me.log('Device: %s, get current Input successful: %s', me.host, inputReference);
 								me.currentInputReference = inputReference;
+								callback(null, i);
 							}
 						}
-						callback(null);
 					}
 				});
 			}
