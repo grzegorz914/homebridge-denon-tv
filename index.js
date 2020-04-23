@@ -169,9 +169,7 @@ class denonTvDevice {
 
 		this.tvService.getCharacteristic(Characteristic.ActiveIdentifier)
 			.on('get', this.getInput.bind(this))
-			.on('set', (inputIdentifier, callback) => {
-				this.setInput(this.inputReferences[inputIdentifier], callback);
-			});
+			.on('set', this.setInput.bind(this));
 
 		this.tvService.getCharacteristic(Characteristic.RemoteKey)
 			.on('set', this.setRemoteKey.bind(this));
@@ -446,14 +444,15 @@ class denonTvDevice {
 		}
 	}
 
-	setInput(inputReference, callback) {
+	setInput(inputIdentifier, callback) {
 		var me = this;
 		me.getInput(function (error, currentInputReference) {
 			if (error) {
 				me.log.debug('Device: %s, can not get current Input. Might be due to a wrong settings in config, error: %s', me.host, error);
 				callback(error);
 			} else {
-				if (inputReference !== currentInputReference) {
+				if (me.inputReferences[inputIdentifier] !== currentInputReference) {
+                                     let inputReference = me.inputReferences[inputIdentifier];
 					request(me.url + '/goform/formiPhoneAppDirect.xml?SI' + inputReference, function (error, response, data) {
 						if (error) {
 							me.log.debug('Device: %s, can not set new Input. Might be due to a wrong settings in config, error: %s', me.host, error);
@@ -461,7 +460,7 @@ class denonTvDevice {
 						} else {
 							me.log('Device: %s, set new Input successful: %s', me.host, inputReference);
 							me.currentInputReference = inputReference;
-							callback(null);
+							callback(null, inputIdentifier);
 						}
 					});
 				}
