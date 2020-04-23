@@ -451,8 +451,8 @@ class denonTvDevice {
 				me.log.debug('Device: %s, can not get current Input. Might be due to a wrong settings in config, error: %s', me.host, error);
 				callback(error);
 			} else {
+				let inputReference = me.inputReferences[inputIdentifier];
 				if (me.inputReferences[inputIdentifier] !== currentInputReference) {
-                                     let inputReference = me.inputReferences[inputIdentifier];
 					request(me.url + '/goform/formiPhoneAppDirect.xml?SI' + inputReference, function (error, response, data) {
 						if (error) {
 							me.log.debug('Device: %s, can not set new Input. Might be due to a wrong settings in config, error: %s', me.host, error);
