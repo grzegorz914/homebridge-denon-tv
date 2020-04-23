@@ -81,7 +81,7 @@ class denonTvDevice {
 		this.serialNumber = device.serialNumber || 'SN000002';
 		this.firmwareRevision = device.firmwareRevision || 'FW000002';
 
-		//setup variables
+		//setup letiables
 		this.inputReferences = new Array();
 		this.connectionStatus = false;
 		this.currentPowerState = false;
@@ -300,7 +300,7 @@ class denonTvDevice {
 						me.log.debug('Device %s, getPowerState parse string error: %s', me.host, error);
 						callback(error);
 					} else {
-						var state = (result.item.Power[0].value[0] == 'ON');
+						let state = (result.item.Power[0].value[0] == 'ON');
 						me.log('Device: %s, get current Power state successful: %s', me.host, state ? 'ON' : 'STANDBY');
 						me.currentPowerState = state;
 						callback(null, state);
@@ -318,7 +318,7 @@ class denonTvDevice {
 				callback(error);
 			} else {
 				if (state !== currentPowerState) {
-					var newState = state ? 'ON' : 'STANDBY';
+					let newState = state ? 'ON' : 'STANDBY';
 					request(me.url + '/goform/formiPhoneAppDirect.xml?PW' + newState, function (error, response, data) {
 						if (error) {
 							me.log.debug('Device: %s, can not set new Power state. Might be due to a wrong settings in config, error: %s', me.host, error);
@@ -346,7 +346,7 @@ class denonTvDevice {
 						me.log.debug('Device %s, getMute parse string error: %s', me.host, error);
 						callback(error);
 					} else {
-						var state = (result.item.Mute[0].value[0] == 'ON');
+						let state = (result.item.Mute[0].value[0] == 'ON');
 						me.log('Device: %s, get current Mute state successful: %s', me.host, state ? 'ON' : 'OFF');
 						me.currentMuteState = state;
 						callback(null, state);
@@ -364,7 +364,7 @@ class denonTvDevice {
 				callback(error);
 			} else {
 				if (state !== currentMuteState) {
-					var newState = state ? 'ON' : 'OFF';
+					let newState = state ? 'ON' : 'OFF';
 					request(me.url + '/goform/formiPhoneAppDirect.xml?MU' + newState, function (error, response, data) {
 						if (error) {
 							me.log.debug('Device: %s, can not set new Mute state. Might be due to a wrong settings in config, error: %s', me.host, error);
@@ -392,7 +392,7 @@ class denonTvDevice {
 						me.log.debug('Device %s, getVolume parse string error: %s', me.host, error);
 						callback(error);
 					} else {
-						var volume = parseInt(result.item.MasterVolume[0].value[0]) + 80;
+						let volume = parseInt(result.item.MasterVolume[0].value[0]) + 80;
 						me.log('Device: %s, get current Volume level successful: %s', me.host, volume);
 						me.currentVolume = volume;
 						callback(null, volume);
@@ -404,7 +404,7 @@ class denonTvDevice {
 
 	setVolume(volume, callback) {
 		var me = this;
-		var targetVolume = (volume - 2).toString();
+		let targetVolume = (volume - 2).toString();
 		request(me.url + '/goform/formiPhoneAppDirect.xml?MV' + targetVolume, function (error, response, data) {
 			if (error) {
 				me.log.debug('Device: %s, can not set new Volume level. Might be due to a wrong settings in config, error: %s', me.host, error);
@@ -428,7 +428,7 @@ class denonTvDevice {
 						me.log.debug('Device %s, getInput parse string error: %s', me.host, error);
 						callback(error);
 					} else {
-						var inputReference = result.item.InputFuncSelect[0].value[0];
+						let inputReference = result.item.InputFuncSelect[0].value[0];
 						for (let i = 0; i < me.inputReferences.length; i++) {
 							if (inputReference === me.inputReferences[i]) {
 								me.log('Device: %s, get current Input successful: %s', me.host, inputReference);
@@ -467,7 +467,7 @@ class denonTvDevice {
 
 	setPictureMode(remoteKey, callback) {
 		var me = this;
-		var command;
+		let command;
 		switch (remoteKey) {
 			case Characteristic.PictureMode.OTHER:
 				command = 'INFO';
@@ -507,7 +507,7 @@ class denonTvDevice {
 
 	setPowerModeSelection(remoteKey, callback) {
 		var me = this;
-		var command = 'MEN?';
+		let command = 'MEN?';
 		switch (remoteKey) {
 			case Characteristic.PowerModeSelection.SHOW:
 				command = me.switchInfoMenu ? 'MNOPT' : 'MNINF';
@@ -529,7 +529,7 @@ class denonTvDevice {
 
 	setVolumeSelector(remoteKey, callback) {
 		var me = this;
-		var command = 'MV?';
+		let command = 'MV?';
 		switch (remoteKey) {
 			case Characteristic.VolumeSelector.INCREMENT:
 				command = 'MVUP';
@@ -551,7 +551,7 @@ class denonTvDevice {
 
 	setRemoteKey(remoteKey, callback) {
 		var me = this;
-		var command = 'MEN?';
+		let command = 'MEN?';
 		switch (remoteKey) {
 			case Characteristic.RemoteKey.REWIND:
 				command = 'MN9E';
