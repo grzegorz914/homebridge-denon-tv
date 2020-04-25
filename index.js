@@ -255,7 +255,7 @@ class denonTvDevice {
 			}
 
 			//if reference not null or empty add the input
-			if (inputReference !== undefined && inputReference !== null) {
+			if (inputReference !== undefined && inputReference !== null || inputReference !== ' ') {
 				inputReference = inputReference.replace(/\s/g, ''); // remove all white spaces from the string
 
 				let tempInput = new Service.InputSource(inputReference, 'input' + i);
@@ -416,9 +416,6 @@ class denonTvDevice {
 
 	getInput(callback) {
 		var me = this;
-		if (!me.connectionStatus || !me.currentPowerState) {
-			callback(null, 0);
-		} else {
 			request(me.url + '/goform/formMainZone_MainZoneXmlStatusLite.xml', function (error, response, data) {
 				if (error) {
 					me.log.debug('Device: %s, can not get current Input. Might be due to a wrong settings in config, error: %s', me.host, error);
@@ -441,7 +438,6 @@ class denonTvDevice {
 					});
 				}
 			});
-		}
 	}
 
 	setInput(inputIdentifier, callback) {
