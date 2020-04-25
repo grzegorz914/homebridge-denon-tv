@@ -255,7 +255,7 @@ class denonTvDevice {
 			}
 
 			//if reference not null or empty add the input
-			if (inputReference !== undefined && inputReference !== null) {
+			if (inputReference !== undefined && inputReference !== null || inputReference !== ' ') {
 				inputReference = inputReference.replace(/\s/g, ''); // remove all white spaces from the string
 
 				let tempInput = new Service.InputSource(inputReference, 'input' + i);
@@ -441,7 +441,7 @@ class denonTvDevice {
 					});
 				}
 			});
-		}
+            }
 	}
 
 	setInput(inputIdentifier, callback) {
@@ -452,7 +452,7 @@ class denonTvDevice {
 				callback(error);
 			} else {
 				let inputReference = me.inputReferences[inputIdentifier];
-				if (me.inputReferences[inputIdentifier] !== currentInputReference) {
+				if (inputReference !== currentInputReference) {
 					request(me.url + '/goform/formiPhoneAppDirect.xml?SI' + inputReference, function (error, response, data) {
 						if (error) {
 							me.log.debug('Device: %s, can not set new Input. Might be due to a wrong settings in config, error: %s', me.host, error);
