@@ -434,7 +434,6 @@ class denonTvDevice {
 								callback(null, i);
 							}
 						}
-						callback(null);
 					}
 				});
 			}
