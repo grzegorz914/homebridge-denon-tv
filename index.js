@@ -255,7 +255,7 @@ class denonTvDevice {
 			}
 
 			//if reference not null or empty add the input
-			if (inputReference !== undefined && inputReference !== null || inputReference !== ' ') {
+			if (inputReference !== undefined && inputReference !== null || inputReference !== '') {
 				inputReference = inputReference.replace(/\s/g, ''); // remove all white spaces from the string
 
 				let tempInput = new Service.InputSource(inputReference, 'input' + i);
@@ -416,32 +416,29 @@ class denonTvDevice {
 
 	getInput(callback) {
 		var me = this;
-		if (!me.connectionStatus) {
-			callback(null, 0);
-		} else {
-			request(me.url + '/goform/formMainZone_MainZoneXmlStatusLite.xml', function (error, response, data) {
-				if (error) {
-					me.log.debug('Device: %s, can not get current Input. Might be due to a wrong settings in config, error: %s', me.host, error);
-					callback(error);
-				} else {
-					parseString(data, function (error, result) {
-						if (error) {
-							me.log.debug('Device %s, getInput parse string error: %s', me.host, error);
-							callback(error);
-						} else {
-							let inputReference = result.item.InputFuncSelect[0].value[0];
-							for (let i = 0; i < me.inputReferences.length; i++) {
-								if (inputReference === me.inputReferences[i]) {
-									me.log('Device: %s, get current Input successful: %s', me.host, inputReference);
-									me.currentInputReference = inputReference;
-									callback(null, i);
-								}
+		request(me.url + '/goform/formMainZone_MainZoneXmlStatusLite.xml', function (error, response, data) {
+			if (error) {
+				me.log.debug('Device: %s, can not get current Input. Might be due to a wrong settings in config, error: %s', me.host, error);
+				callback(error);
+			} else {
+				parseString(data, function (error, result) {
+					if (error) {
+						me.log.debug('Device %s, getInput parse string error: %s', me.host, error);
+						callback(error);
+					} else {
+						let inputReference = result.item.InputFuncSelect[0].value[0];
+						for (let i = 0; i < me.inputReferences.length; i++) {
+							if (inputReference === me.inputReferences[i]) {
+								me.log('Device: %s, get current Input successful: %s', me.host, inputReference);
+								me.currentInputReference = inputReference;
+								callback(null, i);
 							}
 						}
-					});
-				}
-			});
-		}
+						callback(null);
+					}
+				});
+			}
+		});
 	}
 
 	setInput(inputIdentifier, callback) {
