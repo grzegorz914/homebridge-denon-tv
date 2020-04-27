@@ -430,6 +430,7 @@ class denonTvDevice {
 				callback(error);
 			} else {
 				me.log('Device: %s, set new Volume level successful: %s', me.host, targetVolume);
+				me.currentVolume = volume;
 				callback(null, volume);
 			}
 		});
