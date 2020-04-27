@@ -73,6 +73,7 @@ class denonTvDevice {
 		this.name = device.name;
 		this.host = device.host;
 		this.port = device.port;
+		this.volumeControl = device.volumeControl;
 		this.switchInfoMenu = device.switchInfoMenu;
 		this.inputs = device.inputs;
 
@@ -192,8 +193,10 @@ class denonTvDevice {
 
 		this.accessory.addService(this.televisionService);
 		this.prepareSpeakerService();
-		this.prepareVolumeService();
 		this.prepareInputsService();
+		if (this.volumeControl) {
+			this.prepareVolumeService();
+		}
 
 		this.log.debug('Device: %s, publishExternalAccessories: %s', this.host, this.name);
 		this.api.publishExternalAccessories('homebridge-denon-tv', [this.accessory]);

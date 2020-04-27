@@ -17,7 +17,7 @@ Homebridge plugin to control Denon/Marantz AV Receivers series X in HomeKit as T
 1. Volume/Mute and RC/Media control is possible after You go to RC app on iPhone/iPad.
 2. Power ON/OFF short press tile in HomeKit app.
 3. Inputs can be changed after loong press tile in HomeKit app and select from the list.
-4. Volume/Mute can be changed using hardware buttons on iPhone/iPad.
+4. Volume/Mute can be changed using hardware buttons on iPhone/iPad `Speaker Service` or after enable `volumeControl` throught extra `lightbulb` (slider) or using Siri.
 5. RC/Media control function available from RC app on iPhone/iPad.
 6. Siri control.
 
@@ -52,7 +52,8 @@ Homebridge plugin to control Denon/Marantz AV Receivers series X in HomeKit as T
             "name": "AV Receiver",
             "host": "192.168.1.5",
             "port": 8080,
-            "switchInfoMenu": true,
+            "volumeControl": false,
+            "switchInfoMenu": false,
             "inputs": [
                 {
                 "name": "Xbox One",

@@ -22,7 +22,8 @@
                     "name": "AV Receiver",
                     "host": "192.168.1.5",
                     "port": 8080,
-                    "switchInfoMenu": true,
+                    "volumeControl": false,
+                    "switchInfoMenu": false,
                     "inputs": [
                         {
                             "name": "Xbox One",
