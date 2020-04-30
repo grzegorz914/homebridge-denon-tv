@@ -113,10 +113,16 @@ class denonTvDevice {
 					me.log('Device: %s, name: %s, state: Offline', me.host, me.name);
 					me.connectionStatus = false;
 					return;
-				} else if (!me.connectionStatus) {
-					me.log('Device: %s, name: %s, state: Online', me.host, me.name);
-					me.connectionStatus = true;
-					me.getDeviceInfo();
+				} else {
+					if (!me.connectionStatus) {
+						me.log('Device: %s, name: %s, state: Online', me.host, me.name);
+						me.connectionStatus = true;
+						me.getDeviceInfo();
+					} else {
+						if (me.currentPowerState) {
+							me.getDeviceState();
+						}
+					}
 				}
 			});
 		}.bind(this), 5000);
@@ -154,6 +160,49 @@ class denonTvDevice {
 				}
 			});
 		}, 350);
+	}
+
+	getDeviceState() {
+		var me = this;
+		request(me.url + '/goform/formMainZone_MainZoneXmlStatusLite.xml', function (error, response, data) {
+			if (error) {
+				me.log('Device: %s, name: %s, state: Offline', me.host, me.name);
+			} else {
+				parseString(data, function (error, result) {
+					if (error) {
+						me.log.debug('Device %s, getVolume parse string error: %s', me.host, error);
+						callback(error);
+					} else {
+						let powerState = (result.item.Power[0].value[0] == 'ON');
+						me.currentPowerState = powerState;
+						if (me.televisionService && me.inputReferences && me.inputReferences.length > 0) {
+							let inputIdentifier = me.inputReferences.indexOf(result.item.InputFuncSelect[0].value[0]);
+							me.televisionService.getCharacteristic(Characteristic.ActiveIdentifier).updateValue(inputIdentifier);
+						}
+						if (me.speakerService && data.changed) {
+							let muteState = (result.item.Mute[0].value[0] == 'ON');
+							me.speakerService.getCharacteristic(Characteristic.Mute).updateValue(data.muted);
+							me.log.info('Device: %s, get current Mute state: %s', me.host, muteState ? 'ON' : 'OFF');
+							me.currentMuteState = muteState;
+						}
+						if (me.volumeService && data.changed) {
+							let muteState = (result.item.Mute[0].value[0] == 'ON');
+							me.volumeService.getCharacteristic(Characteristic.On).updateValue(!muteState);
+						}
+						if (me.speakerService && data.changed) {
+							let volume = parseInt(result.item.MasterVolume[0].value[0]) + 80;
+							this.speakerService.getCharacteristic(Characteristic.Volume).updateValue(volume);
+							me.log.info('Device: %s, get current Volume level: %s', me.host, volume);
+							me.currentVolume = volume;
+						}
+						if (me.volumeService && data.changed) {
+							let volume = parseInt(result.item.MasterVolume[0].value[0]) + 80;
+							me.volumeService.getCharacteristic(Characteristic.Brightness).updateValue(volume);
+						}
+					}
+				});
+			}
+		});
 	}
 
 	//Prepare TV service 
