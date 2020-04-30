@@ -227,7 +227,7 @@ class denonTvDevice {
 		this.log.debug('prepareVolumeService');
 		this.volumeService = new Service.Lightbulb(this.name + ' Volume', 'volumeService');
 		this.volumeService.getCharacteristic(Characteristic.On)
-			.on('get', this.getMuteSlider.bind(this));
+			.on('get', this.getMute.bind(this));
 		this.volumeService.getCharacteristic(Characteristic.Brightness)
 			.on('get', this.getVolume.bind(this))
 			.on('set', this.setVolume.bind(this));
@@ -365,7 +365,9 @@ class denonTvDevice {
 						callback(error);
 					} else {
 						let state = (result.item.Mute[0].value[0] == 'ON');
-						let mute = state ? 0 : 1;
+						me.volumeService
+							.getCharacteristic(Characteristic.On)
+							.updateValue(!state);
 						me.log('Device: %s, get current Mute state successful: %s', me.host, state ? 'ON' : 'OFF');
 						me.currentMuteState = state;
 						callback(null, state);
@@ -375,11 +377,6 @@ class denonTvDevice {
 		});
 	}
 
-        getMuteSlider(callback) {
-		var me = this;
-		let state = !me.currentMuteState;
-		callback(null, state);
-	}
 
 	setMute(state, callback) {
 		var me = this;
@@ -455,24 +452,24 @@ class denonTvDevice {
 						callback(error);
 					} else {
 						let inputReference = result.item.InputFuncSelect[0].value[0];
-                                          if (!me.connectionStatus || inputReference === undefined || inputReference === null) {
-					me.televisionService
-						.getCharacteristic(Characteristic.ActiveIdentifier)
-						.updateValue(0);
-					callback(null);
-                              } else {
-						for (let i = 0; i < me.inputReferences.length; i++) {
-							if (inputReference === me.inputReferences[i]) {
-								me.televisionService
+						if (!me.connectionStatus || inputReference === undefined || inputReference === null) {
+							me.televisionService
 								.getCharacteristic(Characteristic.ActiveIdentifier)
-								.updateValue(i);
-					me.log('Device: %s, get current Input successful: %s', me.host, inputReference);
-					me.currentInputReference = inputReference;
-                                }
-				}
-					callback(null);
-                           }
-                        }
+								.updateValue(0);
+							callback(null);
+						} else {
+							for (let i = 0; i < me.inputReferences.length; i++) {
+								if (inputReference === me.inputReferences[i]) {
+									me.televisionService
+										.getCharacteristic(Characteristic.ActiveIdentifier)
+										.updateValue(i);
+									me.log('Device: %s, get current Input successful: %s', me.host, inputReference);
+									me.currentInputReference = inputReference;
+								}
+							}
+							callback(null);
+						}
+					}
 				});
 			}
 		});
