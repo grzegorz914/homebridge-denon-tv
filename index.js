@@ -227,10 +227,7 @@ class denonTvDevice {
 		this.log.debug('prepareVolumeService');
 		this.volumeService = new Service.Lightbulb(this.name + ' Volume', 'volumeService');
 		this.volumeService.getCharacteristic(Characteristic.On)
-			.on('get', function (callback) {
-				let mute = this.currentMuteState ? 0 : 1;
-				callback(null, mute);
-			});
+			.on('get', this.getMuteSlider.bind(this));
 		this.volumeService.getCharacteristic(Characteristic.Brightness)
 			.on('get', this.getVolume.bind(this))
 			.on('set', this.setVolume.bind(this));
@@ -378,6 +375,12 @@ class denonTvDevice {
 		});
 	}
 
+        getMuteSlider(callback) {
+		var me = this;
+		let state = !me.currentMuteState;
+		callback(null, state);
+	}
+
 	setMute(state, callback) {
 		var me = this;
 		me.getMute(function (error, currentMuteState) {
@@ -452,14 +455,24 @@ class denonTvDevice {
 						callback(error);
 					} else {
 						let inputReference = result.item.InputFuncSelect[0].value[0];
+                                          if (!me.connectionStatus || inputReference === undefined || inputReference === null) {
+					me.televisionService
+						.getCharacteristic(Characteristic.ActiveIdentifier)
+						.updateValue(0);
+					callback(null);
+                              } else {
 						for (let i = 0; i < me.inputReferences.length; i++) {
 							if (inputReference === me.inputReferences[i]) {
-								me.log('Device: %s, get current Input successful: %s', me.host, inputReference);
-								me.currentInputReference = inputReference;
-								callback(null, i);
-							}
-						}
-					}
+								me.televisionService
+								.getCharacteristic(Characteristic.ActiveIdentifier)
+								.updateValue(i);
+					me.log('Device: %s, get current Input successful: %s', me.host, inputReference);
+					me.currentInputReference = inputReference;
+                                }
+				}
+					callback(null);
+                           }
+                        }
 				});
 			}
 		});
@@ -481,7 +494,7 @@ class denonTvDevice {
 						} else {
 							me.log('Device: %s, set new Input successful: %s', me.host, inputReference);
 							me.currentInputReference = inputReference;
-							callback(null, inputIdentifier);
+							callback(null);
 						}
 					});
 				}
