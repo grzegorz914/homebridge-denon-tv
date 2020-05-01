@@ -175,14 +175,14 @@ class denonTvDevice {
 					} else {
 						let powerState = (result.item.Power[0].value[0] == 'ON');
 						me.currentPowerState = powerState;
-						if (me.televisionService && result.item.changed) {
+						if (me.televisionService) {
 							me.televisionService.getCharacteristic(Characteristic.Active).updateValue(powerState);
-							me.log('Device: %s, get current Power state successful: %s', me.host, state ? 'ON' : 'STANDBY');
+							me.log('Device: %s, get current Power state successful: %s', me.host, powerState ? 'ON' : 'STANDBY');
 						}
 
 						let inputReference = result.item.InputFuncSelect[0].value[0];
 						me.currentInputReference = inputReference;
-						if (me.televisionService && result.item.changed) {
+						if (me.televisionService) {
 							if (me.inputReferences && me.inputReferences.length > 0) {
 								let inputIdentifier = me.inputReferences.indexOf(inputReference);
 								me.televisionService.getCharacteristic(Characteristic.ActiveIdentifier).updateValue(inputIdentifier);
@@ -194,16 +194,11 @@ class denonTvDevice {
 						let volume = parseInt(result.item.MasterVolume[0].value[0]) + 80;
 						me.currentMuteState = muteState;
 						me.currentVolume = volume;
-						if (me.speakerService && result.item.changed) {
-							if (result.item.changed.indexOf('Mute') !== -1) {
-								me.speakerService.getCharacteristic(Characteristic.Mute).updateValue(muteState);
-								me.log('Device: %s, get current Mute state: %s', me.host, muteState ? 'ON' : 'OFF');
-							} else {
-								if (result.item.changed.indexOf('MasterVolume') !== -1) {
-									me.speakerService.getCharacteristic(Characteristic.Volume).updateValue(volume);
-									me.log('Device: %s, get current Volume level: %s', me.host, volume);
-								}
-							}
+						if (me.speakerService) {
+							me.speakerService.getCharacteristic(Characteristic.Mute).updateValue(muteState);
+							me.log('Device: %s, get current Mute state: %s', me.host, muteState ? 'ON' : 'OFF');
+							me.speakerService.getCharacteristic(Characteristic.Volume).updateValue(volume);
+							me.log('Device: %s, get current Volume level: %s', me.host, volume);
 						}
 					}
 				});
