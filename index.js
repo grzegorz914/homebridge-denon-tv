@@ -108,7 +108,7 @@ class denonTvDevice {
 		//Check net state
 		setInterval(function () {
 			var me = this;
-			request(me.url + '/goform/formMainZone_MainZoneXmlStatusLite.xml', function (error, response, data) {
+			request(me.url + '/goform/formMainZone_MainZoneXmlStatusLite.xml', (error, response, data) => {
 				if (error) {
 					me.log('Device: %s, name: %s, state: Offline', me.host, me.name);
 					me.connectionStatus = false;
@@ -135,12 +135,12 @@ class denonTvDevice {
 		var me = this;
 		setTimeout(() => {
 			me.log.debug('Device: %s, requesting information from: %s', me.host, me.name);
-			request('http://' + me.host + ':60006/upnp/desc/aios_device/aios_device.xml', function (error, response, data) {
+			request('http://' + me.host + ':60006/upnp/desc/aios_device/aios_device.xml', (error, response, data) => {
 				if (error) {
 					me.log.debug('Device: %s, name: %s, getDeviceInfo eror: %s', me.host, me.name, error);
 				} else {
 					data = data.replace(/:/g, '');
-					parseString(data, function (error, result) {
+					parseString(data, (error, result) => {
 						if (error) {
 							me.log.debug('Device %s, getDeviceInfo parse string error: %s', me.host, error);
 						} else {
