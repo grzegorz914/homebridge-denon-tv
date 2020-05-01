@@ -164,40 +164,46 @@ class denonTvDevice {
 
 	getDeviceState() {
 		var me = this;
-		request(me.url + '/goform/formMainZone_MainZoneXmlStatusLite.xml', function (error, response, data) {
+		request(me.url + '/goform/formMainZone_MainZoneXmlStatusLite.xml', (error, response, data) => {
 			if (error) {
 				me.log('Device: %s, name: %s, state: Offline', me.host, me.name);
 			} else {
-				parseString(data, function (error, result) {
+				parseString(data, (error, result) => {
 					if (error) {
 						me.log.debug('Device %s, getVolume parse string error: %s', me.host, error);
 						callback(error);
 					} else {
 						let powerState = (result.item.Power[0].value[0] == 'ON');
 						me.currentPowerState = powerState;
-						if (me.televisionService && me.inputReferences && me.inputReferences.length > 0) {
-							let inputIdentifier = me.inputReferences.indexOf(result.item.InputFuncSelect[0].value[0]);
-							me.televisionService.getCharacteristic(Characteristic.ActiveIdentifier).updateValue(inputIdentifier);
+						if (me.televisionService && result.item.changed) {
+							me.televisionService.getCharacteristic(Characteristic.Active).updateValue(powerState);
+							me.log('Device: %s, get current Power state successful: %s', me.host, state ? 'ON' : 'STANDBY');
 						}
-						if (me.speakerService && data.changed) {
-							let muteState = (result.item.Mute[0].value[0] == 'ON');
-							me.speakerService.getCharacteristic(Characteristic.Mute).updateValue(data.muted);
-							me.log.info('Device: %s, get current Mute state: %s', me.host, muteState ? 'ON' : 'OFF');
-							me.currentMuteState = muteState;
+
+						let inputReference = result.item.InputFuncSelect[0].value[0];
+						me.currentInputReference = inputReference;
+						if (me.televisionService && result.item.changed) {
+							if (me.inputReferences && me.inputReferences.length > 0) {
+								let inputIdentifier = me.inputReferences.indexOf(inputReference);
+								me.televisionService.getCharacteristic(Characteristic.ActiveIdentifier).updateValue(inputIdentifier);
+								me.log('Device: %s, get current Input successful: %s', me.host, inputReference);
+							}
 						}
-						if (me.volumeService && data.changed) {
-							let muteState = (result.item.Mute[0].value[0] == 'ON');
-							me.volumeService.getCharacteristic(Characteristic.On).updateValue(!muteState);
-						}
-						if (me.speakerService && data.changed) {
-							let volume = parseInt(result.item.MasterVolume[0].value[0]) + 80;
-							this.speakerService.getCharacteristic(Characteristic.Volume).updateValue(volume);
-							me.log.info('Device: %s, get current Volume level: %s', me.host, volume);
-							me.currentVolume = volume;
-						}
-						if (me.volumeService && data.changed) {
-							let volume = parseInt(result.item.MasterVolume[0].value[0]) + 80;
-							me.volumeService.getCharacteristic(Characteristic.Brightness).updateValue(volume);
+
+						let muteState = (result.item.Mute[0].value[0] == 'ON');
+						let volume = parseInt(result.item.MasterVolume[0].value[0]) + 80;
+						me.currentMuteState = muteState;
+						me.currentVolume = volume;
+						if (me.speakerService && result.item.changed) {
+							if (result.item.changed.indexOf('Mute') !== -1) {
+								me.speakerService.getCharacteristic(Characteristic.Mute).updateValue(muteState);
+								me.log('Device: %s, get current Mute state: %s', me.host, muteState ? 'ON' : 'OFF');
+							} else {
+								if (result.item.changed.indexOf('MasterVolume') !== -1) {
+									me.speakerService.getCharacteristic(Characteristic.Volume).updateValue(volume);
+									me.log('Device: %s, get current Volume level: %s', me.host, volume);
+								}
+							}
 						}
 					}
 				});
