@@ -1,5 +1,8 @@
 # Change Log
 All notable changes to this project will be documented in this file.
+## 1.4.34 (02.05.2020)
+- added real time read and write data for (lightbulb slider volume control)
+
 ## 1.4.15 (01.05.2020)
 - fixes in real time data read and write
 
