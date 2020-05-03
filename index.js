@@ -125,7 +125,7 @@ class denonTvDevice {
 					}
 				}
 			});
-		}.bind(this), 5000);
+		}.bind(this), 3000);
 
 		//Delay to wait for device info before publish
 		setTimeout(this.prepareTelevisionService.bind(this), 1000);
@@ -362,24 +362,9 @@ class denonTvDevice {
 
 	getPowerState(callback) {
 		var me = this;
-		request(me.url + '/goform/formMainZone_MainZoneXmlStatusLite.xml', (error, response, data) => {
-			if (error) {
-				me.log.debug('Device: %s, can not get current Power state. Might be due to a wrong settings in config, error: %s', me.host, error);
-				callback(error);
-			} else {
-				parseString(data, function (error, result) {
-					if (error) {
-						me.log.debug('Device %s, getPowerState parse string error: %s', me.host, error);
-						callback(error);
-					} else {
-						let state = (result.item.Power[0].value[0] == 'ON');
-						me.log('Device: %s, get current Power state successful: %s', me.host, state ? 'ON' : 'STANDBY');
-						me.currentPowerState = state;
-						callback(null, state);
-					}
-				});
-			}
-		});
+		let state = me.currentPowerState;
+		me.log('Device: %s, get current Power state successful: %s', me.host, state ? 'ON' : 'STANDBY');
+		callback(null, state);
 	}
 
 	setPowerState(state, callback) {
@@ -392,7 +377,6 @@ class denonTvDevice {
 					callback(error);
 				} else {
 					me.log('Device: %s, set new Power state successful: %s', me.host, state ? 'ON' : 'STANDBY');
-					me.currentPowerState = state;
 					callback(null, state);
 				}
 			});
@@ -401,24 +385,9 @@ class denonTvDevice {
 
 	getMute(callback) {
 		var me = this;
-		request(me.url + '/goform/formMainZone_MainZoneXmlStatusLite.xml', (error, response, data) => {
-			if (error) {
-				me.log.debug('Device: %s, can not get current Mute state. Might be due to a wrong settings in config, error: %s', me.host, error);
-				callback(error);
-			} else {
-				parseString(data, function (error, result) {
-					if (error) {
-						me.log.debug('Device %s, getMute parse string error: %s', me.host, error);
-						callback(error);
-					} else {
-						let state = me.currentPowerState ? (result.item.Mute[0].value[0] == 'ON') : true;
-						me.log('Device: %s, get current Mute state successful: %s', me.host, state ? 'ON' : 'OFF');
-						me.currentMuteState = state;
-						callback(null, state);
-					}
-				});
-			}
-		});
+		let state = me.currentPowerState ? me.currentMuteState : true;
+		me.log('Device: %s, get current Mute state successful: %s', me.host, state ? 'ON' : 'OFF');
+		callback(null, state);
 	}
 
 	getMuteSlider(callback) {
@@ -438,7 +407,6 @@ class denonTvDevice {
 					callback(error);
 				} else {
 					me.log('Device: %s, set new Mute state successful: %s', me.host, state ? 'ON' : 'OFF');
-					me.currentMuteState = state;
 					callback(null, state);
 				}
 			});
@@ -447,24 +415,9 @@ class denonTvDevice {
 
 	getVolume(callback) {
 		var me = this;
-		request(me.url + '/goform/formMainZone_MainZoneXmlStatusLite.xml', (error, response, data) => {
-			if (error) {
-				me.log.debug('Device: %s, can not get current Volume level. Might be due to a wrong settings in config, error: %s', me.host, error);
-				callback(error);
-			} else {
-				parseString(data, (error, result) => {
-					if (error) {
-						me.log.debug('Device %s, getVolume parse string error: %s', me.host, error);
-						callback(error);
-					} else {
-						let volume = parseInt(result.item.MasterVolume[0].value[0]) + 80;
-						me.log('Device: %s, get current Volume level successful: %s', me.host, volume);
-						me.currentVolume = volume;
-						callback(null, volume);
-					}
-				});
-			}
-		});
+		let volume = me.currentVolume;
+		me.log('Device: %s, get current Volume level successful: %s', me.host, volume);
+		callback(null, volume);
 	}
 
 	setVolume(volume, callback) {
@@ -476,7 +429,6 @@ class denonTvDevice {
 				callback(error);
 			} else {
 				me.log('Device: %s, set new Volume level successful: %s', me.host, targetVolume);
-				me.currentVolume = volume;
 				callback(null, volume);
 			}
 		});
@@ -484,61 +436,38 @@ class denonTvDevice {
 
 	getInput(callback) {
 		var me = this;
-		request(me.url + '/goform/formMainZone_MainZoneXmlStatusLite.xml', (error, response, data) => {
-			if (error) {
-				me.log.debug('Device: %s, can not get current Input. Might be due to a wrong settings in config, error: %s', me.host, error);
-				callback(error);
-			} else {
-				parseString(data, (error, result) => {
-					if (error) {
-						me.log.debug('Device %s, getInput parse string error: %s', me.host, error);
-						callback(error);
-					} else {
-						let inputReference = result.item.InputFuncSelect[0].value[0];
-						if (!me.connectionStatus || inputReference === undefined || inputReference === null) {
-							me.televisionService
-								.getCharacteristic(Characteristic.ActiveIdentifier)
-								.updateValue(0);
-							callback(null);
-						} else {
-							let inputIdentifier = me.inputReferences.indexOf(inputReference);
-							if (inputReference === me.inputReferences[inputIdentifier]) {
-								me.televisionService
-									.getCharacteristic(Characteristic.ActiveIdentifier)
-									.updateValue(inputIdentifier);
-								me.log('Device: %s, get current Input successful: %s', me.host, inputReference);
-								me.currentInputReference = inputReference;
-							}
-							callback(null);
-						}
-					}
-				});
+		let inputReference = me.currentInputReference;
+		if (!me.connectionStatus || inputReference === undefined || inputReference === null) {
+			me.televisionService
+				.getCharacteristic(Characteristic.ActiveIdentifier)
+				.updateValue(0);
+			callback(null);
+		} else {
+			let inputIdentifier = me.inputReferences.indexOf(inputReference);
+			if (inputReference === me.inputReferences[inputIdentifier]) {
+				me.televisionService
+					.getCharacteristic(Characteristic.ActiveIdentifier)
+					.updateValue(inputIdentifier);
+				me.log('Device: %s, get current Input successful: %s', me.host, inputReference);
 			}
-		});
+			callback(null);
+		}
 	}
 
 	setInput(inputIdentifier, callback) {
 		var me = this;
-		me.getInput((error, currentInputReference) => {
-			if (error) {
-				me.log.debug('Device: %s, can not get current Input. Might be due to a wrong settings in config, error: %s', me.host, error);
-				callback(error);
-			} else {
-				let inputReference = me.inputReferences[inputIdentifier];
-				if (inputReference !== currentInputReference) {
-					request(me.url + '/goform/formiPhoneAppDirect.xml?SI' + inputReference, (error, response, data) => {
-						if (error) {
-							me.log.debug('Device: %s, can not set new Input. Might be due to a wrong settings in config, error: %s', me.host, error);
-							callback(error);
-						} else {
-							me.log('Device: %s, set new Input successful: %s', me.host, inputReference);
-							me.currentInputReference = inputReference;
-							callback(null);
-						}
-					});
+		let inputReference = me.inputReferences[inputIdentifier];
+		if (inputReference !== me.currentInputReference) {
+			request(me.url + '/goform/formiPhoneAppDirect.xml?SI' + inputReference, (error, response, data) => {
+				if (error) {
+					me.log.debug('Device: %s, can not set new Input. Might be due to a wrong settings in config, error: %s', me.host, error);
+					callback(error);
+				} else {
+					me.log('Device: %s, set new Input successful: %s', me.host, inputReference);
+					callback(null);
 				}
-			}
-		});
+			});
+		}
 	}
 
 	setPictureMode(remoteKey, callback) {
