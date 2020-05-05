@@ -136,33 +136,37 @@ class denonTvDevice {
 
 	getDeviceInfo() {
 		var me = this;
-		me.log.debug('Device: %s %s, requesting Device information.', me.host, me.name);
-		request(me.url + '/goform/Deviceinfo.xml', (error, response, data) => {
-			if (error) {
-				me.log.debug('Device: %s %s, getDeviceInfo eror: %s', me.host, me.name, error);
-			} else {
-				parseString(data, (error, result) => {
-					if (error) {
-						me.log.debug('Device %s %s, getDeviceInfo parse string error: %s', me.host, me.name, error);
-					} else {
-						let brand = ['Denon','Marantz'][result.Device_Info.BrandCode[0]];
-						me.manufacturer = brand;
-						me.modelName = result.Device_Info.ModelName[0];
-						me.serialNumber = result.Device_Info.MacAddress[0];
-						me.firmwareRevision = result.Device_Info.UpgradeVersion[0];
+		setTimeout(() => {
+			me.log.debug('Device: %s %s, requesting Device information.', me.host, me.name);
+			request(me.url + '/goform/Deviceinfo.xml', (error, response, data) => {
+				if (error) {
+					me.log.debug('Device: %s %s, getDeviceInfo eror: %s', me.host, me.name, error);
+				} else {
+					parseString(data, (error, result) => {
+						if (error) {
+							me.log.debug('Device %s %s, getDeviceInfo parse string error: %s', me.host, me.name, error);
+						} else {
+							let brand = ['Denon', 'Marantz'][result.Device_Info.BrandCode[0]];
+							me.manufacturer = brand;
+							me.modelName = result.Device_Info.ModelName[0];
+							me.serialNumber = result.Device_Info.MacAddress[0];
+							me.firmwareRevision = result.Device_Info.UpgradeVersion[0];
+							me.zones = result.Device_Info.DeviceZones[0];
+							me.apiVersion = result.Device_Info.CommApiVers[0];
 
-						me.log('-------- %s --------', me.name);
-						me.log('Manufacturer: %s', me.manufacturer);
-						me.log('Model: %s', me.modelName);
-						me.log('Zones: %s', result.Device_Info.DeviceZones[0]);
-						me.log('Api version: %s', result.Device_Info.CommApiVers[0]);
-						me.log('Serialnumber: %s', me.serialNumber);
-						me.log('Firmware: %s', me.firmwareRevision);
-						me.log('----------------------------------');
-					}
-				});
-			}
-		});
+							me.log('-------- %s --------', me.name);
+							me.log('Manufacturer: %s', me.manufacturer);
+							me.log('Model: %s', me.modelName);
+							me.log('Zones: %s', me.zones);
+							me.log('Api version: %s', me.apiVersion);
+							me.log('Serialnumber: %s', me.serialNumber);
+							me.log('Firmware: %s', me.firmwareRevision);
+							me.log('----------------------------------');
+						}
+					});
+				}
+			});
+		}, 250);
 	}
 
 	getDeviceState() {
