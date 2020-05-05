@@ -52,6 +52,7 @@ Homebridge plugin to control Denon/Marantz AV Receivers series X in HomeKit as T
             "name": "AV Receiver",
             "host": "192.168.1.5",
             "port": 8080,
+            "zoneControl" : 0,
             "volumeControl": false,
             "switchInfoMenu": false,
             "inputs": [

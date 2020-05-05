@@ -1,5 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file.
+## 1.5.8 (05.05.2020)
+- fixes and performance inprovements
+- correted logging state
+
+## 1.5.0 (03.05.2020)
+- added zone control (please update Your config.json)
+
 ## 1.4.22 (02.05.2020)
 - added real time read and write data for (lightbulb slider volume control)
 

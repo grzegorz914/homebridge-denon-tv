@@ -31,6 +31,17 @@
               "maximum": 65535,
               "required": true
             },
+            "zoneControl": {
+            "title": "Zone control",
+            "type": "integer",
+            "default": 0,
+            "oneOf": [
+             { "title": "Main zone", "enum": [0] },
+             { "title": "Zone 1", "enum": [1] },
+             { "title": "Zone 2", "enum": [2] }
+            ],
+            "required": true
+           },
             "volumeControl": {
               "title": "Volume control",
               "type": "boolean",
