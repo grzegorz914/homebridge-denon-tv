@@ -85,8 +85,8 @@ class denonTvDevice {
 		this.firmwareRevision = device.firmwareRevision || 'FW000002';
 
 		//setup variables
-		this.zone = ['Main Zone', 'Zone 2', ' Zone 3'][this.zoneControl];
-		this.getZoneState = ['MainZone_MainZone', 'Zone2_Zone2', 'Zone3_Zone3'][this.zoneControl];
+		this.zoneName = ['Main Zone', 'Zone 2', ' Zone 3'][this.zoneControl];
+		this.zoneNumber = ['MainZone_MainZone', 'Zone2_Zone2', 'Zone3_Zone3'][this.zoneControl];
 		this.inputReferences = new Array();
 		this.connectionStatus = false;
 		this.currentPowerState = false;
@@ -111,14 +111,14 @@ class denonTvDevice {
 		//Check net state
 		setInterval(function () {
 			var me = this;
-			request(me.url + '/goform/form' + me.getZoneState + 'XmlStatusLite.xml', (error, response, data) => {
+			request(me.url + '/goform/form' + me.zoneNumber + 'XmlStatusLite.xml', (error, response, data) => {
 				if (error) {
-					me.log.debug('Device: %s %s %s, state: Offline', me.host, me.name, me.zone);
+					me.log.debug('Device: %s %s %s, state: Offline', me.host, me.name, me.zoneName);
 					me.connectionStatus = false;
 					return;
 				} else {
 					if (!me.connectionStatus) {
-						me.log('Device: %s %s %s, state: Online', me.host, me.name, me.zone);
+						me.log('Device: %s %s %s, state: Online', me.host, me.name, me.zoneName);
 						me.connectionStatus = true;
 						me.getDeviceInfo();
 					} else {
@@ -137,23 +137,25 @@ class denonTvDevice {
 	getDeviceInfo() {
 		var me = this;
 		me.log.debug('Device: %s %s, requesting Device information.', me.host, me.name);
-		request('http://' + me.host + ':60006/upnp/desc/aios_device/aios_device.xml', (error, response, data) => {
+		request(me.url + '/goform/Deviceinfo.xml', (error, response, data) => {
 			if (error) {
-				me.log.debug('Device: %s %s %s, getDeviceInfo eror: %s', me.host, me.name, me.zone, error);
+				me.log.debug('Device: %s %s, getDeviceInfo eror: %s', me.host, me.name, error);
 			} else {
-				data = data.replace(/:/g, '');
 				parseString(data, (error, result) => {
 					if (error) {
-						me.log.debug('Device %s %s %s, getDeviceInfo parse string error: %s', me.host, me.name, me.zone, error);
+						me.log.debug('Device %s %s, getDeviceInfo parse string error: %s', me.host, me.name, error);
 					} else {
-						me.manufacturer = result.root.device[0].manufacturer[0];
-						me.modelName = result.root.device[0].modelName[0];
-						me.serialNumber = 'SN0000002';
-						me.firmwareRevision = 'FW0000002';
+						let brand = ['Denon','Marantz'][result.Device_Info.BrandCode[0]];
+						me.manufacturer = brand;
+						me.modelName = result.Device_Info.ModelName[0];
+						me.serialNumber = result.Device_Info.MacAddress[0];
+						me.firmwareRevision = result.Device_Info.UpgradeVersion[0];
 
 						me.log('-------- %s --------', me.name);
 						me.log('Manufacturer: %s', me.manufacturer);
 						me.log('Model: %s', me.modelName);
+						me.log('Zones: %s', result.Device_Info.DeviceZones[0]);
+						me.log('Api version: %s', result.Device_Info.CommApiVers[0]);
 						me.log('Serialnumber: %s', me.serialNumber);
 						me.log('Firmware: %s', me.firmwareRevision);
 						me.log('----------------------------------');
@@ -165,18 +167,18 @@ class denonTvDevice {
 
 	getDeviceState() {
 		var me = this;
-		request(me.url + '/goform/form' + me.getZoneState + 'XmlStatusLite.xml', (error, response, data) => {
+		request(me.url + '/goform/form' + me.zoneNumber + 'XmlStatusLite.xml', (error, response, data) => {
 			if (error) {
-				me.log('Device: %s %s %s, getDeviceState error: %s', me.host, me.name, me.zone, error);
+				me.log('Device: %s %s %s, getDeviceState error: %s', me.host, me.name, me.zoneName, error);
 			} else {
 				parseString(data, (error, result) => {
 					if (error) {
-						me.log.debug('Device %s %s %s, getDeviceState parse string error: %s', me.host, me.name, me.zone, error);
+						me.log.debug('Device %s %s %s, getDeviceState parse string error: %s', me.host, me.name, me.zoneName, error);
 					} else {
 						let powerState = (result.item.Power[0].value[0] == 'ON');
 						if (me.televisionService && (powerState !== me.currentPowerState)) {
 							me.televisionService.getCharacteristic(Characteristic.Active).updateValue(powerState);
-							me.log('Device: %s %s %s, get current Power state successful: %s', me.host, me.name, me.zone, powerState ? 'ON' : 'STANDBY');
+							me.log('Device: %s %s %s, get current Power state successful: %s', me.host, me.name, me.zoneName, powerState ? 'ON' : 'STANDBY');
 							me.currentPowerState = powerState;
 						}
 
@@ -185,7 +187,7 @@ class denonTvDevice {
 							if (me.inputReferences && me.inputReferences.length > 0) {
 								let inputIdentifier = me.inputReferences.indexOf(inputReference);
 								me.televisionService.getCharacteristic(Characteristic.ActiveIdentifier).updateValue(inputIdentifier);
-								me.log('Device: %s %s %s, get current Input successful: %s', me.host, me.name, me.zone, inputReference);
+								me.log('Device: %s %s %s, get current Input successful: %s', me.host, me.name, me.zoneName, inputReference);
 								me.currentInputReference = inputReference;
 							}
 						}
@@ -199,8 +201,8 @@ class denonTvDevice {
 								me.volumeService.getCharacteristic(Characteristic.On).updateValue(!muteState);
 								me.volumeService.getCharacteristic(Characteristic.Brightness).updateValue(volume);
 							}
-							me.log('Device: %s %s %s, get current Mute state: %s', me.host, me.name, me.zone, muteState ? 'ON' : 'OFF');
-							me.log('Device: %s %s %s, get current Volume level: %s dB ', me.host, me.name, me.zone, (volume - 80));
+							me.log('Device: %s %s %s, get current Mute state: %s', me.host, me.name, me.zoneName, muteState ? 'ON' : 'OFF');
+							me.log('Device: %s %s %s, get current Volume level: %s dB ', me.host, me.name, me.zoneName, (volume - 80));
 							me.currentMuteState = muteState;
 							me.currentVolume = volume;
 						}
@@ -363,7 +365,7 @@ class denonTvDevice {
 	getPower(callback) {
 		var me = this;
 		let state = me.currentPowerState;
-		me.log.debug('Device: %s %s %s, get current Power state successful: %s', me.host, me.name, me.zone, state ? 'ON' : 'STANDBY');
+		me.log.debug('Device: %s %s %s, get current Power state successful: %s', me.host, me.name, me.zoneName, state ? 'ON' : 'STANDBY');
 		callback(null, state);
 	}
 
@@ -373,10 +375,10 @@ class denonTvDevice {
 			let newState = [(state ? 'PWON' : 'PWSTANDBY'), (state ? 'Z2ON' : 'Z2OFF'), (state ? 'Z3ON' : 'Z3OFF')][me.zoneControl];
 			request(me.url + '/goform/formiPhoneAppDirect.xml?' + newState, (error, response, data) => {
 				if (error) {
-					me.log.debug('Device: %s %s %s, can not set new Power state. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zone, error);
+					me.log.debug('Device: %s %s %s, can not set new Power state. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
 					callback(error);
 				} else {
-					me.log('Device: %s %s %s, set new Power state successful: %s', me.host, me.name, me.zone, state ? 'ON' : 'STANDBY');
+					me.log('Device: %s %s %s, set new Power state successful: %s', me.host, me.name, me.zoneName, state ? 'ON' : 'STANDBY');
 					callback(null, state);
 				}
 			});
@@ -386,14 +388,14 @@ class denonTvDevice {
 	getMute(callback) {
 		var me = this;
 		let state = me.currentPowerState ? me.currentMuteState : true;
-		me.log.debug('Device: %s %s %s, get current Mute state successful: %s', me.host, me.name, me.zone, state ? 'ON' : 'OFF');
+		me.log.debug('Device: %s %s %s, get current Mute state successful: %s', me.host, me.name, me.zoneName, state ? 'ON' : 'OFF');
 		callback(null, state);
 	}
 
 	getMuteSlider(callback) {
 		var me = this;
 		let state = me.currentPowerState ? !me.currentMuteState : false;
-		me.log.debug('Device: %s %s %s, get current Mute state successful: %s', me.host, me.name, me.zone, !state ? 'ON' : 'OFF');
+		me.log.debug('Device: %s %s %s, get current Mute state successful: %s', me.host, me.name, me.zoneName, !state ? 'ON' : 'OFF');
 		callback(null, state);
 	}
 
@@ -403,10 +405,10 @@ class denonTvDevice {
 		if (state !== me.currentMuteState) {
 			request(me.url + '/goform/formiPhoneAppDirect.xml?' + newState, (error, response, data) => {
 				if (error) {
-					me.log.debug('Device: %s %s %s, can not set new Mute state. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zone, error);
+					me.log.debug('Device: %s %s %s, can not set new Mute state. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
 					callback(error);
 				} else {
-					me.log('Device: %s %s %s, set new Mute state successful: %s', me.host, me.name, me.zone, state ? 'ON' : 'OFF');
+					me.log('Device: %s %s %s, set new Mute state successful: %s', me.host, me.name, me.zoneName, state ? 'ON' : 'OFF');
 					callback(null, state);
 				}
 			});
@@ -416,7 +418,7 @@ class denonTvDevice {
 	getVolume(callback) {
 		var me = this;
 		let volume = me.currentVolume;
-		me.log.debug('Device: %s %s %s, get current Volume level successful: %s dB', me.host, me.name, me.zone, (volume - 80));
+		me.log.debug('Device: %s %s %s, get current Volume level successful: %s dB', me.host, me.name, me.zoneName, (volume - 80));
 		callback(null, volume);
 	}
 
@@ -426,10 +428,10 @@ class denonTvDevice {
 		let targetVolume = (volume - 2);
 		request(me.url + '/goform/formiPhoneAppDirect.xml?' + zone + targetVolume, (error, response, data) => {
 			if (error) {
-				me.log.debug('Device: %s %s %s, can not set new Volume level. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zone, error);
+				me.log.debug('Device: %s %s %s, can not set new Volume level. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
 				callback(error);
 			} else {
-				me.log('Device: %s %s %s, set new Volume level successful: %s', me.host, me.name, me.zone, targetVolume);
+				me.log('Device: %s %s %s, set new Volume level successful: %s', me.host, me.name, me.zoneName, targetVolume);
 				callback(null, volume);
 			}
 		});
@@ -449,7 +451,7 @@ class denonTvDevice {
 				me.televisionService
 					.getCharacteristic(Characteristic.ActiveIdentifier)
 					.updateValue(inputIdentifier);
-				me.log.debug('Device: %s %s %s, get current Input successful: %s', me.host, me.name, me.zone, inputReference);
+				me.log.debug('Device: %s %s %s, get current Input successful: %s', me.host, me.name, me.zoneName, inputReference);
 			}
 			callback(null, inputIdentifier);
 		}
@@ -462,10 +464,10 @@ class denonTvDevice {
 		if (inputReference !== me.currentInputReference) {
 			request(me.url + '/goform/formiPhoneAppDirect.xml?' + zone + inputReference, (error, response, data) => {
 				if (error) {
-					me.log.debug('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zone, error);
+					me.log.debug('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
 					callback(error);
 				} else {
-					me.log('Device: %s %s %s, set new Input successful: %s', me.host, me.name, me.zone, inputReference);
+					me.log('Device: %s %s %s, set new Input successful: %s', me.host, me.name, me.zoneName, inputReference);
 					callback(null, inputIdentifier);
 				}
 			});
@@ -553,10 +555,10 @@ class denonTvDevice {
 			}
 			request(me.url + '/goform/formiPhoneAppDirect.xml?' + zone + command, (error, response, data) => {
 				if (error) {
-					me.log.debug('Device: %s %s %s, can not setVolumeSelector. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zone, error);
+					me.log.debug('Device: %s %s %s, can not setVolumeSelector. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
 					callback(error);
 				} else {
-					me.log('Device: %s %s %s, setVolumeSelector successful, remoteKey: %s, command: %s', me.host, me.name, me.zone, remoteKey, command);
+					me.log('Device: %s %s %s, setVolumeSelector successful, remoteKey: %s, command: %s', me.host, me.name, me.zoneName, remoteKey, command);
 					callback(null, remoteKey);
 				}
 			});

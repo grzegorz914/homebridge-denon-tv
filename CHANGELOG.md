@@ -1,5 +1,8 @@
 # Change Log
 All notable changes to this project will be documented in this file.
+## 1.5.30 (05.05.2020)
+- read more detailed info from device
+
 ## 1.5.10 (05.05.2020)
 - fixes and performance inprovements
 - correted logging state
