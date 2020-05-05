@@ -35,6 +35,7 @@
             "title": "Zone control",
             "type": "integer",
             "default": 0,
+            "maximum": 2,
             "oneOf": [
              { "title": "Main zone", "enum": [0] },
              { "title": "Zone 1", "enum": [1] },
