@@ -474,141 +474,149 @@ class denonTvDevice {
 
 	setPictureMode(remoteKey, callback) {
 		var me = this;
-		let command;
-		switch (remoteKey) {
-			case Characteristic.PictureMode.OTHER:
-				command = 'INFO';
-				break;
-			case Characteristic.PictureMode.STANDARD:
-				command = 'BACK';
-				break;
-			case Characteristic.PictureMode.CALIBRATED:
-				command = 'INFO';
-				break;
-			case Characteristic.PictureMode.CALIBRATED_DARK:
-				command = 'BACK';
-				break;
-			case Characteristic.PictureMode.VIVID:
-				command = 'INFO';
-				break;
-			case Characteristic.PictureMode.GAME:
-				command = 'BACK';
-				break;
-			case Characteristic.PictureMode.COMPUTER:
-				command = 'INFO';
-				break;
-			case Characteristic.PictureMode.CUSTOM:
-				command = 'BACK';
-				break;
-		}
-		request(me.url + '/goform/formiPhoneAppDirect.xml?' + command, (error, response, data) => {
-			if (error) {
-				me.log.debug('Device: %s %s, can not setPictureMode. Might be due to a wrong settings in config, error: %s', me.host, me.name, error);
-				callback(error);
-			} else {
-				me.log('Device: %s %s, setPictureMode successful, remoteKey: %s, command: %s', me.host, me.name, remoteKey, command);
-				callback(null, remoteKey);
+		if (me.currentPowerState) {
+			let command;
+			switch (remoteKey) {
+				case Characteristic.PictureMode.OTHER:
+					command = 'INFO';
+					break;
+				case Characteristic.PictureMode.STANDARD:
+					command = 'BACK';
+					break;
+				case Characteristic.PictureMode.CALIBRATED:
+					command = 'INFO';
+					break;
+				case Characteristic.PictureMode.CALIBRATED_DARK:
+					command = 'BACK';
+					break;
+				case Characteristic.PictureMode.VIVID:
+					command = 'INFO';
+					break;
+				case Characteristic.PictureMode.GAME:
+					command = 'BACK';
+					break;
+				case Characteristic.PictureMode.COMPUTER:
+					command = 'INFO';
+					break;
+				case Characteristic.PictureMode.CUSTOM:
+					command = 'BACK';
+					break;
 			}
-		});
+			request(me.url + '/goform/formiPhoneAppDirect.xml?' + command, (error, response, data) => {
+				if (error) {
+					me.log.debug('Device: %s %s, can not setPictureMode. Might be due to a wrong settings in config, error: %s', me.host, me.name, error);
+					callback(error);
+				} else {
+					me.log('Device: %s %s, setPictureMode successful, remoteKey: %s, command: %s', me.host, me.name, remoteKey, command);
+					callback(null, remoteKey);
+				}
+			});
+		}
 	}
 
 	setPowerModeSelection(remoteKey, callback) {
 		var me = this;
-		let command = 'MEN?';
-		switch (remoteKey) {
-			case Characteristic.PowerModeSelection.SHOW:
-				command = me.switchInfoMenu ? 'MNOPT' : 'MNINF';
-				break;
-			case Characteristic.PowerModeSelection.HIDE:
-				command = 'MNRTN';
-				break;
-		}
-		request(me.url + '/goform/formiPhoneAppDirect.xml?' + command, (error, response, data) => {
-			if (error) {
-				me.log.debug('Device: %s %s, can not setPowerModeSelection. Might be due to a wrong settings in config, error: %s', me.host, me.name, error);
-				callback(error);
-			} else {
-				me.log('Device: %s %s, setPowerModeSelection successful, remoteKey: %s, command: %s', me.host, me.name, remoteKey, command);
-				callback(null, remoteKey);
+		if (me.currentPowerState) {
+			let command = 'MEN?';
+			switch (remoteKey) {
+				case Characteristic.PowerModeSelection.SHOW:
+					command = me.switchInfoMenu ? 'MNOPT' : 'MNINF';
+					break;
+				case Characteristic.PowerModeSelection.HIDE:
+					command = 'MNRTN';
+					break;
 			}
-		});
+			request(me.url + '/goform/formiPhoneAppDirect.xml?' + command, (error, response, data) => {
+				if (error) {
+					me.log.debug('Device: %s %s, can not setPowerModeSelection. Might be due to a wrong settings in config, error: %s', me.host, me.name, error);
+					callback(error);
+				} else {
+					me.log('Device: %s %s, setPowerModeSelection successful, remoteKey: %s, command: %s', me.host, me.name, remoteKey, command);
+					callback(null, remoteKey);
+				}
+			});
+		}
 	}
 
 	setVolumeSelector(remoteKey, callback) {
 		var me = this;
-		let zone = ['MV', 'Z2', 'Z3'][this.zoneControl];
-		let command = 'MV?';
-		switch (remoteKey) {
-			case Characteristic.VolumeSelector.INCREMENT:
-				command = 'UP';
-				break;
-			case Characteristic.VolumeSelector.DECREMENT:
-				command = 'DOWN';
-				break;
-		}
-		request(me.url + '/goform/formiPhoneAppDirect.xml?' + zone + command, (error, response, data) => {
-			if (error) {
-				me.log.debug('Device: %s %s %s, can not setVolumeSelector. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zone, error);
-				callback(error);
-			} else {
-				me.log('Device: %s %s %s, setVolumeSelector successful, remoteKey: %s, command: %s', me.host, me.name, me.zone, remoteKey, command);
-				callback(null, remoteKey);
+		if (me.currentPowerState) {
+			let zone = ['MV', 'Z2', 'Z3'][this.zoneControl];
+			let command = 'MV?';
+			switch (remoteKey) {
+				case Characteristic.VolumeSelector.INCREMENT:
+					command = 'UP';
+					break;
+				case Characteristic.VolumeSelector.DECREMENT:
+					command = 'DOWN';
+					break;
 			}
-		});
+			request(me.url + '/goform/formiPhoneAppDirect.xml?' + zone + command, (error, response, data) => {
+				if (error) {
+					me.log.debug('Device: %s %s %s, can not setVolumeSelector. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zone, error);
+					callback(error);
+				} else {
+					me.log('Device: %s %s %s, setVolumeSelector successful, remoteKey: %s, command: %s', me.host, me.name, me.zone, remoteKey, command);
+					callback(null, remoteKey);
+				}
+			});
+		}
 	}
 
 	setRemoteKey(remoteKey, callback) {
 		var me = this;
-		let command = 'MEN?';
-		switch (remoteKey) {
-			case Characteristic.RemoteKey.REWIND:
-				command = 'MN9E';
-				break;
-			case Characteristic.RemoteKey.FAST_FORWARD:
-				command = 'MN9D';
-				break;
-			case Characteristic.RemoteKey.NEXT_TRACK:
-				command = 'MN9F';
-				break;
-			case Characteristic.RemoteKey.PREVIOUS_TRACK:
-				command = 'MN9G';
-				break;
-			case Characteristic.RemoteKey.ARROW_UP:
-				command = 'MNCUP';
-				break;
-			case Characteristic.RemoteKey.ARROW_DOWN:
-				command = 'MNCDN';
-				break;
-			case Characteristic.RemoteKey.ARROW_LEFT:
-				command = 'MNCLT';
-				break;
-			case Characteristic.RemoteKey.ARROW_RIGHT:
-				command = 'MNCRT';
-				break;
-			case Characteristic.RemoteKey.SELECT:
-				command = 'MNENT';
-				break;
-			case Characteristic.RemoteKey.BACK:
-				command = 'MNRTN';
-				break;
-			case Characteristic.RemoteKey.EXIT:
-				command = 'MNRTN';
-				break;
-			case Characteristic.RemoteKey.PLAY_PAUSE:
-				command = 'NS94';
-				break;
-			case Characteristic.RemoteKey.INFORMATION:
-				command = me.switchInfoMenu ? 'MNINF' : 'MNOPT';
-				break;
-		}
-		request(me.url + '/goform/formiPhoneAppDirect.xml?' + command, (error, response, data) => {
-			if (error) {
-				me.log.debug('Device: %s %s, can not setRemoteKey. Might be due to a wrong settings in config, error: %s', me.host, me.name, error);
-				callback(error);
-			} else {
-				me.log('Device: %s %s, setRemoteKey successful, remoteKey: %s, command: %s', me.host, me.name, remoteKey, command);
-				callback(null, remoteKey);
+		if (me.currentPowerState) {
+			let command = 'MEN?';
+			switch (remoteKey) {
+				case Characteristic.RemoteKey.REWIND:
+					command = 'MN9E';
+					break;
+				case Characteristic.RemoteKey.FAST_FORWARD:
+					command = 'MN9D';
+					break;
+				case Characteristic.RemoteKey.NEXT_TRACK:
+					command = 'MN9F';
+					break;
+				case Characteristic.RemoteKey.PREVIOUS_TRACK:
+					command = 'MN9G';
+					break;
+				case Characteristic.RemoteKey.ARROW_UP:
+					command = 'MNCUP';
+					break;
+				case Characteristic.RemoteKey.ARROW_DOWN:
+					command = 'MNCDN';
+					break;
+				case Characteristic.RemoteKey.ARROW_LEFT:
+					command = 'MNCLT';
+					break;
+				case Characteristic.RemoteKey.ARROW_RIGHT:
+					command = 'MNCRT';
+					break;
+				case Characteristic.RemoteKey.SELECT:
+					command = 'MNENT';
+					break;
+				case Characteristic.RemoteKey.BACK:
+					command = 'MNRTN';
+					break;
+				case Characteristic.RemoteKey.EXIT:
+					command = 'MNRTN';
+					break;
+				case Characteristic.RemoteKey.PLAY_PAUSE:
+					command = 'NS94';
+					break;
+				case Characteristic.RemoteKey.INFORMATION:
+					command = me.switchInfoMenu ? 'MNINF' : 'MNOPT';
+					break;
 			}
-		});
+			request(me.url + '/goform/formiPhoneAppDirect.xml?' + command, (error, response, data) => {
+				if (error) {
+					me.log.debug('Device: %s %s, can not setRemoteKey. Might be due to a wrong settings in config, error: %s', me.host, me.name, error);
+					callback(error);
+				} else {
+					me.log('Device: %s %s, setRemoteKey successful, remoteKey: %s, command: %s', me.host, me.name, remoteKey, command);
+					callback(null, remoteKey);
+				}
+			});
+		}
 	}
 };
