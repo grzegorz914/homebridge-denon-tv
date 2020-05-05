@@ -221,8 +221,8 @@ class denonTvDevice {
 		this.televisionService.setCharacteristic(Characteristic.SleepDiscoveryMode, Characteristic.SleepDiscoveryMode.ALWAYS_DISCOVERABLE);
 
 		this.televisionService.getCharacteristic(Characteristic.Active)
-			.on('get', this.getPowerState.bind(this))
-			.on('set', this.setPowerState.bind(this));
+			.on('get', this.getPower.bind(this))
+			.on('set', this.setPower.bind(this));
 
 		this.televisionService.getCharacteristic(Characteristic.ActiveIdentifier)
 			.on('get', this.getInput.bind(this))
@@ -360,14 +360,14 @@ class denonTvDevice {
 		});
 	}
 
-	getPowerState(callback) {
+	getPower(callback) {
 		var me = this;
 		let state = me.currentPowerState;
 		me.log.debug('Device: %s %s %s, get current Power state successful: %s', me.host, me.name, me.zone, state ? 'ON' : 'STANDBY');
 		callback(null, state);
 	}
 
-	setPowerState(state, callback) {
+	setPower(state, callback) {
 		var me = this;
 		if (state !== me.currentPowerState) {
 			let newState = [(state ? 'PWON' : 'PWSTANDBY'), (state ? 'Z2ON' : 'Z2OFF'), (state ? 'Z3ON' : 'Z3OFF')][me.zoneControl];
