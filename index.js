@@ -1,4 +1,10 @@
-'use strict';
+const hap = require("hap-nodejs");
+
+const Characteristic = hap.Characteristic;
+const CharacteristicEventTypes = hap.CharacteristicEventTypes;
+const Service = hap.Service;
+const Categories = hap.Accessory.Categories;
+const accessoryUuid = hap.uuid;
 
 const request = require('request');
 const fs = require('fs');
@@ -6,26 +12,24 @@ const mkdirp = require('mkdirp');
 const xml2js = require('xml2js');
 const path = require('path');
 const parseString = xml2js.parseString;
-const zonesName = ['Main Zone', 'Zone 2', ' Zone 3'];
-const zonesNumber = ['MainZone_MainZone', 'Zone2_Zone2', 'Zone3_Zone3'];
 
-let Accessory, Service, Characteristic, UUIDGen, Categories;
+const PLUGIN_NAME = 'homebridge-denon-tv';
+const PLATFORM_NAME = 'DenonTv';
+const ZONES_NAME = ['Main Zone', 'Zone 2', ' Zone 3'];
+const ZONES_NUMBER = ['MainZone_MainZone', 'Zone2_Zone2', 'Zone3_Zone3'];
+
+let Accessory;
 
 module.exports = homebridge => {
-	Service = homebridge.hap.Service;
-	Characteristic = homebridge.hap.Characteristic;
 	Accessory = homebridge.platformAccessory;
-	UUIDGen = homebridge.hap.uuid;
-	Categories = homebridge.hap.Accessory.Categories;
-
-	homebridge.registerPlatform('homebridge-denon-tv', 'DenonTv', denonTvPlatform, true);
+	homebridge.registerPlatform(PLUGIN_NAME, PLATFORM_NAME, denonTvPlatform, true);
 };
 
 class denonTvPlatform {
 	constructor(log, config, api) {
 		// only load if configured
 		if (!config || !Array.isArray(config.devices)) {
-			log('No configuration found for homebridge-denon-tv');
+			log('No configuration found for %s', PLUGIN_NAME);
 			return;
 		}
 		this.log = log;
@@ -61,7 +65,7 @@ class denonTvPlatform {
 	}
 	removeAccessory(platformAccessory) {
 		this.log.debug('removeAccessory');
-		this.api.unregisterPlatformAccessories('homebridge-denon-tv', 'DenonTv', [platformAccessory]);
+		this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [platformAccessory]);
 	}
 }
 
@@ -81,12 +85,12 @@ class denonTvDevice {
 		this.inputs = device.inputs;
 
 		//zones
-		this.zoneName = zonesName[this.zoneControl];
-		this.zoneNumber = zonesNumber[this.zoneControl];
+		this.zoneName = ZONES_NAME[this.zoneControl];
+		this.zoneNumber = ZONES_NUMBER[this.zoneControl];
 
 		//get Device info
 		this.manufacturer = device.manufacturer || 'Denon/Marantz';
-		this.modelName = device.modelName || 'homebridge-denon-tv';
+		this.modelName = device.modelName || PLUGIN_NAME;
 		this.serialNumber = device.serialNumber || 'SN000002';
 		this.firmwareRevision = device.firmwareRevision || 'FW000002';
 
@@ -225,7 +229,7 @@ class denonTvDevice {
 	//Prepare TV service 
 	prepareTelevisionService() {
 		this.log.debug('prepareTelevisionService');
-		this.UUID = UUIDGen.generate(this.name)
+		this.UUID = accessoryUuid.generate(this.name)
 		this.accessory = new Accessory(this.name, this.UUID, Categories.TELEVISION);
 
 		this.televisionService = new Service.Television(this.name, 'televisionService');
@@ -268,7 +272,7 @@ class denonTvDevice {
 		}
 
 		this.log.debug('Device: %s %s, publishExternalAccessories.', this.host, this.name);
-		this.api.publishExternalAccessories('homebridge-denon-tv', [this.accessory]);
+		this.api.publishExternalAccessories(PLUGIN_NAME, [this.accessory]);
 	}
 
 	//Prepare speaker service
