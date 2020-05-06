@@ -32,17 +32,32 @@
               "required": true
             },
             "zoneControl": {
-            "title": "Zone control",
-            "type": "integer",
-            "default": 0,
-            "maximum": 2,
-            "oneOf": [
-             { "title": "Main zone", "enum": [0] },
-             { "title": "Zone 1", "enum": [1] },
-             { "title": "Zone 2", "enum": [2] }
-            ],
-            "required": true
-           },
+              "title": "Zone control",
+              "type": "integer",
+              "default": 0,
+              "maximum": 2,
+              "oneOf": [
+                {
+                  "title": "Main zone",
+                  "enum": [
+                    0
+                  ]
+                },
+                {
+                  "title": "Zone 1",
+                  "enum": [
+                    1
+                  ]
+                },
+                {
+                  "title": "Zone 2",
+                  "enum": [
+                    2
+                  ]
+                }
+              ],
+              "required": true
+            },
             "volumeControl": {
               "title": "Volume control",
               "type": "boolean",
@@ -71,6 +86,26 @@
                     "title": "Input reference",
                     "type": "string",
                     "default": "DVD",
+                    "required": true
+                  },
+                  "type": {
+                    "title": "Input type",
+                    "type": "string",
+                    "default": "SI",
+                    "oneOf": [
+                      {
+                        "title": "Input",
+                        "enum": ["SI"]
+                      },
+                      {
+                        "title": "Surround mode",
+                        "enum": ["MS"]
+                      },
+                      {
+                        "title": "Digital input",
+                        "enum": ["DC"]
+                      }
+                    ],
                     "required": true
                   }
                 }

@@ -19,7 +19,9 @@ Homebridge plugin to control Denon/Marantz AV Receivers series X in HomeKit as T
 3. Speaker control is possible after You go to RC app on iPhone/iPad `Speaker Service`.
 4. Legacy volume control is possible throught extra `lightbulb` (slider) or using Siri `Volume Service`.
 5. Inputs can be changed after loong press tile in HomeKit app and select from the list.
-6. Siri control.
+6. Surround Modes control from the inputs list.
+7. Digital Input Modes control from the inputs list.
+8. Siri control.
 
 <p align="left">
   <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://github.com/grzegorz914/homebridge-denon-tv/blob/master/graphics/homekit.png" height="300"></a>  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://github.com/grzegorz914/homebridge-denon-tv/blob/master/graphics/inputs.png" height="300"></a>  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://github.com/grzegorz914/homebridge-denon-tv/blob/master/graphics/RC.png" height="300"></a>
@@ -35,10 +37,16 @@ Homebridge plugin to control Denon/Marantz AV Receivers series X in HomeKit as T
 3. Install homebridge-denon-tv using: `npm install -g homebridge-denon-tv` or search for `Denon Tv` in Config UI X.
 
 ## Configuration
-1. Use [Homebridge Config UI X](https://github.com/oznu/homebridge-config-ui-x) to configure the plugin (strongly recomended), or update your configuration file manually. See `sample-config.json` in this repository for a sample or add the bottom example to Your config.json file.
-2. Different model of AV Receiver uses different reference:
+1. If port `8080` not working check with port `80`, different receivers uses different ports, You need to check which one is correct for you.
+2. Use [Homebridge Config UI X](https://github.com/oznu/homebridge-config-ui-x) to configure the plugin (strongly recomended), or update your configuration file manually. See `sample-config.json` in this repository for a sample or add the bottom example to Your config.json file.
+3. Different model of AV Receiver uses different `Inputs`, `SI` reference:
 `PHONO, CD, TUNER, DVD, BD, TV, SAT/CBL, MPLAY, GAME, HDRADIO, NET, PANDORA, SIRIUSXM, SPOTIFY, LASTFM, FLICKR, IRADIO, SERVER, FAVORITES, AUX1, AUX2, AUX3, AUX4, AUX5, AUX6, AUX7, BT, USB/IPOD, USB, IPD, IRP, FVP, HDP, VCR, DVR, SAT, XM`
-3. If port `8080` not working check with port `80`, different receivers uses different ports, You need to check which one is correct for you.
+4. Different model of AV Receiver uses different `Digital Inputs`, `DC` reference:
+`AUTO` - set DIGITAL INPUT AUTO mode, `PCM` - set DIGITAL INPUT force PCM, `DTS` - set DIGITAL INPUT force DTS.
+5. Different model of AV Receiver uses different `Surrounds Modes`, `MS` reference:
+`DIRECT, PURE DIRECT, STEREO, STANDARD, DOLBY DIGITAL, DTS SUROUND, 7CH STEREO, MCH STEREO, ROCK ARENA, JAZZ CLUB, MONO MOVIE, MATRIX, GAME, VIRTUAL, AURO3D, AURO2DSURR, WIDE SCREEN, SUPER STADIUM, CLASSIC CONCERT, LEFT, RIGHT, AUX3, AUX4, AUX5, AUX6, AUX7, BT, USB/IPOD, USB, QUCIK1, QUCIK2, QUCIK3, QUCIK4, QUCIK1 MEMORY, QUCIK2 MEMORY, QUCIK3 MEMORY, QUCIK4 MEMORY`
+6. All possible commands can be found in [Denon Control Protocol 2020](http://assets.denon.com/_layouts/15/xlviewer.aspx?id=/DocumentMaster/us/DENON_FY20%20AVR_PROTOCOL_V03_03042020.xlsx)
+
 
 <p align="left">
   <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://github.com/grzegorz914/homebridge-denon-tv/blob/master/graphics/ustawienia.png" height="150"></a>
@@ -56,57 +64,90 @@ Homebridge plugin to control Denon/Marantz AV Receivers series X in HomeKit as T
             "volumeControl": false,
             "switchInfoMenu": false,
             "inputs": [
-                {
-                "name": "Xbox One",
-                "reference": "GAME"
+               {
+                    "name": "Xbox One",
+                    "reference": "GAME",
+                    "type": "SI"
                 },
                 {
-                "name": "TV",
-                "reference": "TV"
+                    "name": "Television",
+                    "reference": "TV",
+                    "type": "SI"
                 },
                 {
                     "name": "Sat Receiver",
-                    "reference": "SAT/CBL"
+                    "reference": "SAT/CBL",
+                    "type": "SI"
                 },
                 {
                     "name": "CD",
-                    "reference": "CD"
+                    "reference": "CD",
+                    "type": "SI"
                 },
                 {
                     "name": "DVD",
-                    "reference": "DVD"
+                    "reference": "DVD",
+                    "type": "SI"
                 },
                 {
                     "name": "Bluray",
-                    "reference": "BD"
+                    "reference": "BD",
+                    "type": "SI"
                 },
                 {
                     "name": "Tuner",
-                    "reference": "TUNER"
+                    "reference": "TUNER",
+                    "type": "SI"
                 },
                 {
                     "name": "Spotify",
-                    "reference": "SPOTIFY"
+                    "reference": "SPOTIFY",
+                    "type": "SI"
                 },
                 {
                     "name": "Net",
-                    "reference": "NET"
+                    "reference": "NET",
+                    "type": "SI"
                 },
                 {
-                    "name": "Media Player",
-                    "reference": "MPLAY"
+                    "name": "Media player",
+                    "reference": "MPLAY",
+                    "type": "SI"
                 },
                 {
-                    "name": "USB iPod",
-                    "reference": "USB/IPOD"
+                    "name": "USB IPOD",
+                    "reference": "USB/IPOD",
+                    "type": "SI"
                 },
                 {
-                    "name": "AUX1",
-                    "reference": "AUX1"
+                    "name": "AUX 1",
+                    "reference": "AUX1",
+                    "type": "SI"
                 },
                 {
-                    "name": "AUX2",
-                    "reference": "AUX2"
+                    "name": "AUX 2",
+                    "reference": "AUX2",
+                    "type": "SI"
+                },
+                {
+                    "name": "Source",
+                    "reference": "SOURCE",
+                    "type": "SI"
+                },
+                {
+                    "name": "Stereo",
+                    "reference": "STEREO",
+                    "type": "MS"
+                },
+                {
+                    "name": "Multi Channel Stereo",
+                    "reference": "MCH STEREO",
+                    "type": "MS"
+                },
+                {
+                    "name": "Digital Input AUTO",
+                    "reference": "AUTO",
+                    "type": "DC"
                 }
             ]
         }

@@ -6,6 +6,8 @@ const mkdirp = require('mkdirp');
 const xml2js = require('xml2js');
 const path = require('path');
 const parseString = xml2js.parseString;
+const zonesName = ['Main Zone', 'Zone 2', ' Zone 3'];
+const zonesNumber = ['MainZone_MainZone', 'Zone2_Zone2', 'Zone3_Zone3'];
 
 let Accessory, Service, Characteristic, UUIDGen, Categories;
 
@@ -78,6 +80,10 @@ class denonTvDevice {
 		this.switchInfoMenu = device.switchInfoMenu;
 		this.inputs = device.inputs;
 
+		//zones
+		this.zoneName = zonesName[this.zoneControl];
+		this.zoneNumber = zonesNumber[this.zoneControl];
+
 		//get Device info
 		this.manufacturer = device.manufacturer || 'Denon/Marantz';
 		this.modelName = device.modelName || 'homebridge-denon-tv';
@@ -85,14 +91,14 @@ class denonTvDevice {
 		this.firmwareRevision = device.firmwareRevision || 'FW000002';
 
 		//setup variables
-		this.zoneName = ['Main Zone', 'Zone 2', ' Zone 3'][this.zoneControl];
-		this.zoneNumber = ['MainZone_MainZone', 'Zone2_Zone2', 'Zone3_Zone3'][this.zoneControl];
 		this.inputReferences = new Array();
+		this.inputTypes = new Array();
 		this.connectionStatus = false;
 		this.currentPowerState = false;
 		this.currentMuteState = false;
 		this.currentVolume = 0;
 		this.currentInputReference = null;
+		this.currentSoundModeReference = null;
 		this.prefDir = path.join(api.user.storagePath(), 'denonTv');
 		this.inputsFile = this.prefDir + '/' + 'inputs_' + this.host.split('.').join('');
 		this.devInfoFile = this.prefDir + '/' + 'info_' + this.host.split('.').join('');
@@ -257,6 +263,9 @@ class denonTvDevice {
 		if (this.volumeControl) {
 			this.prepareVolumeService();
 		}
+		if (this.soundModeControl) {
+			this.prepareSoundModesService();
+		}
 
 		this.log.debug('Device: %s %s, publishExternalAccessories.', this.host, this.name);
 		this.api.publishExternalAccessories('homebridge-denon-tv', [this.accessory]);
@@ -325,6 +334,15 @@ class denonTvDevice {
 				inputReference = input;
 			}
 
+			//get input type
+			let inputType = null;
+
+			if (input.type !== undefined) {
+				inputType = input.type;
+			} else {
+				inputType = input;
+			}
+
 			//get input name		
 			let inputName = inputReference;
 
@@ -336,17 +354,16 @@ class denonTvDevice {
 
 			//if reference not null or empty add the input
 			if (inputReference !== undefined && inputReference !== null || inputReference !== '') {
-				inputReference = inputReference.replace(/\s/g, ''); // remove all white spaces from the string
 
-				let tempInput = new Service.InputSource(inputReference, 'input' + i);
-				tempInput
+				this.inputsService = new Service.InputSource(inputReference, 'input' + i);
+				this.inputsService
 					.setCharacteristic(Characteristic.Identifier, i)
 					.setCharacteristic(Characteristic.ConfiguredName, inputName)
 					.setCharacteristic(Characteristic.IsConfigured, Characteristic.IsConfigured.CONFIGURED)
 					.setCharacteristic(Characteristic.InputSourceType, Characteristic.InputSourceType.TV)
 					.setCharacteristic(Characteristic.CurrentVisibilityState, Characteristic.CurrentVisibilityState.SHOWN);
 
-				tempInput
+				this.inputsService
 					.getCharacteristic(Characteristic.ConfiguredName)
 					.on('set', (newInputName, callback) => {
 						this.inputs[inputReference] = newInputName;
@@ -359,9 +376,10 @@ class denonTvDevice {
 						});
 						callback(null, newInputName)
 					});
-				this.accessory.addService(tempInput);
-				this.televisionService.addLinkedService(tempInput);
+				this.accessory.addService(this.inputsService);
+				this.televisionService.addLinkedService(this.inputsService);
 				this.inputReferences.push(inputReference);
+				this.inputTypes.push(inputType);
 			}
 		});
 	}
@@ -376,7 +394,7 @@ class denonTvDevice {
 	setPower(state, callback) {
 		var me = this;
 		if (state !== me.currentPowerState) {
-			let newState = [(state ? 'PWON' : 'PWSTANDBY'), (state ? 'Z2ON' : 'Z2OFF'), (state ? 'Z3ON' : 'Z3OFF')][me.zoneControl];
+			let newState = [(state ? 'ZMON' : 'ZMOFF'), (state ? 'Z2ON' : 'Z2OFF'), (state ? 'Z3ON' : 'Z3OFF')][me.zoneControl];
 			request(me.url + '/goform/formiPhoneAppDirect.xml?' + newState, (error, response, data) => {
 				if (error) {
 					me.log.debug('Device: %s %s %s, can not set new Power state. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
@@ -463,8 +481,9 @@ class denonTvDevice {
 
 	setInput(inputIdentifier, callback) {
 		var me = this;
-		let zone = ['SI', 'Z2', 'Z3'][me.zoneControl];
+		let inputType = me.inputTypes[inputIdentifier];
 		let inputReference = me.inputReferences[inputIdentifier];
+		let zone = [inputType, 'Z2', 'Z3'][me.zoneControl];
 		if (inputReference !== me.currentInputReference) {
 			request(me.url + '/goform/formiPhoneAppDirect.xml?' + zone + inputReference, (error, response, data) => {
 				if (error) {
@@ -484,28 +503,28 @@ class denonTvDevice {
 			let command;
 			switch (remoteKey) {
 				case Characteristic.PictureMode.OTHER:
-					command = 'INFO';
+					command = 'PVMOV';
 					break;
 				case Characteristic.PictureMode.STANDARD:
-					command = 'BACK';
+					command = 'PVSTD';
 					break;
 				case Characteristic.PictureMode.CALIBRATED:
-					command = 'INFO';
+					command = 'PVDAY';
 					break;
 				case Characteristic.PictureMode.CALIBRATED_DARK:
-					command = 'BACK';
+					command = 'PVNGT';
 					break;
 				case Characteristic.PictureMode.VIVID:
-					command = 'INFO';
+					command = 'PVVVD';
 					break;
 				case Characteristic.PictureMode.GAME:
-					command = 'BACK';
+					command = 'PVSTM';
 					break;
 				case Characteristic.PictureMode.COMPUTER:
-					command = 'INFO';
+					command = 'PVSTM';
 					break;
 				case Characteristic.PictureMode.CUSTOM:
-					command = 'BACK';
+					command = 'PVCTM';
 					break;
 			}
 			request(me.url + '/goform/formiPhoneAppDirect.xml?' + command, (error, response, data) => {

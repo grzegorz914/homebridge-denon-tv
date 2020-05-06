@@ -1,5 +1,18 @@
 # Change Log
 All notable changes to this project will be documented in this file.
+## 1.6.4 (06.05.2020) 
+- code cleanup
+- update README.md
+
+## 1.6.3 (06.05.2020) 
+- removed Favorites from input source type
+
+## 1.6.0 (05.05.2020)
+- added possibility to set Surrounds Mode
+- added possibility to set Digital Input Mode
+- added possibility to set Favorite
+- please update Your config.json, best to use GUI Config UI X to Settings the plugin.
+
 ## 1.5.30 (05.05.2020)
 - read more detailed info from device
 
