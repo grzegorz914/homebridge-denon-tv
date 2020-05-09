@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://github.com/grzegorz914/homebridge-denon-tv/blob/master//graphics/denon.png" height="140"></a>
+  <a href="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/denon.png" height="140"></a>
 </p>
 
 <span align="center">
@@ -24,7 +24,7 @@ Homebridge plugin to control Denon/Marantz AV Receivers series X in HomeKit as T
 8. Siri control.
 
 <p align="left">
-  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://github.com/grzegorz914/homebridge-denon-tv/blob/master/graphics/homekit.png" height="300"></a>  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://github.com/grzegorz914/homebridge-denon-tv/blob/master/graphics/inputs.png" height="300"></a>  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://github.com/grzegorz914/homebridge-denon-tv/blob/master/graphics/RC.png" height="300"></a>
+  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/homekit.png" height="300"></a>  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/inputs.png" height="300"></a>  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/RC.png" height="300"></a>
 </p>
 
 ## Package
@@ -49,7 +49,7 @@ Homebridge plugin to control Denon/Marantz AV Receivers series X in HomeKit as T
 
 
 <p align="left">
-  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://github.com/grzegorz914/homebridge-denon-tv/blob/master/graphics/ustawienia.png" height="150"></a>
+  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/ustawienia.png" height="150"></a>
 </p>
 
 ```json

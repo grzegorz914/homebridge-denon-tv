@@ -1,6 +1,6 @@
 {
   "name": "homebridge-denon-tv",
-  "version": "1.7.1",
+  "version": "1.8.1",
   "description": "Homebridge plugin (https://github.com/homebridge/homebridge) to control Denon/Marantz AV Receivers series X.",
   "license": "MIT",
   "author": "grzegorz914",
@@ -20,7 +20,7 @@
   "dependencies": {
     "hap-nodejs": "latest",
     "xml2js": ">=0.4.23",
-    "request": ">=2.88",
+    "axios": ">=0.19.2",
     "mkdirp": ">=1.0.4"
   },
   "keywords": [
