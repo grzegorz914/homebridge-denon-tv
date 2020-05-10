@@ -1,5 +1,8 @@
 # Change Log
 All notable changes to this project will be documented in this file.
+## 1.9.0 (10.05.2020) 
+- code cleanup
+
 ## 1.8.5 (10.05.2020) 
 - use Promise to parseString
 

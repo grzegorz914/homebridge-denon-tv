@@ -3,7 +3,6 @@
 const hap = require("hap-nodejs");
 const axios = require('axios');
 const fs = require('fs');
-const mkdirp = require('mkdirp');
 const parseStringPromise = require('xml2js').parseStringPromise;
 const path = require('path');
 
@@ -114,7 +113,11 @@ class denonTvDevice {
 
 		//check if the directory exists, if not then create it
 		if (fs.existsSync(this.prefDir) === false) {
-			mkdirp(this.prefDir);
+			fs.mkdir(this.prefDir, { recursive: false }, (error) => {
+				if (error) {
+					this.log.debug('Device: %s %s, create directory: %s, error: %s', this.host, this.name, this.prefDir, error);
+				}
+			});
 		}
 
 		//Check net state
