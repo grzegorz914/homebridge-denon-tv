@@ -137,6 +137,7 @@ class denonTvDevice {
 				if (error) {
 					me.log.debug('Device: %s %s %s, state: Offline', me.host, me.name, me.zoneName);
 					me.connectionStatus = false;
+					me.currentPowerState = false;
 					return;
 				}
 			});
@@ -469,7 +470,7 @@ class denonTvDevice {
 	getInput(callback) {
 		var me = this;
 		let inputReference = me.currentInputReference;
-		if (!me.connectionStatus || inputReference === undefined || inputReference === null) {
+		if (!me.currentPowerState || inputReference === undefined || inputReference === null) {
 			me.televisionService
 				.getCharacteristic(Characteristic.ActiveIdentifier)
 				.updateValue(0);
