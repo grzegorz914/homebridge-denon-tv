@@ -231,7 +231,7 @@ class denonTvDevice {
 	//Prepare TV service 
 	prepareTelevisionService() {
 		this.log.debug('prepareTelevisionService');
-		this.accessoryUUID = UUID.generate(this.name)
+		this.accessoryUUID = UUID.generate(this.name);
 		this.accessory = new Accessory(this.name, this.accessoryUUID);
 		this.accessory.category = 34;
 
