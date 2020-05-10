@@ -1,5 +1,8 @@
 # Change Log
 All notable changes to this project will be documented in this file.
+## 1.8.5 (10.05.2020) 
+- use Promise to parseString
+
 ## 1.8.0 (09.05.2020) 
 - changed 'request' with 'axios'
 
