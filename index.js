@@ -90,12 +90,14 @@ class denonTvDevice {
 
 		//setup variables
 		this.inputReferences = new Array();
+		this.inputNames = new Array();
 		this.inputTypes = new Array();
 		this.connectionStatus = false;
 		this.currentPowerState = false;
 		this.currentMuteState = false;
 		this.currentVolume = 0;
 		this.currentInputReference = null;
+		this.currentInputName = null;
 		this.currentSurroundModeReference = null;
 		this.prefDir = path.join(api.user.storagePath(), 'denonTv');
 		this.inputsFile = this.prefDir + '/' + 'inputs_' + this.host.split('.').join('');
@@ -296,6 +298,7 @@ class denonTvDevice {
 			this.accessory.addService(this.inputsService);
 			this.televisionService.addLinkedService(this.inputsService);
 			this.inputReferences.push(inputReference);
+			this.inputNames.push(inputName);
 			this.inputTypes.push(inputType);
 		});
 	}
@@ -460,7 +463,7 @@ class denonTvDevice {
 	getInput(callback) {
 		var me = this;
 		let inputReference = me.currentInputReference;
-		if (!me.currentPowerState || inputReference === undefined || inputReference === null) {
+		if (!me.currentPowerState || inputReference === undefined || inputReference === null || inputReference === '') {
 			me.televisionService
 				.getCharacteristic(Characteristic.ActiveIdentifier)
 				.updateValue(0);
@@ -481,18 +484,17 @@ class denonTvDevice {
 		var me = this;
 		let inputType = me.inputTypes[inputIdentifier];
 		let inputReference = me.inputReferences[inputIdentifier];
+		let inputName = me.inputNames[inputIdentifier];
 		let zone = [inputType, 'Z2', 'Z3'][me.zoneControl];
-		if (inputReference !== me.currentInputReference) {
-			axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + zone + inputReference).then(response => {
-				me.log('Device: %s %s %s, set new Input successful: %s', me.host, me.name, me.zoneName, inputReference);
-				callback(null, inputIdentifier);
-			}).catch(error => {
-				if (error) {
-					me.log.debug('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
-					callback(error);
-				}
-			});
-		}
+		axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + zone + inputReference).then(response => {
+			me.log('Device: %s %s %s, set new Input successful: %s %s', me.host, me.name, me.zoneName, inputName, inputReference);
+			callback(null, inputIdentifier);
+		}).catch(error => {
+			if (error) {
+				me.log.debug('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
+				callback(error);
+			}
+		});
 	}
 
 	setPictureMode(remoteKey, callback) {
