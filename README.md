@@ -64,91 +64,108 @@ Homebridge plugin to control Denon/Marantz AV Receivers series X in HomeKit as T
             "volumeControl": false,
             "switchInfoMenu": false,
             "inputs": [
-               {
-                    "name": "Xbox One",
-                    "reference": "GAME",
-                    "type": "SI"
-                },
-                {
-                    "name": "Television",
-                    "reference": "TV",
-                    "type": "SI"
-                },
-                {
-                    "name": "Sat Receiver",
-                    "reference": "SAT/CBL",
-                    "type": "SI"
-                },
-                {
-                    "name": "CD",
-                    "reference": "CD",
-                    "type": "SI"
-                },
-                {
-                    "name": "DVD",
-                    "reference": "DVD",
-                    "type": "SI"
-                },
-                {
-                    "name": "Bluray",
-                    "reference": "BD",
-                    "type": "SI"
-                },
-                {
-                    "name": "Tuner",
-                    "reference": "TUNER",
-                    "type": "SI"
-                },
-                {
-                    "name": "Spotify",
-                    "reference": "SPOTIFY",
-                    "type": "SI"
-                },
-                {
-                    "name": "Net",
-                    "reference": "NET",
-                    "type": "SI"
-                },
-                {
-                    "name": "Media player",
-                    "reference": "MPLAY",
-                    "type": "SI"
-                },
-                {
-                    "name": "USB IPOD",
-                    "reference": "USB/IPOD",
-                    "type": "SI"
-                },
-                {
-                    "name": "AUX 1",
-                    "reference": "AUX1",
-                    "type": "SI"
-                },
-                {
-                    "name": "AUX 2",
-                    "reference": "AUX2",
-                    "type": "SI"
-                },
-                {
-                    "name": "Source",
-                    "reference": "SOURCE",
-                    "type": "SI"
-                },
-                {
-                    "name": "Stereo",
-                    "reference": "STEREO",
-                    "type": "MS"
-                },
-                {
-                    "name": "Multi Channel Stereo",
-                    "reference": "MCH STEREO",
-                    "type": "MS"
-                },
-                {
-                    "name": "Digital Input AUTO",
-                    "reference": "AUTO",
-                    "type": "DC"
-                }
+                        {
+                            "name": "Xbox One",
+                            "reference": "GAME",
+                            "type": "HDMI",
+                            "mode": "SI"
+                        },
+                        {
+                            "name": "Television",
+                            "reference": "TV",
+                            "type": "HDMI",
+                            "mode": "SI"
+                        },
+                        {
+                            "name": "Sat Receiver",
+                            "reference": "SAT/CBL",
+                            "type": "HDMI",
+                            "mode": "SI"
+                        },
+                        {
+                            "name": "CD",
+                            "reference": "CD",
+                            "type": "OTHER",
+                            "mode": "SI"
+                        },
+                        {
+                            "name": "DVD",
+                            "reference": "DVD",
+                            "type": "HDMI",
+                            "mode": "SI"
+                        },
+                        {
+                            "name": "Bluray",
+                            "reference": "BD",
+                            "type": "HDMI",
+                            "mode": "SI"
+                        },
+                        {
+                            "name": "Tuner",
+                            "reference": "TUNER",
+                            "type": "TUNER",
+                            "mode": "SI"
+                        },
+                        {
+                            "name": "Spotify",
+                            "reference": "SPOTIFY",
+                            "type": "APPLICATION",
+                            "mode": "SI"
+                        },
+                        {
+                            "name": "Net",
+                            "reference": "NET",
+                            "type": "APPLICATION",
+                            "mode": "SI"
+                        },
+                        {
+                            "name": "Media player",
+                            "reference": "MPLAY",
+                            "type": "APPLICATION",
+                            "mode": "SI"
+                        },
+                        {
+                            "name": "USB IPOD",
+                            "reference": "USB/IPOD",
+                            "type": "USB",
+                            "mode": "SI"
+                        },
+                        {
+                            "name": "AUX 1",
+                            "reference": "AUX1",
+                            "type": "HDMI",
+                            "mode": "SI"
+                        },
+                        {
+                            "name": "AUX 2",
+                            "reference": "AUX2",
+                            "type": "HDMI",
+                            "mode": "SI"
+                        },
+                        {
+                            "name": "Source",
+                            "reference": "SOURCE",
+                            "type": "HDMI",
+                            "mode": "SI"
+                        },
+                        {
+                            "name": "Stereo",
+                            "reference": "STEREO",
+                            "type": "OTHER",
+                            "mode": "MS"
+                        },
+                        {
+                            "name": "Multi Channel Stereo",
+                            "reference": "MCH STEREO",
+                            "type": "OTHER",
+                            "mode": "MS"
+                        },
+                        {
+                            "name": "Digital Input AUTO",
+                            "reference": "AUTO",
+                            "type": "OTHER",
+                            "mode": "DC"
+                        }
             ]
         }
     ]

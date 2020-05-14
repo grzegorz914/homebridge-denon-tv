@@ -94,16 +94,90 @@
                   "type": {
                     "title": "Input type",
                     "type": "string",
+                    "default": "HDMI",
+                    "oneOf": [
+                      {
+                        "title": "Other",
+                        "enum": [
+                          "OTHER"
+                        ]
+                      },
+                      {
+                        "title": "Home screen",
+                        "enum": [
+                          "HOME_SCREEN"
+                        ]
+                      },
+                      {
+                        "title": "Tuner",
+                        "enum": [
+                          "TUNER"
+                        ]
+                      },
+                      {
+                        "title": "HDMI",
+                        "enum": [
+                          "HDMI"
+                        ]
+                      },
+                      {
+                        "title": "Composite video",
+                        "enum": [
+                          "COMPOSITE_VIDEO"
+                        ]
+                      },
+                      {
+                        "title": "S Video",
+                        "enum": [
+                          "S_VIDEO"
+                        ]
+                      },
+                      {
+                        "title": "Component video",
+                        "enum": [
+                          "COMPONENT_VIDEO"
+                        ]
+                      },
+                      {
+                        "title": "Digital video input",
+                        "enum": [
+                          "DVI"
+                        ]
+                      },
+                      {
+                        "title": "Airplay",
+                        "enum": [
+                          "AIRPLAY"
+                        ]
+                      },
+                      {
+                        "title": "USB",
+                        "enum": [
+                          "USB"
+                        ]
+                      },
+                      {
+                        "title": "Application",
+                        "enum": [
+                          "APPLICATION"
+                        ]
+                      }
+                    ],
+                    "required": true
+                  },
+                  "mode": {
+                    "title": "Input mode",
+                    "type": "string",
                     "default": "SI",
                     "oneOf": [
                       {
-                        "title": "Source input",
+                        "title": "Source input mode",
                         "enum": [
                           "SI"
                         ]
                       },
                       {
-                        "title": "Digital input",
+                        "title": "Digital input mode",
                         "enum": [
                           "DC"
                         ]

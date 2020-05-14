@@ -1,5 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
+## 2.0.0 (14.05.2020) 
+- changed 'type' to 'mode' as Input mode (Source input mode, Digital input mode, Surround mode), selectable from list
+- added 'type' as source Input type (HDMI, USB, APPLICATION, etc..), selectable from list
+- prevent plugin from crash if no inputs are defined, now display in the list 'No inputs configured'
+- please look at the sample.config or best use Config UI X to configure the plugin
+
 ## 1.9.0 (10.05.2020) 
 - code cleanup
 

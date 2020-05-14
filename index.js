@@ -92,6 +92,7 @@ class denonTvDevice {
 		this.inputReferences = new Array();
 		this.inputNames = new Array();
 		this.inputTypes = new Array();
+		this.inputModes = new Array();
 		this.connectionStatus = false;
 		this.currentPowerState = false;
 		this.currentMuteState = false;
@@ -103,6 +104,18 @@ class denonTvDevice {
 		this.inputsFile = this.prefDir + '/' + 'inputs_' + this.host.split('.').join('');
 		this.devInfoFile = this.prefDir + '/' + 'info_' + this.host.split('.').join('');
 		this.url = ('http://' + this.host + ':' + this.port);
+
+		let defaultInputs = [
+			{
+				name: 'No inputs configured',
+				reference: 'No references configured',
+				type: 'No types configured'
+			}
+		];
+
+		if (!Array.isArray(this.inputs) || this.inputs === undefined || this.inputs === null) {
+			this.inputs = defaultInputs;
+		}
 
 		//check if prefs directory ends with a /, if not then add it
 		if (this.prefDir.endsWith('/') === false) {
@@ -229,14 +242,6 @@ class denonTvDevice {
 	//Prepare inputs services
 	prepareInputsService() {
 		this.log.debug('prepareInputsService');
-		if (this.inputs === undefined || this.inputs === null || this.inputs.length <= 0) {
-			this.log.debug('Inputs are not defined, please add it in config.json');
-			this.inputs = [{ 'name': 'No inputs defined', 'reference': 'No inputs defined' }];
-		}
-
-		if (Array.isArray(this.inputs) === false) {
-			this.inputs = [this.inputs];
-		}
 
 		let savedNames = {};
 		try {
@@ -247,30 +252,21 @@ class denonTvDevice {
 
 		this.inputs.forEach((input, i) => {
 
-			//get input reference
-			let inputReference = null;
+			//get input name		
+			let inputName = input.name;
 
-			if (input.reference !== undefined) {
-				inputReference = input.reference;
-			} else {
-				inputReference = input;
-			}
+			//get input reference
+			let inputReference = input.reference;
 
 			//get input type
-			let inputType = null;
+			let inputType = input.type;
 
-			if (input.type !== undefined) {
-				inputType = input.type;
-			} else {
-				inputType = input;
-			}
-
-			//get input name		
-			let inputName = inputReference;
+			//get input mode
+			let inputMode = input.mode;
 
 			if (savedNames && savedNames[inputReference]) {
 				inputName = savedNames[inputReference];
-			} else if (input.name) {
+			} else {
 				inputName = input.name;
 			}
 
@@ -279,7 +275,7 @@ class denonTvDevice {
 				.setCharacteristic(Characteristic.Identifier, i)
 				.setCharacteristic(Characteristic.ConfiguredName, inputName)
 				.setCharacteristic(Characteristic.IsConfigured, Characteristic.IsConfigured.CONFIGURED)
-				.setCharacteristic(Characteristic.InputSourceType, Characteristic.InputSourceType.TV)
+				.setCharacteristic(Characteristic.InputSourceType, Characteristic.InputSourceType, inputType)
 				.setCharacteristic(Characteristic.CurrentVisibilityState, Characteristic.CurrentVisibilityState.SHOWN);
 
 			this.inputsService
@@ -300,6 +296,7 @@ class denonTvDevice {
 			this.inputReferences.push(inputReference);
 			this.inputNames.push(inputName);
 			this.inputTypes.push(inputType);
+			this.inputModes.push(inputMode);
 		});
 	}
 
@@ -482,10 +479,10 @@ class denonTvDevice {
 
 	setInput(inputIdentifier, callback) {
 		var me = this;
-		let inputType = me.inputTypes[inputIdentifier];
+		let inputMode = me.inputTypes[inputIdentifier];
 		let inputReference = me.inputReferences[inputIdentifier];
 		let inputName = me.inputNames[inputIdentifier];
-		let zone = [inputType, 'Z2', 'Z3'][me.zoneControl];
+		let zone = [inputMode, 'Z2', 'Z3'][me.zoneControl];
 		axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + zone + inputReference).then(response => {
 			me.log('Device: %s %s %s, set new Input successful: %s %s', me.host, me.name, me.zoneName, inputName, inputReference);
 			callback(null, inputIdentifier);

@@ -29,87 +29,104 @@
                         {
                             "name": "Xbox One",
                             "reference": "GAME",
-                            "type": "SI"
+                            "type": "HDMI",
+                            "mode": "SI"
                         },
                         {
                             "name": "Television",
                             "reference": "TV",
-                            "type": "SI"
+                            "type": "HDMI",
+                            "mode": "SI"
                         },
                         {
                             "name": "Sat Receiver",
                             "reference": "SAT/CBL",
-                            "type": "SI"
+                            "type": "HDMI",
+                            "mode": "SI"
                         },
                         {
                             "name": "CD",
                             "reference": "CD",
-                            "type": "SI"
+                            "type": "OTHER",
+                            "mode": "SI"
                         },
                         {
                             "name": "DVD",
                             "reference": "DVD",
-                            "type": "SI"
+                            "type": "HDMI",
+                            "mode": "SI"
                         },
                         {
                             "name": "Bluray",
                             "reference": "BD",
-                            "type": "SI"
+                            "type": "HDMI",
+                            "mode": "SI"
                         },
                         {
                             "name": "Tuner",
                             "reference": "TUNER",
-                            "type": "SI"
+                            "type": "TUNER",
+                            "mode": "SI"
                         },
                         {
                             "name": "Spotify",
                             "reference": "SPOTIFY",
-                            "type": "SI"
+                            "type": "APPLICATION",
+                            "mode": "SI"
                         },
                         {
                             "name": "Net",
                             "reference": "NET",
-                            "type": "SI"
+                            "type": "APPLICATION",
+                            "mode": "SI"
                         },
                         {
                             "name": "Media player",
                             "reference": "MPLAY",
-                            "type": "SI"
+                            "type": "APPLICATION",
+                            "mode": "SI"
                         },
                         {
                             "name": "USB IPOD",
                             "reference": "USB/IPOD",
-                            "type": "SI"
+                            "type": "USB",
+                            "mode": "SI"
                         },
                         {
-                            "name": "AUX q",
+                            "name": "AUX 1",
                             "reference": "AUX1",
-                            "type": "SI"
+                            "type": "HDMI",
+                            "mode": "SI"
                         },
                         {
                             "name": "AUX 2",
                             "reference": "AUX2",
-                            "type": "SI"
+                            "type": "HDMI",
+                            "mode": "SI"
                         },
                         {
                             "name": "Source",
                             "reference": "SOURCE",
-                            "type": "SI"
+                            "type": "HDMI",
+                            "mode": "SI"
                         },
                         {
                             "name": "Stereo",
                             "reference": "STEREO",
-                            "type": "MS"
+                            "type": "OTHER",
+                            "mode": "MS"
                         },
                         {
                             "name": "Multi Channel Stereo",
                             "reference": "MCH STEREO",
-                            "type": "MS"
+                            "type": "OTHER",
+                            "mode": "MS"
                         },
                         {
                             "name": "Digital Input AUTO",
                             "reference": "AUTO",
-                            "type": "DC"
+                            "type": "OTHER",
+                            "mode": "DC"
                         }
                     ]
                 }
