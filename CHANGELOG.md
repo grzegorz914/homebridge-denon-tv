@@ -1,5 +1,8 @@
 # Change Log
 All notable changes to this project will be documented in this file.
+## 2.0.2 (14.05.2020) 
+- added descriptions in config.schema.json
+
 ## 2.0.0 (14.05.2020) 
 - changed 'type' to 'mode' as Input mode (Source input mode, Digital input mode, Surround mode), selectable from list
 - added 'type' as source Input type (HDMI, USB, APPLICATION, etc..), selectable from list

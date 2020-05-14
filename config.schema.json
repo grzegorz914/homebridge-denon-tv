@@ -38,6 +38,7 @@
               "type": "integer",
               "default": 0,
               "maximum": 2,
+              "description": "Here select which 'Zone' U want to control.",
               "oneOf": [
                 {
                   "title": "Main zone",
@@ -64,13 +65,15 @@
               "title": "Volume control",
               "type": "boolean",
               "default": false,
-              "required": false
+              "required": false,
+              "description": "This activate volume control slider."
             },
             "switchInfoMenu": {
               "title": "Switch Info/Menu",
               "type": "boolean",
               "default": true,
-              "required": true
+              "required": true,
+              "description": "This switch behaviour for 'I' button in RC app and 'PowerModeSelection'."
             },
             "inputs": {
               "title": "Inputs",
@@ -95,6 +98,7 @@
                     "title": "Input type",
                     "type": "string",
                     "default": "HDMI",
+                    "description": "Her select source input type.",
                     "oneOf": [
                       {
                         "title": "Other",
@@ -169,6 +173,7 @@
                     "title": "Input mode",
                     "type": "string",
                     "default": "SI",
+                    "description": "Here select source input mode.",
                     "oneOf": [
                       {
                         "title": "Source input",
