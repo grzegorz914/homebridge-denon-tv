@@ -171,13 +171,13 @@
                     "default": "SI",
                     "oneOf": [
                       {
-                        "title": "Source input mode",
+                        "title": "Source input",
                         "enum": [
                           "SI"
                         ]
                       },
                       {
-                        "title": "Digital input mode",
+                        "title": "Digital input",
                         "enum": [
                           "DC"
                         ]
