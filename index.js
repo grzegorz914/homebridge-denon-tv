@@ -7,17 +7,18 @@ const parseStringPromise = require('xml2js').parseStringPromise;
 
 const PLUGIN_NAME = 'homebridge-denon-tv';
 const PLATFORM_NAME = 'DenonTv';
-const ZONES_NAME = ['Main Zone', 'Zone 2', 'Zone 3'];
-const ZONES_NUMBER = ['MainZone_MainZone', 'Zone2_Zone2', 'Zone3_Zone3'];
+const ZONE_NAME = ['Main Zone', 'Zone 2', 'Zone 3'];
+const ZONE_NUMBER = ['MainZone_MainZone', 'Zone2_Zone2', 'Zone3_Zone3'];
 
-let Accessory, Characteristic, Service, UUID;
+let Accessory, Characteristic, Service, Categories, UUID;
 
-module.exports = homebridge => {
-	Accessory = homebridge.platformAccessory;
-	Characteristic = homebridge.hap.Characteristic;
-	Service = homebridge.hap.Service;
-	UUID = homebridge.hap.uuid;
-	homebridge.registerPlatform(PLUGIN_NAME, PLATFORM_NAME, denonTvPlatform, true);
+module.exports = (api) => {
+	Accessory = api.platformAccessory;
+	Characteristic = api.hap.Characteristic;
+	Service = api.hap.Service;
+	Categories = api.hap.Categories;
+	UUID = api.hap.uuid;
+	api.registerPlatform(PLUGIN_NAME, PLATFORM_NAME, denonTvPlatform, true);
 };
 
 class denonTvPlatform {
@@ -79,8 +80,8 @@ class denonTvDevice {
 		this.inputs = device.inputs;
 
 		//zones
-		this.zoneName = ZONES_NAME[this.zoneControl];
-		this.zoneNumber = ZONES_NUMBER[this.zoneControl];
+		this.zoneName = ZONE_NAME[this.zoneControl];
+		this.zoneNumber = ZONE_NUMBER[this.zoneControl];
 
 		//get Device info
 		this.manufacturer = device.manufacturer || 'Denon/Marantz';
@@ -163,7 +164,7 @@ class denonTvDevice {
 		this.log.debug('prepareTelevisionService');
 		this.accessoryUUID = UUID.generate(this.name);
 		this.accessory = new Accessory(this.name, this.accessoryUUID);
-		this.accessory.category = 34;
+		this.accessory.category = Categories.TELEVISION;
 		this.accessory.getService(Service.AccessoryInformation)
 			.setCharacteristic(Characteristic.Manufacturer, this.manufacturer)
 			.setCharacteristic(Characteristic.Model, this.modelName)
@@ -348,6 +349,7 @@ class denonTvDevice {
 
 	getDeviceState() {
 		var me = this;
+		me.log.debug('Device: %s %s, requesting Device state.', me.host, me.name);
 		axios.get(me.url + '/goform/form' + me.zoneNumber + 'XmlStatusLite.xml').then(response => {
 			parseStringPromise(response.data).then(result => {
 				let powerState = (result.item.Power[0].value[0] == 'ON');
