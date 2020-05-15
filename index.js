@@ -303,8 +303,8 @@ class denonTvDevice {
 	getDeviceInfo() {
 		var me = this;
 		me.log.debug('Device: %s %s, requesting Device information.', me.host, me.name);
-		axios.get(me.url + '/goform/Deviceinfo.xml').then(response => {
-			setTimeout(() => {
+		setTimeout(() => {
+			axios.get(me.url + '/goform/Deviceinfo.xml').then(response => {
 				parseStringPromise(response.data).then(result => {
 					let brand = ['Denon', 'Marantz'][result.Device_Info.BrandCode[0]];
 					me.manufacturer = brand;
@@ -331,8 +331,8 @@ class denonTvDevice {
 				if (error) {
 					me.log.debug('Device: %s %s, getDeviceInfo eror: %s', me.host, me.name, error);
 				}
-			}, 300);
-		});
+			});
+		}, 300);
 	}
 
 	getDeviceState() {
