@@ -481,7 +481,7 @@ class denonTvDevice {
 		var me = this;
 		let inputName = me.inputNames[inputIdentifier];
 		let inputReference = me.inputReferences[inputIdentifier];
-		let inputMode = me.inputTypes[inputIdentifier];
+		let inputMode = me.inputModes[inputIdentifier];
 		let zone = [inputMode, 'Z2', 'Z3'][me.zoneControl];
 		axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + zone + inputReference).then(response => {
 			me.log('Device: %s %s %s, set new Input successful: %s %s', me.host, me.name, me.zoneName, inputName, inputReference);
