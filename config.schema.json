@@ -41,7 +41,7 @@
               "description": "Here select which 'Zone' U want to control.",
               "oneOf": [
                 {
-                  "title": "Main zone",
+                  "title": "Main Zone",
                   "enum": [
                     0
                   ]
@@ -60,6 +60,13 @@
                 }
               ],
               "required": true
+            },
+            "masterPowerControl": {
+              "title": "All zones power control",
+              "type": "boolean",
+              "default": false,
+              "required": false,
+              "description": "This activate power control for all zones."
             },
             "volumeControl": {
               "title": "Volume control",

@@ -75,6 +75,7 @@ class denonTvDevice {
 		this.host = device.host;
 		this.port = device.port;
 		this.zoneControl = device.zoneControl;
+		this.masterPowerControl = device.masterPowerControl;
 		this.volumeControl = device.volumeControl;
 		this.switchInfoMenu = device.switchInfoMenu;
 		this.inputs = device.inputs;
@@ -405,7 +406,7 @@ class denonTvDevice {
 	setPower(state, callback) {
 		var me = this;
 		if (state !== me.currentPowerState) {
-			let newState = [(state ? "ZMON" : "ZMOFF"), (state ? "Z2ON" : "Z2OFF"), (state ? "Z3ON" : "Z3OFF")][me.zoneControl];
+			let newState = me.masterPowerControl ? (state ? "PWON" : "PWSTANDBY") : [(state ? "ZMON" : "ZMOFF"), (state ? "Z2ON" : "Z2OFF"), (state ? "Z3ON" : "Z3OFF")][me.zoneControl];
 			axios.get(me.url + "/goform/formiPhoneAppDirect.xml?" + newState).then(response => {
 				me.log("Device: %s %s %s, set new Power state successful: %s", me.host, me.name, me.zoneName, state ? "ON" : "STANDBY");
 				callback(null);
@@ -574,7 +575,7 @@ class denonTvDevice {
 	setVolumeSelector(remoteKey, callback) {
 		var me = this;
 		if (me.currentPowerState) {
-			let zone = ["MV", "Z2", "Z3"][this.zoneControl];
+			let zone = ["MV", "Z2", "Z3"][me.zoneControl];
 			let command = "MV?";
 			switch (remoteKey) {
 				case Characteristic.VolumeSelector.INCREMENT:
