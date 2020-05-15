@@ -2,8 +2,8 @@
 
 const axios = require('axios');
 const fs = require('fs');
-const parseStringPromise = require('xml2js').parseStringPromise;
 const path = require('path');
+const parseStringPromise = require('xml2js').parseStringPromise;
 
 const PLUGIN_NAME = 'homebridge-denon-tv';
 const PLATFORM_NAME = 'DenonTv';
@@ -302,9 +302,9 @@ class denonTvDevice {
 
 	getDeviceInfo() {
 		var me = this;
-		setTimeout(() => {
-			me.log.debug('Device: %s %s, requesting Device information.', me.host, me.name);
-			axios.get(me.url + '/goform/Deviceinfo.xml').then(response => {
+		me.log.debug('Device: %s %s, requesting Device information.', me.host, me.name);
+		axios.get(me.url + '/goform/Deviceinfo.xml').then(response => {
+			setTimeout(() => {
 				parseStringPromise(response.data).then(result => {
 					let brand = ['Denon', 'Marantz'][result.Device_Info.BrandCode[0]];
 					me.manufacturer = brand;
@@ -331,8 +331,8 @@ class denonTvDevice {
 				if (error) {
 					me.log.debug('Device: %s %s, getDeviceInfo eror: %s', me.host, me.name, error);
 				}
-			});
-		}, 250);
+			}, 300);
+		});
 	}
 
 	getDeviceState() {

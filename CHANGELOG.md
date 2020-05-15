@@ -1,5 +1,8 @@
 # Change Log
 All notable changes to this project will be documented in this file.
+## 2.0.4 (15.05.2020) 
+- fixed sources input selection
+
 ## 2.0.2 (14.05.2020) 
 - added descriptions in config.schema.json
 
