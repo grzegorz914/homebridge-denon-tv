@@ -290,7 +290,7 @@ class denonTvDevice {
 							this.log('Device: %s %s, saved new Input successful, name: %s reference: %s', this.host, this.name, newInputName, inputReference);
 						}
 					});
-					callback(null, newInputName)
+					callback(null)
 				});
 			this.accessory.addService(this.inputsService);
 			this.televisionService.addLinkedService(this.inputsService);
@@ -408,7 +408,7 @@ class denonTvDevice {
 			let newState = [(state ? 'ZMON' : 'ZMOFF'), (state ? 'Z2ON' : 'Z2OFF'), (state ? 'Z3ON' : 'Z3OFF')][me.zoneControl];
 			axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + newState).then(response => {
 				me.log('Device: %s %s %s, set new Power state successful: %s', me.host, me.name, me.zoneName, state ? 'ON' : 'STANDBY');
-				callback(null, state);
+				callback(null);
 			}).catch(error => {
 				if (error) {
 					me.log.debug('Device: %s %s %s, can not set new Power state. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
@@ -438,7 +438,7 @@ class denonTvDevice {
 		if (state !== me.currentMuteState) {
 			axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + newState).then(response => {
 				me.log('Device: %s %s %s, set new Mute state successful: %s', me.host, me.name, me.zoneName, state ? 'ON' : 'OFF');
-				callback(null, state);
+				callback(null);
 			}).catch(error => {
 				if (error) {
 					me.log.debug('Device: %s %s %s, can not set new Mute state. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
@@ -461,7 +461,7 @@ class denonTvDevice {
 		let targetVolume = (volume - 2);
 		axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + zone + targetVolume).then(response => {
 			me.log('Device: %s %s %s, set new Volume level successful: %s', me.host, me.name, me.zoneName, targetVolume);
-			callback(null, volume);
+			callback(null);
 		}).catch(error => {
 			if (error) {
 				me.log.debug('Device: %s %s %s, can not set new Volume level. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
@@ -498,7 +498,7 @@ class denonTvDevice {
 		let zone = [inputMode, 'Z2', 'Z3'][me.zoneControl];
 		axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + zone + inputReference).then(response => {
 			me.log('Device: %s %s %s, set new Input successful: %s %s', me.host, me.name, me.zoneName, inputName, inputReference);
-			callback(null, inputIdentifier);
+			callback(null);
 		}).catch(error => {
 			if (error) {
 				me.log.debug('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
@@ -539,7 +539,7 @@ class denonTvDevice {
 			}
 			axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + command).then(response => {
 				me.log('Device: %s %s, setPictureMode successful, remoteKey: %s, command: %s', me.host, me.name, remoteKey, command);
-				callback(null, remoteKey);
+				callback(null);
 			}).catch(error => {
 				if (error) {
 					me.log.debug('Device: %s %s, can not setPictureMode. Might be due to a wrong settings in config, error: %s', me.host, me.name, error);
@@ -563,7 +563,7 @@ class denonTvDevice {
 			}
 			axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + command).then(response => {
 				me.log('Device: %s %s, setPowerModeSelection successful, remoteKey: %s, command: %s', me.host, me.name, remoteKey, command);
-				callback(null, remoteKey);
+				callback(null);
 			}).catch(error => {
 				if (error) {
 					me.log.debug('Device: %s %s, can not setPowerModeSelection. Might be due to a wrong settings in config, error: %s', me.host, me.name, error);
@@ -588,7 +588,7 @@ class denonTvDevice {
 			}
 			axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + zone + command).then(response => {
 				me.log('Device: %s %s %s, setVolumeSelector successful, remoteKey: %s, command: %s', me.host, me.name, me.zoneName, remoteKey, command);
-				callback(null, remoteKey);
+				callback(null);
 			}).catch(error => {
 				if (error) {
 					me.log.debug('Device: %s %s %s, can not setVolumeSelector. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
@@ -645,7 +645,7 @@ class denonTvDevice {
 			}
 			axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + command).then(response => {
 				me.log('Device: %s %s, setRemoteKey successful, remoteKey: %s, command: %s', me.host, me.name, remoteKey, command);
-				callback(null, remoteKey);
+				callback(null);
 			}).catch(error => {
 				if (error) {
 					me.log.debug('Device: %s %s, can not setRemoteKey. Might be due to a wrong settings in config, error: %s', me.host, me.name, error);
