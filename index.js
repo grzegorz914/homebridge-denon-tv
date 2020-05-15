@@ -102,7 +102,7 @@ class denonTvDevice {
 		this.currentSurroundModeReference = null;
 		this.prefDir = path.join(api.user.storagePath(), 'denonTv');
 		this.inputsFile = this.prefDir + '/' + 'inputs_' + this.host.split('.').join('');
-		this.devInfoFile = this.prefDir + '/' + 'info_' + this.host.split('.').join('');
+		this.devInfoFile = this.prefDir + '/' + 'devInfo_' + this.host.split('.').join('');
 		this.url = ('http://' + this.host + ':' + this.port);
 
 		let defaultInputs = [
@@ -302,17 +302,28 @@ class denonTvDevice {
 
 	getDeviceInfo() {
 		var me = this;
-		me.log.debug('Device: %s %s, requesting Device information.', me.host, me.name);
 		setTimeout(() => {
+			me.log.debug('Device: %s %s, requesting Device information.', me.host, me.name);
 			axios.get(me.url + '/goform/Deviceinfo.xml').then(response => {
 				parseStringPromise(response.data).then(result => {
-					let brand = ['Denon', 'Marantz'][result.Device_Info.BrandCode[0]];
-					me.manufacturer = brand;
+					me.log.debug('Device: %s %s, get device info successful: %s', me.host, me.name, JSON.stringify(result, null, 2));
+					me.manufacturer = ['Denon', 'Marantz'][result.Device_Info.BrandCode[0]];
 					me.modelName = result.Device_Info.ModelName[0];
 					me.serialNumber = result.Device_Info.MacAddress[0];
 					me.firmwareRevision = result.Device_Info.UpgradeVersion[0];
 					me.zones = result.Device_Info.DeviceZones[0];
 					me.apiVersion = result.Device_Info.CommApiVers[0];
+					if (fs.existsSync(me.devInfoFile) === false) {
+						fs.writeFile(me.devInfoFile, JSON.stringify(result), (error) => {
+							if (error) {
+								me.log.debug('Device: %s %s, could not write devInfoFile, error: %s', me.host, me.name, error);
+							} else {
+								me.log.debug('Device: %s %s, devInfoFile saved successful', me.host, me.name);
+							}
+						});
+					} else {
+						me.log.debug('Device: %s %s, devInfoFile already exists, not saving', me.host, me.name);
+					}
 
 					me.log('-------- %s --------', me.name);
 					me.log('Manufacturer: %s', me.manufacturer);
@@ -332,7 +343,7 @@ class denonTvDevice {
 					me.log.debug('Device: %s %s, getDeviceInfo eror: %s', me.host, me.name, error);
 				}
 			});
-		}, 300);
+		}, 250);
 	}
 
 	getDeviceState() {
