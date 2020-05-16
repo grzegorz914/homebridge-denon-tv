@@ -80,15 +80,17 @@ class denonTvDevice {
 		this.switchInfoMenu = device.switchInfoMenu;
 		this.inputs = device.inputs;
 
+		//get Device info
+		this.manufacturer = "Denon/Marantz";
+		this.modelName = PLUGIN_NAME;
+		this.serialNumber = "SN000002";
+		this.firmwareRevision = "FW000002";
+		this.zones = 1;
+		this.apiVersion = null;
+
 		//zones
 		this.zoneName = this.allZonesControl ? "All Zones" : ZONE_NAME[this.zoneControl];
 		this.zoneNumber = this.allZonesControl ? "MainZone_MainZone" : ZONE_NUMBER[this.zoneControl];
-
-		//get Device info
-		this.manufacturer = device.manufacturer || "Denon/Marantz";
-		this.modelName = device.modelName || PLUGIN_NAME;
-		this.serialNumber = device.serialNumber || "SN000002";
-		this.firmwareRevision = device.firmwareRevision || "FW000002";
 
 		//setup variables
 		this.inputReferences = new Array();
