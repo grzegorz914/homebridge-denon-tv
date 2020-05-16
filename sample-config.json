@@ -24,6 +24,7 @@
                     "port": 8080,
                     "zoneControl": 0,
                     "masterPowerControl": false,
+                    "masterVolumeControl": false,
                     "volumeControl": false,
                     "switchInfoMenu": false,
                     "inputs": [

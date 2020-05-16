@@ -1,5 +1,8 @@
 # Change Log
 All notable changes to this project will be documented in this file.
+## 2.2.0 (16.05.2020) 
+- added master volume control (if enabled volume will change volume in all zones)
+
 ## 2.1.0 (15.05.2020) 
 - added master power control (if enabled power button switch ON/OFF all zones)
 

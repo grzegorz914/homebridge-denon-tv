@@ -1,7 +1,7 @@
 {
   "pluginAlias": "DenonTv",
   "pluginType": "platform",
-  "headerDisplay": "This plugin works with Denon/Marantz AV Receivers series X and are exposed to HomeKit as separate accessories and each needs to be manually paired.\n\n1. Open the Home <img src='https://user-images.githubusercontent.com/3979615/78010622-4ea1d380-738e-11ea-8a17-e6a465eeec35.png' height='16.42px'> app on your device.\n2. Tap the Home tab, then tap <img src='https://user-images.githubusercontent.com/3979615/78010869-9aed1380-738e-11ea-9644-9f46b3633026.png' height='16.42px'>.\n3. Tap *Add Accessory*, and select *I Don't Have a Code or Cannot Scan*.\n4. Enter the Homebridge PIN, this can be found under the QR code in Homebridge UI or your Homebridge logs.",
+  "headerDisplay": "This plugin works with Denon/Marantz AV Receivers series X and are exposed to HomeKit as separate accessories and each needs to be manually paired.\n\n1. Open the Home <img src='https://user-images.githubusercontent.com/3979615/78010622-4ea1d380-738e-11ea-8a17-e6a465eeec35.png' height='16.42px'> app on your device.\n2. Tap the Home tab, then tap <img src='https://user-images.githubusercontent.com/3979615/78010869-9aed1380-738e-11ea-9644-9f46b3633026.png' height='16.42px'>.\n3. Tap *Add Accessory*, and select *I Don't Have a Code or Cannot Scan*.\n4. Enter the Homebridge PIN, this can be found under the QR code in Homebridge UI or your Homebridge logs, alternatively you can select *Use Camera* and scan the QR code again.",
   "footerDisplay": "This plugin works with Denon/Marantz AV Receivers series X which is available [here](https://github.com/grzegorz914/homebridge-denon-tv).",
   "schema": {
     "type": "object",
@@ -38,7 +38,7 @@
               "type": "integer",
               "default": 0,
               "maximum": 2,
-              "description": "Here select which 'Zone' U want to control.",
+              "description": "Here select which *Zone* You want to control.",
               "oneOf": [
                 {
                   "title": "Main Zone",
@@ -68,6 +68,13 @@
               "required": false,
               "description": "This activate power control for all zones."
             },
+            "masterVolumeControl": {
+              "title": "All zones volume control",
+              "type": "boolean",
+              "default": false,
+              "required": false,
+              "description": "This activate volume control for all zones."
+            },
             "volumeControl": {
               "title": "Volume control",
               "type": "boolean",
@@ -80,7 +87,7 @@
               "type": "boolean",
               "default": true,
               "required": true,
-              "description": "This switch behaviour for 'I' button in RC app and 'PowerModeSelection'."
+              "description": "This toggle behaviour for *I* button in RC app and *PowerModeSelection* in settings."
             },
             "inputs": {
               "title": "Inputs",
@@ -105,7 +112,7 @@
                     "title": "Input type",
                     "type": "string",
                     "default": "HDMI",
-                    "description": "Her select source input type.",
+                    "description": "Here select source input type.",
                     "oneOf": [
                       {
                         "title": "Other",
