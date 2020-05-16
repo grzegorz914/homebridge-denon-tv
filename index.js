@@ -449,15 +449,15 @@ class denonTvDevice {
 								me.log.debug("Device: %s %s %s, can not set new Mute state. Might be due to a wrong settings in config, error: %s", me.host, me.name, "Zone 2", error);
 							}
 						});
-						if (me.zones >= 3) {
-							newState = state ? "Z3MUON" : "Z3MUOFF";
-							axios.get(me.url + "/goform/formiPhoneAppDirect.xml?" + newState).then(response => {
-							}).catch(error => {
-								if (error) {
-									me.log.debug("Device: %s %s %s, can not set new Mute state. Might be due to a wrong settings in config, error: %s", me.host, me.name, "Zone 3", error);
-								}
-							});
-						}
+					}
+					if (me.zones >= 3) {
+						newState = state ? "Z3MUON" : "Z3MUOFF";
+						axios.get(me.url + "/goform/formiPhoneAppDirect.xml?" + newState).then(response => {
+						}).catch(error => {
+							if (error) {
+								me.log.debug("Device: %s %s %s, can not set new Mute state. Might be due to a wrong settings in config, error: %s", me.host, me.name, "Zone 3", error);
+							}
+						});
 					}
 				}
 				callback(null);
@@ -491,14 +491,14 @@ class denonTvDevice {
 							me.log.debug("Device: %s %s %s, can not set new Volume level. Might be due to a wrong settings in config, error: %s", me.host, me.name, "Zone 2", error);
 						}
 					});
-					if (me.zones >= 3) {
-						axios.get(me.url + "/goform/formiPhoneAppDirect.xml?" + "Z3" + targetVolume).then(response => {
-						}).catch(error => {
-							if (error) {
-								me.log.debug("Device: %s %s %s, can not set new Volume level. Might be due to a wrong settings in config, error: %s", me.host, me.name, "Zone 3", error);
-							}
-						});
-					}
+				}
+				if (me.zones >= 3) {
+					axios.get(me.url + "/goform/formiPhoneAppDirect.xml?" + "Z3" + targetVolume).then(response => {
+					}).catch(error => {
+						if (error) {
+							me.log.debug("Device: %s %s %s, can not set new Volume level. Might be due to a wrong settings in config, error: %s", me.host, me.name, "Zone 3", error);
+						}
+					});
 				}
 			}
 			callback(null);
@@ -544,14 +544,14 @@ class denonTvDevice {
 							me.log.debug("Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s", me.host, me.name, me.zoneName, error);
 						}
 					});
-					if (me.zones >= 3) {
-						axios.get(me.url + "/goform/formiPhoneAppDirect.xml?" + "Z3" + inputReference).then(response => {
-						}).catch(error => {
-							if (error) {
-								me.log.debug("Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s", me.host, me.name, me.zoneName, error);
-							}
-						});
-					}
+				}
+				if (me.zones >= 3) {
+					axios.get(me.url + "/goform/formiPhoneAppDirect.xml?" + "Z3" + inputReference).then(response => {
+					}).catch(error => {
+						if (error) {
+							me.log.debug("Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s", me.host, me.name, me.zoneName, error);
+						}
+					});
 				}
 			}
 			callback(null);
@@ -652,14 +652,14 @@ class denonTvDevice {
 								me.log.debug("Device: %s %s %s, can not setVolumeSelector. Might be due to a wrong settings in config, error: %s", me.host, me.name, me.zoneName, error);
 							}
 						});
-						if (me.zones >= 3) {
-							axios.get(me.url + "/goform/formiPhoneAppDirect.xml?" + "Z3" + command).then(response => {
-							}).catch(error => {
-								if (error) {
-									me.log.debug("Device: %s %s %s, can not setVolumeSelector. Might be due to a wrong settings in config, error: %s", me.host, me.name, me.zoneName, error);
-								}
-							});
-						}
+					}
+					if (me.zones >= 3) {
+						axios.get(me.url + "/goform/formiPhoneAppDirect.xml?" + "Z3" + command).then(response => {
+						}).catch(error => {
+							if (error) {
+								me.log.debug("Device: %s %s %s, can not setVolumeSelector. Might be due to a wrong settings in config, error: %s", me.host, me.name, me.zoneName, error);
+							}
+						});
 					}
 				}
 				callback(null, remoteKey);
