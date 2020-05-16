@@ -356,7 +356,7 @@ class denonTvDevice {
 				let powerState = (result.item.Power[0].value[0] == "ON");
 				if (me.televisionService && (powerState !== me.currentPowerState)) {
 					me.televisionService.updateCharacteristic(Characteristic.Active, powerState);
-					me.log("Device: %s %s %s, get current Power state successful: %s", me.host, me.name, me.zoneName, powerState ? "ON" : "STANDBY");
+					me.log("Device: %s %s %s, get current Power state successful: %s", me.host, me.name, me.zoneName, powerState ? "ON" : "OFF");
 					me.currentPowerState = powerState;
 				}
 
@@ -399,7 +399,7 @@ class denonTvDevice {
 	getPower(callback) {
 		var me = this;
 		let state = me.currentPowerState;
-		me.log.debug("Device: %s %s %s, get current Power state successful: %s", me.host, me.name, me.zoneName, state ? "ON" : "STANDBY");
+		me.log.debug("Device: %s %s %s, get current Power state successful: %s", me.host, me.name, me.zoneName, state ? "ON" : "OFF");
 		callback(null, state);
 	}
 
@@ -408,7 +408,7 @@ class denonTvDevice {
 		if (state !== me.currentPowerState) {
 			let newState = me.masterPowerControl ? (state ? "PWON" : "PWSTANDBY") : [(state ? "ZMON" : "ZMOFF"), (state ? "Z2ON" : "Z2OFF"), (state ? "Z3ON" : "Z3OFF")][me.zoneControl];
 			axios.get(me.url + "/goform/formiPhoneAppDirect.xml?" + newState).then(response => {
-				me.log("Device: %s %s %s, set new Power state successful: %s", me.host, me.name, me.zoneName, state ? "ON" : "STANDBY");
+				me.log("Device: %s %s %s, set new Power state successful: %s", me.host, me.name, me.zoneName, state ? "ON" : "OFF");
 				callback(null);
 			}).catch(error => {
 				if (error) {
