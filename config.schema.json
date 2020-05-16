@@ -76,18 +76,18 @@
               "description": "This activate volume control for all zones."
             },
             "volumeControl": {
-              "title": "Volume control",
+              "title": "Slider volume control",
               "type": "boolean",
               "default": false,
               "required": false,
-              "description": "This activate volume control slider."
+              "description": "This activate extra tile present as slider volume control."
             },
             "switchInfoMenu": {
               "title": "Switch Info/Menu",
               "type": "boolean",
               "default": true,
               "required": true,
-              "description": "This toggle behaviour for I button in RC app and PowerModeSelection in settings."
+              "description": "This toggle behaviour for *I* button in RC app and *PowerModeSelection* in settings."
             },
             "inputs": {
               "title": "Inputs",
