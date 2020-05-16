@@ -38,7 +38,7 @@
               "type": "integer",
               "default": 0,
               "maximum": 2,
-              "description": "Here select which *Zone* You want to control.",
+              "description": "Here select which Zone You want to control.",
               "oneOf": [
                 {
                   "title": "Main Zone",
@@ -87,7 +87,7 @@
               "type": "boolean",
               "default": true,
               "required": true,
-              "description": "This toggle behaviour for *I* button in RC app and *PowerModeSelection* in settings."
+              "description": "This toggle behaviour for I button in RC app and PowerModeSelection in settings."
             },
             "inputs": {
               "title": "Inputs",
