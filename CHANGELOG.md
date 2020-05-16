@@ -1,5 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file.
+## 2.3.0 (16.05.2020)
+- removed master volume and power control (best Use Config UI X to set new config)
+- added all zones control (if enabled all zones will be control togheter, (power, source input, volume, mute))
+
 ## 2.2.0 (16.05.2020) 
 - added master volume control (if enabled volume will change volume in all zones)
 

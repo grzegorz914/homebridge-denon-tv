@@ -61,19 +61,12 @@
               ],
               "required": true
             },
-            "masterPowerControl": {
-              "title": "All zones power control",
+            "allZonesControl": {
+              "title": "All zones control",
               "type": "boolean",
               "default": false,
               "required": false,
-              "description": "This activate power control for all zones."
-            },
-            "masterVolumeControl": {
-              "title": "All zones volume control",
-              "type": "boolean",
-              "default": false,
-              "required": false,
-              "description": "This activate volume control for all zones."
+              "description": "This activate control for all zones together."
             },
             "volumeControl": {
               "title": "Slider volume control",

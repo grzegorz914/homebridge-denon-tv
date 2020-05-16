@@ -46,11 +46,10 @@ Homebridge plugin to control Denon/Marantz AV Receivers series X in HomeKit as T
 5. Different model of AV Receiver uses different `Surrounds Modes`, `MS` reference:
 `DIRECT, PURE DIRECT, STEREO, STANDARD, DOLBY DIGITAL, DTS SUROUND, 7CH STEREO, MCH STEREO, ROCK ARENA, JAZZ CLUB, MONO MOVIE, MATRIX, GAME, VIRTUAL, AURO3D, AURO2DSURR, WIDE SCREEN, SUPER STADIUM, CLASSIC CONCERT, LEFT, RIGHT, AUX3, AUX4, AUX5, AUX6, AUX7, BT, USB/IPOD, USB, QUICK1, QUICK2, QUICK3, QUICK4, QUICK1 MEMORY, QUICK2 MEMORY, QUICK3 MEMORY, QUICK4 MEMORY`
 6. In `zoneControl` U can select which zone U want to control.
-7. If `masterPowerControl` is enabled, power button switch ON/OFF all zones together(ignore zoneControl selection).
-8. If `masterVolumeControl` is enabled, volume will change volume in all zones(ignore zoneControl selection).
-9. If `volumeControl` is enabled, volume can be control using slider.
-10. If `switchInfoMenu` is enabled, `I` button toggle its behaviour in RC app and `PowerModeSelection` in settings.
-11. All possible commands can be found in [Denon Control Protocol 2020](http://assets.denon.com/_layouts/15/xlviewer.aspx?id=/DocumentMaster/us/DENON_FY20%20AVR_PROTOCOL_V03_03042020.xlsx)
+7. If `allZonesControl` if enabled, all zones will be control togheter, (power, source input, volume, mute))
+8. If `volumeControl` is enabled, volume can be control using slider.
+9. If `switchInfoMenu` is enabled, `I` button toggle its behaviour in RC app and `PowerModeSelection` in settings.
+10. All possible commands can be found in [Denon Control Protocol 2020](http://assets.denon.com/_layouts/15/xlviewer.aspx?id=/DocumentMaster/us/DENON_FY20%20AVR_PROTOCOL_V03_03042020.xlsx)
 
 <p align="left">
   <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/ustawienia.png" height="150"></a>
@@ -65,8 +64,7 @@ Homebridge plugin to control Denon/Marantz AV Receivers series X in HomeKit as T
             "host": "192.168.1.5",
             "port": 8080,
             "zoneControl" : 0,
-            "masterPowerControl": false,
-            "masterVolumeControl": false,
+            "allZonesControl": false,
             "volumeControl": false,
             "switchInfoMenu": false,
             "inputs": [
