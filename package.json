@@ -15,7 +15,7 @@
   "main": "index.js",
   "engines": {
     "node": ">=10.17.0",
-    "homebridge": ">=1.0.0"
+    "homebridge": ">=1.0.4"
   },
   "dependencies": {
     "xml2js": ">=0.4.23",
