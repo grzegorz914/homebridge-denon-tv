@@ -509,7 +509,7 @@ class denonTvDevice {
 	setPictureMode(remoteKey, callback) {
 		var me = this;
 		if (me.currentPowerState) {
-			let command;
+			let command = "";
 			switch (remoteKey) {
 				case Characteristic.PictureMode.OTHER:
 					command = "PVMOV";
@@ -538,7 +538,7 @@ class denonTvDevice {
 			}
 			axios.get(me.url + "/goform/formiPhoneAppDirect.xml?" + command).then(response => {
 				me.log("Device: %s %s, setPictureMode successful, remoteKey: %s, command: %s", me.host, me.name, remoteKey, command);
-				callback(null);
+				callback(null, remoteKey);
 			}).catch(error => {
 				if (error) {
 					me.log.debug("Device: %s %s, can not setPictureMode. Might be due to a wrong settings in config, error: %s", me.host, me.name, error);
@@ -562,7 +562,7 @@ class denonTvDevice {
 			}
 			axios.get(me.url + "/goform/formiPhoneAppDirect.xml?" + command).then(response => {
 				me.log("Device: %s %s, setPowerModeSelection successful, remoteKey: %s, command: %s", me.host, me.name, remoteKey, command);
-				callback(null);
+				callback(null, remoteKey);
 			}).catch(error => {
 				if (error) {
 					me.log.debug("Device: %s %s, can not setPowerModeSelection. Might be due to a wrong settings in config, error: %s", me.host, me.name, error);
@@ -587,7 +587,7 @@ class denonTvDevice {
 			}
 			axios.get(me.url + "/goform/formiPhoneAppDirect.xml?" + zone + command).then(response => {
 				me.log("Device: %s %s %s, setVolumeSelector successful, remoteKey: %s, command: %s", me.host, me.name, me.zoneName, remoteKey, command);
-				callback(null);
+				callback(null, remoteKey);
 			}).catch(error => {
 				if (error) {
 					me.log.debug("Device: %s %s %s, can not setVolumeSelector. Might be due to a wrong settings in config, error: %s", me.host, me.name, me.zoneName, error);
@@ -644,7 +644,7 @@ class denonTvDevice {
 			}
 			axios.get(me.url + "/goform/formiPhoneAppDirect.xml?" + command).then(response => {
 				me.log("Device: %s %s, setRemoteKey successful, remoteKey: %s, command: %s", me.host, me.name, remoteKey, command);
-				callback(null);
+				callback(null, remoteKey);
 			}).catch(error => {
 				if (error) {
 					me.log.debug("Device: %s %s, can not setRemoteKey. Might be due to a wrong settings in config, error: %s", me.host, me.name, error);
