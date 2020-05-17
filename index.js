@@ -327,7 +327,7 @@ class denonTvDevice {
 					if (error) {
 						me.log.debug('Device: %s %s, could not write devInfoFile, error: %s', me.host, me.name, error);
 					} else {
-						me.log('Device: %s %s, devInfoFile saved successful', me.host, me.name);
+						me.log('Device: %s %s, devInfoFile saved successful in: %s', me.host, me.name, me.prefDir);
 					}
 				});
 			}).catch(error => {
