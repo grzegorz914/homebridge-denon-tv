@@ -142,7 +142,9 @@ class denonTvDevice {
 				if (!this.connectionStatus) {
 					this.log("Device: %s %s %s, state: Online", this.host, this.name, this.zoneName);
 					this.connectionStatus = true;
-					this.connect();
+					this.getDeviceInfo();
+				} else {
+					this.getDeviceState();
 				}
 			}).catch(error => {
 				if (error) {
@@ -156,12 +158,6 @@ class denonTvDevice {
 
 		//Delay to wait for device info before publish
 		setTimeout(this.prepareTelevisionService.bind(this), 1000);
-	}
-
-	connect() {
-		this.log("Device: %s %s, connected.", this.host, this.name);
-		this.getDeviceInfo();
-		this.getDeviceState();
 	}
 
 	//Prepare TV service 
@@ -536,37 +532,39 @@ class denonTvDevice {
 
 	setInput(inputIdentifier, callback) {
 		var me = this;
-		let inputName = me.inputNames[inputIdentifier];
-		let inputReference = me.inputReferences[inputIdentifier];
-		let inputMode = me.inputModes[inputIdentifier];
-		let zone = me.allZonesControl ? inputMode : [inputMode, "Z2", "Z3"][me.zoneControl];
-		axios.get(me.url + "/goform/formiPhoneAppDirect.xml?" + zone + inputReference).then(response => {
-			me.log("Device: %s %s %s, set new Input successful: %s %s", me.host, me.name, me.zoneName, inputName, inputReference);
-			if (me.allZonesControl) {
-				if (me.zones >= 2) {
-					axios.get(me.url + "/goform/formiPhoneAppDirect.xml?" + "Z2" + inputReference).then(response => {
-					}).catch(error => {
-						if (error) {
-							me.log.debug("Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s", me.host, me.name, me.zoneName, error);
-						}
-					});
+		setTimeout(() => {
+			let inputName = me.inputNames[inputIdentifier];
+			let inputReference = me.inputReferences[inputIdentifier];
+			let inputMode = me.inputModes[inputIdentifier];
+			let zone = me.allZonesControl ? inputMode : [inputMode, "Z2", "Z3"][me.zoneControl];
+			axios.get(me.url + "/goform/formiPhoneAppDirect.xml?" + zone + inputReference).then(response => {
+				me.log("Device: %s %s %s, set new Input successful: %s %s", me.host, me.name, me.zoneName, inputName, inputReference);
+				if (me.allZonesControl) {
+					if (me.zones >= 2) {
+						axios.get(me.url + "/goform/formiPhoneAppDirect.xml?" + "Z2" + inputReference).then(response => {
+						}).catch(error => {
+							if (error) {
+								me.log.debug("Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s", me.host, me.name, me.zoneName, error);
+							}
+						});
+					}
+					if (me.zones >= 3) {
+						axios.get(me.url + "/goform/formiPhoneAppDirect.xml?" + "Z3" + inputReference).then(response => {
+						}).catch(error => {
+							if (error) {
+								me.log.debug("Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s", me.host, me.name, me.zoneName, error);
+							}
+						});
+					}
 				}
-				if (me.zones >= 3) {
-					axios.get(me.url + "/goform/formiPhoneAppDirect.xml?" + "Z3" + inputReference).then(response => {
-					}).catch(error => {
-						if (error) {
-							me.log.debug("Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s", me.host, me.name, me.zoneName, error);
-						}
-					});
+				callback(null);
+			}).catch(error => {
+				if (error) {
+					me.log.debug("Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s", me.host, me.name, me.zoneName, error);
+					callback(error);
 				}
-			}
-			callback(null);
-		}).catch(error => {
-			if (error) {
-				me.log.debug("Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s", me.host, me.name, me.zoneName, error);
-				callback(error);
-			}
-		});
+			});
+		}, 100);
 	}
 
 	setPictureMode(remoteKey, callback) {
