@@ -348,9 +348,9 @@ class denonTvDevice {
 		axios.get(me.url + '/goform/form' + me.zoneNumber + 'XmlStatusLite.xml').then(response => {
 			parseStringPromise(response.data).then(result => {
 				let powerState = (result.item.Power[0].value[0] == 'ON');
-				if (me.televisionService && (powerState !== me.currentPowerState)) {
+				if (me.televisionService) {
 					me.televisionService.updateCharacteristic(Characteristic.Active, powerState);
-					me.log('Device: %s %s %s, get current Power state successful: %s', me.host, me.name, me.zoneName, powerState ? 'ON' : 'OFF');
+					me.log.debug('Device: %s %s %s, get current Power state successful: %s', me.host, me.name, me.zoneName, powerState ? 'ON' : 'OFF');
 					me.currentPowerState = powerState;
 				}
 
@@ -393,7 +393,7 @@ class denonTvDevice {
 	getPower(callback) {
 		var me = this;
 		let state = me.currentPowerState;
-		me.log.debug('Device: %s %s %s, get current Power state successful: %s', me.host, me.name, me.zoneName, state ? 'ON' : 'OFF');
+		me.log('Device: %s %s %s, get current Power state successful: %s', me.host, me.name, me.zoneName, state ? 'ON' : 'OFF');
 		callback(null, state);
 	}
 
