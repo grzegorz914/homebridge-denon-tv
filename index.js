@@ -142,7 +142,7 @@ class denonTvDevice {
 				if (!this.connectionStatus) {
 					this.log("Device: %s %s %s, state: Online", this.host, this.name, this.zoneName);
 					this.connectionStatus = true;
-					this.getDeviceInfo();
+					setTimeout(this.getDeviceInfo.bind(this), 500);
 				} else {
 					this.getDeviceState();
 				}
@@ -305,40 +305,16 @@ class denonTvDevice {
 
 	getDeviceInfo() {
 		var me = this;
-		setTimeout(() => {
-			me.log.debug("Device: %s %s, requesting Device information.", me.host, me.name);
-			axios.get(me.url + "/goform/Deviceinfo.xml").then(response => {
-				parseStringPromise(response.data).then(result => {
-					me.log.debug("Device: %s %s, get device info successful: %s", me.host, me.name, JSON.stringify(result, null, 2));
-					me.manufacturer = ["Denon", "Marantz"][result.Device_Info.BrandCode[0]];
-					me.modelName = result.Device_Info.ModelName[0];
-					me.serialNumber = result.Device_Info.MacAddress[0];
-					me.firmwareRevision = result.Device_Info.UpgradeVersion[0];
-					me.zones = result.Device_Info.DeviceZones[0];
-					me.apiVersion = result.Device_Info.CommApiVers[0];
-					if (fs.existsSync(me.devInfoFile) === false) {
-						fs.writeFile(me.devInfoFile, JSON.stringify(result), (error) => {
-							if (error) {
-								me.log.debug("Device: %s %s, could not write devInfoFile, error: %s", me.host, me.name, error);
-							} else {
-								me.log.debug("Device: %s %s, devInfoFile saved successful", me.host, me.name);
-							}
-						});
-					} else {
-						me.log.debug("Device: %s %s, devInfoFile already exists, not saving", me.host, me.name);
-					}
-				}).catch(error => {
-					if (error) {
-						me.log.debug("Device %s %s, getDeviceInfo parse string error: %s", me.host, me.name, error);
-					}
-				});
-			}).catch(error => {
-				if (error) {
-					me.log.debug("Device: %s %s, getDeviceInfo eror: %s", me.host, me.name, error);
-				}
-			});
-
-			setTimeout(() => {
+		me.log.debug("Device: %s %s, requesting Device information.", me.host, me.name);
+		axios.get(me.url + "/goform/Deviceinfo.xml").then(response => {
+			parseStringPromise(response.data).then(result => {
+				me.log.debug("Device: %s %s, get device info successful: %s", me.host, me.name, JSON.stringify(result, null, 2));
+				me.manufacturer = ["Denon", "Marantz"][result.Device_Info.BrandCode[0]];
+				me.modelName = result.Device_Info.ModelName[0];
+				me.serialNumber = result.Device_Info.MacAddress[0];
+				me.firmwareRevision = result.Device_Info.UpgradeVersion[0];
+				me.zones = result.Device_Info.DeviceZones[0];
+				me.apiVersion = result.Device_Info.CommApiVers[0];
 				me.log("-------- %s --------", me.name);
 				me.log("Manufacturer: %s", me.manufacturer);
 				me.log("Model: %s", me.modelName);
@@ -347,8 +323,27 @@ class denonTvDevice {
 				me.log("Serialnumber: %s", me.serialNumber);
 				me.log("Firmware: %s", me.firmwareRevision);
 				me.log("----------------------------------");
-			}, 350);
-		}, 500);
+				if (fs.existsSync(me.devInfoFile) === false) {
+					fs.writeFile(me.devInfoFile, JSON.stringify(result), (error) => {
+						if (error) {
+							me.log.debug("Device: %s %s, could not write devInfoFile, error: %s", me.host, me.name, error);
+						} else {
+							me.log.debug("Device: %s %s, devInfoFile saved successful", me.host, me.name);
+						}
+					});
+				} else {
+					me.log.debug("Device: %s %s, devInfoFile already exists, not saving", me.host, me.name);
+				}
+			}).catch(error => {
+				if (error) {
+					me.log.debug("Device %s %s, getDeviceInfo parse string error: %s", me.host, me.name, error);
+				}
+			});
+		}).catch(error => {
+			if (error) {
+				me.log.debug("Device: %s %s, getDeviceInfo eror: %s", me.host, me.name, error);
+			}
+		});
 	}
 
 	getDeviceState() {
