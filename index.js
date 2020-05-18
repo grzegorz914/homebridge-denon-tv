@@ -147,12 +147,10 @@ class denonTvDevice {
 					this.getDeviceState();
 				}
 			}).catch(error => {
-				if (error) {
-					this.log.debug('Device: %s %s %s, state: Offline', this.host, this.name, this.zoneName);
-					this.connectionStatus = false;
-					this.currentPowerState = false;
-					return;
-				}
+				this.log.debug('Device: %s %s %s, state: Offline', this.host, this.name, this.zoneName);
+				this.connectionStatus = false;
+				this.currentPowerState = false;
+				return;
 			});
 		}.bind(this), 3000);
 
@@ -249,7 +247,7 @@ class denonTvDevice {
 		let savedNames = {};
 		try {
 			savedNames = JSON.parse(fs.readFileSync(this.inputsFile));
-		} catch (err) {
+		} catch (error) {
 			this.log.debug('Device: %s %s, inputs file does not exist', this.host, this.name)
 		}
 
@@ -331,14 +329,10 @@ class denonTvDevice {
 					}
 				});
 			}).catch(error => {
-				if (error) {
-					me.log.debug('Device %s %s, getDeviceInfo parse string error: %s', me.host, me.name, error);
-				}
+				me.log.debug('Device %s %s, getDeviceInfo parse string error: %s', me.host, me.name, error);
 			});
 		}).catch(error => {
-			if (error) {
-				me.log.debug('Device: %s %s, getDeviceInfo eror: %s', me.host, me.name, error);
-			}
+			me.log.debug('Device: %s %s, getDeviceInfo eror: %s', me.host, me.name, error);
 		});
 	}
 
@@ -379,14 +373,10 @@ class denonTvDevice {
 					me.currentVolume = volume;
 				}
 			}).catch(error => {
-				if (error) {
-					me.log.debug('Device %s %s, getDeviceState parse string error: %s', me.host, me.name, error);
-				}
+				me.log.debug('Device %s %s, getDeviceState parse string error: %s', me.host, me.name, error);
 			});
 		}).catch(error => {
-			if (error) {
-				me.log('Device: %s %s %s, getDeviceState error: %s', me.host, me.name, me.zoneName, error);
-			}
+			me.log('Device: %s %s %s, getDeviceState error: %s', me.host, me.name, me.zoneName, error);
 		});
 	}
 
@@ -405,10 +395,8 @@ class denonTvDevice {
 				me.log('Device: %s %s %s, set new Power state successful: %s', me.host, me.name, me.zoneName, state ? 'ON' : 'OFF');
 				callback(null);
 			}).catch(error => {
-				if (error) {
-					me.log.debug('Device: %s %s %s, can not set new Power state. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
-					callback(error);
-				}
+				me.log.debug('Device: %s %s %s, can not set new Power state. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
+				callback(error);
 			});
 		}
 	}
@@ -438,27 +426,21 @@ class denonTvDevice {
 						newState = state ? 'Z2MUON' : 'Z2MUOFF';
 						axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + newState).then(response => {
 						}).catch(error => {
-							if (error) {
-								me.log.debug('Device: %s %s %s, can not set new Mute state. Might be due to a wrong settings in config, error: %s', me.host, me.name, 'Zone 2', error);
-							}
+							me.log.debug('Device: %s %s %s, can not set new Mute state. Might be due to a wrong settings in config, error: %s', me.host, me.name, 'Zone 2', error);
 						});
 					}
 					if (me.zones >= 3) {
 						newState = state ? 'Z3MUON' : 'Z3MUOFF';
 						axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + newState).then(response => {
 						}).catch(error => {
-							if (error) {
-								me.log.debug('Device: %s %s %s, can not set new Mute state. Might be due to a wrong settings in config, error: %s', me.host, me.name, 'Zone 3', error);
-							}
+							me.log.debug('Device: %s %s %s, can not set new Mute state. Might be due to a wrong settings in config, error: %s', me.host, me.name, 'Zone 3', error);
 						});
 					}
 				}
 				callback(null);
 			}).catch(error => {
-				if (error) {
-					me.log.debug('Device: %s %s %s, can not set new Mute state. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
-					callback(error);
-				}
+				me.log.debug('Device: %s %s %s, can not set new Mute state. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
+				callback(error);
 			});
 		}
 	}
@@ -480,26 +462,20 @@ class denonTvDevice {
 				if (me.zones >= 2) {
 					axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + 'Z2' + targetVolume).then(response => {
 					}).catch(error => {
-						if (error) {
-							me.log.debug('Device: %s %s %s, can not set new Volume level. Might be due to a wrong settings in config, error: %s', me.host, me.name, 'Zone 2', error);
-						}
+						me.log.debug('Device: %s %s %s, can not set new Volume level. Might be due to a wrong settings in config, error: %s', me.host, me.name, 'Zone 2', error);
 					});
 				}
 				if (me.zones >= 3) {
 					axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + 'Z3' + targetVolume).then(response => {
 					}).catch(error => {
-						if (error) {
-							me.log.debug('Device: %s %s %s, can not set new Volume level. Might be due to a wrong settings in config, error: %s', me.host, me.name, 'Zone 3', error);
-						}
+						me.log.debug('Device: %s %s %s, can not set new Volume level. Might be due to a wrong settings in config, error: %s', me.host, me.name, 'Zone 3', error);
 					});
 				}
 			}
 			callback(null);
 		}).catch(error => {
-			if (error) {
-				me.log.debug('Device: %s %s %s, can not set new Volume level. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
-				callback(error);
-			}
+			me.log.debug('Device: %s %s %s, can not set new Volume level. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
+			callback(error);
 		});
 	}
 
@@ -534,26 +510,20 @@ class denonTvDevice {
 					if (me.zones >= 2) {
 						axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + 'Z2' + inputReference).then(response => {
 						}).catch(error => {
-							if (error) {
-								me.log.debug('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
-							}
+							me.log.debug('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
 						});
 					}
 					if (me.zones >= 3) {
 						axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + 'Z3' + inputReference).then(response => {
 						}).catch(error => {
-							if (error) {
-								me.log.debug('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
-							}
+							me.log.debug('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
 						});
 					}
 				}
 				callback(null);
 			}).catch(error => {
-				if (error) {
-					me.log.debug('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
-					callback(error);
-				}
+				me.log.debug('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
+				callback(error);
 			});
 		}, 100);
 	}
@@ -588,15 +558,8 @@ class denonTvDevice {
 					command = 'PVCTM';
 					break;
 			}
-			axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + command).then(response => {
-				me.log('Device: %s %s, setPictureMode successful, remoteKey: %s, command: %s', me.host, me.name, remoteKey, command);
-				callback(null);
-			}).catch(error => {
-				if (error) {
-					me.log.debug('Device: %s %s, can not setPictureMode. Might be due to a wrong settings in config, error: %s', me.host, me.name, error);
-					callback(error);
-				}
-			});
+			me.sendRemoteCommand(command, callback);
+			me.log('Device: %s %s, setPictureMode successful, remoteKey: %s', me.host, me.name, remoteKey);
 		}
 	}
 
@@ -612,22 +575,14 @@ class denonTvDevice {
 					command = 'MNRTN';
 					break;
 			}
-			axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + command).then(response => {
-				me.log('Device: %s %s, setPowerModeSelection successful, remoteKey: %s, command: %s', me.host, me.name, remoteKey, command);
-				callback(null);
-			}).catch(error => {
-				if (error) {
-					me.log.debug('Device: %s %s, can not setPowerModeSelection. Might be due to a wrong settings in config, error: %s', me.host, me.name, error);
-					callback(error);
-				}
-			});
+			me.sendRemoteCommand(command, callback);
+			me.log('Device: %s %s, setPowerModeSelection successful, remoteKey: %s', me.host, me.name, remoteKey);
 		}
 	}
 
 	setVolumeSelector(remoteKey, callback) {
 		var me = this;
 		if (me.currentPowerState) {
-			let zone = me.allZonesControl ? 'MV' : ['MV', 'Z2', 'Z3'][me.zoneControl];
 			let command = 'MV?';
 			switch (remoteKey) {
 				case Characteristic.VolumeSelector.INCREMENT:
@@ -637,33 +592,8 @@ class denonTvDevice {
 					command = 'DOWN';
 					break;
 			}
-			axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + zone + command).then(response => {
-				me.log('Device: %s %s %s, setVolumeSelector successful, remoteKey: %s, command: %s', me.host, me.name, me.zoneName, remoteKey, command);
-				if (me.allZonesControl) {
-					if (me.zones >= 2) {
-						axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + 'Z2' + command).then(response => {
-						}).catch(error => {
-							if (error) {
-								me.log.debug('Device: %s %s %s, can not setVolumeSelector. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
-							}
-						});
-					}
-					if (me.zones >= 3) {
-						axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + 'Z3' + command).then(response => {
-						}).catch(error => {
-							if (error) {
-								me.log.debug('Device: %s %s %s, can not setVolumeSelector. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
-							}
-						});
-					}
-				}
-				callback(null);
-			}).catch(error => {
-				if (error) {
-					me.log.debug('Device: %s %s %s, can not setVolumeSelector. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
-					callback(error);
-				}
-			});
+			me.sendRemoteCommand(command, callback);
+			me.log('Device: %s %s, setVolumeSelector successful, remoteKey: %s', me.host, me.name, remoteKey);
 		}
 	}
 
@@ -712,14 +642,37 @@ class denonTvDevice {
 					command = me.switchInfoMenu ? 'MNINF' : 'MNOPT';
 					break;
 			}
-			axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + command).then(response => {
-				me.log('Device: %s %s, setRemoteKey successful, remoteKey: %s, command: %s', me.host, me.name, remoteKey, command);
-				callback(null);
-			}).catch(error => {
-				if (error) {
-					me.log.debug('Device: %s %s, can not setRemoteKey. Might be due to a wrong settings in config, error: %s', me.host, me.name, error);
-					callback(error);
+			me.sendRemoteCommand(command, callback);
+			me.log('Device: %s %s, setRemoteKey successful, remoteKey: %s', me.host, me.name, remoteKey);
+		}
+	}
+
+	sendRemoteCommand(command, callback) {
+		var me = this;
+		let zone = me.allZonesControl ? 'MV' : ['MV', 'Z2', 'Z3'][me.zoneControl];
+		if (me.currentPowerState) {
+			axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + zone + command).then(response => {
+				me.log('Device: %s %s %s, send RC command successful, command: %s', me.host, me.name, me.zoneName, command);
+				if (me.allZonesControl) {
+					if (me.zones >= 2 && (command === 'UP' || command === 'DOWN')) {
+						axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + 'Z2' + command).then(response => {
+						}).catch(error => {
+							me.log.debug('Device: %s %s %s, can not send RC command. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
+						});
+					}
+					if (me.zones >= 3 && (command === 'UP' || command === 'DOWN')) {
+						axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + 'Z3' + command).then(response => {
+						}).catch(error => {
+							me.log.debug('Device: %s %s %s, can not send RC command. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
+						});
+					}
 				}
+				if (callback !== null) {
+					callback();
+				}
+			}).catch(error => {
+				me.log.debug('Device: %s %s %s, can not send RC command. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
+				callback(error);
 			});
 		}
 	}

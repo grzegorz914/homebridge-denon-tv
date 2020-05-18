@@ -1,7 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
+## 2.3.60 (18.05.2020)
+- fixed bug in RC control
+
 ## 2.3.35 (17.05.2020)
--fixed switch input if start with scene aor automation
+- fixed switch input if start with scene or automation
 
 ## 2.3.0 (16.05.2020)
 - removed master volume and power control (best Use Config UI X to set new config)
