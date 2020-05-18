@@ -106,19 +106,19 @@ class denonTvDevice {
 		this.currentSurroundModeReference = null;
 		this.prefDir = path.join(api.user.storagePath(), 'denonTv');
 		this.inputsFile = this.prefDir + '/' + 'inputs_' + this.host.split('.').join('');
+		this.customInputsFile = this.prefDir + '/' + 'customInputs_' + this.host.split('.').join('');
 		this.devInfoFile = this.prefDir + '/' + 'devInfo_' + this.host.split('.').join('');
 		this.url = ('http://' + this.host + ':' + this.port);
 
-		let defaultInputs = [
-			{
-				name: 'No inputs configured',
-				reference: 'No references configured',
-				type: 'No types configured',
-				mode: 'No mode configured'
-			}
-		];
-
 		if (!Array.isArray(this.inputs) || this.inputs === undefined || this.inputs === null) {
+			let defaultInputs = [
+				{
+					name: 'No inputs configured',
+					reference: 'No references configured',
+					type: 'No types configured',
+					mode: 'No mode configured'
+				}
+			];
 			this.inputs = defaultInputs;
 		}
 
@@ -246,9 +246,9 @@ class denonTvDevice {
 
 		let savedNames = {};
 		try {
-			savedNames = JSON.parse(fs.readFileSync(this.inputsFile));
+			savedNames = JSON.parse(fs.readFileSync(this.customInputsFile));
 		} catch (error) {
-			this.log.debug('Device: %s %s, inputs file does not exist', this.host, this.name)
+			this.log.debug('Device: %s %s, customInputs file does not exist', this.host, this.name)
 		}
 
 		this.inputs.forEach((input, i) => {
@@ -281,13 +281,13 @@ class denonTvDevice {
 
 			this.inputsService
 				.getCharacteristic(Characteristic.ConfiguredName)
-				.on('set', (newInputName, callback) => {
-					this.inputs[inputReference] = newInputName;
-					fs.writeFile(this.inputsFile, JSON.stringify(this.inputs), (error) => {
+				.on('set', (name, callback) => {
+					savedNames[inputReference] = name;
+					fs.writeFile(this.customInputsFile, JSON.stringify(savedNames, null, 2), (error) => {
 						if (error) {
 							this.log.debug('Device: %s %s, can not write new Input name, error: %s', this.host, this.name, error);
 						} else {
-							this.log('Device: %s %s, saved new Input successful, name: %s reference: %s', this.host, this.name, newInputName, inputReference);
+							this.log('Device: %s %s, saved new Input successful, name: %s reference: %s', this.host, this.name, name, inputReference);
 						}
 					});
 					callback(null)
@@ -321,7 +321,7 @@ class denonTvDevice {
 				me.log('Serialnumber: %s', me.serialNumber);
 				me.log('Firmware: %s', me.firmwareRevision);
 				me.log('----------------------------------');
-				fs.writeFile(me.devInfoFile, JSON.stringify(result), (error) => {
+				fs.writeFile(me.devInfoFile, JSON.stringify(result, null, 2), (error) => {
 					if (error) {
 						me.log.debug('Device: %s %s, could not write devInfoFile, error: %s', me.host, me.name, error);
 					} else {
