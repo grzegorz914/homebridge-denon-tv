@@ -481,12 +481,12 @@ class denonTvDevice {
 	getInput(callback) {
 		var me = this;
 		let inputReference = me.currentInputReference;
+		let inputIdentifier = me.inputReferences.indexOf(inputReference);
 		if (!me.currentPowerState || inputReference === undefined || inputReference === null || inputReference === '') {
 			me.televisionService
 				.updateCharacteristic(Characteristic.ActiveIdentifier, 0);
-			callback(null);
+			callback(null, 0);
 		} else {
-			let inputIdentifier = me.inputReferences.indexOf(inputReference);
 			if (inputReference === me.inputReferences[inputIdentifier]) {
 				me.televisionService
 					.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
@@ -559,11 +559,10 @@ class denonTvDevice {
 			}
 			axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + command).then(response => {
 				me.log('Device: %s %s, setPictureMode successful, command: %s', me.host, me.name, command);
-				if (callback !== null) {
-					callback();
-				}
+				callback(null);
 			}).catch(error => {
 				me.log.debug('Device: %s %s %s, can not setPictureMode command. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
+				callback(error);
 			});
 		}
 	}
@@ -582,11 +581,10 @@ class denonTvDevice {
 			}
 			axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + command).then(response => {
 				me.log('Device: %s %s, setPowerModeSelection successful, command: %s', me.host, me.name, command);
-				if (callback !== null) {
-					callback();
-				}
+				callback(null);
 			}).catch(error => {
 				me.log.debug('Device: %s %s %s, can not setPowerModeSelection command. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
+				callback(error);
 			});
 		}
 	}
@@ -620,11 +618,10 @@ class denonTvDevice {
 						});
 					}
 				}
-				if (callback !== null) {
-					callback();
-				}
+				callback(null);
 			}).catch(error => {
 				me.log.debug('Device: %s %s %s, can not setVolumeSelector command. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
+				callback(error);
 			});
 		}
 	}
@@ -676,11 +673,10 @@ class denonTvDevice {
 			}
 			axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + zone + command).then(response => {
 				me.log('Device: %s %s, setRemoteKey successful, command: %s', me.host, me.name, command);
-				if (callback !== null) {
-					callback();
-				}
+				callback(null);
 			}).catch(error => {
 				me.log.debug('Device: %s %s %s, can not setRemoteKey command. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
+				callback(error);
 			});
 		}
 	}
