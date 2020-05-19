@@ -34,7 +34,7 @@ class denonTvPlatform {
 		this.accessories = [];
 		if (api) {
 			this.api = api;
-			if (this.version < 2.1) {
+			if (api.version < 2.1) {
 				throw new Error('Unexpected API version.');
 			}
 			this.api.on('didFinishLaunching', this.didFinishLaunching.bind(this));
@@ -65,26 +65,26 @@ class denonTvPlatform {
 }
 
 class denonTvDevice {
-	constructor(log, device, api) {
+	constructor(log, config, api) {
 		this.log = log;
 		this.api = api;
-		this.device = device;
+		this.config = config;
 
 		//device configuration
-		this.name = device.name;
-		this.host = device.host;
-		this.port = device.port;
-		this.zoneControl = device.zoneControl;
-		this.allZonesControl = device.allZonesControl;
-		this.volumeControl = device.volumeControl;
-		this.switchInfoMenu = device.switchInfoMenu;
-		this.inputs = device.inputs;
+		this.name = config.name;
+		this.host = config.host;
+		this.port = config.port;
+		this.zoneControl = config.zoneControl;
+		this.allZonesControl = config.allZonesControl;
+		this.volumeControl = config.volumeControl;
+		this.switchInfoMenu = config.switchInfoMenu;
+		this.inputs = config.inputs;
 
 		//get Device info
-		this.manufacturer = device.manufacturer || 'Denon/Marantz';
-		this.modelName = device.modelName || PLUGIN_NAME;
-		this.serialNumber = device.serialNumber || 'SN0000003';
-		this.firmwareRevision = device.firmwareRevision || 'FW0000003';
+		this.manufacturer = config.manufacturer || 'Denon/Marantz';
+		this.modelName = config.modelName || PLUGIN_NAME;
+		this.serialNumber = config.serialNumber || 'SN0000003';
+		this.firmwareRevision = config.firmwareRevision || 'FW0000003';
 		this.zones = 1;
 		this.apiVersion = null;
 
@@ -156,6 +156,84 @@ class denonTvDevice {
 
 		//Delay to wait for device info before publish
 		setTimeout(this.prepareTelevisionService.bind(this), 1500);
+	}
+
+	getDeviceInfo() {
+		var me = this;
+		me.log.debug('Device: %s %s, requesting Device information.', me.host, me.name);
+		axios.get(me.url + '/goform/Deviceinfo.xml').then(response => {
+			parseStringPromise(response.data).then(result => {
+				me.log.debug('Device: %s %s, get Device info successful: %s', me.host, me.name, JSON.stringify(result, null, 2));
+				me.manufacturer = ['Denon', 'Marantz'][result.Device_Info.BrandCode[0]];
+				me.modelName = result.Device_Info.ModelName[0];
+				me.serialNumber = result.Device_Info.MacAddress[0];
+				me.firmwareRevision = result.Device_Info.UpgradeVersion[0];
+				me.zones = result.Device_Info.DeviceZones[0];
+				me.apiVersion = result.Device_Info.CommApiVers[0];
+				me.log('-------- %s --------', me.name);
+				me.log('Manufacturer: %s', me.manufacturer);
+				me.log('Model: %s', me.modelName);
+				me.log('Zones: %s', me.zones);
+				me.log('Api version: %s', me.apiVersion);
+				me.log('Serialnumber: %s', me.serialNumber);
+				me.log('Firmware: %s', me.firmwareRevision);
+				me.log('----------------------------------');
+				fs.writeFile(me.devInfoFile, JSON.stringify(result, null, 2), (error) => {
+					if (error) {
+						me.log.debug('Device: %s %s, could not write devInfoFile, error: %s', me.host, me.name, error);
+					} else {
+						me.log('Device: %s %s, devInfoFile saved successful in: %s', me.host, me.name, me.prefDir);
+					}
+				});
+			}).catch(error => {
+				me.log.debug('Device %s %s, getDeviceInfo parse string error: %s', me.host, me.name, error);
+			});
+		}).catch(error => {
+			me.log.debug('Device: %s %s, getDeviceInfo eror: %s', me.host, me.name, error);
+		});
+	}
+
+	getDeviceState() {
+		var me = this;
+		me.log.debug('Device: %s %s, requesting Device state.', me.host, me.name);
+		axios.get(me.url + '/goform/form' + me.zoneNumber + 'XmlStatusLite.xml').then(response => {
+			parseStringPromise(response.data).then(result => {
+				let powerState = (result.item.Power[0].value[0] == 'ON');
+				if (me.televisionService) {
+					me.televisionService.updateCharacteristic(Characteristic.Active, powerState);
+					me.log.debug('Device: %s %s %s, get current Power state successful: %s', me.host, me.name, me.zoneName, powerState ? 'ON' : 'OFF');
+					me.currentPowerState = powerState;
+				}
+
+				let inputReference = result.item.InputFuncSelect[0].value[0];
+				let inputIdentifier = me.inputReferences.indexOf(inputReference);
+				if (me.televisionService) {
+					me.televisionService.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
+					me.log.debug('Device: %s %s %s, get current Input successful: %s', me.host, me.name, me.zoneName, inputReference);
+					me.currentInputReference = inputReference;
+				}
+
+				let mute = (result.item.Mute[0].value[0] == 'ON');
+				let muteState = powerState ? mute : true;
+				let volume = parseInt(result.item.MasterVolume[0].value[0]) + 80;
+				if (me.speakerService) {
+					me.speakerService.updateCharacteristic(Characteristic.Mute, muteState);
+					me.speakerService.updateCharacteristic(Characteristic.Volume, volume);
+					if (me.volumeControl && me.volumeService) {
+						me.volumeService.updateCharacteristic(Characteristic.On, !muteState);
+						me.volumeService.updateCharacteristic(Characteristic.Brightness, volume);
+					}
+					me.log.debug('Device: %s %s %s, get current Mute state: %s', me.host, me.name, me.zoneName, muteState ? 'ON' : 'OFF');
+					me.log.debug('Device: %s %s %s, get current Volume level: %s dB ', me.host, me.name, me.zoneName, (volume - 80));
+					me.currentMuteState = muteState;
+					me.currentVolume = volume;
+				}
+			}).catch(error => {
+				me.log.debug('Device %s %s, getDeviceState parse string error: %s', me.host, me.name, error);
+			});
+		}).catch(error => {
+			me.log('Device: %s %s %s, getDeviceState error: %s', me.host, me.name, me.zoneName, error);
+		});
 	}
 
 	//Prepare TV service 
@@ -301,85 +379,6 @@ class denonTvDevice {
 		});
 	}
 
-	getDeviceInfo() {
-		var me = this;
-		me.log.debug('Device: %s %s, requesting Device information.', me.host, me.name);
-		axios.get(me.url + '/goform/Deviceinfo.xml').then(response => {
-			parseStringPromise(response.data).then(result => {
-				me.log.debug('Device: %s %s, get device info successful: %s', me.host, me.name, JSON.stringify(result, null, 2));
-				me.manufacturer = ['Denon', 'Marantz'][result.Device_Info.BrandCode[0]];
-				me.modelName = result.Device_Info.ModelName[0];
-				me.serialNumber = result.Device_Info.MacAddress[0];
-				me.firmwareRevision = result.Device_Info.UpgradeVersion[0];
-				me.zones = result.Device_Info.DeviceZones[0];
-				me.apiVersion = result.Device_Info.CommApiVers[0];
-				me.log('-------- %s --------', me.name);
-				me.log('Manufacturer: %s', me.manufacturer);
-				me.log('Model: %s', me.modelName);
-				me.log('Zones: %s', me.zones);
-				me.log('Api version: %s', me.apiVersion);
-				me.log('Serialnumber: %s', me.serialNumber);
-				me.log('Firmware: %s', me.firmwareRevision);
-				me.log('----------------------------------');
-				fs.writeFile(me.devInfoFile, JSON.stringify(result, null, 2), (error) => {
-					if (error) {
-						me.log.debug('Device: %s %s, could not write devInfoFile, error: %s', me.host, me.name, error);
-					} else {
-						me.log('Device: %s %s, devInfoFile saved successful in: %s', me.host, me.name, me.prefDir);
-					}
-				});
-			}).catch(error => {
-				me.log.debug('Device %s %s, getDeviceInfo parse string error: %s', me.host, me.name, error);
-			});
-		}).catch(error => {
-			me.log.debug('Device: %s %s, getDeviceInfo eror: %s', me.host, me.name, error);
-		});
-	}
-
-	getDeviceState() {
-		var me = this;
-		me.log.debug('Device: %s %s, requesting Device state.', me.host, me.name);
-		axios.get(me.url + '/goform/form' + me.zoneNumber + 'XmlStatusLite.xml').then(response => {
-			parseStringPromise(response.data).then(result => {
-				let powerState = (result.item.Power[0].value[0] == 'ON');
-				if (me.televisionService) {
-					me.televisionService.updateCharacteristic(Characteristic.Active, powerState);
-					me.log.debug('Device: %s %s %s, get current Power state successful: %s', me.host, me.name, me.zoneName, powerState ? 'ON' : 'OFF');
-					me.currentPowerState = powerState;
-				}
-
-				let inputReference = result.item.InputFuncSelect[0].value[0];
-				if (me.televisionService && powerState && (me.currentInputReference !== inputReference)) {
-					if (me.inputReferences && me.inputReferences.length > 0) {
-						let inputIdentifier = me.inputReferences.indexOf(inputReference);
-						me.televisionService.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
-						me.log('Device: %s %s %s, get current Input successful: %s', me.host, me.name, me.zoneName, inputReference);
-						me.currentInputReference = inputReference;
-					}
-				}
-
-				let muteState = powerState ? (result.item.Mute[0].value[0] == 'ON') : true;
-				let volume = parseInt(result.item.MasterVolume[0].value[0]) + 80;
-				if (me.speakerService && powerState && (me.currentMuteState !== muteState || me.currentVolume !== volume)) {
-					me.speakerService.updateCharacteristic(Characteristic.Mute, muteState);
-					me.speakerService.updateCharacteristic(Characteristic.Volume, volume);
-					if (me.volumeControl && me.volumeService) {
-						me.volumeService.updateCharacteristic(Characteristic.On, !muteState);
-						me.volumeService.updateCharacteristic(Characteristic.Brightness, volume);
-					}
-					me.log('Device: %s %s %s, get current Mute state: %s', me.host, me.name, me.zoneName, muteState ? 'ON' : 'OFF');
-					me.log('Device: %s %s %s, get current Volume level: %s dB ', me.host, me.name, me.zoneName, (volume - 80));
-					me.currentMuteState = muteState;
-					me.currentVolume = volume;
-				}
-			}).catch(error => {
-				me.log.debug('Device %s %s, getDeviceState parse string error: %s', me.host, me.name, error);
-			});
-		}).catch(error => {
-			me.log('Device: %s %s %s, getDeviceState error: %s', me.host, me.name, me.zoneName, error);
-		});
-	}
-
 	getPower(callback) {
 		var me = this;
 		let state = me.currentPowerState;
@@ -404,7 +403,7 @@ class denonTvDevice {
 	getMute(callback) {
 		var me = this;
 		let state = me.currentPowerState ? me.currentMuteState : true;
-		me.log.debug('Device: %s %s %s, get current Mute state successful: %s', me.host, me.name, me.zoneName, state ? 'ON' : 'OFF');
+		me.log('Device: %s %s %s, get current Mute state successful: %s', me.host, me.name, me.zoneName, state ? 'ON' : 'OFF');
 		callback(null, state);
 	}
 
@@ -417,8 +416,8 @@ class denonTvDevice {
 
 	setMute(state, callback) {
 		var me = this;
-		let newState = me.allZonesControl ? (state ? 'MUON' : 'MUOFF') : [(state ? 'MUON' : 'MUOFF'), (state ? 'Z2MUON' : 'Z2MUOFF'), (state ? 'Z3MUON' : 'Z3MUOFF')][me.zoneControl];
-		if (state !== me.currentMuteState) {
+		if (me.currentPowerState) {
+			let newState = me.allZonesControl ? (me.currentMuteState ? 'MUON' : 'MUOFF') : [(state ? 'MUON' : 'MUOFF'), (me.currentMuteState ? 'Z2MUON' : 'Z2MUOFF'), (me.currentMuteState ? 'Z3MUON' : 'Z3MUOFF')][me.zoneControl];
 			axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + newState).then(response => {
 				me.log('Device: %s %s %s, set new Mute state successful: %s', me.host, me.name, me.zoneName, state ? 'ON' : 'OFF');
 				if (me.allZonesControl) {
@@ -448,7 +447,7 @@ class denonTvDevice {
 	getVolume(callback) {
 		var me = this;
 		let volume = me.currentVolume;
-		me.log.debug('Device: %s %s %s, get current Volume level successful: %s dB', me.host, me.name, me.zoneName, (volume - 80));
+		me.log('Device: %s %s %s, get current Volume level successful: %s dB', me.host, me.name, me.zoneName, (volume - 80));
 		callback(null, volume);
 	}
 
@@ -491,7 +490,7 @@ class denonTvDevice {
 			if (inputReference === me.inputReferences[inputIdentifier]) {
 				me.televisionService
 					.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
-				me.log.debug('Device: %s %s %s, get current Input successful: %s', me.host, me.name, me.zoneName, inputReference);
+				me.log('Device: %s %s %s, get current Input successful: %s', me.host, me.name, me.zoneName, inputReference);
 			}
 			callback(null, inputIdentifier);
 		}
@@ -525,7 +524,7 @@ class denonTvDevice {
 				me.log.debug('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
 				callback(error);
 			});
-		}, 100);
+		}, 250);
 	}
 
 	setPictureMode(remoteKey, callback) {
@@ -558,8 +557,14 @@ class denonTvDevice {
 					command = 'PVCTM';
 					break;
 			}
-			me.sendRemoteCommand(command, callback);
-			me.log('Device: %s %s, setPictureMode successful, remoteKey: %s', me.host, me.name, remoteKey);
+			axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + command).then(response => {
+				me.log('Device: %s %s, setPictureMode successful, command: %s', me.host, me.name, command);
+				if (callback !== null) {
+					callback();
+				}
+			}).catch(error => {
+				me.log.debug('Device: %s %s %s, can not setPictureMode command. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
+			});
 		}
 	}
 
@@ -575,13 +580,20 @@ class denonTvDevice {
 					command = 'MNRTN';
 					break;
 			}
-			me.sendRemoteCommand(command, callback);
-			me.log('Device: %s %s, setPowerModeSelection successful, remoteKey: %s', me.host, me.name, remoteKey);
+			axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + command).then(response => {
+				me.log('Device: %s %s, setPowerModeSelection successful, command: %s', me.host, me.name, command);
+				if (callback !== null) {
+					callback();
+				}
+			}).catch(error => {
+				me.log.debug('Device: %s %s %s, can not setPowerModeSelection command. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
+			});
 		}
 	}
 
 	setVolumeSelector(remoteKey, callback) {
 		var me = this;
+		let zone = me.allZonesControl ? 'MV' : ['MV', 'Z2', 'Z3'][me.zoneControl];
 		if (me.currentPowerState) {
 			let command = 'MV?';
 			switch (remoteKey) {
@@ -592,8 +604,28 @@ class denonTvDevice {
 					command = 'DOWN';
 					break;
 			}
-			me.sendRemoteCommand(command, callback);
-			me.log('Device: %s %s, setVolumeSelector successful, remoteKey: %s', me.host, me.name, remoteKey);
+			axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + zone + command).then(response => {
+				me.log('Device: %s %s %s, setVolumeSelector successful, command: %s', me.host, me.name, me.zoneName, command);
+				if (me.allZonesControl) {
+					if (me.zones >= 2) {
+						axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + 'Z2' + command).then(response => {
+						}).catch(error => {
+							me.log.debug('Device: %s %s %s, can not setVolumeSelector command. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
+						});
+					}
+					if (me.zones >= 3) {
+						axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + 'Z3' + command).then(response => {
+						}).catch(error => {
+							me.log.debug('Device: %s %s %s, can not setVolumeSelector command. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
+						});
+					}
+				}
+				if (callback !== null) {
+					callback();
+				}
+			}).catch(error => {
+				me.log.debug('Device: %s %s %s, can not setVolumeSelector command. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
+			});
 		}
 	}
 
@@ -642,37 +674,13 @@ class denonTvDevice {
 					command = me.switchInfoMenu ? 'MNINF' : 'MNOPT';
 					break;
 			}
-			me.sendRemoteCommand(command, callback);
-			me.log('Device: %s %s, setRemoteKey successful, remoteKey: %s', me.host, me.name, remoteKey);
-		}
-	}
-
-	sendRemoteCommand(command, callback) {
-		var me = this;
-		let zone = me.allZonesControl ? 'MV' : ['MV', 'Z2', 'Z3'][me.zoneControl];
-		if (me.currentPowerState) {
 			axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + zone + command).then(response => {
-				me.log('Device: %s %s %s, send RC command successful, command: %s', me.host, me.name, me.zoneName, command);
-				if (me.allZonesControl) {
-					if (me.zones >= 2 && (command === 'UP' || command === 'DOWN')) {
-						axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + 'Z2' + command).then(response => {
-						}).catch(error => {
-							me.log.debug('Device: %s %s %s, can not send RC command. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
-						});
-					}
-					if (me.zones >= 3 && (command === 'UP' || command === 'DOWN')) {
-						axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + 'Z3' + command).then(response => {
-						}).catch(error => {
-							me.log.debug('Device: %s %s %s, can not send RC command. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
-						});
-					}
-				}
+				me.log('Device: %s %s, setRemoteKey successful, command: %s', me.host, me.name, command);
 				if (callback !== null) {
 					callback();
 				}
 			}).catch(error => {
-				me.log.debug('Device: %s %s %s, can not send RC command. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
-				callback(error);
+				me.log.debug('Device: %s %s %s, can not setRemoteKey command. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
 			});
 		}
 	}
