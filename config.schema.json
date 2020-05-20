@@ -38,7 +38,7 @@
               "type": "integer",
               "default": 0,
               "maximum": 2,
-              "description": "Here select which Zone You want control. Do not enable *All zones* if You added Zone 1 or 2 and want separate control at the same time.",
+              "description": "Here select which Zone You want control. Do not enable *All zones* if You added Zone 2 or 3 and want separate control at the same time.",
               "oneOf": [
                 {
                   "title": "Main Zone",
@@ -179,7 +179,7 @@
                     "title": "Input mode",
                     "type": "string",
                     "default": "SI",
-                    "description": "Here select source input mode. Do not select surround mode if You added Zone 1 or 2.",
+                    "description": "Here select source input mode. Do not select *Surround mode* if You added Zone 2 or 3.",
                     "oneOf": [
                       {
                         "title": "Source input",
