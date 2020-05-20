@@ -22,6 +22,7 @@ Homebridge plugin to control Denon/Marantz AV Receivers series X in HomeKit as T
 6. Surround Modes control from the inputs list.
 7. Digital Input Modes control from the inputs list.
 8. Siri control.
+9. Zones control.
 
 <p align="left">
   <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/homekit.png" height="300"></a>  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/inputs.png" height="300"></a>  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/RC.png" height="300"></a>
@@ -102,60 +103,6 @@ Due to HomeKit app limitation max. services for 1 accessory is 100. Over this va
                             "mode": "SI"
                         },
                         {
-                            "name": "Bluray",
-                            "reference": "BD",
-                            "type": "HDMI",
-                            "mode": "SI"
-                        },
-                        {
-                            "name": "Tuner",
-                            "reference": "TUNER",
-                            "type": "TUNER",
-                            "mode": "SI"
-                        },
-                        {
-                            "name": "Spotify",
-                            "reference": "SPOTIFY",
-                            "type": "APPLICATION",
-                            "mode": "SI"
-                        },
-                        {
-                            "name": "Net",
-                            "reference": "NET",
-                            "type": "APPLICATION",
-                            "mode": "SI"
-                        },
-                        {
-                            "name": "Media player",
-                            "reference": "MPLAY",
-                            "type": "APPLICATION",
-                            "mode": "SI"
-                        },
-                        {
-                            "name": "USB IPOD",
-                            "reference": "USB/IPOD",
-                            "type": "USB",
-                            "mode": "SI"
-                        },
-                        {
-                            "name": "AUX 1",
-                            "reference": "AUX1",
-                            "type": "HDMI",
-                            "mode": "SI"
-                        },
-                        {
-                            "name": "AUX 2",
-                            "reference": "AUX2",
-                            "type": "HDMI",
-                            "mode": "SI"
-                        },
-                        {
-                            "name": "Source",
-                            "reference": "SOURCE",
-                            "type": "HDMI",
-                            "mode": "SI"
-                        },
-                        {
                             "name": "Stereo",
                             "reference": "STEREO",
                             "type": "OTHER",
@@ -173,6 +120,129 @@ Due to HomeKit app limitation max. services for 1 accessory is 100. Over this va
                             "type": "OTHER",
                             "mode": "DC"
                         }
+            ]
+        }
+    ]
+}
+```
+
+## Zones control and settings
+1. If U want control all zones seperat at the same time U can use config as present bottom.
+3. Select `zoneControl` (0 - Main Zone, 1 - Zone 1, 2 - Zone 2) or choice from the configurations GUI.
+2. Disable `allZonesControl` together.
+2. The `volumeControl` will working seperat for every zone.
+2. Disable `switchInfoMenu` will working for all zones seperat but have same end effect for every zone.
+4. All `inputs` `name`, `reference`, `type` can be use for every zone.
+5. Surrounds `mode` can be only used for Main Zone, do not set this for Zone 1 and 2.
+6. After correct settings and save restart Homebridge, every zone need to be added separat in HomeKit app using same PIN CODE.
+
+```json
+{
+    "platform": "DenonTv",
+    "devices": [
+        {
+            "name": "AV Main Zone",
+            "host": "192.168.1.5",
+            "port": 8080,
+            "zoneControl" : 0,
+            "allZonesControl": false,
+            "volumeControl": false,
+            "switchInfoMenu": false,
+            "inputs": [
+                {
+                    "name": "Xbox One",
+                    "reference": "GAME",
+                    "type": "HDMI",
+                    "mode": "SI"
+                },
+                {
+                    "name": "Television",
+                    "reference": "TV",
+                    "type": "HDMI",
+                    "mode": "SI"
+                },
+                {
+                    "name": "Sat Receiver",
+                    "reference": "SAT/CBL",
+                    "type": "HDMI",
+                    "mode": "SI"
+                },
+                {
+                    "name": "Digital Input AUTO",
+                    "reference": "AUTO",
+                    "type": "OTHER",
+                    "mode": "DC"
+                }
+            ]
+        },
+        {
+            "name": "AV Zone 1",
+            "host": "192.168.1.5",
+            "port": 8080,
+            "zoneControl" : 1,
+            "allZonesControl": false,
+            "volumeControl": false,
+            "switchInfoMenu": false,
+            "inputs": [
+                {
+                    "name": "Xbox One",
+                    "reference": "GAME",
+                    "type": "HDMI",
+                    "mode": "SI"
+                },
+                {
+                    "name": "Television",
+                    "reference": "TV",
+                    "type": "HDMI",
+                    "mode": "SI"
+                },
+                {
+                    "name": "Sat Receiver",
+                    "reference": "SAT/CBL",
+                    "type": "HDMI",
+                    "mode": "SI"
+                },
+                {
+                    "name": "Digital Input AUTO",
+                    "reference": "AUTO",
+                    "type": "OTHER",
+                    "mode": "DC"
+                }
+            ]
+        },
+        {
+            "name": "AV Zone 2",
+            "host": "192.168.1.5",
+            "port": 8080,
+            "zoneControl" : 2,
+            "allZonesControl": false,
+            "volumeControl": false,
+            "switchInfoMenu": false,
+            "inputs": [
+                {
+                    "name": "Xbox One",
+                    "reference": "GAME",
+                    "type": "HDMI",
+                    "mode": "SI"
+                },
+                {
+                    "name": "Television",
+                    "reference": "TV",
+                    "type": "HDMI",
+                    "mode": "SI"
+                },
+                {
+                    "name": "Sat Receiver",
+                    "reference": "SAT/CBL",
+                    "type": "HDMI",
+                    "mode": "SI"
+                },
+                {
+                    "name": "Digital Input AUTO",
+                    "reference": "AUTO",
+                    "type": "OTHER",
+                    "mode": "DC"
+                }
             ]
         }
     ]
