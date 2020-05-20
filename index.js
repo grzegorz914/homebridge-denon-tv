@@ -213,492 +213,491 @@ class denonTvDevice {
 			me.log.debug('Device: %s %s, getDeviceInfo eror: %s', me.host, me.name, error);
 		});
 	}
-}
 
-getDeviceState() {
-	var me = this;
-	me.log.debug('Device: %s %s, requesting Device state.', me.host, me.name);
-	let result = me.deviceStatusResponse;
-	let powerState = (result.item.Power[0].value[0] == 'ON');
-	me.log.debug('Device: %s %s %s, get current Power state successful: %s', me.host, me.name, me.zoneName, powerState ? 'ON' : 'OFF');
-	me.currentPowerState = powerState;
-	if (me.televisionService) {
-		me.televisionService.updateCharacteristic(Characteristic.Active, powerState);
-	}
-
-	let inputReference = result.item.InputFuncSelect[0].value[0];
-	let inputIdentifier = me.inputReferences.indexOf(inputReference);
-	me.log.debug('Device: %s %s %s, get current Input successful: %s', me.host, me.name, me.zoneName, inputReference);
-	me.currentInputReference = inputReference;
-	if (me.televisionService) {
-		me.televisionService.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
-
-	}
-
-	let mute = (result.item.Mute[0].value[0] == 'ON');
-	let muteState = powerState ? mute : true;
-	let volume = parseInt(result.item.MasterVolume[0].value[0]) + 80;
-	me.log.debug('Device: %s %s %s, get current Mute state: %s', me.host, me.name, me.zoneName, muteState ? 'ON' : 'OFF');
-	me.log.debug('Device: %s %s %s, get current Volume level: %s dB ', me.host, me.name, me.zoneName, (volume - 80));
-	me.currentMuteState = muteState;
-	me.currentVolume = volume;
-	if (me.speakerService) {
-		me.speakerService.updateCharacteristic(Characteristic.Mute, muteState);
-		me.speakerService.updateCharacteristic(Characteristic.Volume, volume);
-		if (me.volumeControl && me.volumeService) {
-			me.volumeService.updateCharacteristic(Characteristic.On, !muteState);
-			me.volumeService.updateCharacteristic(Characteristic.Brightness, volume);
-		}
-	}
-}
-
-//Prepare TV service 
-prepareTelevisionService() {
-	this.log.debug('prepareTelevisionService');
-	const accessoryName = this.name;
-	const accessoryUUID = UUID.generate(accessoryName);
-	this.accessory = new Accessory(accessoryName, accessoryUUID);
-	this.accessory.category = Categories.AUDIO_RECEIVER;
-
-	this.accessory.getService(Service.AccessoryInformation)
-		.setCharacteristic(Characteristic.Manufacturer, this.manufacturer)
-		.setCharacteristic(Characteristic.Model, this.modelName)
-		.setCharacteristic(Characteristic.SerialNumber, this.serialNumber)
-		.setCharacteristic(Characteristic.FirmwareRevision, this.firmwareRevision);
-
-	this.televisionService = new Service.Television(accessoryName, 'televisionService');
-	this.televisionService.setCharacteristic(Characteristic.ConfiguredName, accessoryName);
-	this.televisionService.setCharacteristic(Characteristic.SleepDiscoveryMode, Characteristic.SleepDiscoveryMode.ALWAYS_DISCOVERABLE);
-
-	this.televisionService.getCharacteristic(Characteristic.Active)
-		.on('get', this.getPower.bind(this))
-		.on('set', this.setPower.bind(this));
-
-	this.televisionService.getCharacteristic(Characteristic.ActiveIdentifier)
-		.on('get', this.getInput.bind(this))
-		.on('set', this.setInput.bind(this));
-
-	this.televisionService.getCharacteristic(Characteristic.RemoteKey)
-		.on('set', this.setRemoteKey.bind(this));
-
-	this.televisionService.getCharacteristic(Characteristic.PowerModeSelection)
-		.on('set', this.setPowerModeSelection.bind(this));
-
-	this.televisionService.getCharacteristic(Characteristic.PictureMode)
-		.on('set', this.setPictureMode.bind(this));
-
-	this.accessory.addService(this.televisionService);
-	this.prepareSpeakerService();
-	this.prepareInputsService();
-	if (this.volumeControl) {
-		this.prepareVolumeService();
-	}
-	if (this.soundModeControl) {
-		this.prepareSoundModesService();
-	}
-
-	this.log.debug('Device: %s %s, publishExternalAccessories.', this.host, accessoryName);
-	this.api.publishExternalAccessories(PLUGIN_NAME, [this.accessory]);
-}
-
-//Prepare speaker service
-prepareSpeakerService() {
-	this.log.debug('prepareSpeakerService');
-	this.speakerService = new Service.TelevisionSpeaker(this.name + ' Speaker', 'speakerService');
-	this.speakerService
-		.setCharacteristic(Characteristic.Active, Characteristic.Active.ACTIVE)
-		.setCharacteristic(Characteristic.VolumeControlType, Characteristic.VolumeControlType.ABSOLUTE);
-	this.speakerService.getCharacteristic(Characteristic.VolumeSelector)
-		.on('set', this.setVolumeSelector.bind(this));
-	this.speakerService.getCharacteristic(Characteristic.Volume)
-		.on('get', this.getVolume.bind(this))
-		.on('set', this.setVolume.bind(this));
-	this.speakerService.getCharacteristic(Characteristic.Mute)
-		.on('get', this.getMute.bind(this))
-		.on('set', this.setMute.bind(this));
-
-	this.accessory.addService(this.speakerService);
-	this.televisionService.addLinkedService(this.speakerService);
-}
-
-//Prepare volume service
-prepareVolumeService() {
-	this.log.debug('prepareVolumeService');
-	this.volumeService = new Service.Lightbulb(this.name + ' Volume', 'volumeService');
-	this.volumeService.getCharacteristic(Characteristic.On)
-		.on('get', this.getMuteSlider.bind(this))
-		.on('set', (newValue, callback) => {
-			this.speakerService.setCharacteristic(Characteristic.Mute, !newValue);
-			callback(null);
-		});
-	this.volumeService.getCharacteristic(Characteristic.Brightness)
-		.on('get', this.getVolume.bind(this))
-		.on('set', this.setVolume.bind(this));
-
-	this.accessory.addService(this.volumeService);
-	this.televisionService.addLinkedService(this.volumeService);
-}
-
-//Prepare inputs services
-prepareInputsService() {
-	this.log.debug('prepareInputsService');
-
-	let savedNames = {};
-	try {
-		savedNames = JSON.parse(fs.readFileSync(this.customInputsFile));
-	} catch (error) {
-		this.log.debug('Device: %s %s, customInputs file does not exist', this.host, this.name)
-	}
-
-	this.inputs.forEach((input, i) => {
-
-		//get input name		
-		let inputName = input.name;
-
-		//get input reference
-		let inputReference = input.reference;
-
-		//get input type
-		let inputType = input.type;
-
-		//get input mode
-		let inputMode = input.mode;
-
-		if (savedNames && savedNames[inputReference]) {
-			inputName = savedNames[inputReference];
-		} else {
-			inputName = input.name;
+	getDeviceState() {
+		var me = this;
+		me.log.debug('Device: %s %s, requesting Device state.', me.host, me.name);
+		let result = me.deviceStatusResponse;
+		let powerState = (result.item.Power[0].value[0] == 'ON');
+		me.log.debug('Device: %s %s %s, get current Power state successful: %s', me.host, me.name, me.zoneName, powerState ? 'ON' : 'OFF');
+		me.currentPowerState = powerState;
+		if (me.televisionService) {
+			me.televisionService.updateCharacteristic(Characteristic.Active, powerState);
 		}
 
-		this.inputsService = new Service.InputSource(inputReference, 'input' + i);
-		this.inputsService
-			.setCharacteristic(Characteristic.Identifier, i)
-			.setCharacteristic(Characteristic.ConfiguredName, inputName)
-			.setCharacteristic(Characteristic.IsConfigured, Characteristic.IsConfigured.CONFIGURED)
-			.setCharacteristic(Characteristic.InputSourceType, Characteristic.InputSourceType, inputType)
-			.setCharacteristic(Characteristic.CurrentVisibilityState, Characteristic.CurrentVisibilityState.SHOWN);
+		let inputReference = result.item.InputFuncSelect[0].value[0];
+		let inputIdentifier = me.inputReferences.indexOf(inputReference);
+		me.log.debug('Device: %s %s %s, get current Input successful: %s', me.host, me.name, me.zoneName, inputReference);
+		me.currentInputReference = inputReference;
+		if (me.televisionService) {
+			me.televisionService.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
 
-		this.inputsService
-			.getCharacteristic(Characteristic.ConfiguredName)
-			.on('set', (name, callback) => {
-				savedNames[inputReference] = name;
-				fs.writeFile(this.customInputsFile, JSON.stringify(savedNames, null, 2), (error) => {
-					if (error) {
-						this.log.debug('Device: %s %s, can not write new Input name, error: %s', this.host, this.name, error);
-					} else {
-						this.log('Device: %s %s, saved new Input successful, name: %s reference: %s', this.host, this.name, name, inputReference);
-					}
-				});
-				callback(null)
+		}
+
+		let mute = (result.item.Mute[0].value[0] == 'ON');
+		let muteState = powerState ? mute : true;
+		let volume = parseInt(result.item.MasterVolume[0].value[0]) + 80;
+		me.log.debug('Device: %s %s %s, get current Mute state: %s', me.host, me.name, me.zoneName, muteState ? 'ON' : 'OFF');
+		me.log.debug('Device: %s %s %s, get current Volume level: %s dB ', me.host, me.name, me.zoneName, (volume - 80));
+		me.currentMuteState = muteState;
+		me.currentVolume = volume;
+		if (me.speakerService) {
+			me.speakerService.updateCharacteristic(Characteristic.Mute, muteState);
+			me.speakerService.updateCharacteristic(Characteristic.Volume, volume);
+			if (me.volumeControl && me.volumeService) {
+				me.volumeService.updateCharacteristic(Characteristic.On, !muteState);
+				me.volumeService.updateCharacteristic(Characteristic.Brightness, volume);
+			}
+		}
+	}
+
+	//Prepare TV service 
+	prepareTelevisionService() {
+		this.log.debug('prepareTelevisionService');
+		const accessoryName = this.name;
+		const accessoryUUID = UUID.generate(accessoryName);
+		this.accessory = new Accessory(accessoryName, accessoryUUID);
+		this.accessory.category = Categories.AUDIO_RECEIVER;
+
+		this.accessory.getService(Service.AccessoryInformation)
+			.setCharacteristic(Characteristic.Manufacturer, this.manufacturer)
+			.setCharacteristic(Characteristic.Model, this.modelName)
+			.setCharacteristic(Characteristic.SerialNumber, this.serialNumber)
+			.setCharacteristic(Characteristic.FirmwareRevision, this.firmwareRevision);
+
+		this.televisionService = new Service.Television(accessoryName, 'televisionService');
+		this.televisionService.setCharacteristic(Characteristic.ConfiguredName, accessoryName);
+		this.televisionService.setCharacteristic(Characteristic.SleepDiscoveryMode, Characteristic.SleepDiscoveryMode.ALWAYS_DISCOVERABLE);
+
+		this.televisionService.getCharacteristic(Characteristic.Active)
+			.on('get', this.getPower.bind(this))
+			.on('set', this.setPower.bind(this));
+
+		this.televisionService.getCharacteristic(Characteristic.ActiveIdentifier)
+			.on('get', this.getInput.bind(this))
+			.on('set', this.setInput.bind(this));
+
+		this.televisionService.getCharacteristic(Characteristic.RemoteKey)
+			.on('set', this.setRemoteKey.bind(this));
+
+		this.televisionService.getCharacteristic(Characteristic.PowerModeSelection)
+			.on('set', this.setPowerModeSelection.bind(this));
+
+		this.televisionService.getCharacteristic(Characteristic.PictureMode)
+			.on('set', this.setPictureMode.bind(this));
+
+		this.accessory.addService(this.televisionService);
+		this.prepareSpeakerService();
+		this.prepareInputsService();
+		if (this.volumeControl) {
+			this.prepareVolumeService();
+		}
+		if (this.soundModeControl) {
+			this.prepareSoundModesService();
+		}
+
+		this.log.debug('Device: %s %s, publishExternalAccessories.', this.host, accessoryName);
+		this.api.publishExternalAccessories(PLUGIN_NAME, [this.accessory]);
+	}
+
+	//Prepare speaker service
+	prepareSpeakerService() {
+		this.log.debug('prepareSpeakerService');
+		this.speakerService = new Service.TelevisionSpeaker(this.name + ' Speaker', 'speakerService');
+		this.speakerService
+			.setCharacteristic(Characteristic.Active, Characteristic.Active.ACTIVE)
+			.setCharacteristic(Characteristic.VolumeControlType, Characteristic.VolumeControlType.ABSOLUTE);
+		this.speakerService.getCharacteristic(Characteristic.VolumeSelector)
+			.on('set', this.setVolumeSelector.bind(this));
+		this.speakerService.getCharacteristic(Characteristic.Volume)
+			.on('get', this.getVolume.bind(this))
+			.on('set', this.setVolume.bind(this));
+		this.speakerService.getCharacteristic(Characteristic.Mute)
+			.on('get', this.getMute.bind(this))
+			.on('set', this.setMute.bind(this));
+
+		this.accessory.addService(this.speakerService);
+		this.televisionService.addLinkedService(this.speakerService);
+	}
+
+	//Prepare volume service
+	prepareVolumeService() {
+		this.log.debug('prepareVolumeService');
+		this.volumeService = new Service.Lightbulb(this.name + ' Volume', 'volumeService');
+		this.volumeService.getCharacteristic(Characteristic.On)
+			.on('get', this.getMuteSlider.bind(this))
+			.on('set', (newValue, callback) => {
+				this.speakerService.setCharacteristic(Characteristic.Mute, !newValue);
+				callback(null);
 			});
-		this.accessory.addService(this.inputsService);
-		this.televisionService.addLinkedService(this.inputsService);
-		this.inputReferences.push(inputReference);
-		this.inputNames.push(inputName);
-		this.inputTypes.push(inputType);
-		this.inputModes.push(inputMode);
-	});
-}
+		this.volumeService.getCharacteristic(Characteristic.Brightness)
+			.on('get', this.getVolume.bind(this))
+			.on('set', this.setVolume.bind(this));
 
-getPower(callback) {
-	var me = this;
-	let state = me.currentPowerState;
-	me.log('Device: %s %s %s, get current Power state successful: %s', me.host, me.name, me.zoneName, state ? 'ON' : 'OFF');
-	callback(null, state);
-}
+		this.accessory.addService(this.volumeService);
+		this.televisionService.addLinkedService(this.volumeService);
+	}
 
-setPower(state, callback) {
-	var me = this;
-	if (state !== me.currentPowerState) {
-		let newState = [(state ? 'ZMON' : 'ZMOFF'), (state ? 'Z2ON' : 'Z2OFF'), (state ? 'Z3ON' : 'Z3OFF'), (state ? 'PWON' : 'PWSTANDBY')][me.zoneControl];
-		axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + newState).then(response => {
-			me.log('Device: %s %s %s, set new Power state successful: %s', me.host, me.name, me.zoneName, state ? 'ON' : 'OFF');
-			callback(null);
-		}).catch(error => {
-			me.log.debug('Device: %s %s %s, can not set new Power state. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
-			callback(error);
+	//Prepare inputs services
+	prepareInputsService() {
+		this.log.debug('prepareInputsService');
+
+		let savedNames = {};
+		try {
+			savedNames = JSON.parse(fs.readFileSync(this.customInputsFile));
+		} catch (error) {
+			this.log.debug('Device: %s %s, customInputs file does not exist', this.host, this.name)
+		}
+
+		this.inputs.forEach((input, i) => {
+
+			//get input name		
+			let inputName = input.name;
+
+			//get input reference
+			let inputReference = input.reference;
+
+			//get input type
+			let inputType = input.type;
+
+			//get input mode
+			let inputMode = input.mode;
+
+			if (savedNames && savedNames[inputReference]) {
+				inputName = savedNames[inputReference];
+			} else {
+				inputName = input.name;
+			}
+
+			this.inputsService = new Service.InputSource(inputReference, 'input' + i);
+			this.inputsService
+				.setCharacteristic(Characteristic.Identifier, i)
+				.setCharacteristic(Characteristic.ConfiguredName, inputName)
+				.setCharacteristic(Characteristic.IsConfigured, Characteristic.IsConfigured.CONFIGURED)
+				.setCharacteristic(Characteristic.InputSourceType, Characteristic.InputSourceType, inputType)
+				.setCharacteristic(Characteristic.CurrentVisibilityState, Characteristic.CurrentVisibilityState.SHOWN);
+
+			this.inputsService
+				.getCharacteristic(Characteristic.ConfiguredName)
+				.on('set', (name, callback) => {
+					savedNames[inputReference] = name;
+					fs.writeFile(this.customInputsFile, JSON.stringify(savedNames, null, 2), (error) => {
+						if (error) {
+							this.log.debug('Device: %s %s, can not write new Input name, error: %s', this.host, this.name, error);
+						} else {
+							this.log('Device: %s %s, saved new Input successful, name: %s reference: %s', this.host, this.name, name, inputReference);
+						}
+					});
+					callback(null)
+				});
+			this.accessory.addService(this.inputsService);
+			this.televisionService.addLinkedService(this.inputsService);
+			this.inputReferences.push(inputReference);
+			this.inputNames.push(inputName);
+			this.inputTypes.push(inputType);
+			this.inputModes.push(inputMode);
 		});
 	}
-}
 
-getMute(callback) {
-	var me = this;
-	let state = me.currentPowerState ? me.currentMuteState : true;
-	me.log('Device: %s %s %s, get current Mute state successful: %s', me.host, me.name, me.zoneName, state ? 'ON' : 'OFF');
-	callback(null, state);
-}
+	getPower(callback) {
+		var me = this;
+		let state = me.currentPowerState;
+		me.log('Device: %s %s %s, get current Power state successful: %s', me.host, me.name, me.zoneName, state ? 'ON' : 'OFF');
+		callback(null, state);
+	}
 
-getMuteSlider(callback) {
-	var me = this;
-	let state = me.currentPowerState ? !me.currentMuteState : false;
-	me.log.debug('Device: %s %s %s, get current Mute state successful: %s', me.host, me.name, me.zoneName, !state ? 'ON' : 'OFF');
-	callback(null, state);
-}
+	setPower(state, callback) {
+		var me = this;
+		if (state !== me.currentPowerState) {
+			let newState = [(state ? 'ZMON' : 'ZMOFF'), (state ? 'Z2ON' : 'Z2OFF'), (state ? 'Z3ON' : 'Z3OFF'), (state ? 'PWON' : 'PWSTANDBY')][me.zoneControl];
+			axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + newState).then(response => {
+				me.log('Device: %s %s %s, set new Power state successful: %s', me.host, me.name, me.zoneName, state ? 'ON' : 'OFF');
+				callback(null);
+			}).catch(error => {
+				me.log.debug('Device: %s %s %s, can not set new Power state. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
+				callback(error);
+			});
+		}
+	}
 
-setMute(state, callback) {
-	var me = this;
-	if (me.currentPowerState) {
-		let newState = [(stste ? 'MUON' : 'MUOFF'), (state ? 'Z2MUON' : 'Z2MUOFF'), (state ? 'Z3MUON' : 'Z3MUOFF'), (state ? 'MUON' : 'MUOFF')][me.zoneControl];
-		axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + newState).then(response => {
-			me.log('Device: %s %s %s, set new Mute state successful: %s', me.host, me.name, me.zoneName, state ? 'ON' : 'OFF');
+	getMute(callback) {
+		var me = this;
+		let state = me.currentPowerState ? me.currentMuteState : true;
+		me.log('Device: %s %s %s, get current Mute state successful: %s', me.host, me.name, me.zoneName, state ? 'ON' : 'OFF');
+		callback(null, state);
+	}
+
+	getMuteSlider(callback) {
+		var me = this;
+		let state = me.currentPowerState ? !me.currentMuteState : false;
+		me.log.debug('Device: %s %s %s, get current Mute state successful: %s', me.host, me.name, me.zoneName, !state ? 'ON' : 'OFF');
+		callback(null, state);
+	}
+
+	setMute(state, callback) {
+		var me = this;
+		if (me.currentPowerState) {
+			let newState = [(stste ? 'MUON' : 'MUOFF'), (state ? 'Z2MUON' : 'Z2MUOFF'), (state ? 'Z3MUON' : 'Z3MUOFF'), (state ? 'MUON' : 'MUOFF')][me.zoneControl];
+			axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + newState).then(response => {
+				me.log('Device: %s %s %s, set new Mute state successful: %s', me.host, me.name, me.zoneName, state ? 'ON' : 'OFF');
+				if (me.zoneControl == 3) {
+					if (me.zones >= 2) {
+						newState = state ? 'Z2MUON' : 'Z2MUOFF';
+						axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + newState).then(response => {
+						}).catch(error => {
+							me.log.debug('Device: %s %s %s, can not set new Mute state. Might be due to a wrong settings in config, error: %s', me.host, me.name, 'Zone 2', error);
+						});
+					}
+					if (me.zones >= 3) {
+						newState = state ? 'Z3MUON' : 'Z3MUOFF';
+						axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + newState).then(response => {
+						}).catch(error => {
+							me.log.debug('Device: %s %s %s, can not set new Mute state. Might be due to a wrong settings in config, error: %s', me.host, me.name, 'Zone 3', error);
+						});
+					}
+				}
+				callback(null);
+			}).catch(error => {
+				me.log.debug('Device: %s %s %s, can not set new Mute state. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
+				callback(error);
+			});
+		}
+	}
+
+	getVolume(callback) {
+		var me = this;
+		let volume = me.currentVolume;
+		me.log('Device: %s %s %s, get current Volume level successful: %s dB', me.host, me.name, me.zoneName, (volume - 80));
+		callback(null, volume);
+	}
+
+	setVolume(volume, callback) {
+		var me = this;
+		let zone = ['MV', 'Z2', 'Z3', 'MV'][me.zoneControl];
+		let targetVolume = (volume - 2);
+		axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + zone + targetVolume).then(response => {
+			me.log('Device: %s %s %s, set new Volume level successful: %s', me.host, me.name, me.zoneName, targetVolume);
 			if (me.zoneControl == 3) {
 				if (me.zones >= 2) {
-					newState = state ? 'Z2MUON' : 'Z2MUOFF';
-					axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + newState).then(response => {
+					axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + 'Z2' + targetVolume).then(response => {
 					}).catch(error => {
-						me.log.debug('Device: %s %s %s, can not set new Mute state. Might be due to a wrong settings in config, error: %s', me.host, me.name, 'Zone 2', error);
+						me.log.debug('Device: %s %s %s, can not set new Volume level. Might be due to a wrong settings in config, error: %s', me.host, me.name, 'Zone 2', error);
 					});
 				}
 				if (me.zones >= 3) {
-					newState = state ? 'Z3MUON' : 'Z3MUOFF';
-					axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + newState).then(response => {
+					axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + 'Z3' + targetVolume).then(response => {
 					}).catch(error => {
-						me.log.debug('Device: %s %s %s, can not set new Mute state. Might be due to a wrong settings in config, error: %s', me.host, me.name, 'Zone 3', error);
+						me.log.debug('Device: %s %s %s, can not set new Volume level. Might be due to a wrong settings in config, error: %s', me.host, me.name, 'Zone 3', error);
 					});
 				}
 			}
 			callback(null);
 		}).catch(error => {
-			me.log.debug('Device: %s %s %s, can not set new Mute state. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
+			me.log.debug('Device: %s %s %s, can not set new Volume level. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
 			callback(error);
 		});
 	}
-}
 
-getVolume(callback) {
-	var me = this;
-	let volume = me.currentVolume;
-	me.log('Device: %s %s %s, get current Volume level successful: %s dB', me.host, me.name, me.zoneName, (volume - 80));
-	callback(null, volume);
-}
-
-setVolume(volume, callback) {
-	var me = this;
-	let zone = ['MV', 'Z2', 'Z3', 'MV'][me.zoneControl];
-	let targetVolume = (volume - 2);
-	axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + zone + targetVolume).then(response => {
-		me.log('Device: %s %s %s, set new Volume level successful: %s', me.host, me.name, me.zoneName, targetVolume);
-		if (me.zoneControl == 3) {
-			if (me.zones >= 2) {
-				axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + 'Z2' + targetVolume).then(response => {
-				}).catch(error => {
-					me.log.debug('Device: %s %s %s, can not set new Volume level. Might be due to a wrong settings in config, error: %s', me.host, me.name, 'Zone 2', error);
-				});
-			}
-			if (me.zones >= 3) {
-				axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + 'Z3' + targetVolume).then(response => {
-				}).catch(error => {
-					me.log.debug('Device: %s %s %s, can not set new Volume level. Might be due to a wrong settings in config, error: %s', me.host, me.name, 'Zone 3', error);
-				});
-			}
-		}
-		callback(null);
-	}).catch(error => {
-		me.log.debug('Device: %s %s %s, can not set new Volume level. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
-		callback(error);
-	});
-}
-
-getInput(callback) {
-	var me = this;
-	let inputReference = me.currentInputReference;
-	let inputIdentifier = me.inputReferences.indexOf(inputReference);
-	if (!me.currentPowerState || inputReference === undefined || inputReference === null || inputReference === '') {
-		me.televisionService
-			.updateCharacteristic(Characteristic.ActiveIdentifier, 0);
-		callback(null, 0);
-	} else {
-		if (inputReference === me.inputReferences[inputIdentifier]) {
+	getInput(callback) {
+		var me = this;
+		let inputReference = me.currentInputReference;
+		let inputIdentifier = me.inputReferences.indexOf(inputReference);
+		if (!me.currentPowerState || inputReference === undefined || inputReference === null || inputReference === '') {
 			me.televisionService
-				.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
-			me.log('Device: %s %s %s, get current Input successful: %s', me.host, me.name, me.zoneName, inputReference);
-		}
-		callback(null, inputIdentifier);
-	}
-}
-
-setInput(inputIdentifier, callback) {
-	var me = this;
-	let inputName = me.inputNames[inputIdentifier];
-	let inputReference = me.inputReferences[inputIdentifier];
-	let inputMode = me.inputModes[inputIdentifier];
-	let zone = [inputMode, 'Z2', 'Z3', inputMode][me.zoneControl];
-	setTimeout(() => {
-		axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + zone + inputReference).then(response => {
-			me.log('Device: %s %s %s, set new Input successful: %s %s', me.host, me.name, me.zoneName, inputName, inputReference);
-			if (me.zoneControl == 3) {
-				if (me.zones >= 2) {
-					axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + 'Z2' + inputReference).then(response => {
-					}).catch(error => {
-						me.log.debug('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
-					});
-				}
-				if (me.zones >= 3) {
-					axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + 'Z3' + inputReference).then(response => {
-					}).catch(error => {
-						me.log.debug('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
-					});
-				}
+				.updateCharacteristic(Characteristic.ActiveIdentifier, 0);
+			callback(null, 0);
+		} else {
+			if (inputReference === me.inputReferences[inputIdentifier]) {
+				me.televisionService
+					.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
+				me.log('Device: %s %s %s, get current Input successful: %s', me.host, me.name, me.zoneName, inputReference);
 			}
-			callback(null);
-		}).catch(error => {
-			me.log.debug('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
-			callback(error);
-		});
-	}, 250);
-}
-
-setPictureMode(remoteKey, callback) {
-	var me = this;
-	if (me.currentPowerState) {
-		let command = '';
-		switch (remoteKey) {
-			case Characteristic.PictureMode.OTHER:
-				command = 'PVMOV';
-				break;
-			case Characteristic.PictureMode.STANDARD:
-				command = 'PVSTD';
-				break;
-			case Characteristic.PictureMode.CALIBRATED:
-				command = 'PVDAY';
-				break;
-			case Characteristic.PictureMode.CALIBRATED_DARK:
-				command = 'PVNGT';
-				break;
-			case Characteristic.PictureMode.VIVID:
-				command = 'PVVVD';
-				break;
-			case Characteristic.PictureMode.GAME:
-				command = 'PVSTM';
-				break;
-			case Characteristic.PictureMode.COMPUTER:
-				command = 'PVSTM';
-				break;
-			case Characteristic.PictureMode.CUSTOM:
-				command = 'PVCTM';
-				break;
+			callback(null, inputIdentifier);
 		}
-		axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + command).then(response => {
-			me.log('Device: %s %s, setPictureMode successful, command: %s', me.host, me.name, command);
-			callback(null);
-		}).catch(error => {
-			me.log.debug('Device: %s %s %s, can not setPictureMode command. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
-			callback(error);
-		});
 	}
-}
 
-setPowerModeSelection(remoteKey, callback) {
-	var me = this;
-	if (me.currentPowerState) {
-		let command = 'MEN?';
-		switch (remoteKey) {
-			case Characteristic.PowerModeSelection.SHOW:
-				command = me.switchInfoMenu ? 'MNOPT' : 'MNINF';
-				break;
-			case Characteristic.PowerModeSelection.HIDE:
-				command = 'MNRTN';
-				break;
-		}
-		axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + command).then(response => {
-			me.log('Device: %s %s, setPowerModeSelection successful, command: %s', me.host, me.name, command);
-			callback(null);
-		}).catch(error => {
-			me.log.debug('Device: %s %s %s, can not setPowerModeSelection command. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
-			callback(error);
-		});
+	setInput(inputIdentifier, callback) {
+		var me = this;
+		let inputName = me.inputNames[inputIdentifier];
+		let inputReference = me.inputReferences[inputIdentifier];
+		let inputMode = me.inputModes[inputIdentifier];
+		let zone = [inputMode, 'Z2', 'Z3', inputMode][me.zoneControl];
+		setTimeout(() => {
+			axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + zone + inputReference).then(response => {
+				me.log('Device: %s %s %s, set new Input successful: %s %s', me.host, me.name, me.zoneName, inputName, inputReference);
+				if (me.zoneControl == 3) {
+					if (me.zones >= 2) {
+						axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + 'Z2' + inputReference).then(response => {
+						}).catch(error => {
+							me.log.debug('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
+						});
+					}
+					if (me.zones >= 3) {
+						axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + 'Z3' + inputReference).then(response => {
+						}).catch(error => {
+							me.log.debug('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
+						});
+					}
+				}
+				callback(null);
+			}).catch(error => {
+				me.log.debug('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
+				callback(error);
+			});
+		}, 250);
 	}
-}
 
-setVolumeSelector(remoteKey, callback) {
-	var me = this;
-	let zone = ['MV', 'Z2', 'Z3', 'MV'][me.zoneControl];
-	if (me.currentPowerState) {
-		let command = 'MV?';
-		switch (remoteKey) {
-			case Characteristic.VolumeSelector.INCREMENT:
-				command = 'UP';
-				break;
-			case Characteristic.VolumeSelector.DECREMENT:
-				command = 'DOWN';
-				break;
-		}
-		axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + zone + command).then(response => {
-			me.log('Device: %s %s %s, setVolumeSelector successful, command: %s', me.host, me.name, me.zoneName, command);
-			if (me.zoneControl == 3) {
-				if (me.zones >= 2) {
-					axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + 'Z2' + command).then(response => {
-					}).catch(error => {
-						me.log.debug('Device: %s %s %s, can not setVolumeSelector command. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
-					});
-				}
-				if (me.zones >= 3) {
-					axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + 'Z3' + command).then(response => {
-					}).catch(error => {
-						me.log.debug('Device: %s %s %s, can not setVolumeSelector command. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
-					});
-				}
+	setPictureMode(remoteKey, callback) {
+		var me = this;
+		if (me.currentPowerState) {
+			let command = '';
+			switch (remoteKey) {
+				case Characteristic.PictureMode.OTHER:
+					command = 'PVMOV';
+					break;
+				case Characteristic.PictureMode.STANDARD:
+					command = 'PVSTD';
+					break;
+				case Characteristic.PictureMode.CALIBRATED:
+					command = 'PVDAY';
+					break;
+				case Characteristic.PictureMode.CALIBRATED_DARK:
+					command = 'PVNGT';
+					break;
+				case Characteristic.PictureMode.VIVID:
+					command = 'PVVVD';
+					break;
+				case Characteristic.PictureMode.GAME:
+					command = 'PVSTM';
+					break;
+				case Characteristic.PictureMode.COMPUTER:
+					command = 'PVSTM';
+					break;
+				case Characteristic.PictureMode.CUSTOM:
+					command = 'PVCTM';
+					break;
 			}
-			callback(null);
-		}).catch(error => {
-			me.log.debug('Device: %s %s %s, can not setVolumeSelector command. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
-			callback(error);
-		});
-	}
-}
-
-setRemoteKey(remoteKey, callback) {
-	var me = this;
-	if (me.currentPowerState) {
-		let command = 'MEN?';
-		switch (remoteKey) {
-			case Characteristic.RemoteKey.REWIND:
-				command = 'MN9E';
-				break;
-			case Characteristic.RemoteKey.FAST_FORWARD:
-				command = 'MN9D';
-				break;
-			case Characteristic.RemoteKey.NEXT_TRACK:
-				command = 'MN9F';
-				break;
-			case Characteristic.RemoteKey.PREVIOUS_TRACK:
-				command = 'MN9G';
-				break;
-			case Characteristic.RemoteKey.ARROW_UP:
-				command = 'MNCUP';
-				break;
-			case Characteristic.RemoteKey.ARROW_DOWN:
-				command = 'MNCDN';
-				break;
-			case Characteristic.RemoteKey.ARROW_LEFT:
-				command = 'MNCLT';
-				break;
-			case Characteristic.RemoteKey.ARROW_RIGHT:
-				command = 'MNCRT';
-				break;
-			case Characteristic.RemoteKey.SELECT:
-				command = 'MNENT';
-				break;
-			case Characteristic.RemoteKey.BACK:
-				command = 'MNRTN';
-				break;
-			case Characteristic.RemoteKey.EXIT:
-				command = 'MNRTN';
-				break;
-			case Characteristic.RemoteKey.PLAY_PAUSE:
-				command = 'NS94';
-				break;
-			case Characteristic.RemoteKey.INFORMATION:
-				command = me.switchInfoMenu ? 'MNINF' : 'MNOPT';
-				break;
+			axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + command).then(response => {
+				me.log('Device: %s %s, setPictureMode successful, command: %s', me.host, me.name, command);
+				callback(null);
+			}).catch(error => {
+				me.log.debug('Device: %s %s %s, can not setPictureMode command. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
+				callback(error);
+			});
 		}
-		axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + command).then(response => {
-			me.log('Device: %s %s, setRemoteKey successful, command: %s', me.host, me.name, command);
-			callback(null);
-		}).catch(error => {
-			me.log.debug('Device: %s %s %s, can not setRemoteKey command. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
-			callback(error);
-		});
 	}
-}
+
+	setPowerModeSelection(remoteKey, callback) {
+		var me = this;
+		if (me.currentPowerState) {
+			let command = 'MEN?';
+			switch (remoteKey) {
+				case Characteristic.PowerModeSelection.SHOW:
+					command = me.switchInfoMenu ? 'MNOPT' : 'MNINF';
+					break;
+				case Characteristic.PowerModeSelection.HIDE:
+					command = 'MNRTN';
+					break;
+			}
+			axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + command).then(response => {
+				me.log('Device: %s %s, setPowerModeSelection successful, command: %s', me.host, me.name, command);
+				callback(null);
+			}).catch(error => {
+				me.log.debug('Device: %s %s %s, can not setPowerModeSelection command. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
+				callback(error);
+			});
+		}
+	}
+
+	setVolumeSelector(remoteKey, callback) {
+		var me = this;
+		let zone = ['MV', 'Z2', 'Z3', 'MV'][me.zoneControl];
+		if (me.currentPowerState) {
+			let command = 'MV?';
+			switch (remoteKey) {
+				case Characteristic.VolumeSelector.INCREMENT:
+					command = 'UP';
+					break;
+				case Characteristic.VolumeSelector.DECREMENT:
+					command = 'DOWN';
+					break;
+			}
+			axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + zone + command).then(response => {
+				me.log('Device: %s %s %s, setVolumeSelector successful, command: %s', me.host, me.name, me.zoneName, command);
+				if (me.zoneControl == 3) {
+					if (me.zones >= 2) {
+						axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + 'Z2' + command).then(response => {
+						}).catch(error => {
+							me.log.debug('Device: %s %s %s, can not setVolumeSelector command. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
+						});
+					}
+					if (me.zones >= 3) {
+						axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + 'Z3' + command).then(response => {
+						}).catch(error => {
+							me.log.debug('Device: %s %s %s, can not setVolumeSelector command. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
+						});
+					}
+				}
+				callback(null);
+			}).catch(error => {
+				me.log.debug('Device: %s %s %s, can not setVolumeSelector command. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
+				callback(error);
+			});
+		}
+	}
+
+	setRemoteKey(remoteKey, callback) {
+		var me = this;
+		if (me.currentPowerState) {
+			let command = 'MEN?';
+			switch (remoteKey) {
+				case Characteristic.RemoteKey.REWIND:
+					command = 'MN9E';
+					break;
+				case Characteristic.RemoteKey.FAST_FORWARD:
+					command = 'MN9D';
+					break;
+				case Characteristic.RemoteKey.NEXT_TRACK:
+					command = 'MN9F';
+					break;
+				case Characteristic.RemoteKey.PREVIOUS_TRACK:
+					command = 'MN9G';
+					break;
+				case Characteristic.RemoteKey.ARROW_UP:
+					command = 'MNCUP';
+					break;
+				case Characteristic.RemoteKey.ARROW_DOWN:
+					command = 'MNCDN';
+					break;
+				case Characteristic.RemoteKey.ARROW_LEFT:
+					command = 'MNCLT';
+					break;
+				case Characteristic.RemoteKey.ARROW_RIGHT:
+					command = 'MNCRT';
+					break;
+				case Characteristic.RemoteKey.SELECT:
+					command = 'MNENT';
+					break;
+				case Characteristic.RemoteKey.BACK:
+					command = 'MNRTN';
+					break;
+				case Characteristic.RemoteKey.EXIT:
+					command = 'MNRTN';
+					break;
+				case Characteristic.RemoteKey.PLAY_PAUSE:
+					command = 'NS94';
+					break;
+				case Characteristic.RemoteKey.INFORMATION:
+					command = me.switchInfoMenu ? 'MNINF' : 'MNOPT';
+					break;
+			}
+			axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + command).then(response => {
+				me.log('Device: %s %s, setRemoteKey successful, command: %s', me.host, me.name, command);
+				callback(null);
+			}).catch(error => {
+				me.log.debug('Device: %s %s %s, can not setRemoteKey command. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
+				callback(error);
+			});
+		}
+	}
 };
