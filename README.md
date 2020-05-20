@@ -172,7 +172,13 @@ Due to HomeKit app limitation max. services for 1 accessory is 100. Over this va
                     "reference": "AUTO",
                     "type": "OTHER",
                     "mode": "DC"
-                }
+                },
+                {
+                    "name": "Multi Channel Stereo",
+                    "reference": "MCH STEREO",
+                    "type": "OTHER",
+                    "mode": "MS"
+                },
             ]
         },
         {
