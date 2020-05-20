@@ -17,7 +17,7 @@ Homebridge plugin to control Denon/Marantz AV Receivers series X in HomeKit as T
 1. Power ON/OFF short press tile in HomeKit app.
 2. RC/Media control is possible after You go to the RC app on iPhone/iPad.
 3. Speaker control is possible after You go to RC app on iPhone/iPad `Speaker Service`.
-4. Legacy volume control is possible throught extra `lightbulb` (slider) or using Siri `Volume Service`.
+4. Legacy volume and mute control is possible throught extra `lightbulb` (slider) or using Siri `Volume Service`.
 5. Inputs can be changed after loong press tile in HomeKit app and select from the list.
 6. Surround Modes control from the inputs list.
 7. Digital Input Modes control from the inputs list.
@@ -47,7 +47,7 @@ Homebridge plugin to control Denon/Marantz AV Receivers series X in HomeKit as T
 `DIRECT, PURE DIRECT, STEREO, STANDARD, DOLBY DIGITAL, DTS SUROUND, 7CH STEREO, MCH STEREO, ROCK ARENA, JAZZ CLUB, MONO MOVIE, MATRIX, GAME, VIRTUAL, AURO3D, AURO2DSURR, WIDE SCREEN, SUPER STADIUM, CLASSIC CONCERT, LEFT, RIGHT, AUX3, AUX4, AUX5, AUX6, AUX7, BT, USB/IPOD, USB, QUICK1, QUICK2, QUICK3, QUICK4, QUICK1 MEMORY, QUICK2 MEMORY, QUICK3 MEMORY, QUICK4 MEMORY`
 6. In `zoneControl` U can select which zone U want to control.
 7. If `allZonesControl` is enabled, all zones will be control togheter, (power, source input, volume, mute).
-8. If `volumeControl` is enabled, volume can be control using slider.
+8. If `volumeControl` is enabled, volume can be control using slider and mute ON/OFF if button press.
 9. If `switchInfoMenu` is enabled, `I` button toggle its behaviour in RC app and `PowerModeSelection` in settings.
 10. All possible commands can be found in [Denon Control Protocol 2020](http://assets.denon.com/_layouts/15/xlviewer.aspx?id=/DocumentMaster/us/DENON_FY20%20AVR_PROTOCOL_V03_03042020.xlsx)
 
