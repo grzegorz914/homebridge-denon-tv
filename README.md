@@ -117,8 +117,8 @@ Due to HomeKit app limitation max. services for 1 accessory is 100. Over this va
 2. Select `zoneControl` (0 - Main Zone, 1 - Zone 2, 2 - Zone 3, 3 - All Zones) or choice from the configurations GUI.
 3. The `volumeControl` will working seperat for every zone.
 4. The `switchInfoMenu` will working for all zones seperat but have same end effect for every zone.
-5. All `inputs` `name`, `reference`, `type` can be use for every zone.
-6. Surrounds `mode` can be only used for Main Zone, do not set this for Zone 1 and 2.
+5. All `inputs` `name`, `reference`, `type` can be used for every zone.
+6. Surrounds `mode` can be only used for Main Zone and All Zones, do not set this for Zone 2 and 3.
 7. After correct settings and save restart Homebridge, every zone need to be added separat in HomeKit app using same PIN CODE.
 
 ```json
