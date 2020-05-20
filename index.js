@@ -7,7 +7,7 @@ const parseStringPromise = require('xml2js').parseStringPromise;
 
 const PLUGIN_NAME = 'homebridge-denon-tv';
 const PLATFORM_NAME = 'DenonTv';
-const ZONE_NAME = ['Main Zone', 'Zone 1', 'Zone 2', 'All Zones'];
+const ZONE_NAME = ['Main Zone', 'Zone 2', 'Zone 3', 'All Zones'];
 const ZONE_NUMBER = ['MainZone_MainZone', 'Zone2_Zone2', 'Zone3_Zone3', 'MainZone_MainZone'];
 
 let Accessory, Characteristic, Service, Categories, UUID;
