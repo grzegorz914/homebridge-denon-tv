@@ -38,7 +38,7 @@
               "type": "integer",
               "default": 0,
               "maximum": 2,
-              "description": "Here select which Zone You want control. Do not enable *All zones* if You added Zone 2 or 3 and want separate control at the same time.",
+              "description": "Here select which Zone You want control. Do not enable *All zones* if You added Zone 2 or 3 and want separate control it at the same time.",
               "oneOf": [
                 {
                   "title": "Main Zone",

@@ -437,7 +437,7 @@ class denonTvDevice {
 	setMute(state, callback) {
 		var me = this;
 		if (me.currentPowerState) {
-			let newState = [(stste ? 'MUON' : 'MUOFF'), (state ? 'Z2MUON' : 'Z2MUOFF'), (state ? 'Z3MUON' : 'Z3MUOFF'), (state ? 'MUON' : 'MUOFF')][me.zoneControl];
+			let newState = [(state ? 'MUON' : 'MUOFF'), (state ? 'Z2MUON' : 'Z2MUOFF'), (state ? 'Z3MUON' : 'Z3MUOFF'), (state ? 'MUON' : 'MUOFF')][me.zoneControl];
 			axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + newState).then(response => {
 				me.log('Device: %s %s %s, set new Mute state successful: %s', me.host, me.name, me.zoneName, state ? 'ON' : 'OFF');
 				if (me.zoneControl == 3) {
