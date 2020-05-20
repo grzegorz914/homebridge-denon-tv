@@ -117,7 +117,7 @@ class denonTvDevice {
 					name: 'No inputs configured',
 					reference: 'No references configured',
 					type: 'No types configured',
-					mode: 'No mode configured'
+					mode: 'No modes configured'
 				}
 			];
 			this.inputs = defaultInputs;
@@ -676,7 +676,7 @@ class denonTvDevice {
 					command = me.switchInfoMenu ? 'MNINF' : 'MNOPT';
 					break;
 			}
-			axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + zone + command).then(response => {
+			axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + command).then(response => {
 				me.log('Device: %s %s, setRemoteKey successful, command: %s', me.host, me.name, command);
 				callback(null);
 			}).catch(error => {
