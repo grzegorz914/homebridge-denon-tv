@@ -66,7 +66,7 @@
               "type": "boolean",
               "default": false,
               "required": false,
-              "description": "This activate control for all zones together. Do not enable this if You adde Zone 1 or 2 and wont to seperat control."
+              "description": "This activate control for all zones together. Do not enable this if You added Zone 1 or 2 and want separate control at the same time."
             },
             "volumeControl": {
               "title": "Slider volume control",
@@ -180,7 +180,7 @@
                     "title": "Input mode",
                     "type": "string",
                     "default": "SI",
-                    "description": "Here select source input mode. Do not select surround mode for Zone 1 or 2.",
+                    "description": "Here select source input mode. Do not select surround mode if You added Zone 1 or 2.",
                     "oneOf": [
                       {
                         "title": "Source input",
