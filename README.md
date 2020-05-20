@@ -91,18 +91,6 @@ Due to HomeKit app limitation max. services for 1 accessory is 100. Over this va
                             "mode": "SI"
                         },
                         {
-                            "name": "CD",
-                            "reference": "CD",
-                            "type": "OTHER",
-                            "mode": "SI"
-                        },
-                        {
-                            "name": "DVD",
-                            "reference": "DVD",
-                            "type": "HDMI",
-                            "mode": "SI"
-                        },
-                        {
                             "name": "Stereo",
                             "reference": "STEREO",
                             "type": "OTHER",
