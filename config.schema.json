@@ -8,7 +8,7 @@
     "properties": {
       "devices": {
         "title": "Devices",
-        "buttonText": "Add device",
+        "buttonText": "Add device or zone",
         "type": "array",
         "items": {
           "type": "object",
@@ -66,7 +66,7 @@
               "type": "boolean",
               "default": false,
               "required": false,
-              "description": "This activate control for all zones together."
+              "description": "This activate control for all zones together. Do not enable this if You adde Zone 1 or 2 and wont to seperat control."
             },
             "volumeControl": {
               "title": "Slider volume control",
@@ -180,7 +180,7 @@
                     "title": "Input mode",
                     "type": "string",
                     "default": "SI",
-                    "description": "Here select source input mode.",
+                    "description": "Here select source input mode. Do not select surround mode for Zone 1 or 2.",
                     "oneOf": [
                       {
                         "title": "Source input",
