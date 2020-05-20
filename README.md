@@ -50,10 +50,9 @@ Due to HomeKit app limitation max. services for 1 accessory is 100. Over this va
 5. Different model of AV Receiver uses different `Surrounds Modes`, `MS` reference:
 `DIRECT, PURE DIRECT, STEREO, STANDARD, DOLBY DIGITAL, DTS SUROUND, 7CH STEREO, MCH STEREO, ROCK ARENA, JAZZ CLUB, MONO MOVIE, MATRIX, GAME, VIRTUAL, AURO3D, AURO2DSURR, WIDE SCREEN, SUPER STADIUM, CLASSIC CONCERT, LEFT, RIGHT, AUX3, AUX4, AUX5, AUX6, AUX7, BT, USB/IPOD, USB, QUICK1, QUICK2, QUICK3, QUICK4, QUICK1 MEMORY, QUICK2 MEMORY, QUICK3 MEMORY, QUICK4 MEMORY`
 6. In `zoneControl` U can select which zone U want to control.
-7. If `allZonesControl` is enabled, all zones will be control togheter, (power, source input, volume, mute).
-8. If `volumeControl` is enabled, volume can be control using slider and mute ON/OFF if button press.
-9. If `switchInfoMenu` is enabled, `I` button toggle its behaviour in RC app and `PowerModeSelection` in settings.
-10. All possible commands can be found in [Denon Control Protocol 2020](http://assets.denon.com/_layouts/15/xlviewer.aspx?id=/DocumentMaster/us/DENON_FY20%20AVR_PROTOCOL_V03_03042020.xlsx)
+7. If `volumeControl` is enabled, volume can be control using slider and mute ON/OFF if button press.
+8. If `switchInfoMenu` is enabled, `I` button toggle its behaviour in RC app and `PowerModeSelection` in settings.
+9. All possible commands can be found in [Denon Control Protocol 2020](http://assets.denon.com/_layouts/15/xlviewer.aspx?id=/DocumentMaster/us/DENON_FY20%20AVR_PROTOCOL_V03_03042020.xlsx)
 
 <p align="left">
   <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/ustawienia.png" height="150"></a>
@@ -68,7 +67,6 @@ Due to HomeKit app limitation max. services for 1 accessory is 100. Over this va
             "host": "192.168.1.5",
             "port": 8080,
             "zoneControl" : 0,
-            "allZonesControl": false,
             "volumeControl": false,
             "switchInfoMenu": false,
             "inputs": [
@@ -116,13 +114,12 @@ Due to HomeKit app limitation max. services for 1 accessory is 100. Over this va
 
 ## Zones control and settings
 1. If U want control all zones seperat at the same time U can use config as present bottom.
-3. Select `zoneControl` (0 - Main Zone, 1 - Zone 1, 2 - Zone 2) or choice from the configurations GUI.
-2. Disable `allZonesControl` together.
-2. The `volumeControl` will working seperat for every zone.
-2. Disable `switchInfoMenu` will working for all zones seperat but have same end effect for every zone.
-4. All `inputs` `name`, `reference`, `type` can be use for every zone.
-5. Surrounds `mode` can be only used for Main Zone, do not set this for Zone 1 and 2.
-6. After correct settings and save restart Homebridge, every zone need to be added separat in HomeKit app using same PIN CODE.
+2. Select `zoneControl` (0 - Main Zone, 1 - Zone 1, 2 - Zone 2, 3 - All Zones) or choice from the configurations GUI.
+3. The `volumeControl` will working seperat for every zone.
+4. Disable `switchInfoMenu` will working for all zones seperat but have same end effect for every zone.
+5. All `inputs` `name`, `reference`, `type` can be use for every zone.
+6. Surrounds `mode` can be only used for Main Zone, do not set this for Zone 1 and 2.
+7. After correct settings and save restart Homebridge, every zone need to be added separat in HomeKit app using same PIN CODE.
 
 ```json
 {
@@ -133,7 +130,6 @@ Due to HomeKit app limitation max. services for 1 accessory is 100. Over this va
             "host": "192.168.1.5",
             "port": 8080,
             "zoneControl" : 0,
-            "allZonesControl": false,
             "volumeControl": false,
             "switchInfoMenu": false,
             "inputs": [
@@ -174,7 +170,6 @@ Due to HomeKit app limitation max. services for 1 accessory is 100. Over this va
             "host": "192.168.1.5",
             "port": 8080,
             "zoneControl" : 1,
-            "allZonesControl": false,
             "volumeControl": false,
             "switchInfoMenu": false,
             "inputs": [
@@ -209,7 +204,6 @@ Due to HomeKit app limitation max. services for 1 accessory is 100. Over this va
             "host": "192.168.1.5",
             "port": 8080,
             "zoneControl" : 2,
-            "allZonesControl": false,
             "volumeControl": false,
             "switchInfoMenu": false,
             "inputs": [

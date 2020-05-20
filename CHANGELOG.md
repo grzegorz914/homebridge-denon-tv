@@ -1,5 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file.
+## 2.5.0 (20.05.2020)
+- removed check box *allZonesControl* and moved this to selections list *zoneControl* (please update config.json)
+- code corrections to work with zones control separat at the same time
+
 ## 2.4.0 (20.05.2020)
 - added mute ON/OFF to the slider volume
 
