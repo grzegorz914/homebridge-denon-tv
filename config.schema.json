@@ -14,13 +14,13 @@
           "type": "object",
           "properties": {
             "name": {
-              "title": "Name",
+              "title": "Device name",
               "type": "string",
               "default": "AV Receiver",
               "required": true
             },
             "host": {
-              "title": "IP Address",
+              "title": "Address IP",
               "type": "string",
               "default": "192.168.1.5",
               "required": true,
@@ -68,7 +68,7 @@
               "required": true
             },
             "volumeControl": {
-              "title": "Slider volume control",
+              "title": "Volume control",
               "type": "boolean",
               "default": false,
               "required": false,
