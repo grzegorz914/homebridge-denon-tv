@@ -219,35 +219,42 @@ class denonTvDevice {
 		me.log.debug('Device: %s %s, requesting Device state.', me.host, me.name);
 		let result = me.deviceStatusResponse;
 		let powerState = (result.item.Power[0].value[0] == 'ON');
-		me.log.debug('Device: %s %s %s, get current Power state successful: %s', me.host, me.name, me.zoneName, powerState ? 'ON' : 'OFF');
-		me.currentPowerState = powerState;
 		if (me.televisionService) {
-			me.televisionService.updateCharacteristic(Characteristic.Active, powerState);
+			if (powerState && !me.currentPowerState) {
+				me.televisionService.updateCharacteristic(Characteristic.Active, true);
+				me.log.debug('Device: %s %s, get current Power state successful: %s', me.host, me.name, 'ON');
+				me.currentPowerState = true;
+			} else {
+				if (!powerState && me.currentPowerState) {
+					me.televisionService.updateCharacteristic(Characteristic.Active, false);
+					me.log.debug('Device: %s %s, get current Power state successful: %s', me.host, me.name, 'OFF');
+					me.currentPowerState = false;
+				}
+			}
 		}
 
 		let inputReference = result.item.InputFuncSelect[0].value[0];
 		let inputIdentifier = me.inputReferences.indexOf(inputReference);
-		me.log.debug('Device: %s %s %s, get current Input successful: %s', me.host, me.name, me.zoneName, inputReference);
-		me.currentInputReference = inputReference;
-		if (me.televisionService) {
+		if (me.televisionService && inputReference !== me.currentInputReference) {
 			me.televisionService.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
-
+			me.log.debug('Device: %s %s %s, get current Input successful: %s', me.host, me.name, me.zoneName, inputReference);
+			me.currentInputReference = inputReference;
 		}
 
 		let mute = (result.item.Mute[0].value[0] == 'ON');
 		let muteState = powerState ? mute : true;
 		let volume = parseInt(result.item.MasterVolume[0].value[0]) + 80;
-		me.log.debug('Device: %s %s %s, get current Mute state: %s', me.host, me.name, me.zoneName, muteState ? 'ON' : 'OFF');
-		me.log.debug('Device: %s %s %s, get current Volume level: %s dB ', me.host, me.name, me.zoneName, (volume - 80));
-		me.currentMuteState = muteState;
-		me.currentVolume = volume;
-		if (me.speakerService) {
+		if (me.speakerService && (muteState !== me.currentMuteState || volume !== me.currentVolume)) {
 			me.speakerService.updateCharacteristic(Characteristic.Mute, muteState);
 			me.speakerService.updateCharacteristic(Characteristic.Volume, volume);
 			if (me.volumeControl && me.volumeService) {
 				me.volumeService.updateCharacteristic(Characteristic.On, !muteState);
 				me.volumeService.updateCharacteristic(Characteristic.Brightness, volume);
 			}
+			me.log.debug('Device: %s %s %s, get current Mute state: %s', me.host, me.name, me.zoneName, muteState ? 'ON' : 'OFF');
+			me.log.debug('Device: %s %s %s, get current Volume level: %s dB ', me.host, me.name, me.zoneName, (volume - 80));
+			me.currentMuteState = muteState;
+			me.currentVolume = volume;
 		}
 	}
 
@@ -408,8 +415,8 @@ class denonTvDevice {
 
 	setPower(state, callback) {
 		var me = this;
+		let newState = [(me.currentPowerState ? 'ZMOFF' : 'ZMON'), (me.currentPowerState ? 'Z2OFF' : 'Z2ON'), (me.currentPowerState ? 'Z3OFF' : 'Z3ON'), (me.currentPowerState ? 'PWSTANDBY' : 'PWON')][me.zoneControl];
 		if (state !== me.currentPowerState) {
-			let newState = [(state ? 'ZMON' : 'ZMOFF'), (state ? 'Z2ON' : 'Z2OFF'), (state ? 'Z3ON' : 'Z3OFF'), (state ? 'PWON' : 'PWSTANDBY')][me.zoneControl];
 			axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + newState).then(response => {
 				me.log('Device: %s %s %s, set new Power state successful: %s', me.host, me.name, me.zoneName, state ? 'ON' : 'OFF');
 				callback(null);
@@ -436,8 +443,8 @@ class denonTvDevice {
 
 	setMute(state, callback) {
 		var me = this;
+		let newState = [(state ? 'MUON' : 'MUOFF'), (state ? 'Z2MUON' : 'Z2MUOFF'), (state ? 'Z3MUON' : 'Z3MUOFF'), (state ? 'MUON' : 'MUOFF')][me.zoneControl];
 		if (me.currentPowerState) {
-			let newState = [(state ? 'MUON' : 'MUOFF'), (state ? 'Z2MUON' : 'Z2MUOFF'), (state ? 'Z3MUON' : 'Z3MUOFF'), (state ? 'MUON' : 'MUOFF')][me.zoneControl];
 			axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + newState).then(response => {
 				me.log('Device: %s %s %s, set new Mute state successful: %s', me.host, me.name, me.zoneName, state ? 'ON' : 'OFF');
 				if (me.zoneControl == 3) {
