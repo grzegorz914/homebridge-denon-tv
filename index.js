@@ -516,7 +516,7 @@ class denonTvDevice {
 		if (inputReference === me.inputReferences[inputIdentifier]) {
 			me.televisionService
 				.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
-			me.log.info('Device: %s %s %s, get current Input successful: %s', me.host, me.name, me.zoneName, inputName, inputReference);
+			me.log.info('Device: %s %s %s, get current Input successful: %s %s', me.host, me.name, me.zoneName, inputName, inputReference);
 			callback(null, inputIdentifier);
 		} else {
 			me.televisionService
