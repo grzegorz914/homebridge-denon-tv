@@ -241,6 +241,7 @@ class denonTvDevice {
 			me.televisionService.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
 			me.log.debug('Device: %s %s %s, get current Input successful: %s', me.host, me.name, me.zoneName, inputReference);
 			me.currentInputReference = inputReference;
+			me.currentInputName = me.inputNames[inputIdentifier];
 		}
 
 		let mute = (result.item.Mute[0].value[0] == 'ON');
@@ -509,19 +510,19 @@ class denonTvDevice {
 
 	getInput(callback) {
 		var me = this;
+		let inputName = me.currentInputName;
 		let inputReference = me.currentInputReference;
 		let inputIdentifier = me.inputReferences.indexOf(inputReference);
-		if (!me.currentPowerState || inputReference === undefined || inputReference === null || inputReference === '') {
+		if (inputReference === me.inputReferences[inputIdentifier]) {
+			me.televisionService
+				.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
+			me.log.info('Device: %s %s %s, get current Input successful: %s', me.host, me.name, me.zoneName, inputName, inputReference);
+			callback(null, inputIdentifier);
+		} else {
 			me.televisionService
 				.updateCharacteristic(Characteristic.ActiveIdentifier, 0);
+			me.log.debug('Device: %s %s, get current Input default: %s %s', me.host, me.name, me.zoneName, inputName, inputReference);
 			callback(null, 0);
-		} else {
-			if (inputReference === me.inputReferences[inputIdentifier]) {
-				me.televisionService
-					.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
-				me.log.info('Device: %s %s %s, get current Input successful: %s', me.host, me.name, me.zoneName, inputReference);
-			}
-			callback(null, inputIdentifier);
 		}
 	}
 
