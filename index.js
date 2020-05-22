@@ -418,7 +418,7 @@ class denonTvDevice {
 	setPower(state, callback) {
 		var me = this;
 		let newState = [(me.currentPowerState ? 'ZMOFF' : 'ZMON'), (me.currentPowerState ? 'Z2OFF' : 'Z2ON'), (me.currentPowerState ? 'Z3OFF' : 'Z3ON'), (me.currentPowerState ? 'PWSTANDBY' : 'PWON')][me.zoneControl];
-		if (state !== me.currentPowerState) {
+		if ((state && !me.currentPowerState) || (!state && me.currentPowerState)) {
 			axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + newState).then(response => {
 				me.log.info('Device: %s %s %s, set new Power state successful: %s', me.host, me.name, me.zoneName, state ? 'ON' : 'OFF');
 				callback(null);
