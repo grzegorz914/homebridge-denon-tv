@@ -94,17 +94,17 @@ class denonTvDevice {
 		//setup variables
 		this.connectionStatus = false;
 		this.currentPowerState = false;
-		this.deviceStatusResponse = null;
+		this.deviceStatusResponse = '';
 		this.inputNames = new Array();
 		this.inputReferences = new Array();
 		this.inputTypes = new Array();
 		this.inputModes = new Array();
 		this.currentMuteState = false;
 		this.currentVolume = 0;
-		this.currentInputName = null;
-		this.currentInputReference = null;
-		this.currentInputType = null;
-		this.currentInputMode = null;
+		this.currentInputName = '';
+		this.currentInputReference = '';
+		this.currentInputType = '';
+		this.currentInputMode = '';
 		this.prefDir = path.join(api.user.storagePath(), 'denonTv');
 		this.inputsFile = this.prefDir + '/' + 'inputs_' + this.host.split('.').join('');
 		this.customInputsFile = this.prefDir + '/' + 'customInputs_' + this.host.split('.').join('');
@@ -142,6 +142,7 @@ class denonTvDevice {
 		//Check net state
 		setInterval(function () {
 			axios.get(this.url + '/goform/form' + this.zoneNumber + 'XmlStatusLite.xml').then(response => {
+				this.log.debug('Device %s %s %s, get device status data: %s', this.host, this.name, this.zoneName, response.data);
 				parseStringPromise(response.data).then(result => {
 					this.deviceStatusResponse = result;
 					this.connectionStatus = true;
@@ -236,32 +237,37 @@ class denonTvDevice {
 				}
 			}
 		}
-		
+
 		let inputReference = result.item.InputFuncSelect[0].value[0];
 		let inputIdentifier = me.inputReferences.indexOf(inputReference);
 		let inputName = me.inputNames[inputIdentifier];
 		if (me.televisionService) {
 			me.televisionService.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
 			me.log.debug('Device: %s %s %s, get current Input successful: %s %s', me.host, me.name, me.zoneName, inputName, inputReference);
+			me.currentInputName = inputName;
+			me.currentInputReference = inputReference;
 		}
-		me.currentInputName = inputName;
-		me.currentInputReference = inputReference;
 
 		let mute = (result.item.Mute[0].value[0] == 'ON');
 		let muteState = powerState ? mute : true;
-		let volume = parseInt(result.item.MasterVolume[0].value[0]) + 80;
 		if (me.speakerService) {
 			me.speakerService.updateCharacteristic(Characteristic.Mute, muteState);
-			me.speakerService.updateCharacteristic(Characteristic.Volume, volume);
-			if (me.volumeControl && me.volumeService) {
+			if (me.volumeControl) {
 				me.volumeService.updateCharacteristic(Characteristic.On, !muteState);
-				me.volumeService.updateCharacteristic(Characteristic.Brightness, volume);
 			}
+			me.log.debug('Device: %s %s %s, get current Mute state: %s', me.host, me.name, me.zoneName, muteState ? 'ON' : 'OFF');
+			me.currentMuteState = muteState;
 		}
-		me.log.debug('Device: %s %s %s, get current Mute state: %s', me.host, me.name, me.zoneName, muteState ? 'ON' : 'OFF');
-		me.log.debug('Device: %s %s %s, get current Volume level: %s dB ', me.host, me.name, me.zoneName, (volume - 80));
-		me.currentMuteState = muteState;
-		me.currentVolume = volume;
+
+		let volume = parseInt(result.item.MasterVolume[0].value[0]) + 80;
+		if (me.speakerService) {
+			me.speakerService.updateCharacteristic(Characteristic.Volume, volume);
+			if (me.volumeControl) {
+				me.volumeService.updateCharacteristic(Characteristic.Brightnes, volume);
+			}
+			me.log.debug('Device: %s %s %s, get current Volume level: %s dB ', me.host, me.name, me.zoneName, (volume - 80));
+			me.currentVolume = volume;
+		}
 	}
 
 	//Prepare TV service 
@@ -364,23 +370,23 @@ class denonTvDevice {
 
 		this.inputs.forEach((input, i) => {
 
-			//get input name		
-			let inputName = input.name;
-
 			//get input reference
 			let inputReference = input.reference;
 
-			//get input type
-			let inputType = input.type;
-
-			//get input mode
-			let inputMode = input.mode;
+			//get input name		
+			let inputName = input.name;
 
 			if (savedNames && savedNames[inputReference]) {
 				inputName = savedNames[inputReference];
 			} else {
 				inputName = input.name;
 			}
+
+			//get input type
+			let inputType = input.type;
+
+			//get input mode
+			let inputMode = input.mode;
 
 			this.inputsService = new Service.InputSource(inputReference, 'input' + i);
 			this.inputsService
