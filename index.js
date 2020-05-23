@@ -182,13 +182,15 @@ class denonTvDevice {
 				me.zones = result.Device_Info.DeviceZones[0];
 				me.apiVersion = result.Device_Info.CommApiVers[0];
 				if (me.zoneControl == 0 || me.zoneControl == 3) {
-					fs.writeFile(me.devInfoFile, JSON.stringify(result, null, 2), (error) => {
-						if (error) {
-							me.log.error('Device: %s %s, could not write devInfoFile, error: %s', me.host, me.name, error);
-						} else {
-							me.log.debug('Device: %s %s, devInfoFile saved successful in: %s %s', me.host, me.name, me.prefDir, JSON.stringify(result, null, 2));
-						}
-					});
+					if (fs.existsSync(me.devInfoFile) === false) {
+						fs.writeFile(me.devInfoFile, JSON.stringify(result, null, 2), (error) => {
+							if (error) {
+								me.log.error('Device: %s %s, could not write devInfoFile, error: %s', me.host, me.name, error);
+							} else {
+								me.log.debug('Device: %s %s, devInfoFile saved successful in: %s %s', me.host, me.name, me.prefDir, JSON.stringify(result, null, 2));
+							}
+						});
+					}
 					me.log('-------- %s --------', me.name);
 					me.log('Manufacturer: %s', me.manufacturer);
 					me.log('Model: %s', me.modelName);
@@ -264,10 +266,10 @@ class denonTvDevice {
 		let volume = parseInt(result.item.MasterVolume[0].value[0]) + 80;
 		if (me.speakerService) {
 			me.speakerService.updateCharacteristic(Characteristic.Volume, volume);
-			if (me.volumeService && me.volumeControl === 1) {
+			if (me.volumeService && me.volumeControl == 1) {
 				me.volumeService.updateCharacteristic(Characteristic.Brightnes, volume);
 			}
-			if (me.volumeService && me.volumeControl === 2) {
+			if (me.volumeService && me.volumeControl == 2) {
 				me.volumeService.updateCharacteristic(Characteristic.RotationSpeed, volume);
 			}
 		}
@@ -347,18 +349,17 @@ class denonTvDevice {
 	//Prepare volume service
 	prepareVolumeService() {
 		this.log.debug('prepareVolumeService');
-		if (this.volumeControl === 1) {
+		if (this.volumeControl == 1) {
 			this.volumeService = new Service.Lightbulb(this.name + ' Volume', 'volumeService');
 			this.volumeService.getCharacteristic(Characteristic.Brightness)
 				.on('get', this.getVolume.bind(this))
 				.on('set', this.setVolume.bind(this));
-		} else {
-			if (this.volumeControl === 2) {
-				this.volumeService = new Service.Fan(this.name + ' Volume', 'volumeService');
-				this.volumeService.getCharacteristic(Characteristic.RotationSpeed)
-					.on('get', this.getVolume.bind(this))
-					.on('set', this.setVolume.bind(this));
-			}
+		}
+		if (this.volumeControl == 2) {
+			this.volumeService = new Service.Fan(this.name + ' Volume', 'volumeService');
+			this.volumeService.getCharacteristic(Characteristic.RotationSpeed)
+				.on('get', this.getVolume.bind(this))
+				.on('set', this.setVolume.bind(this));
 		}
 		this.volumeService.getCharacteristic(Characteristic.On)
 			.on('get', this.getMuteSlider.bind(this))
@@ -508,6 +509,9 @@ class denonTvDevice {
 		var me = this;
 		let zone = ['MV', 'Z2', 'Z3', 'MV'][me.zoneControl];
 		let targetVolume = (volume - 2);
+		if (volume == 0 || volume == 100) {
+			targetVolume = me.currentVolume;
+		}
 		axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + zone + targetVolume).then(response => {
 			me.log.info('Device: %s %s %s, set new Volume level successful: %s', me.host, me.name, me.zoneName, targetVolume);
 			if (me.zoneControl == 3) {
