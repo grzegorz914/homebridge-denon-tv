@@ -130,7 +130,7 @@ Due to HomeKit app limitation max. services for 1 accessory is 100. Over this va
             "host": "192.168.1.5",
             "port": 8080,
             "zoneControl" : 0,
-            "volumeControl": false,
+            "volumeControl": 0,
             "switchInfoMenu": false,
             "inputs": [
                 {
@@ -170,7 +170,7 @@ Due to HomeKit app limitation max. services for 1 accessory is 100. Over this va
             "host": "192.168.1.5",
             "port": 8080,
             "zoneControl" : 1,
-            "volumeControl": false,
+            "volumeControl": 0,
             "switchInfoMenu": false,
             "inputs": [
                 {
@@ -204,7 +204,7 @@ Due to HomeKit app limitation max. services for 1 accessory is 100. Over this va
             "host": "192.168.1.5",
             "port": 8080,
             "zoneControl" : 2,
-            "volumeControl": false,
+            "volumeControl": 0,
             "switchInfoMenu": false,
             "inputs": [
                 {
