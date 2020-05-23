@@ -92,18 +92,19 @@ class denonTvDevice {
 		this.zoneNumber = ZONE_NUMBER[this.zoneControl];
 
 		//setup variables
-		this.deviceStatusResponse = null;
-		this.inputReferences = new Array();
-		this.inputNames = new Array();
-		this.inputTypes = new Array();
-		this.inputModes = new Array();
 		this.connectionStatus = false;
 		this.currentPowerState = false;
+		this.deviceStatusResponse = null;
+		this.inputNames = new Array();
+		this.inputReferences = new Array();
+		this.inputTypes = new Array();
+		this.inputModes = new Array();
 		this.currentMuteState = false;
 		this.currentVolume = 0;
-		this.currentInputReference = null;
 		this.currentInputName = null;
-		this.currentSurroundModeReference = null;
+		this.currentInputReference = null;
+		this.currentInputType = null;
+		this.currentInputMode = null;
 		this.prefDir = path.join(api.user.storagePath(), 'denonTv');
 		this.inputsFile = this.prefDir + '/' + 'inputs_' + this.host.split('.').join('');
 		this.customInputsFile = this.prefDir + '/' + 'customInputs_' + this.host.split('.').join('');
@@ -143,20 +144,22 @@ class denonTvDevice {
 			axios.get(this.url + '/goform/form' + this.zoneNumber + 'XmlStatusLite.xml').then(response => {
 				parseStringPromise(response.data).then(result => {
 					this.deviceStatusResponse = result;
+					this.connectionStatus = true;
 				}).catch(error => {
-					this.log.error('Device %s %s, get device status parse string error: %s', this.host, this.name, error);
+					this.log.error('Device %s %s %s, get device status parse string error: %s', this.host, this.name, this.zoneName, error);
+					this.connectionStatus = false;
+					return;
 				});
 				if (!this.connectionStatus) {
-					this.log.info('Device: %s %s %s, state: Online', this.host, this.name, this.zoneName);
+					this.log.info('Device: %s %s %s, state: Online.', this.host, this.name, this.zoneName);
 					this.connectionStatus = true;
 					setTimeout(this.getDeviceInfo.bind(this), 750);
 				} else {
 					this.getDeviceState();
 				}
 			}).catch(error => {
-				this.log.debug('Device: %s %s %s, state: Offline', this.host, this.name, this.zoneName);
+				this.log.debug('Device: %s %s %s, state: Offline.', this.host, this.name, this.zoneName);
 				this.connectionStatus = false;
-				this.currentPowerState = false;
 				return;
 			});
 		}.bind(this), 2000);
@@ -170,7 +173,6 @@ class denonTvDevice {
 		me.log.debug('Device: %s %s, requesting Device information.', me.host, me.name);
 		axios.get(me.url + '/goform/Deviceinfo.xml').then(response => {
 			parseStringPromise(response.data).then(result => {
-				me.log.debug('Device: %s %s, get Device info successful: %s', me.host, me.name, JSON.stringify(result, null, 2));
 				me.manufacturer = ['Denon', 'Marantz'][result.Device_Info.BrandCode[0]];
 				me.modelName = result.Device_Info.ModelName[0];
 				me.serialNumber = result.Device_Info.MacAddress[0];
@@ -182,7 +184,7 @@ class denonTvDevice {
 						if (error) {
 							me.log.error('Device: %s %s, could not write devInfoFile, error: %s', me.host, me.name, error);
 						} else {
-							me.log.debug('Device: %s %s, devInfoFile saved successful in: %s', me.host, me.name, me.prefDir);
+							me.log.debug('Device: %s %s, devInfoFile saved successful in: %s %s', me.host, me.name, me.prefDir, JSON.stringify(result, null, 2));
 						}
 					});
 					me.log('-------- %s --------', me.name);
@@ -234,15 +236,16 @@ class denonTvDevice {
 				}
 			}
 		}
-
+		
 		let inputReference = result.item.InputFuncSelect[0].value[0];
 		let inputIdentifier = me.inputReferences.indexOf(inputReference);
+		let inputName = me.inputNames[inputIdentifier];
 		if (me.televisionService) {
 			me.televisionService.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
-			me.log.debug('Device: %s %s %s, get current Input successful: %s', me.host, me.name, me.zoneName, inputReference);
-			me.currentInputReference = inputReference;
-			me.currentInputName = me.inputNames[inputIdentifier];
+			me.log.debug('Device: %s %s %s, get current Input successful: %s %s', me.host, me.name, me.zoneName, inputName, inputReference);
 		}
+		me.currentInputName = inputName;
+		me.currentInputReference = inputReference;
 
 		let mute = (result.item.Mute[0].value[0] == 'ON');
 		let muteState = powerState ? mute : true;
@@ -254,11 +257,11 @@ class denonTvDevice {
 				me.volumeService.updateCharacteristic(Characteristic.On, !muteState);
 				me.volumeService.updateCharacteristic(Characteristic.Brightness, volume);
 			}
-			me.log.debug('Device: %s %s %s, get current Mute state: %s', me.host, me.name, me.zoneName, muteState ? 'ON' : 'OFF');
-			me.log.debug('Device: %s %s %s, get current Volume level: %s dB ', me.host, me.name, me.zoneName, (volume - 80));
-			me.currentMuteState = muteState;
-			me.currentVolume = volume;
 		}
+		me.log.debug('Device: %s %s %s, get current Mute state: %s', me.host, me.name, me.zoneName, muteState ? 'ON' : 'OFF');
+		me.log.debug('Device: %s %s %s, get current Volume level: %s dB ', me.host, me.name, me.zoneName, (volume - 80));
+		me.currentMuteState = muteState;
+		me.currentVolume = volume;
 	}
 
 	//Prepare TV service 
