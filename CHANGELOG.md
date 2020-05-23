@@ -1,5 +1,8 @@
 # Change Log
 All notable changes to this project will be documented in this file.
+## 2.6.0 (23.05.2020)
+- added possibility to select what a type of extra volume control You want to use (None, Slider, Fan)
+
 ## 2.5.0 (20.05.2020)
 - removed check box *allZonesControl* and moved this to selections list *zoneControl* (please update config.json)
 - code corrections to work with zones control separat at the same time
