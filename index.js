@@ -164,7 +164,7 @@ class denonTvDevice {
 				this.connectionStatus = false;
 				return;
 			});
-		}.bind(this), 2000);
+		}.bind(this), 2500);
 
 		//Delay to wait for device info before publish
 		setTimeout(this.prepareTelevisionService.bind(this), 1500);
@@ -362,9 +362,12 @@ class denonTvDevice {
 				.on('set', this.setVolume.bind(this));
 		}
 		this.volumeService.getCharacteristic(Characteristic.On)
-			.on('get', this.getMuteSlider.bind(this))
-			.on('set', (newValue, callback) => {
-				this.speakerService.setCharacteristic(Characteristic.Mute, !newValue);
+			.on('get', (callback) => {
+				let state = !this.currentMuteState;
+				callback(null, state);
+			})
+			.on('set', (state, callback) => {
+				this.speakerService.setCharacteristic(Characteristic.Mute, !state);
 				callback(null);
 			});
 
@@ -461,17 +464,10 @@ class denonTvDevice {
 		callback(null, state);
 	}
 
-	getMuteSlider(callback) {
-		var me = this;
-		let state = me.currentPowerState ? !me.currentMuteState : false;
-		me.log.debug('Device: %s %s %s, get current Mute state successful: %s', me.host, me.name, me.zoneName, !state ? 'ON' : 'OFF');
-		callback(null, state);
-	}
-
 	setMute(state, callback) {
 		var me = this;
 		let newState = [(state ? 'MUON' : 'MUOFF'), (state ? 'Z2MUON' : 'Z2MUOFF'), (state ? 'Z3MUON' : 'Z3MUOFF'), (state ? 'MUON' : 'MUOFF')][me.zoneControl];
-		if (me.currentPowerState) {
+		if (me.currentPowerState && state !== me.currentMuteState) {
 			axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + newState).then(response => {
 				me.log.info('Device: %s %s %s, set new Mute state successful: %s', me.host, me.name, me.zoneName, state ? 'ON' : 'OFF');
 				if (me.zoneControl == 3) {
