@@ -227,24 +227,16 @@ class denonTvDevice {
 		me.log.debug('Device: %s %s, requesting Device state.', me.host, me.name);
 		let result = me.deviceStatusResponse;
 		let powerState = (result.item.Power[0].value[0] == 'ON');
-		if (me.televisionService) {
-			if (powerState && !me.currentPowerState) {
-				me.televisionService.updateCharacteristic(Characteristic.Active, true);
-				me.log.debug('Device: %s %s, get current Power state successful: %s', me.host, me.name, 'ON');
-				me.currentPowerState = true;
-			} else {
-				if (!powerState && me.currentPowerState) {
-					me.televisionService.updateCharacteristic(Characteristic.Active, false);
-					me.log.debug('Device: %s %s, get current Power state successful: %s', me.host, me.name, 'OFF');
-					me.currentPowerState = false;
-				}
-			}
+		if (me.televisionService && (powerState !== me.currentPowerState)) {
+			me.televisionService.updateCharacteristic(Characteristic.Active, powerState);
 		}
+		me.log.debug('Device: %s %s, get current Power state successful: %s', me.host, me.name, powerState ? 'ON' : 'OFF');
+		me.currentPowerState = powerState;
 
 		let inputReference = result.item.InputFuncSelect[0].value[0];
 		let inputIdentifier = me.inputReferences.indexOf(inputReference);
 		let inputName = me.inputNames[inputIdentifier];
-		if (me.televisionService) {
+		if (me.televisionService && (inputReference !== me.currentInputReference)) {
 			me.televisionService.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
 		}
 		me.log.debug('Device: %s %s %s, get current Input successful: %s %s', me.host, me.name, me.zoneName, inputName, inputReference);
@@ -254,7 +246,7 @@ class denonTvDevice {
 
 		let mute = (result.item.Mute[0].value[0] == 'ON');
 		let muteState = powerState ? mute : true;
-		if (me.speakerService) {
+		if (me.speakerService && (muteState !== me.currentMuteState)) {
 			me.speakerService.updateCharacteristic(Characteristic.Mute, muteState);
 			if (me.volumeService && me.volumeControl >= 1) {
 				me.volumeService.updateCharacteristic(Characteristic.On, !muteState);
@@ -264,7 +256,7 @@ class denonTvDevice {
 		me.currentMuteState = muteState;
 
 		let volume = parseInt(result.item.MasterVolume[0].value[0]) + 80;
-		if (me.speakerService) {
+		if (me.speakerService && (volume !== me.currentVolume)) {
 			me.speakerService.updateCharacteristic(Characteristic.Volume, volume);
 			if (me.volumeService && me.volumeControl == 1) {
 				me.volumeService.updateCharacteristic(Characteristic.Brightness, volume);
@@ -353,13 +345,19 @@ class denonTvDevice {
 			this.volumeService = new Service.Lightbulb(this.name + ' Volume', 'volumeService');
 			this.volumeService.getCharacteristic(Characteristic.Brightness)
 				.on('get', this.getVolume.bind(this))
-				.on('set', this.setVolume.bind(this));
+				.on('set', (volume, callback) => {
+					this.speakerService.setCharacteristic(Characteristic.Volume, volume);
+					callback(null);
+				});
 		}
 		if (this.volumeControl == 2) {
 			this.volumeService = new Service.Fan(this.name + ' Volume', 'volumeService');
 			this.volumeService.getCharacteristic(Characteristic.RotationSpeed)
 				.on('get', this.getVolume.bind(this))
-				.on('set', this.setVolume.bind(this));
+				.on('set', (volume, callback) => {
+					this.speakerService.setCharacteristic(Characteristic.Volume, volume);
+					callback(null);
+				});
 		}
 		this.volumeService.getCharacteristic(Characteristic.On)
 			.on('get', (callback) => {
