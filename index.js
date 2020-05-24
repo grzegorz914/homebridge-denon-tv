@@ -267,7 +267,7 @@ class denonTvDevice {
 		if (me.speakerService) {
 			me.speakerService.updateCharacteristic(Characteristic.Volume, volume);
 			if (me.volumeService && me.volumeControl == 1) {
-				me.volumeService.updateCharacteristic(Characteristic.Brightnes, volume);
+				me.volumeService.updateCharacteristic(Characteristic.Brightness, volume);
 			}
 			if (me.volumeService && me.volumeControl == 2) {
 				me.volumeService.updateCharacteristic(Characteristic.RotationSpeed, volume);
