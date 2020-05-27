@@ -60,6 +60,7 @@ Due to HomeKit app limitation max. services for 1 accessory is 100. Over this va
   <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/ustawienia.png" height="150"></a>
 </p>
 
+## Main Zone control and settings
 ```json
 {
     "platform": "DenonTv",
@@ -114,7 +115,7 @@ Due to HomeKit app limitation max. services for 1 accessory is 100. Over this va
 }
 ```
 
-## Zones control and settings
+## Multi zone control and settings
 1. If U want control all zones seperat at the same time U can use config as present bottom.
 2. Select `zoneControl` (0 - Main Zone, 1 - Zone 2, 2 - Zone 3, 3 - All Zones) or choice from the configurations GUI.
 3. The `volumeControl` will working seperat for every zone.
