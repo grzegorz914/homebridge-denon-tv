@@ -123,6 +123,18 @@
                             "mode": "MS"
                         },
                         {
+                            "name": "All zones stereo ON",
+                            "reference": "ZST ON",
+                            "type": "OTHER",
+                            "mode": "MN"
+                        },
+                        {
+                            "name": "All zones stereo OFF",
+                            "reference": "ZST OFF",
+                            "type": "OTHER",
+                            "mode": "MN"
+                        },
+                        {
                             "name": "Digital Input AUTO",
                             "reference": "AUTO",
                             "type": "OTHER",

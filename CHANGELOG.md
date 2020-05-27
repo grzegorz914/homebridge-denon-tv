@@ -1,5 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file.
+## 2.7.0 (27.05.2020)
+- added position in *Input mode*, *Surround mode all zones* which enable Stereo ON/OFF for alll zones (configure this only in Main Zone).
+- for reference please look in README.md
+
 ## 2.6.0 (23.05.2020)
 - added possibility to select what a type of extra volume control You want to use (None, Slider, Fan)
 

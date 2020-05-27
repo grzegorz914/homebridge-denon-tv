@@ -220,6 +220,12 @@
                         "enum": [
                           "MS"
                         ]
+                      },
+                      {
+                        "title": "Surround mode all zones",
+                        "enum": [
+                          "MN"
+                        ]
                       }
                     ],
                     "required": true

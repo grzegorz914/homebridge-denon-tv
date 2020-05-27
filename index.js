@@ -30,37 +30,31 @@ class denonTvPlatform {
 		}
 		this.log = log;
 		this.config = config;
+		this.api = api;
 		this.devices = config.devices || [];
 		this.accessories = [];
-		if (api) {
-			this.api = api;
-			if (api.version < 2.1) {
-				throw new Error('Unexpected API version.');
+
+		this.api.on('didFinishLaunching', () => {
+			this.log.debug('didFinishLaunching');
+			for (let i = 0, len = this.devices.length; i < len; i++) {
+				let deviceName = this.devices[i];
+				if (!deviceName.name) {
+					this.log.warn('Device Name Missing')
+				} else {
+					this.accessories.push(new denonTvDevice(this.log, deviceName, this.api));
+				}
 			}
-			this.api.on('didFinishLaunching', this.didFinishLaunching.bind(this));
-		}
+		});
 	}
 
-	didFinishLaunching() {
-		this.log.debug('didFinishLaunching');
-		for (let i = 0, len = this.devices.length; i < len; i++) {
-			let deviceName = this.devices[i];
-			if (!deviceName.name) {
-				this.log.warn('Device Name Missing')
-			} else {
-				this.accessories.push(new denonTvDevice(this.log, deviceName, this.api));
-			}
-		}
-	}
-	configureAccessory(platformAccessory) {
+	configureAccessory(accessory) {
 		this.log.debug('configureAccessory');
-		if (this.accessories) {
-			this.accessories.push(platformAccessory);
-		}
+		this.accessories.push(accessory);
 	}
-	removeAccessory(platformAccessory) {
+
+	removeAccessory(accessory) {
 		this.log.debug('removeAccessory');
-		this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [platformAccessory]);
+		this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
 	}
 }
 
@@ -223,11 +217,12 @@ class denonTvDevice {
 		me.log.debug('Device: %s %s, requesting Device state.', me.host, me.name);
 		let result = me.deviceStatusInfo;
 		let powerState = (result.item.Power[0].value[0] == 'ON');
+		let state = powerState ? 1 : 0;
 		let inputReference = result.item.InputFuncSelect[0].value[0];
 		let inputIdentifier = me.inputReferences.indexOf(inputReference);
 		let inputName = me.inputNames[inputIdentifier];
 		if (me.televisionService) {
-			me.televisionService.updateCharacteristic(Characteristic.Active, powerState);
+			me.televisionService.updateCharacteristic(Characteristic.Active, state);
 			me.televisionService.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
 			me.log.debug('Device: %s %s, get current Power state successful: %s', me.host, me.name, powerState ? 'ON' : 'OFF');
 			me.log.debug('Device: %s %s %s, get current Input successful: %s %s', me.host, me.name, me.zoneName, inputName, inputReference);

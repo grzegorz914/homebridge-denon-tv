@@ -49,10 +49,12 @@ Due to HomeKit app limitation max. services for 1 accessory is 100. Over this va
 `AUTO` - set DIGITAL INPUT AUTO mode, `PCM` - set DIGITAL INPUT force PCM, `DTS` - set DIGITAL INPUT force DTS.
 5. Different model of AV Receiver uses different `Surrounds Modes`, `MS` reference:
 `DIRECT, PURE DIRECT, STEREO, STANDARD, DOLBY DIGITAL, DTS SUROUND, 7CH STEREO, MCH STEREO, ROCK ARENA, JAZZ CLUB, MONO MOVIE, MATRIX, GAME, VIRTUAL, AURO3D, AURO2DSURR, WIDE SCREEN, SUPER STADIUM, CLASSIC CONCERT, LEFT, RIGHT, AUX3, AUX4, AUX5, AUX6, AUX7, BT, USB/IPOD, USB, QUICK1, QUICK2, QUICK3, QUICK4, QUICK1 MEMORY, QUICK2 MEMORY, QUICK3 MEMORY, QUICK4 MEMORY`
-6. In `zoneControl` You can select which zone U want to control.
-7. In `volumeControl` You can select what a additional volume control mode You want to use (None, Slider, Fan).
-8. If `switchInfoMenu` is enabled, `I` button toggle its behaviour in RC app and `PowerModeSelection` in settings.
-9. All possible commands can be found in [Denon Control Protocol 2020](http://assets.denon.com/_layouts/15/xlviewer.aspx?id=/DocumentMaster/us/DENON_FY20%20AVR_PROTOCOL_V03_03042020.xlsx)
+6. Different model of AV Receiver uses different `Surrounds Modes`, `MN` to controll all zones stereo reference:
+`ZST ON, ZST OFF`
+7. In `zoneControl` You can select which zone U want to control.
+8. In `volumeControl` You can select what a additional volume control mode You want to use (None, Slider, Fan).
+9. If `switchInfoMenu` is enabled, `I` button toggle its behaviour in RC app and `PowerModeSelection` in settings.
+10. All possible commands can be found in [Denon Control Protocol 2020](http://assets.denon.com/_layouts/15/xlviewer.aspx?id=/DocumentMaster/us/DENON_FY20%20AVR_PROTOCOL_V03_03042020.xlsx)
 
 <p align="left">
   <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/ustawienia.png" height="150"></a>
@@ -162,6 +164,18 @@ Due to HomeKit app limitation max. services for 1 accessory is 100. Over this va
                     "reference": "MCH STEREO",
                     "type": "OTHER",
                     "mode": "MS"
+                },
+                {
+                    "name": "All zones stereo ON",
+                    "reference": "ZST ON",
+                    "type": "OTHER",
+                    "mode": "MN"
+                },
+                {
+                    "name": "All zones stereo OFF",
+                    "reference": "ZST OFF",
+                    "type": "OTHER",
+                    "mode": "MN"
                 },
             ]
         },
