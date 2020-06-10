@@ -218,19 +218,23 @@ class denonTvDevice {
 		let result = me.deviceStatusInfo;
 		let powerState = (result.item.Power[0].value[0] == 'ON');
 		let state = powerState ? 1 : 0;
-		let inputReference = result.item.InputFuncSelect[0].value[0];
-		let inputIdentifier = me.inputReferences.indexOf(inputReference);
-		let inputName = me.inputNames[inputIdentifier];
 		if (me.televisionService) {
 			me.televisionService.updateCharacteristic(Characteristic.Active, state);
-			me.televisionService.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
 			me.log.debug('Device: %s %s, get current Power state successful: %s', me.host, me.name, powerState ? 'ON' : 'OFF');
-			me.log.debug('Device: %s %s %s, get current Input successful: %s %s', me.host, me.name, me.zoneName, inputName, inputReference);
 		}
 		me.currentPowerState = powerState;
+
+               if (powerState) {
+               let inputReference = result.item.InputFuncSelect[0].value[0];
+		let inputIdentifier = me.inputReferences.indexOf(inputReference);
+		let inputName = me.inputNames[inputIdentifier];
+               if (me.televisionService) {
+			me.televisionService.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
+			me.log.debug('Device: %s %s %s, get current Input successful: %s %s', me.host, me.name, me.zoneName, inputName, inputReference);
+		}
 		me.currentInputName = inputName;
 		me.currentInputReference = inputReference;
-
+              
 		let mute = (result.item.Mute[0].value[0] == 'ON');
 		let muteState = powerState ? mute : true;
 		let volume = parseInt(result.item.MasterVolume[0].value[0]) + 80;
@@ -251,6 +255,7 @@ class denonTvDevice {
 		me.log.debug('Device: %s %s %s, get current Volume level: %s dB ', me.host, me.name, me.zoneName, (volume - 80));
 		me.currentMuteState = muteState;
 		me.currentVolume = volume;
+            }
 	}
 
 	//Prepare TV service 
