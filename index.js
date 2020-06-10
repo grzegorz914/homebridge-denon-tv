@@ -252,7 +252,7 @@ class denonTvDevice {
 			}
 			me.log.debug('Device: %s %s %s, get current Mute state: %s', me.host, me.name, me.zoneName, mute ? 'ON' : 'OFF');
 			me.log.debug('Device: %s %s %s, get current Volume level: %s dB ', me.host, me.name, me.zoneName, (volume - 80));
-			me.currentMuteState = muteState;
+			me.currentMuteState = mute;
 			me.currentVolume = volume;
 		} else {
 			me.currentMuteState = true;
