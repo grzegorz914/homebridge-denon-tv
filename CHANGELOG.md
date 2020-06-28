@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] - (28.06.2020)
+### Added
+-release version.
+
 ## [2.7.0] - (27.05.2020)
 ### Added
 - position in *Input mode*, *Surround mode all zones* which enable Stereo ON/OFF for alll zones (configure this only in Main Zone).
