@@ -136,18 +136,14 @@ class denonTvDevice {
 				parseStringPromise(response.data).then(result => {
 					this.log.debug('Device %s %s %s, get device status data: %s', this.host, this.name, this.zoneName, JSON.stringify(result, null, 2));
 					this.deviceStatusInfo = result;
-					this.connectionStatus = true;
+					this.currentPowerState = (result.item.Power[0].value[0] == 'ON');
 				}).catch(error => {
 					this.log.error('Device %s %s %s, get device status parse string error: %s', this.host, this.name, this.zoneName, error);
 					this.connectionStatus = false;
 					return;
 				});
-				if (!this.connectionStatus) {
-					this.log.info('Device: %s %s %s, state: Online.', this.host, this.name, this.zoneName);
-					this.connectionStatus = true;
-					setTimeout(this.getDeviceInfo.bind(this), 750);
-				} else {
-					this.getDeviceState();
+				if (this.connectionStatus) {
+					this.updateDeviceState();
 				}
 			}).catch(error => {
 				this.log.debug('Device: %s %s %s, state: Offline.', this.host, this.name, this.zoneName);
@@ -156,8 +152,7 @@ class denonTvDevice {
 			});
 		}.bind(this), 3000);
 
-		//Delay to wait for device info before publish
-		setTimeout(this.prepareTelevisionService.bind(this), 1500);
+		this.prepareTelevisionService();
 	}
 
 	getDeviceInfo() {
@@ -210,10 +205,9 @@ class denonTvDevice {
 		}).catch(error => {
 			me.log.error('Device: %s %s, getDeviceInfo eror: %s', me.host, me.name, error);
 		});
-		me.getDeviceState();
 	}
 
-	getDeviceState() {
+	updateDeviceState() {
 		var me = this;
 		me.log.debug('Device: %s %s, requesting Device state.', me.host, me.name);
 		let result = me.deviceStatusInfo;
@@ -222,7 +216,6 @@ class denonTvDevice {
 			me.televisionService.updateCharacteristic(Characteristic.Active, powerState ? 1 : 0);
 			me.log.debug('Device: %s %s, get current Power state successful: %s', me.host, me.name, powerState ? 'ON' : 'OFF');
 		}
-		me.currentPowerState = powerState;
 
 		let inputReference = result.item.InputFuncSelect[0].value[0];
 		let inputIdentifier = me.inputReferences.indexOf(inputReference);
@@ -231,8 +224,6 @@ class denonTvDevice {
 			me.televisionService.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
 			me.log.debug('Device: %s %s %s, get current Input successful: %s %s', me.host, me.name, me.zoneName, inputName, inputReference);
 		}
-		me.currentInputName = inputName;
-		me.currentInputReference = inputReference;
 
 		let mute = powerState ? (result.item.Mute[0].value[0] == 'ON') : true;
 		let volume = parseInt(result.item.MasterVolume[0].value[0]) + 80;
@@ -251,8 +242,6 @@ class denonTvDevice {
 		}
 		me.log.debug('Device: %s %s %s, get current Mute state: %s', me.host, me.name, me.zoneName, mute ? 'ON' : 'OFF');
 		me.log.debug('Device: %s %s %s, get current Volume level: %s dB ', me.host, me.name, me.zoneName, (volume - 80));
-		me.currentMuteState = mute;
-		me.currentVolume = volume;
 	}
 
 	//Prepare TV service 
@@ -298,6 +287,12 @@ class denonTvDevice {
 		}
 		if (this.soundModeControl) {
 			this.prepareSoundModesService();
+		}
+
+		if (!this.connectionStatus) {
+			this.log.info('Device: %s %s %s, state: Online.', this.host, this.name, this.zoneName);
+			this.connectionStatus = true;
+			this.getDeviceInfo();
 		}
 
 		this.log.debug('Device: %s %s, publishExternalAccessories.', this.host, accessoryName);
@@ -422,9 +417,17 @@ class denonTvDevice {
 
 	getPower(callback) {
 		var me = this;
-		let state = me.currentPowerState ? 1 : 0;
-		me.log.info('Device: %s %s %s, get current Power state successful: %s', me.host, me.name, me.zoneName, state ? 'ON' : 'OFF');
-		callback(null, state);
+		axios.get(this.url + '/goform/form' + this.zoneNumber + 'XmlStatusLite.xml').then(response => {
+			parseStringPromise(response.data).then(result => {
+				let state = (result.item.Power[0].value[0] == 'ON');
+				me.log.info('Device: %s %s %s, get current Power state successful: %s', me.host, me.name, me.zoneName, state ? 'ON' : 'OFF');
+				callback(null, state);
+			}).catch(error => {
+				me.log.error('Device: %s %s %s, get current Power state parse string error: %s', me.host, me.name, me.zoneName, error);
+			});
+		}).catch(error => {
+			me.log.error('Device: %s %s %s, get current Power state error: %s', me.host, me.name, me.zoneName, error);
+		});
 	}
 
 	setPower(state, callback) {
@@ -444,9 +447,17 @@ class denonTvDevice {
 
 	getMute(callback) {
 		var me = this;
-		let state = me.currentMuteState;
-		me.log.info('Device: %s %s %s, get current Mute state successful: %s', me.host, me.name, me.zoneName, state ? 'ON' : 'OFF');
-		callback(null, state);
+		axios.get(this.url + '/goform/form' + this.zoneNumber + 'XmlStatusLite.xml').then(response => {
+			parseStringPromise(response.data).then(result => {
+				let state = powerState ? (result.item.Mute[0].value[0] == 'ON') : true;
+				me.log.info('Device: %s %s %s, get current Mute state successful: %s', me.host, me.name, me.zoneName, state ? 'ON' : 'OFF');
+				callback(null, state);
+			}).catch(error => {
+				me.log.error('Device: %s %s %s, get current Mute parse string error: %s', me.host, me.name, me.zoneName, error);
+			});
+		}).catch(error => {
+			me.log.error('Device: %s %s %s, get current Mute error: %s', me.host, me.name, me.zoneName, error);
+		});
 	}
 
 	setMute(state, callback) {
@@ -482,9 +493,17 @@ class denonTvDevice {
 
 	getVolume(callback) {
 		var me = this;
-		let currentVolume = me.currentVolume;
-		me.log.info('Device: %s %s %s, get current Volume level successful: %s dB', me.host, me.name, me.zoneName, (currentVolume - 80));
-		callback(null, currentVolume);
+		axios.get(this.url + '/goform/form' + this.zoneNumber + 'XmlStatusLite.xml').then(response => {
+			parseStringPromise(response.data).then(result => {
+				let currentVolume = parseInt(result.item.MasterVolume[0].value[0]) + 80;
+				me.log.info('Device: %s %s %s, get current Volume level successful: %s dB', me.host, me.name, me.zoneName, (currentVolume - 80));
+				callback(null, currentVolume);
+			}).catch(error => {
+				me.log.error('Device: %s %s %s, get current Volume parse string error: %s', me.host, me.name, me.zoneName, error);
+			});
+		}).catch(error => {
+			me.log.error('Device: %s %s %s, get current Volume error: %s', me.host, me.name, me.zoneName, error);
+		});
 	}
 
 	setVolume(volume, callback) {
@@ -519,11 +538,19 @@ class denonTvDevice {
 
 	getInput(callback) {
 		var me = this;
-		let inputReference = me.currentInputReference;
-		let inputIdentifier = me.inputReferences.indexOf(inputReference);
-		let inputName = me.currentInputName;
-		me.log.info('Device: %s %s %s, get current Input successful: %s %s', me.host, me.name, me.zoneName, inputName, inputReference);
-		callback(null, inputIdentifier);
+		axios.get(this.url + '/goform/form' + this.zoneNumber + 'XmlStatusLite.xml').then(response => {
+			parseStringPromise(response.data).then(result => {
+				let inputReference = result.item.InputFuncSelect[0].value[0];
+				let inputIdentifier = me.inputReferences.indexOf(inputReference);
+				let inputName = me.inputNames[inputIdentifier];
+				me.log.info('Device: %s %s %s, get current Input successful: %s %s', me.host, me.name, me.zoneName, inputName, inputReference);
+				callback(null, inputIdentifier);
+			}).catch(error => {
+				me.log.error('Device: %s %s %s, get current Input parse string error: %s', me.host, me.name, me.zoneName, error);
+			});
+		}).catch(error => {
+			me.log.error('Device: %s %s %s, get current Input error: %s', me.host, me.name, me.zoneName, error);
+		});
 	}
 
 	setInput(inputIdentifier, callback) {

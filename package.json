@@ -13,9 +13,9 @@
     "url": "https://github.com/grzegorz914/homebridge-denon-tv/issues"
   },
   "funding": {
-    "type" : "paypal",
-    "url" : "https://paypal.me/GrzegorzKaczor"
-    },
+    "type": "paypal",
+    "url": "https://paypal.me/GrzegorzKaczor"
+  },
   "main": "index.js",
   "files": [
     "index.js",
