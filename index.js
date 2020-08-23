@@ -441,6 +441,7 @@ class denonTvDevice {
 		var me = this;
 		axios.get(this.url + '/goform/form' + this.zoneNumber + 'XmlStatusLite.xml').then(response => {
 			parseStringPromise(response.data).then(result => {
+				let powerState = (result.item.Power[0].value[0] == 'ON')
 				let state = powerState ? (result.item.Mute[0].value[0] == 'ON') : true;
 				me.log.info('Device: %s %s %s, get current Mute state successful: %s', me.host, me.name, me.zoneName, state ? 'ON' : 'OFF');
 				callback(null, state);
