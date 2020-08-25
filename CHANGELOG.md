@@ -4,7 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [3.0.1] - (23.00.2020)
+## [3.0.4] - (25.08.2020)
+### Changes
+- performance improvements
+- other small fixes
+
+## [3.0.1] - (23.08.2020)
 ### Added
 - donate option on plugin gui
 - some cleanup

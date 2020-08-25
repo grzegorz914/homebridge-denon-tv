@@ -145,6 +145,7 @@ class denonTvDevice {
 		me.log.debug('Device: %s %s, requesting Device information.', me.host, me.name);
 		axios.get(me.url + '/goform/Deviceinfo.xml').then(response => {
 			parseStringPromise(response.data).then(result => {
+				me.log.info('Device: %s %s %s, state: Online.', this.host, this.name, this.zoneName);
 				me.manufacturer = ['Denon', 'Marantz'][result.Device_Info.BrandCode[0]];
 				me.modelName = result.Device_Info.ModelName[0];
 				me.serialNumber = result.Device_Info.MacAddress[0];
@@ -184,11 +185,15 @@ class denonTvDevice {
 					me.log('Zone: 3');
 					me.log('----------------------------------');
 				}
+				me.updateDeviceState();
+				me.connectionStatus = true;
 			}).catch(error => {
 				me.log.error('Device %s %s, getDeviceInfo parse string error: %s', me.host, me.name, error);
 			});
 		}).catch(error => {
-			me.log.error('Device: %s %s, getDeviceInfo eror: %s', me.host, me.name, error);
+			me.log.error('Device: %s %s, getDeviceInfo eror: %s, state: Offline', me.host, me.name, error);
+			me.connectionStatus = false;
+			return;
 		});
 	}
 
@@ -202,6 +207,7 @@ class denonTvDevice {
 					me.televisionService.updateCharacteristic(Characteristic.Active, powerState ? 1 : 0);
 					me.log.debug('Device: %s %s, get current Power state successful: %s', me.host, me.name, powerState ? 'ON' : 'OFF');
 				}
+				me.currentPowerState = powerState;
 
 				let inputReference = result.item.InputFuncSelect[0].value[0];
 				let inputIdentifier = me.inputReferences.indexOf(inputReference);
@@ -210,6 +216,7 @@ class denonTvDevice {
 					me.televisionService.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
 					me.log.debug('Device: %s %s %s, get current Input successful: %s %s', me.host, me.name, me.zoneName, inputName, inputReference);
 				}
+				me.currentInputReference = inputReference;
 
 				let mute = powerState ? (result.item.Mute[0].value[0] == 'ON') : true;
 				let volume = parseInt(result.item.MasterVolume[0].value[0]) + 80;
@@ -226,6 +233,8 @@ class denonTvDevice {
 						me.volumeService.updateCharacteristic(Characteristic.RotationSpeed, volume);
 					}
 				}
+				me.currentMuteState = mute;
+				me.currentVolume = volume;
 				me.log.debug('Device: %s %s %s, get current Mute state: %s', me.host, me.name, me.zoneName, mute ? 'ON' : 'OFF');
 				me.log.debug('Device: %s %s %s, get current Volume level: %s dB ', me.host, me.name, me.zoneName, (volume - 80));
 			}).catch(error => {
@@ -282,8 +291,6 @@ class denonTvDevice {
 		}
 
 		if (!this.connectionStatus) {
-			this.log.info('Device: %s %s %s, state: Online.', this.host, this.name, this.zoneName);
-			this.connectionStatus = true;
 			this.getDeviceInfo();
 		}
 
