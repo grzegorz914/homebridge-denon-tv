@@ -140,111 +140,6 @@ class denonTvDevice {
 		this.prepareTelevisionService();
 	}
 
-	getDeviceInfo() {
-		var me = this;
-		me.log.debug('Device: %s %s, requesting Device information.', me.host, me.name);
-		axios.get(me.url + '/goform/Deviceinfo.xml').then(response => {
-			parseStringPromise(response.data).then(result => {
-				me.log.info('Device: %s %s %s, state: Online.', this.host, this.name, this.zoneName);
-				me.manufacturer = ['Denon', 'Marantz'][result.Device_Info.BrandCode[0]];
-				me.modelName = result.Device_Info.ModelName[0];
-				me.serialNumber = result.Device_Info.MacAddress[0];
-				me.firmwareRevision = result.Device_Info.UpgradeVersion[0];
-				me.zones = result.Device_Info.DeviceZones[0];
-				me.apiVersion = result.Device_Info.CommApiVers[0];
-				if (me.zoneControl == 0 || me.zoneControl == 3) {
-					if (fs.existsSync(me.devInfoFile) === false) {
-						fs.writeFile(me.devInfoFile, JSON.stringify(result, null, 2), (error) => {
-							if (error) {
-								me.log.error('Device: %s %s, could not write devInfoFile, error: %s', me.host, me.name, error);
-							} else {
-								me.log.debug('Device: %s %s, devInfoFile saved successful in: %s %s', me.host, me.name, me.prefDir, JSON.stringify(result, null, 2));
-							}
-						});
-					}
-					me.log('-------- %s --------', me.name);
-					me.log('Manufacturer: %s', me.manufacturer);
-					me.log('Model: %s', me.modelName);
-					me.log('Zones: %s', me.zones);
-					me.log('Api version: %s', me.apiVersion);
-					me.log('Serialnumber: %s', me.serialNumber);
-					me.log('Firmware: %s', me.firmwareRevision);
-					me.log('----------------------------------');
-				}
-				if (me.zoneControl == 1) {
-					me.log('-------- %s --------', me.name);
-					me.log('Manufacturer: %s', me.manufacturer);
-					me.log('Model: %s', me.modelName);
-					me.log('Zone: 2');
-					me.log('----------------------------------');
-				}
-				if (me.zoneControl == 2) {
-					me.log('-------- %s --------', me.name);
-					me.log('Manufacturer: %s', me.manufacturer);
-					me.log('Model: %s', me.modelName);
-					me.log('Zone: 3');
-					me.log('----------------------------------');
-				}
-				me.updateDeviceState();
-				me.connectionStatus = true;
-			}).catch(error => {
-				me.log.error('Device %s %s, getDeviceInfo parse string error: %s', me.host, me.name, error);
-			});
-		}).catch(error => {
-			me.log.error('Device: %s %s, getDeviceInfo eror: %s, state: Offline', me.host, me.name, error);
-			me.connectionStatus = false;
-			return;
-		});
-	}
-
-	updateDeviceState() {
-		var me = this;
-		me.log.debug('Device: %s %s, requesting Device state.', me.host, me.name);
-		axios.get(this.url + '/goform/form' + this.zoneNumber + 'XmlStatusLite.xml').then(response => {
-			parseStringPromise(response.data).then(result => {
-				let powerState = (result.item.Power[0].value[0] == 'ON');
-				if (me.televisionService) {
-					me.televisionService.updateCharacteristic(Characteristic.Active, powerState ? 1 : 0);
-					me.log.debug('Device: %s %s, get current Power state successful: %s', me.host, me.name, powerState ? 'ON' : 'OFF');
-				}
-				me.currentPowerState = powerState;
-
-				let inputReference = result.item.InputFuncSelect[0].value[0];
-				let inputIdentifier = me.inputReferences.indexOf(inputReference);
-				let inputName = me.inputNames[inputIdentifier];
-				if (me.televisionService) {
-					me.televisionService.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
-					me.log.debug('Device: %s %s %s, get current Input successful: %s %s', me.host, me.name, me.zoneName, inputName, inputReference);
-				}
-				me.currentInputReference = inputReference;
-
-				let mute = powerState ? (result.item.Mute[0].value[0] == 'ON') : true;
-				let volume = parseInt(result.item.MasterVolume[0].value[0]) + 80;
-				if (me.speakerService) {
-					me.speakerService.updateCharacteristic(Characteristic.Mute, mute);
-					me.speakerService.updateCharacteristic(Characteristic.Volume, volume);
-					if (me.volumeService && me.volumeControl >= 1) {
-						me.volumeService.updateCharacteristic(Characteristic.On, !mute);
-					}
-					if (me.volumeService && me.volumeControl == 1) {
-						me.volumeService.updateCharacteristic(Characteristic.Brightness, volume);
-					}
-					if (me.volumeService && me.volumeControl == 2) {
-						me.volumeService.updateCharacteristic(Characteristic.RotationSpeed, volume);
-					}
-				}
-				me.currentMuteState = mute;
-				me.currentVolume = volume;
-				me.log.debug('Device: %s %s %s, get current Mute state: %s', me.host, me.name, me.zoneName, mute ? 'ON' : 'OFF');
-				me.log.debug('Device: %s %s %s, get current Volume level: %s dB ', me.host, me.name, me.zoneName, (volume - 80));
-			}).catch(error => {
-				me.log.error('Device: %s %s %s, update Device state parse string error: %s', me.host, me.name, me.zoneName, error);
-			});
-		}).catch(error => {
-			me.log.error('Device: %s %s %s, update Device state error: %s', me.host, me.name, me.zoneName, error);
-		});
-	}
-
 	//Prepare TV service 
 	prepareTelevisionService() {
 		this.log.debug('prepareTelevisionService');
@@ -411,6 +306,111 @@ class denonTvDevice {
 			this.inputNames.push(inputName);
 			this.inputTypes.push(inputType);
 			this.inputModes.push(inputMode);
+		});
+	}
+
+	getDeviceInfo() {
+		var me = this;
+		me.log.debug('Device: %s %s, requesting Device information.', me.host, me.name);
+		axios.get(me.url + '/goform/Deviceinfo.xml').then(response => {
+			parseStringPromise(response.data).then(result => {
+				me.log.info('Device: %s %s %s, state: Online.', me.host, me.name, me.zoneName);
+				me.manufacturer = ['Denon', 'Marantz'][result.Device_Info.BrandCode[0]];
+				me.modelName = result.Device_Info.ModelName[0];
+				me.serialNumber = result.Device_Info.MacAddress[0];
+				me.firmwareRevision = result.Device_Info.UpgradeVersion[0];
+				me.zones = result.Device_Info.DeviceZones[0];
+				me.apiVersion = result.Device_Info.CommApiVers[0];
+				if (me.zoneControl == 0 || me.zoneControl == 3) {
+					if (fs.existsSync(me.devInfoFile) === false) {
+						fs.writeFile(me.devInfoFile, JSON.stringify(result, null, 2), (error) => {
+							if (error) {
+								me.log.error('Device: %s %s, could not write devInfoFile, error: %s', me.host, me.name, error);
+							} else {
+								me.log.debug('Device: %s %s, devInfoFile saved successful in: %s %s', me.host, me.name, me.prefDir, JSON.stringify(result, null, 2));
+							}
+						});
+					}
+					me.log('-------- %s --------', me.name);
+					me.log('Manufacturer: %s', me.manufacturer);
+					me.log('Model: %s', me.modelName);
+					me.log('Zones: %s', me.zones);
+					me.log('Api version: %s', me.apiVersion);
+					me.log('Serialnumber: %s', me.serialNumber);
+					me.log('Firmware: %s', me.firmwareRevision);
+					me.log('----------------------------------');
+				}
+				if (me.zoneControl == 1) {
+					me.log('-------- %s --------', me.name);
+					me.log('Manufacturer: %s', me.manufacturer);
+					me.log('Model: %s', me.modelName);
+					me.log('Zone: 2');
+					me.log('----------------------------------');
+				}
+				if (me.zoneControl == 2) {
+					me.log('-------- %s --------', me.name);
+					me.log('Manufacturer: %s', me.manufacturer);
+					me.log('Model: %s', me.modelName);
+					me.log('Zone: 3');
+					me.log('----------------------------------');
+				}
+				me.updateDeviceState();
+				me.connectionStatus = true;
+			}).catch(error => {
+				me.log.error('Device %s %s, getDeviceInfo parse string error: %s', me.host, me.name, error);
+			});
+		}).catch(error => {
+			me.log.error('Device: %s %s, getDeviceInfo eror: %s, state: Offline', me.host, me.name, error);
+			me.connectionStatus = false;
+			return;
+		});
+	}
+
+	updateDeviceState() {
+		var me = this;
+		me.log.debug('Device: %s %s, requesting Device state.', me.host, me.name);
+		axios.get(this.url + '/goform/form' + this.zoneNumber + 'XmlStatusLite.xml').then(response => {
+			parseStringPromise(response.data).then(result => {
+				let powerState = (result.item.Power[0].value[0] == 'ON');
+				if (me.televisionService) {
+					me.televisionService.updateCharacteristic(Characteristic.Active, powerState ? 1 : 0);
+				}
+				me.currentPowerStat
+				me.log.debug('Device: %s %s, get current Power state successful: %s', me.host, me.name, powerState ? 'ON' : 'OFF'); e = powerState;
+
+				let inputReference = result.item.InputFuncSelect[0].value[0];
+				let inputIdentifier = me.inputReferences.indexOf(inputReference);
+				let inputName = me.inputNames[inputIdentifier];
+				if (me.televisionService) {
+					me.televisionService.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
+				}
+				me.log.debug('Device: %s %s %s, get current Input successful: %s %s', me.host, me.name, me.zoneName, inputName, inputReference);
+				me.currentInputReference = inputReference;
+
+				let mute = powerState ? (result.item.Mute[0].value[0] == 'ON') : true;
+				let volume = parseInt(result.item.MasterVolume[0].value[0]) + 80;
+				if (me.speakerService) {
+					me.speakerService.updateCharacteristic(Characteristic.Mute, mute);
+					me.speakerService.updateCharacteristic(Characteristic.Volume, volume);
+					if (me.volumeService && me.volumeControl >= 1) {
+						me.volumeService.updateCharacteristic(Characteristic.On, !mute);
+					}
+					if (me.volumeService && me.volumeControl == 1) {
+						me.volumeService.updateCharacteristic(Characteristic.Brightness, volume);
+					}
+					if (me.volumeService && me.volumeControl == 2) {
+						me.volumeService.updateCharacteristic(Characteristic.RotationSpeed, volume);
+					}
+				}
+				me.log.debug('Device: %s %s %s, get current Mute state: %s', me.host, me.name, me.zoneName, mute ? 'ON' : 'OFF');
+				me.log.debug('Device: %s %s %s, get current Volume level: %s dB ', me.host, me.name, me.zoneName, (volume - 80));
+				me.currentMuteState = mute;
+				me.currentVolume = volume;
+			}).catch(error => {
+				me.log.error('Device: %s %s %s, update Device state parse string error: %s', me.host, me.name, me.zoneName, error);
+			});
+		}).catch(error => {
+			me.log.error('Device: %s %s %s, update Device state error: %s', me.host, me.name, me.zoneName, error);
 		});
 	}
 
