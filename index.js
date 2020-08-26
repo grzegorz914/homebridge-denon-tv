@@ -378,7 +378,7 @@ class denonTvDevice {
 					me.televisionService.updateCharacteristic(Characteristic.Active, powerState ? 1 : 0);
 				}
 				me.log.debug('Device: %s %s, get current Power state successful: %s', me.host, me.name, powerState ? 'ON' : 'OFF');
-				me.currentPowerStat = powerState;
+				me.currentPowerState = powerState;
 
 				let inputReference = result.item.InputFuncSelect[0].value[0];
 				let inputIdentifier = me.inputReferences.indexOf(inputReference);
