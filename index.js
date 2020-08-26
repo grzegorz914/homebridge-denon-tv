@@ -86,7 +86,8 @@ class denonTvDevice {
 		this.zoneNumber = ZONE_NUMBER[this.zoneControl];
 
 		//setup variables
-		this.connectionStatus = false;
+		this.checkDeviceInfo = false;
+		this.checkDeviceState = false;
 		this.currentPowerState = false;
 		this.inputNames = new Array();
 		this.inputReferences = new Array();
@@ -132,7 +133,10 @@ class denonTvDevice {
 
 		//update device state
 		setInterval(function () {
-			if (this.connectionStatus) {
+			if (this.checkDeviceInfo) {
+				this.getDeviceInfo();
+			}
+			if (this.checkDeviceState) {
 				this.updateDeviceState();
 			}
 		}.bind(this), 3000);
@@ -185,9 +189,7 @@ class denonTvDevice {
 			this.prepareSoundModesService();
 		}
 
-		if (!this.connectionStatus) {
-			this.getDeviceInfo();
-		}
+		this.checkDeviceInfo = true;
 
 		this.log.debug('Device: %s %s, publishExternalAccessories.', this.host, accessoryName);
 		this.api.publishExternalAccessories(PLUGIN_NAME, [this.accessory]);
@@ -354,15 +356,15 @@ class denonTvDevice {
 					me.log('Zone: 3');
 					me.log('----------------------------------');
 				}
-				me.updateDeviceState();
-				me.connectionStatus = true;
+				me.checkDeviceInfo = false;
+				me.checkDeviceState = true;
 			}).catch(error => {
 				me.log.error('Device %s %s, getDeviceInfo parse string error: %s', me.host, me.name, error);
 			});
 		}).catch(error => {
 			me.log.error('Device: %s %s, getDeviceInfo eror: %s, state: Offline', me.host, me.name, error);
-			me.connectionStatus = false;
-			return;
+			me.checkDeviceInfo = true;
+			me.checkDeviceState = false;
 		});
 	}
 
@@ -375,8 +377,8 @@ class denonTvDevice {
 				if (me.televisionService) {
 					me.televisionService.updateCharacteristic(Characteristic.Active, powerState ? 1 : 0);
 				}
-				me.currentPowerStat
-				me.log.debug('Device: %s %s, get current Power state successful: %s', me.host, me.name, powerState ? 'ON' : 'OFF'); e = powerState;
+				me.log.debug('Device: %s %s, get current Power state successful: %s', me.host, me.name, powerState ? 'ON' : 'OFF');
+				me.currentPowerStat = powerState;
 
 				let inputReference = result.item.InputFuncSelect[0].value[0];
 				let inputIdentifier = me.inputReferences.indexOf(inputReference);
