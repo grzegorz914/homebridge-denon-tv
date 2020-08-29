@@ -388,6 +388,7 @@ class denonTvDevice {
 				}
 				me.log.debug('Device: %s %s %s, get current Input successful: %s %s', me.host, me.name, me.zoneName, inputName, inputReference);
 				me.currentInputReference = inputReference;
+				me.currentInputName = inputName;
 
 				let mute = powerState ? (result.item.Mute[0].value[0] == 'ON') : true;
 				let volume = parseInt(result.item.MasterVolume[0].value[0]) + 80;
