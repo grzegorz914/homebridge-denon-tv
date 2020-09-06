@@ -25,10 +25,6 @@
                     "zoneControl": 0,
                     "volumeControl": 0,
                     "switchInfoMenu": false,
-                    "manufacturer": "Denon/Marantz",
-                    "modelName": "AVR",
-                    "serialNumber": "Serial Number",
-                    "firmwareRevision": "Firmware Revision",
                     "inputs": [
                         {
                             "name": "Xbox One",
@@ -144,7 +140,11 @@
                             "type": "OTHER",
                             "mode": "DC"
                         }
-                    ]
+                    ],
+                    "manufacturer": "Manufacturer",
+                    "modelName": "Model",
+                    "serialNumber": "Serial Number",
+                    "firmwareRevision": "Firmware Revision"
                 }
             ]
         }

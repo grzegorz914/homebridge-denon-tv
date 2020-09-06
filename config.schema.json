@@ -243,7 +243,7 @@
               "name": "Model",
               "type": "string",
               "placeholder": "Model",
-              "description": "Set the model.",
+              "description": "Set the model name.",
               "required": false
             },
             "serialNumber": {
