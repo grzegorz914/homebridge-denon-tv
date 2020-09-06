@@ -180,14 +180,12 @@ class denonTvDevice {
 			.on('set', this.setPictureMode.bind(this));
 
 		this.accessory.addService(this.televisionService);
+
 		this.prepareSpeakerService();
-		this.prepareInputsService();
 		if (this.volumeControl >= 1) {
 			this.prepareVolumeService();
 		}
-		if (this.soundModeControl) {
-			this.prepareSoundModesService();
-		}
+		this.prepareInputsService();
 
 		this.checkDeviceInfo = true;
 
@@ -302,12 +300,13 @@ class denonTvDevice {
 					});
 					callback(null)
 				});
-			this.accessory.addService(this.inputsService);
-			this.televisionService.addLinkedService(this.inputsService);
 			this.inputReferences.push(inputReference);
 			this.inputNames.push(inputName);
 			this.inputTypes.push(inputType);
 			this.inputModes.push(inputMode);
+
+			this.accessory.addService(this.inputsService);
+			this.televisionService.addLinkedService(this.inputsService);
 		});
 	}
 
