@@ -335,7 +335,7 @@ class denonTvDevice {
 					me.log('Model: %s', me.modelName);
 					me.log('Zones: %s', me.zones);
 					me.log('Api version: %s', me.apiVersion);
-					me.log('Serialnumber: %s', me.serialNumber);
+					me.log('Serialnr: %s', me.serialNumber);
 					me.log('Firmware: %s', me.firmwareRevision);
 					me.log('----------------------------------');
 				}
