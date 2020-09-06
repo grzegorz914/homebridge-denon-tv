@@ -75,7 +75,7 @@ class denonTvDevice {
 
 		//get Device info
 		this.manufacturer = config.manufacturer || 'Denon/Marantz';
-		this.modelName = config.modelName || PLUGIN_NAME;
+		this.modelName = config.modelName || 'AVR Receiver';
 		this.serialNumber = config.serialNumber || 'SN0000003';
 		this.firmwareRevision = config.firmwareRevision || 'FW0000003';
 		this.zones = 1;

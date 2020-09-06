@@ -106,7 +106,6 @@
               "title": "Inputs",
               "buttonText": "Add input",
               "type": "array",
-              "expandable": true,
               "items": {
                 "type": "object",
                 "properties": {
@@ -232,10 +231,101 @@
                   }
                 }
               }
+            },
+            "manufacturer": {
+              "name": "Manufacturer",
+              "type": "string",
+              "placeholder": "Denon/Marantz",
+              "description": "Set the manufacturer name."
+            },
+            "modelName": {
+              "name": "Model",
+              "type": "string",
+              "placeholder": "Model",
+              "description": "Set the model."
+            },
+            "serialNumber": {
+              "name": "Serial Number",
+              "type": "string",
+              "placeholder": "SerialNumber",
+              "description": "Set the serial number."
+            },
+            "firmwareRevision": {
+              "name": "Firmware Revision",
+              "type": "string",
+              "placeholder": "Firmware Revision",
+              "description": "Set the firmware revision."
             }
           }
         }
       }
     }
-  }
+  },
+  "layout": [
+    {
+      "type": "section",
+      "title": "Devices",
+      "expandable": true,
+      "expanded": true,
+      "items": [
+        {
+          "key": "devices",
+          "type": "array",
+          "orderable": false,
+          "buttonText": "Add device",
+          "items": [
+            "devices[].name",
+            "devices[].host",
+            "devices[].port",
+            {
+              "key": "devices[]",
+              "type": "section",
+              "title": "Inputs",
+              "expandable": true,
+              "expanded": false,
+              "items": [
+                {
+                  "key": "devices[].inputs",
+                  "type": "array",
+                  "orderable": false,
+                  "buttonText": "Add input/mode",
+                  "items": [
+                    "devices[].inputs[].name",
+                    "devices[].inputs[].reference",
+                    "devices[].inputs[].type",
+                    "devices[].inputs[].mode"
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "devices[]",
+              "type": "section",
+              "title": "Advanced Settings",
+              "expandable": true,
+              "expanded": false,
+              "items": [
+                "devices[].switchInfoMenu",
+                "devices[].zoneControl",
+                "devices[].volumeControl"
+              ]
+            },
+            {
+              "key": "devices[]",
+              "type": "section",
+              "title": "Branding",
+              "expandable": true,
+              "expanded": false,
+              "items": [
+                "devices[].manufacturer",
+                "devices[].modelName",
+                "devices[].serialNumber",
+                "devices[].firmwareRevision"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
 }
