@@ -72,6 +72,10 @@ Due to HomeKit app limitation max. services for 1 accessory is 100. Over this va
             "zoneControl" : 0,
             "volumeControl": 0,
             "switchInfoMenu": false,
+            "manufacturer": "Denon/Marantz",
+            "modelName": "AVR",
+            "serialNumber": "Serial Number",
+            "firmwareRevision": "Firmware Revision",
             "inputs": [
                         {
                             "name": "Xbox One",

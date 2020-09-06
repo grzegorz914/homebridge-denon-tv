@@ -236,25 +236,29 @@
               "name": "Manufacturer",
               "type": "string",
               "placeholder": "Denon/Marantz",
-              "description": "Set the manufacturer name."
+              "description": "Set the manufacturer name.",
+              "required": false
             },
             "modelName": {
               "name": "Model",
               "type": "string",
               "placeholder": "Model",
-              "description": "Set the model."
+              "description": "Set the model.",
+              "required": false
             },
             "serialNumber": {
               "name": "Serial Number",
               "type": "string",
               "placeholder": "SerialNumber",
-              "description": "Set the serial number."
+              "description": "Set the serial number.",
+              "required": false
             },
             "firmwareRevision": {
               "name": "Firmware Revision",
               "type": "string",
               "placeholder": "Firmware Revision",
-              "description": "Set the firmware revision."
+              "description": "Set the firmware revision.",
+              "required": false
             }
           }
         }
