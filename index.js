@@ -133,7 +133,7 @@ class denonTvDevice {
 
 		//update device state
 		setInterval(function () {
-			if (this.checkDeviceInfo) {
+			if (!this.checkDeviceInfo) {
 				this.getDeviceInfo();
 			}
 			if (this.checkDeviceState) {
@@ -186,8 +186,6 @@ class denonTvDevice {
 			this.prepareVolumeService();
 		}
 		this.prepareInputsService();
-
-		this.checkDeviceInfo = true;
 
 		this.log.debug('Device: %s %s, publishExternalAccessories.', this.host, accessoryName);
 		this.api.publishExternalAccessories(PLUGIN_NAME, [this.accessory]);
@@ -355,14 +353,14 @@ class denonTvDevice {
 					me.log('Zone: 3');
 					me.log('----------------------------------');
 				}
-				me.checkDeviceInfo = false;
+				me.checkDeviceInfo = true;
 				me.checkDeviceState = true;
 			}).catch(error => {
 				me.log.error('Device %s %s, getDeviceInfo parse string error: %s', me.host, me.name, error);
 			});
 		}).catch(error => {
 			me.log.error('Device: %s %s, getDeviceInfo eror: %s, state: Offline', me.host, me.name, error);
-			me.checkDeviceInfo = true;
+			me.checkDeviceInfo = false;
 			me.checkDeviceState = false;
 		});
 	}
