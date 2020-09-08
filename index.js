@@ -1,7 +1,8 @@
 'use strict';
 
-const axios = require('axios');
+const axios = require('axios').default;
 const fs = require('fs');
+const fsPromises = require('fs').promises;
 const path = require('path');
 const parseStringPromise = require('xml2js').parseStringPromise;
 
@@ -308,11 +309,13 @@ class denonTvDevice {
 		});
 	}
 
-	getDeviceInfo() {
+	async getDeviceInfo() {
 		var me = this;
 		me.log.debug('Device: %s %s, requesting Device information.', me.host, me.name);
-		axios.get(me.url + '/goform/Deviceinfo.xml').then(response => {
-			parseStringPromise(response.data).then(result => {
+		try {
+			const response = await axios.get(me.url + '/goform/Deviceinfo.xml');
+			try {
+				const result = await parseStringPromise(response.data);
 				me.log.info('Device: %s %s %s, state: Online.', me.host, me.name, me.zoneName);
 				me.manufacturer = ['Denon', 'Marantz'][result.Device_Info.BrandCode[0]];
 				if (typeof result.Device_Info.ModelName[0] !== 'undefined') {
@@ -334,13 +337,12 @@ class denonTvDevice {
 				me.apiVersion = result.Device_Info.CommApiVers[0];
 				if (me.zoneControl == 0 || me.zoneControl == 3) {
 					if (fs.existsSync(me.devInfoFile) === false) {
-						fs.writeFile(me.devInfoFile, JSON.stringify(result, null, 2), (error) => {
-							if (error) {
-								me.log.error('Device: %s %s, could not write devInfoFile, error: %s', me.host, me.name, error);
-							} else {
-								me.log.debug('Device: %s %s, devInfoFile saved successful in: %s %s', me.host, me.name, me.prefDir, JSON.stringify(result, null, 2));
-							}
-						});
+						try {
+							await fsPromises.writeFile(me.devInfoFile, JSON.stringify(result, null, 2));
+							me.log.debug('Device: %s %s, devInfoFile saved successful in: %s %s', me.host, me.name, me.prefDir, JSON.stringify(result, null, 2));
+						} catch (error) {
+							me.log.error('Device: %s %s, could not write devInfoFile, error: %s', me.host, me.name, error);
+						}
 					}
 					me.log('-------- %s --------', me.name);
 					me.log('Manufacturer: %s', me.manufacturer);
@@ -367,21 +369,23 @@ class denonTvDevice {
 				}
 				me.checkDeviceInfo = true;
 				me.checkDeviceState = true;
-			}).catch(error => {
+			} catch (error) {
 				me.log.error('Device %s %s, getDeviceInfo parse string error: %s', me.host, me.name, error);
-			});
-		}).catch(error => {
+			};
+		} catch (error) {
 			me.log.error('Device: %s %s, getDeviceInfo eror: %s, state: Offline', me.host, me.name, error);
 			me.checkDeviceInfo = false;
 			me.checkDeviceState = false;
-		});
+		};
 	}
 
-	updateDeviceState() {
+	async updateDeviceState() {
 		var me = this;
 		me.log.debug('Device: %s %s, requesting Device state.', me.host, me.name);
-		axios.get(this.url + '/goform/form' + this.zoneNumber + 'XmlStatusLite.xml').then(response => {
-			parseStringPromise(response.data).then(result => {
+		try {
+			const response = await axios.get(this.url + '/goform/form' + this.zoneNumber + 'XmlStatusLite.xml');
+			try {
+				const result = await parseStringPromise(response.data);
 				let powerState = (result.item.Power[0].value[0] == 'ON');
 				if (me.televisionService) {
 					me.televisionService.updateCharacteristic(Characteristic.Active, powerState ? 1 : 0);
@@ -418,12 +422,12 @@ class denonTvDevice {
 				me.log.debug('Device: %s %s %s, get current Volume level: %s dB ', me.host, me.name, me.zoneName, (volume - 80));
 				me.currentMuteState = mute;
 				me.currentVolume = volume;
-			}).catch(error => {
+			} catch (error) {
 				me.log.error('Device: %s %s %s, update Device state parse string error: %s', me.host, me.name, me.zoneName, error);
-			});
-		}).catch(error => {
+			};
+		} catch (error) {
 			me.log.error('Device: %s %s %s, update Device state error: %s', me.host, me.name, me.zoneName, error);
-		});
+		};
 	}
 
 	getPower(callback) {
