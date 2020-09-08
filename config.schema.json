@@ -93,13 +93,13 @@
                   ]
                 }
               ],
-              "required": true
+              "required": false
             },
             "switchInfoMenu": {
               "title": "Switch Info/Menu",
               "type": "boolean",
-              "default": true,
-              "required": true,
+              "default": false,
+              "required": false,
               "description": "This toggle behaviour for *I* button in RC app and *PowerModeSelection* in settings."
             },
             "inputs": {
