@@ -33,6 +33,13 @@
               "maximum": 65535,
               "required": true
             },
+            "refreshInterval": {
+              "title": "Refresh interval (sec)",
+              "type": "integer",
+              "default": 5,
+              "maximum": 3600,
+              "required": true
+            },
             "zoneControl": {
               "title": "Zone control",
               "type": "integer",
@@ -281,6 +288,7 @@
             "devices[].name",
             "devices[].host",
             "devices[].port",
+            "devices[].refreshInterval",
             {
               "key": "devices[]",
               "type": "section",

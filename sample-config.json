@@ -22,6 +22,7 @@
                     "name": "AV Receiver",
                     "host": "192.168.1.5",
                     "port": 8080,
+                    "refreshInterval": 5,
                     "zoneControl": 0,
                     "volumeControl": 0,
                     "switchInfoMenu": false,

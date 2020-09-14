@@ -69,6 +69,7 @@ class denonTvDevice {
 		this.name = config.name;
 		this.host = config.host;
 		this.port = config.port;
+		this.refreshInterval = config.refreshInterval || 5;
 		this.zoneControl = config.zoneControl;
 		this.volumeControl = config.volumeControl;
 		this.switchInfoMenu = config.switchInfoMenu;
@@ -140,7 +141,7 @@ class denonTvDevice {
 			if (this.checkDeviceState) {
 				this.updateDeviceState();
 			}
-		}.bind(this), 3000);
+		}.bind(this), this.refreshInterval * 1000);
 
 		this.prepareTelevisionService();
 	}
@@ -467,15 +468,11 @@ class denonTvDevice {
 		var me = this;
 		try {
 			const response = await axios.get(this.url + '/goform/form' + this.zoneNumber + 'XmlStatusLite.xml');
-			try {
-				const result = await parseStringPromise(response.data);
-				let powerState = (result.item.Power[0].value[0] == 'ON')
-				let state = powerState ? (result.item.Mute[0].value[0] == 'ON') : true;
-				me.log.info('Device: %s %s %s, get current Mute state successful: %s', me.host, me.name, me.zoneName, state ? 'ON' : 'OFF');
-				callback(null, state);
-			} catch (error) {
-				me.log.error('Device: %s %s %s, get current Mute parse string error: %s', me.host, me.name, me.zoneName, error);
-			};
+			const result = await parseStringPromise(response.data);
+			let powerState = (result.item.Power[0].value[0] == 'ON')
+			let state = powerState ? (result.item.Mute[0].value[0] == 'ON') : true;
+			me.log.info('Device: %s %s %s, get current Mute state successful: %s', me.host, me.name, me.zoneName, state ? 'ON' : 'OFF');
+			callback(null, state);
 		} catch (error) {
 			me.log.error('Device: %s %s %s, get current Mute error: %s', me.host, me.name, me.zoneName, error);
 		};
@@ -519,14 +516,10 @@ class denonTvDevice {
 		var me = this;
 		try {
 			const response = await axios.get(this.url + '/goform/form' + this.zoneNumber + 'XmlStatusLite.xml');
-			try {
-				const result = await parseStringPromise(response.data);
-				let currentVolume = parseInt(result.item.MasterVolume[0].value[0]) + 80;
-				me.log.info('Device: %s %s %s, get current Volume level successful: %s dB', me.host, me.name, me.zoneName, (currentVolume - 80));
-				callback(null, currentVolume);
-			} catch (error) {
-				me.log.error('Device: %s %s %s, get current Volume parse string error: %s', me.host, me.name, me.zoneName, error);
-			};
+			const result = await parseStringPromise(response.data);
+			let currentVolume = parseInt(result.item.MasterVolume[0].value[0]) + 80;
+			me.log.info('Device: %s %s %s, get current Volume level successful: %s dB', me.host, me.name, me.zoneName, (currentVolume - 80));
+			callback(null, currentVolume);
 		} catch (error) {
 			me.log.error('Device: %s %s %s, get current Volume error: %s', me.host, me.name, me.zoneName, error);
 		};
@@ -569,16 +562,12 @@ class denonTvDevice {
 		var me = this;
 		try {
 			const response = await axios.get(this.url + '/goform/form' + this.zoneNumber + 'XmlStatusLite.xml');
-			try {
-				const result = await parseStringPromise(response.data);
-				let inputReference = result.item.InputFuncSelect[0].value[0];
-				let inputIdentifier = me.inputReferences.indexOf(inputReference);
-				let inputName = me.inputNames[inputIdentifier];
-				me.log.info('Device: %s %s %s, get current Input successful: %s %s', me.host, me.name, me.zoneName, inputName, inputReference);
-				callback(null, inputIdentifier);
-			} catch (error) {
-				me.log.error('Device: %s %s %s, get current Input parse string error: %s', me.host, me.name, me.zoneName, error);
-			};
+			const result = await parseStringPromise(response.data);
+			let inputReference = result.item.InputFuncSelect[0].value[0];
+			let inputIdentifier = me.inputReferences.indexOf(inputReference);
+			let inputName = me.inputNames[inputIdentifier];
+			me.log.info('Device: %s %s %s, get current Input successful: %s %s', me.host, me.name, me.zoneName, inputName, inputReference);
+			callback(null, inputIdentifier);
 		} catch (error) {
 			me.log.error('Device: %s %s %s, get current Input error: %s', me.host, me.name, me.zoneName, error);
 		};
