@@ -135,7 +135,7 @@ class denonTvDevice {
 
 		//update device state
 		setInterval(function () {
-			if (!this.checkDeviceInfo) {
+			if (this.checkDeviceInfo) {
 				this.getDeviceInfo();
 			}
 			if (this.checkDeviceState) {
@@ -143,6 +143,7 @@ class denonTvDevice {
 			}
 		}.bind(this), this.refreshInterval * 1000);
 
+		this.getDeviceInfo();
 		this.prepareTelevisionService();
 	}
 
@@ -151,8 +152,8 @@ class denonTvDevice {
 		this.log.debug('prepareTelevisionService');
 		const accessoryName = this.name;
 		const accessoryUUID = UUID.generate(accessoryName);
-		this.accessory = new Accessory(accessoryName, accessoryUUID);
-		this.accessory.category = Categories.AUDIO_RECEIVER;
+		const accessoryCategory = Categories.AUDIO_RECEIVER;
+		this.accessory = new Accessory(accessoryName, accessoryUUID, accessoryCategory);
 
 		this.accessory.getService(Service.AccessoryInformation)
 			.setCharacteristic(Characteristic.Manufacturer, this.manufacturer)
@@ -368,15 +369,14 @@ class denonTvDevice {
 					me.log('Zone: 3');
 					me.log('----------------------------------');
 				}
-				me.checkDeviceInfo = true;
-				me.checkDeviceState = true;
+				me.updateDeviceState();
 			} catch (error) {
 				me.log.error('Device %s %s, getDeviceInfo parse string error: %s', me.host, me.name, error);
+				me.checkDeviceInfo = true;
 			};
 		} catch (error) {
 			me.log.error('Device: %s %s, getDeviceInfo eror: %s, state: Offline', me.host, me.name, error);
-			me.checkDeviceInfo = false;
-			me.checkDeviceState = false;
+			me.checkDeviceInfo = true;
 		};
 	}
 
@@ -423,6 +423,7 @@ class denonTvDevice {
 				me.log.debug('Device: %s %s %s, get current Volume level: %s dB ', me.host, me.name, me.zoneName, (volume - 80));
 				me.currentMuteState = mute;
 				me.currentVolume = volume;
+				me.checkDeviceState = true;
 			} catch (error) {
 				me.log.error('Device: %s %s %s, update Device state parse string error: %s', me.host, me.name, me.zoneName, error);
 			};
@@ -638,12 +639,11 @@ class denonTvDevice {
 			try {
 				const response = await axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + command);
 				me.log.info('Device: %s %s, setPictureMode successful, command: %s', me.host, me.name, command);
-				callback(null);
 			} catch (error) {
 				me.log.error('Device: %s %s %s, can not setPictureMode command. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
-				callback(error);
 			};
 		}
+		callback(null);
 	}
 
 	async setPowerModeSelection(state, callback) {
@@ -661,12 +661,11 @@ class denonTvDevice {
 			try {
 				const response = await axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + command);
 				me.log.info('Device: %s %s, setPowerModeSelection successful, command: %s', me.host, me.name, command);
-				callback(null);
 			} catch (error) {
 				me.log.error('Device: %s %s %s, can not setPowerModeSelection command. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
-				callback(error);
 			};
 		}
+		callback(null);
 	}
 
 	async setVolumeSelector(state, callback) {
@@ -701,12 +700,11 @@ class denonTvDevice {
 						};
 					}
 				}
-				callback(null);
 			} catch (error) {
 				me.log.error('Device: %s %s %s, can not setVolumeSelector command. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
-				callback(error);
 			};
 		}
+		callback(null);
 	}
 
 	async setRemoteKey(remoteKey, callback) {
@@ -757,11 +755,10 @@ class denonTvDevice {
 			try {
 				const response = await axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + command);
 				me.log.info('Device: %s %s, setRemoteKey successful, command: %s', me.host, me.name, command);
-				callback(null);
 			} catch (error) {
 				me.log.error('Device: %s %s %s, can not setRemoteKey command. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
-				callback(error);
 			};
 		}
+		callback(null);
 	}
 };
