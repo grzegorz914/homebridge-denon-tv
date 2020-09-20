@@ -33,7 +33,6 @@ class denonTvPlatform {
 		this.config = config;
 		this.api = api;
 		this.devices = config.devices || [];
-		this.accessories = [];
 
 		this.api.on('didFinishLaunching', () => {
 			this.log.debug('didFinishLaunching');
@@ -42,20 +41,19 @@ class denonTvPlatform {
 				if (!deviceName.name) {
 					this.log.warn('Device Name Missing')
 				} else {
-					this.accessories.push(new denonTvDevice(this.log, deviceName, this.api));
+					new denonTvDevice(this.log, deviceName, this.api);
 				}
 			}
 		});
 	}
 
-	configureAccessory(accessory) {
-		this.log.debug('configureAccessory');
-		this.accessories.push(accessory);
+	configureAccessory(platformAccessory) {
+		this.log.debug('configurePlatformAccessory');
 	}
 
-	removeAccessory(accessory) {
-		this.log.debug('removeAccessory');
-		this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
+	removeAccessory(platformAccessory) {
+		this.log.debug('removePlatformAccessory');
+		this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [platformAccessory]);
 	}
 }
 
@@ -143,26 +141,56 @@ class denonTvDevice {
 			}
 		}.bind(this), this.refreshInterval * 1000);
 
-		this.getDeviceInfo();
-		this.prepareTelevisionService();
+		this.prepareAccessory();
 	}
 
-	//Prepare TV service 
-	prepareTelevisionService() {
-		this.log.debug('prepareTelevisionService');
+	//Prepare accessory
+	prepareAccessory() {
+		this.log.debug('prepareAccessory');
 		const accessoryName = this.name;
 		const accessoryUUID = UUID.generate(accessoryName);
 		const accessoryCategory = Categories.AUDIO_RECEIVER;
 		this.accessory = new Accessory(accessoryName, accessoryUUID, accessoryCategory);
 
-		this.accessory.getService(Service.AccessoryInformation)
-			.setCharacteristic(Characteristic.Manufacturer, this.manufacturer)
-			.setCharacteristic(Characteristic.Model, this.modelName)
-			.setCharacteristic(Characteristic.SerialNumber, this.serialNumber)
-			.setCharacteristic(Characteristic.FirmwareRevision, this.firmwareRevision);
+		this.prepareInformationService();
+		this.prepareTelevisionService();
+		this.prepareSpeakerService();
+		if (this.volumeControl >= 1) {
+			this.prepareVolumeService();
+		}
+		this.prepareInputsService();
 
-		this.televisionService = new Service.Television(accessoryName, 'televisionService');
-		this.televisionService.setCharacteristic(Characteristic.ConfiguredName, accessoryName);
+		this.log.debug('Device: %s %s, publishExternalAccessories.', this.host, accessoryName);
+		this.api.publishExternalAccessories(PLUGIN_NAME, [this.accessory]);
+	}
+
+	//Prepare information service
+	prepareInformationService() {
+		this.log.debug('prepareInformationService');
+		this.getDeviceInfo();
+
+		let manufacturer = this.manufacturer;
+		let modelName = this.modelName;
+		let serialNumber = this.serialNumber;
+		let firmwareRevision = this.firmwareRevision;
+
+		this.accessory.removeService(this.accessory.getService(Service.AccessoryInformation));
+		const informationService = new Service.AccessoryInformation();
+		informationService
+			.setCharacteristic(Characteristic.Name, this.name)
+			.setCharacteristic(Characteristic.Manufacturer, manufacturer)
+			.setCharacteristic(Characteristic.Model, modelName)
+			.setCharacteristic(Characteristic.SerialNumber, serialNumber)
+			.setCharacteristic(Characteristic.FirmwareRevision, firmwareRevision);
+
+		this.accessory.addService(informationService);
+	}
+
+	//Prepare television service
+	prepareTelevisionService() {
+		this.log.debug('prepareTelevisionService');
+		this.televisionService = new Service.Television(this.name, 'televisionService');
+		this.televisionService.setCharacteristic(Characteristic.ConfiguredName, this.name);
 		this.televisionService.setCharacteristic(Characteristic.SleepDiscoveryMode, Characteristic.SleepDiscoveryMode.ALWAYS_DISCOVERABLE);
 
 		this.televisionService.getCharacteristic(Characteristic.Active)
@@ -183,15 +211,6 @@ class denonTvDevice {
 			.on('set', this.setPictureMode.bind(this));
 
 		this.accessory.addService(this.televisionService);
-
-		this.prepareSpeakerService();
-		if (this.volumeControl >= 1) {
-			this.prepareVolumeService();
-		}
-		this.prepareInputsService();
-
-		this.log.debug('Device: %s %s, publishExternalAccessories.', this.host, accessoryName);
-		this.api.publishExternalAccessories(PLUGIN_NAME, [this.accessory]);
 	}
 
 	//Prepare speaker service
