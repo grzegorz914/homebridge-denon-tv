@@ -276,7 +276,7 @@
     {
       "key": "devices",
       "type": "tabarray",
-      "title": "{{ value.name || 'new AVR' }}",
+      "title": "{{ value.name || 'new device' }}",
       "items": [
         "devices[].name",
         "devices[].host",
