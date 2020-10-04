@@ -338,7 +338,11 @@ class denonTvDevice {
 			try {
 				const result = await parseStringPromise(response.data);
 				me.log.info('Device: %s %s %s, state: Online.', me.host, me.name, me.zoneName);
-				me.manufacturer = ['Denon', 'Marantz'][result.Device_Info.BrandCode[0]];
+				if (typeof result.Device_Info.BrandCode[0] !== 'undefined') {
+					me.manufacturer = ['Denon', 'Marantz'][result.Device_Info.BrandCode[0]];
+				} else {
+					me.manufacturer = me.manufacturer;
+				};
 				if (typeof result.Device_Info.ModelName[0] !== 'undefined') {
 					me.modelName = result.Device_Info.ModelName[0];
 				} else {
