@@ -338,28 +338,30 @@ class denonTvDevice {
 			try {
 				const result = await parseStringPromise(response.data);
 				me.log.info('Device: %s %s %s, state: Online.', me.host, me.name, me.zoneName);
-				if (typeof result.Device_Info.BrandCode[0] !== 'undefined') {
-					me.manufacturer = ['Denon', 'Marantz'][result.Device_Info.BrandCode[0]];
-				} else {
-					me.manufacturer = me.manufacturer;
-				};
-				if (typeof result.Device_Info.ModelName[0] !== 'undefined') {
-					me.modelName = result.Device_Info.ModelName[0];
-				} else {
-					me.modelName = me.modelName;
-				};
-				if (typeof result.Device_Info.MacAddress[0] !== 'undefined') {
-					me.serialNumber = result.Device_Info.MacAddress[0];
-				} else {
-					me.serialNumber = me.serialNumber;
-				};
-				if (typeof result.Device_Info.UpgradeVersion[0] !== 'undefined') {
-					me.firmwareRevision = result.Device_Info.UpgradeVersion[0];
-				} else {
-					me.firmwareRevision = me.firmwareRevision;
-				};
-				me.zones = result.Device_Info.DeviceZones[0];
-				me.apiVersion = result.Device_Info.CommApiVers[0];
+				if (typeof result.Device_Info !== 'undefined') {
+					if (typeof result.Device_Info.BrandCode[0] !== 'undefined') {
+						me.manufacturer = ['Denon', 'Marantz'][result.Device_Info.BrandCode[0]];
+					} else {
+						me.manufacturer = me.manufacturer;
+					};
+					if (typeof result.Device_Info.ModelName[0] !== 'undefined') {
+						me.modelName = result.Device_Info.ModelName[0];
+					} else {
+						me.modelName = me.modelName;
+					};
+					if (typeof result.Device_Info.MacAddress[0] !== 'undefined') {
+						me.serialNumber = result.Device_Info.MacAddress[0];
+					} else {
+						me.serialNumber = me.serialNumber;
+					};
+					if (typeof result.Device_Info.UpgradeVersion[0] !== 'undefined') {
+						me.firmwareRevision = result.Device_Info.UpgradeVersion[0];
+					} else {
+						me.firmwareRevision = me.firmwareRevision;
+					};
+					me.zones = result.Device_Info.DeviceZones[0];
+					me.apiVersion = result.Device_Info.CommApiVers[0];
+				}
 				if (me.zoneControl == 0 || me.zoneControl == 3) {
 					if (fs.existsSync(me.devInfoFile) === false) {
 						try {
