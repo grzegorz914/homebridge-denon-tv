@@ -97,6 +97,7 @@ class denonTvDevice {
 		this.currentVolume = 0;
 		this.currentInputName = '';
 		this.currentInputReference = '';
+		this.currentInputIdentifier = 0;
 		this.prefDir = path.join(api.user.storagePath(), 'denonTv');
 		this.inputsFile = this.prefDir + '/' + 'inputs_' + this.host.split('.').join('');
 		this.customInputsFile = this.prefDir + '/' + 'customInputs_' + this.host.split('.').join('');
@@ -304,7 +305,7 @@ class denonTvDevice {
 				.setCharacteristic(Characteristic.Identifier, i)
 				.setCharacteristic(Characteristic.ConfiguredName, inputName)
 				.setCharacteristic(Characteristic.IsConfigured, Characteristic.IsConfigured.CONFIGURED)
-				.setCharacteristic(Characteristic.InputSourceType, Characteristic.InputSourceType, inputType)
+				.setCharacteristic(Characteristic.InputSourceType, Characteristic.InputSourceType.TV)
 				.setCharacteristic(Characteristic.CurrentVisibilityState, Characteristic.CurrentVisibilityState.SHOWN);
 
 			this.inputsService
@@ -420,13 +421,17 @@ class denonTvDevice {
 				me.currentPowerState = powerState;
 
 				let inputReference = result.item.InputFuncSelect[0].value[0];
-				let inputIdentifier = me.inputReferences.indexOf(inputReference);
+				let inputIdentifier = 0;
+				if (me.inputReferences.indexOf(inputReference) >= 0) {
+					inputIdentifier = me.inputReferences.indexOf(inputReference);
+				}
 				let inputName = me.inputNames[inputIdentifier];
 				if (me.televisionService) {
 					me.televisionService.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
 				}
 				me.log.debug('Device: %s %s %s, get current Input successful: %s %s', me.host, me.name, me.zoneName, inputName, inputReference);
 				me.currentInputReference = inputReference;
+				me.currentInputIdentifier = inputIdentifier;
 				me.currentInputName = inputName;
 
 				let mute = powerState ? (result.item.Mute[0].value[0] == 'ON') : true;
@@ -590,7 +595,10 @@ class denonTvDevice {
 			const response = await axios.get(this.url + '/goform/form' + this.zoneNumber + 'XmlStatusLite.xml');
 			const result = await parseStringPromise(response.data);
 			let inputReference = result.item.InputFuncSelect[0].value[0];
-			let inputIdentifier = me.inputReferences.indexOf(inputReference);
+			let inputIdentifier = 0;
+			if (me.inputReferences.indexOf(inputReference) >= 0) {
+				inputIdentifier = me.inputReferences.indexOf(inputReference);
+			}
 			let inputName = me.inputNames[inputIdentifier];
 			me.log.info('Device: %s %s %s, get current Input successful: %s %s', me.host, me.name, me.zoneName, inputName, inputReference);
 			callback(null, inputIdentifier);
