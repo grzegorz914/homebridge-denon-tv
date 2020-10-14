@@ -290,9 +290,7 @@ class denonTvDevice {
 
 			if (savedNames && savedNames[inputReference]) {
 				inputName = savedNames[inputReference];
-			} else {
-				inputName = input.name;
-			}
+			};
 
 			//get input type
 			let inputType = input.type;
@@ -305,7 +303,7 @@ class denonTvDevice {
 				.setCharacteristic(Characteristic.Identifier, i)
 				.setCharacteristic(Characteristic.ConfiguredName, inputName)
 				.setCharacteristic(Characteristic.IsConfigured, Characteristic.IsConfigured.CONFIGURED)
-				.setCharacteristic(Characteristic.InputSourceType, Characteristic.InputSourceType.TV)
+				//.setCharacteristic(Characteristic.InputSourceType, Characteristic.InputSourceType.TV)
 				.setCharacteristic(Characteristic.CurrentVisibilityState, Characteristic.CurrentVisibilityState.SHOWN);
 
 			this.inputsService
