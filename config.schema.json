@@ -225,13 +225,19 @@
                         "title": "Surround mode",
                         "enum": [
                           "MS"
-                        ]
+                        ],
+                        "condition": {
+                          "functionBody": "return model.devices[arrayIndices].zoneControl === 0;"
+                        }
                       },
                       {
                         "title": "Surround mode all zones",
                         "enum": [
                           "MN"
-                        ]
+                        ],
+                        "condition": {
+                          "functionBody": "return model.devices[arrayIndices].zoneControl === 0;"
+                        }
                       }
                     ],
                     "required": true
@@ -285,6 +291,18 @@
         {
           "key": "devices[]",
           "type": "section",
+          "title": "Advanced Settings",
+          "expandable": true,
+          "expanded": false,
+          "items": [
+            "devices[].switchInfoMenu",
+            "devices[].zoneControl",
+            "devices[].volumeControl"
+          ]
+        },
+        {
+          "key": "devices[]",
+          "type": "section",
           "title": "Inputs",
           "expandable": true,
           "expanded": false,
@@ -301,18 +319,6 @@
                 "devices[].inputs[].mode"
               ]
             }
-          ]
-        },
-        {
-          "key": "devices[]",
-          "type": "section",
-          "title": "Advanced Settings",
-          "expandable": true,
-          "expanded": false,
-          "items": [
-            "devices[].switchInfoMenu",
-            "devices[].zoneControl",
-            "devices[].volumeControl"
           ]
         },
         {
