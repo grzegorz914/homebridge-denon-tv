@@ -56,6 +56,8 @@ Due to HomeKit app limitation max. services for 1 accessory is 100. Over this va
 `ZST ON, ZST OFF`
 7. In `refreshInterval` set the data refresh time in seconds, default 5sec.
 8. In `zoneControl` You can select which zone U want to control.
+8. If `masterPower` is `true` the power switch for that zone (typically you would only use this for the Main Zone)
+will turn the entire receiver `ON` or `OFF/STANDBY` rather than just the zone itself.
 9. In `volumeControl` You can select what a additional volume control mode You want to use (None, Slider, Fan).
 10. If `switchInfoMenu` is enabled, `I` button toggle its behaviour in RC app and `PowerModeSelection` in settings.
 11. All possible commands can be found in [Denon Control Protocol 2020](http://assets.denon.com/_layouts/15/xlviewer.aspx?id=/DocumentMaster/us/DENON_FY20%20AVR_PROTOCOL_V03_03042020.xlsx)

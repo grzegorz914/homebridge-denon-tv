@@ -69,6 +69,7 @@ class denonTvDevice {
 		this.port = config.port;
 		this.refreshInterval = config.refreshInterval || 5;
 		this.zoneControl = config.zoneControl;
+		this.masterPower = config.masterPower;
 		this.volumeControl = config.volumeControl;
 		this.switchInfoMenu = config.switchInfoMenu;
 		this.inputs = config.inputs;
@@ -480,11 +481,13 @@ class denonTvDevice {
 	async setPower(state, callback) {
 		var me = this;
 		let powerState = me.currentPowerState;
-		let newState = [(powerState ? 'ZMOFF' : 'ZMON'), (powerState ? 'Z2OFF' : 'Z2ON'), (powerState ? 'Z3OFF' : 'Z3ON'), (powerState ? 'PWSTANDBY' : 'PWON')][me.zoneControl];
+		const zControl = me.masterPower? 3 : me.zoneControl
+		me.log.debug('zControl is %s', zControl)
+		let newState = [(powerState ? 'ZMOFF' : 'ZMON'), (powerState ? 'Z2OFF' : 'Z2ON'), (powerState ? 'Z3OFF' : 'Z3ON'), (powerState ? 'PWSTANDBY' : 'PWON')][zControl];
 		if ((state && !powerState) || (!state && powerState)) {
 			try {
 				const response = await axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + newState);
-				me.log.info('Device: %s %s %s, set new Power state successful: %s', me.host, me.name, me.zoneName, state ? 'ON' : 'OFF');
+				me.log.info('Device: %s %s %s, set new Power state successful: %s', me.host, me.name, me.zoneName, newState );
 				callback(null);
 			} catch (error) {
 				me.log.error('Device: %s %s %s, can not set new Power state. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
