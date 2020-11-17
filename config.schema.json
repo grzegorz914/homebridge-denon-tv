@@ -102,6 +102,13 @@
               ],
               "required": false
             },
+            "masterPower": {
+              "title": "Master Power control",
+              "type": "boolean",
+              "default": false,
+              "required": false,
+              "description": "The power switch for that zone will turn the entire receiver `ON` or `OFF/STANDBY` rather than just the zone itself."
+            },
             "switchInfoMenu": {
               "title": "Switch Info/Menu",
               "type": "boolean",
@@ -296,6 +303,7 @@
           "expanded": false,
           "items": [
             "devices[].switchInfoMenu",
+            "devices[].masterPower",
             "devices[].zoneControl",
             "devices[].volumeControl"
           ]

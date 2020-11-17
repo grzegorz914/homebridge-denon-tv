@@ -25,6 +25,7 @@
                     "refreshInterval": 5,
                     "zoneControl": 0,
                     "volumeControl": 0,
+                    "masterPower": false,
                     "switchInfoMenu": false,
                     "inputs": [
                         {

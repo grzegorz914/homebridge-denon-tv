@@ -412,7 +412,7 @@ class denonTvDevice {
 			const response = await axios.get(this.url + '/goform/form' + this.zoneNumber + 'XmlStatusLite.xml');
 			try {
 				const result = await parseStringPromise(response.data);
-				let powerState = (result.item.Power[0].value[0] == 'ON');
+				let powerState = (result.item.Power[0].value[0] === 'ON');
 				if (me.televisionService) {
 					me.televisionService.updateCharacteristic(Characteristic.Active, powerState ? 1 : 0);
 				}
@@ -433,7 +433,7 @@ class denonTvDevice {
 				me.currentInputIdentifier = inputIdentifier;
 				me.currentInputName = inputName;
 
-				let mute = powerState ? (result.item.Mute[0].value[0] == 'ON') : true;
+				let mute = powerState ? (result.item.Mute[0].value[0] === 'on') : true;
 				let volume = parseInt(result.item.MasterVolume[0].value[0]) + 80;
 				if (me.speakerService) {
 					me.speakerService.updateCharacteristic(Characteristic.Mute, mute);
@@ -448,7 +448,7 @@ class denonTvDevice {
 						me.volumeService.updateCharacteristic(Characteristic.RotationSpeed, volume);
 					}
 				}
-				me.log.debug('Device: %s %s %s, get current Mute state: %s', me.host, me.name, me.zoneName, mute ? 'ON' : 'OFF');
+				me.log.info('Device: %s %s %s, get current Mute state: %s', me.host, me.name, me.zoneName, mute ? 'ON' : 'OFF');
 				me.log.debug('Device: %s %s %s, get current Volume level: %s dB ', me.host, me.name, me.zoneName, (volume - 80));
 				me.currentMuteState = mute;
 				me.currentVolume = volume;
@@ -464,7 +464,7 @@ class denonTvDevice {
 	async getPower(callback) {
 		var me = this;
 		try {
-			const response = await axios.get(this.url + '/goform/form' + this.zoneNumber + 'XmlStatusLite.xml');
+			const response = await axios.get(me.url + '/goform/form' + me.zoneNumber + 'XmlStatusLite.xml');
 			try {
 				const result = await parseStringPromise(response.data);
 				let state = (result.item.Power[0].value[0] == 'ON');
@@ -481,13 +481,13 @@ class denonTvDevice {
 	async setPower(state, callback) {
 		var me = this;
 		let powerState = me.currentPowerState;
-		const zControl = me.masterPower? 3 : me.zoneControl
+		const zControl = me.masterPower ? 3 : me.zoneControl
 		me.log.debug('zControl is %s', zControl)
 		let newState = [(powerState ? 'ZMOFF' : 'ZMON'), (powerState ? 'Z2OFF' : 'Z2ON'), (powerState ? 'Z3OFF' : 'Z3ON'), (powerState ? 'PWSTANDBY' : 'PWON')][zControl];
 		if ((state && !powerState) || (!state && powerState)) {
 			try {
 				const response = await axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + newState);
-				me.log.info('Device: %s %s %s, set new Power state successful: %s', me.host, me.name, me.zoneName, newState );
+				me.log.info('Device: %s %s %s, set new Power state successful: %s', me.host, me.name, me.zoneName, newState);
 				callback(null);
 			} catch (error) {
 				me.log.error('Device: %s %s %s, can not set new Power state. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
@@ -499,10 +499,9 @@ class denonTvDevice {
 	async getMute(callback) {
 		var me = this;
 		try {
-			const response = await axios.get(this.url + '/goform/form' + this.zoneNumber + 'XmlStatusLite.xml');
+			const response = await axios.get(me.url + '/goform/form' + me.zoneNumber + 'XmlStatusLite.xml');
 			const result = await parseStringPromise(response.data);
-			let powerState = (result.item.Power[0].value[0] == 'ON')
-			let state = powerState ? (result.item.Mute[0].value[0] == 'ON') : true;
+			let state = me.currentPowerState ? (result.item.Mute[0].value[0] === 'on') : true;
 			me.log.info('Device: %s %s %s, get current Mute state successful: %s', me.host, me.name, me.zoneName, state ? 'ON' : 'OFF');
 			callback(null, state);
 		} catch (error) {
@@ -513,9 +512,9 @@ class denonTvDevice {
 	async setMute(state, callback) {
 		var me = this;
 		let muteState = me.currentMuteState;
-		let newState = [(state ? 'MUON' : 'MUOFF'), (state ? 'Z2MUON' : 'Z2MUOFF'), (state ? 'Z3MUON' : 'Z3MUOFF'), (state ? 'MUON' : 'MUOFF')][me.zoneControl];
 		if (me.currentPowerState && state !== muteState) {
 			try {
+				const newState = [(state ? 'MUON' : 'MUOFF'), (state ? 'Z2MUON' : 'Z2MUOFF'), (state ? 'Z3MUON' : 'Z3MUOFF'), (state ? 'MUON' : 'MUOFF')][me.zoneControl];
 				const response = await axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + newState);
 				me.log.info('Device: %s %s %s, set new Mute state successful: %s', me.host, me.name, me.zoneName, state ? 'ON' : 'OFF');
 				if (me.zoneControl == 3) {
@@ -547,7 +546,7 @@ class denonTvDevice {
 	async getVolume(callback) {
 		var me = this;
 		try {
-			const response = await axios.get(this.url + '/goform/form' + this.zoneNumber + 'XmlStatusLite.xml');
+			const response = await axios.get(me.url + '/goform/form' + me.zoneNumber + 'XmlStatusLite.xml');
 			const result = await parseStringPromise(response.data);
 			let currentVolume = parseInt(result.item.MasterVolume[0].value[0]) + 80;
 			me.log.info('Device: %s %s %s, get current Volume level successful: %s dB', me.host, me.name, me.zoneName, (currentVolume - 80));
@@ -593,7 +592,7 @@ class denonTvDevice {
 	async getInput(callback) {
 		var me = this;
 		try {
-			const response = await axios.get(this.url + '/goform/form' + this.zoneNumber + 'XmlStatusLite.xml');
+			const response = await axios.get(this.url + '/goform/form' + me.zoneNumber + 'XmlStatusLite.xml');
 			const result = await parseStringPromise(response.data);
 			let inputReference = result.item.InputFuncSelect[0].value[0];
 			let inputIdentifier = 0;
@@ -610,11 +609,11 @@ class denonTvDevice {
 
 	async setInput(inputIdentifier, callback) {
 		var me = this;
-		let inputName = me.inputNames[inputIdentifier];
-		let inputReference = me.inputReferences[inputIdentifier];
-		let inputMode = me.inputModes[inputIdentifier];
-		let zone = [inputMode, 'Z2', 'Z3', inputMode][me.zoneControl];
 		try {
+			let inputName = me.inputNames[inputIdentifier];
+			let inputReference = me.inputReferences[inputIdentifier];
+			let inputMode = me.inputModes[inputIdentifier];
+			let zone = [inputMode, 'Z2', 'Z3', inputMode][me.zoneControl];
 			const response = await axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + zone + inputReference);
 			me.log.info('Device: %s %s %s, set new Input successful: %s %s', me.host, me.name, me.zoneName, inputName, inputReference);
 			if (me.zoneControl == 3) {
