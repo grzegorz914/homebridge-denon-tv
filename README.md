@@ -135,11 +135,12 @@ Tested with AVR-X6300H.
 ## Multi zone control and settings
 1. If U want control all zones seperat at the same time U can use config as present bottom.
 2. Select `zoneControl` (0 - Main Zone, 1 - Zone 2, 2 - Zone 3, 3 - All Zones) or choice from the configurations GUI.
-3. The `volumeControl` will working seperat for every zone.
-4. The `switchInfoMenu` will working for all zones seperat but have same end effect for every zone.
-5. All `inputs` `name`, `reference`, `type` can be used for every zone.
-6. Surrounds `mode` can be only used for Main Zone and All Zones, do not set this for Zone 2 and 3.
-7. After correct settings and save restart Homebridge, every zone need to be added separat in HomeKit app using same PIN CODE.
+3. If `masterPower` is `true` the power switch for that zone will turn the entire receiver `ON` or `OFF/STANDBY` rather than just the zone itself.
+4. The `volumeControl` will working seperat for every zone.
+5. The `switchInfoMenu` will working for all zones seperat but have same end effect for every zone.
+6. All `inputs` `name`, `reference`, `type` can be used for every zone.
+7. Surrounds `mode` can be only used for Main Zone and All Zones, do not set this for Zone 2 and 3.
+8. After correct settings and save restart Homebridge, every zone need to be added separat in HomeKit app using same PIN CODE.
 
 ```json
 {
