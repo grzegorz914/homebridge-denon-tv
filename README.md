@@ -280,3 +280,6 @@ Due to HomeKit app limitation max. services for 1 accessory is 100. Over this va
 ## Whats new:
 https://github.com/grzegorz914/homebridge-denon-tv/blob/master/CHANGELOG.md
 
+## Development
+- Pull request and help in development highly appreciated.
+
