@@ -99,6 +99,7 @@ class denonTvDevice {
 		this.currentInputName = '';
 		this.currentInputReference = '';
 		this.currentInputIdentifier = 0;
+		this.currentPlayPause = false;
 		this.prefDir = path.join(api.user.storagePath(), 'denonTv');
 		this.inputsFile = this.prefDir + '/' + 'inputs_' + this.host.split('.').join('');
 		this.customInputsFile = this.prefDir + '/' + 'customInputs_' + this.host.split('.').join('');
@@ -459,6 +460,7 @@ class denonTvDevice {
 
 	async getPower(callback) {
 		var me = this;
+		let state = me.currentPowerState;
 		try {
 			const response = await axios.get(me.url + '/goform/form' + me.zoneNumber + 'XmlStatusLite.xml');
 			const result = await parseStringPromise(response.data);
@@ -475,17 +477,17 @@ class denonTvDevice {
 		let powerState = me.currentPowerState;
 		const zControl = me.masterPower ? 3 : me.zoneControl
 		me.log.debug('zControl is %s', zControl)
-		let newState = [(powerState ? 'ZMOFF' : 'ZMON'), (powerState ? 'Z2OFF' : 'Z2ON'), (powerState ? 'Z3OFF' : 'Z3ON'), (powerState ? 'PWSTANDBY' : 'PWON')][zControl];
 		if ((state && !powerState) || (!state && powerState)) {
 			try {
+				let newState = [(powerState ? 'ZMOFF' : 'ZMON'), (powerState ? 'Z2OFF' : 'Z2ON'), (powerState ? 'Z3OFF' : 'Z3ON'), (powerState ? 'PWSTANDBY' : 'PWON')][zControl];
 				const response = await axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + newState);
 				me.log.info('Device: %s %s %s, set new Power state successful: %s', me.host, me.name, me.zoneName, newState);
-				callback(null);
 			} catch (error) {
 				me.log.error('Device: %s %s %s, can not set new Power state. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
 				callback(error);
 			};
 		}
+		callback(null);
 	}
 
 	async getMute(callback) {
@@ -508,31 +510,23 @@ class denonTvDevice {
 			try {
 				const newState = [(state ? 'MUON' : 'MUOFF'), (state ? 'Z2MUON' : 'Z2MUOFF'), (state ? 'Z3MUON' : 'Z3MUOFF'), (state ? 'MUON' : 'MUOFF')][me.zoneControl];
 				const response = await axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + newState);
-				me.log.info('Device: %s %s %s, set new Mute state successful: %s', me.host, me.name, me.zoneName, state ? 'ON' : 'OFF');
 				if (me.zoneControl == 3) {
 					if (me.zones >= 2) {
-						try {
-							newState = state ? 'Z2MUON' : 'Z2MUOFF';
-							const response1 = await axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + newState);
-						} catch (error) {
-							me.log.error('Device: %s %s %s, can not set new Mute state. Might be due to a wrong settings in config, error: %s', me.host, me.name, 'Zone 2', error);
-						};
+						newState = state ? 'Z2MUON' : 'Z2MUOFF';
+						const response1 = await axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + newState);
 					}
 					if (me.zones >= 3) {
-						try {
-							newState = state ? 'Z3MUON' : 'Z3MUOFF';
-							const response2 = await axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + newState);
-						} catch (error) {
-							me.log.error('Device: %s %s %s, can not set new Mute state. Might be due to a wrong settings in config, error: %s', me.host, me.name, 'Zone 3', error);
-						};
+						newState = state ? 'Z3MUON' : 'Z3MUOFF';
+						const response2 = await axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + newState);
 					}
 				}
-				callback(null);
+				me.log.info('Device: %s %s %s, set new Mute state successful: %s', me.host, me.name, me.zoneName, state ? 'ON' : 'OFF');
 			} catch (error) {
 				me.log.error('Device: %s %s %s, can not set new Mute state. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
 				callback(error);
 			};
 		}
+		callback(null);
 	}
 
 	async getVolume(callback) {
@@ -550,30 +544,22 @@ class denonTvDevice {
 
 	async setVolume(volume, callback) {
 		var me = this;
-		let currentVolume = me.currentVolume;
-		let zone = ['MV', 'Z2', 'Z3', 'MV'][me.zoneControl];
-		if (volume == 0 || volume == 100) {
-			volume = currentVolume;
-		}
 		try {
+			let currentVolume = me.currentVolume;
+			let zone = ['MV', 'Z2', 'Z3', 'MV'][me.zoneControl];
+			if (volume == 0 || volume == 100) {
+				volume = currentVolume;
+			}
 			const response = await axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + zone + volume);
-			me.log.info('Device: %s %s %s, set new Volume level successful: %s', me.host, me.name, me.zoneName, volume);
 			if (me.zoneControl == 3) {
 				if (me.zones >= 2) {
-					try {
-						const response1 = await axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + 'Z2' + volume);
-					} catch (error) {
-						me.log.error('Device: %s %s %s, can not set new Volume level. Might be due to a wrong settings in config, error: %s', me.host, me.name, 'Zone 2', error);
-					};
+					const response1 = await axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + 'Z2' + volume);
 				}
 				if (me.zones >= 3) {
-					try {
-						const response2 = await axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + 'Z3' + volume);
-					} catch (error) {
-						me.log.error('Device: %s %s %s, can not set new Volume level. Might be due to a wrong settings in config, error: %s', me.host, me.name, 'Zone 3', error);
-					};
+					const response2 = await axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + 'Z3' + volume);
 				}
 			}
+			me.log.info('Device: %s %s %s, set new Volume level successful: %s', me.host, me.name, me.zoneName, volume);
 			callback(null);
 		} catch (error) {
 			me.log.error('Device: %s %s %s, can not set new Volume level. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
@@ -607,23 +593,15 @@ class denonTvDevice {
 			let inputMode = me.inputModes[inputIdentifier];
 			let zone = [inputMode, 'Z2', 'Z3', inputMode][me.zoneControl];
 			const response = await axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + zone + inputReference);
-			me.log.info('Device: %s %s %s, set new Input successful: %s %s', me.host, me.name, me.zoneName, inputName, inputReference);
 			if (me.zoneControl == 3) {
 				if (me.zones >= 2) {
-					try {
-						const response1 = await axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + 'Z2' + inputReference);
-					} catch (error) {
-						me.log.error('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
-					};
+					const response1 = await axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + 'Z2' + inputReference);
 				}
 				if (me.zones >= 3) {
-					try {
-						const response1 = await axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + 'Z3' + inputReference);
-					} catch (error) {
-						me.log.error('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
-					};
+					const response1 = await axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + 'Z3' + inputReference);
 				}
 			}
+			me.log.info('Device: %s %s %s, set new Input successful: %s %s', me.host, me.name, me.zoneName, inputName, inputReference);
 			callback(null);
 		} catch (error) {
 			me.log.error('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
@@ -633,35 +611,35 @@ class denonTvDevice {
 
 	async setPictureMode(mode, callback) {
 		var me = this;
-		let command = '';
 		if (me.currentPowerState) {
-			switch (mode) {
-				case Characteristic.PictureMode.OTHER:
-					command = 'PVMOV';
-					break;
-				case Characteristic.PictureMode.STANDARD:
-					command = 'PVSTD';
-					break;
-				case Characteristic.PictureMode.CALIBRATED:
-					command = 'PVDAY';
-					break;
-				case Characteristic.PictureMode.CALIBRATED_DARK:
-					command = 'PVNGT';
-					break;
-				case Characteristic.PictureMode.VIVID:
-					command = 'PVVVD';
-					break;
-				case Characteristic.PictureMode.GAME:
-					command = 'PVSTM';
-					break;
-				case Characteristic.PictureMode.COMPUTER:
-					command = 'PVSTM';
-					break;
-				case Characteristic.PictureMode.CUSTOM:
-					command = 'PVCTM';
-					break;
-			}
 			try {
+				let command;
+				switch (mode) {
+					case Characteristic.PictureMode.OTHER:
+						command = 'PVMOV';
+						break;
+					case Characteristic.PictureMode.STANDARD:
+						command = 'PVSTD';
+						break;
+					case Characteristic.PictureMode.CALIBRATED:
+						command = 'PVDAY';
+						break;
+					case Characteristic.PictureMode.CALIBRATED_DARK:
+						command = 'PVNGT';
+						break;
+					case Characteristic.PictureMode.VIVID:
+						command = 'PVVVD';
+						break;
+					case Characteristic.PictureMode.GAME:
+						command = 'PVSTM';
+						break;
+					case Characteristic.PictureMode.COMPUTER:
+						command = 'PVSTM';
+						break;
+					case Characteristic.PictureMode.CUSTOM:
+						command = 'PVCTM';
+						break;
+				}
 				const response = await axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + command);
 				me.log.info('Device: %s %s, setPictureMode successful, command: %s', me.host, me.name, command);
 			} catch (error) {
@@ -673,17 +651,17 @@ class denonTvDevice {
 
 	async setPowerModeSelection(state, callback) {
 		var me = this;
-		let command = null;
 		if (me.currentPowerState) {
-			switch (state) {
-				case Characteristic.PowerModeSelection.SHOW:
-					command = me.switchInfoMenu ? 'MNOPT' : 'MNINF';
-					break;
-				case Characteristic.PowerModeSelection.HIDE:
-					command = 'MNRTN';
-					break;
-			}
 			try {
+				let command;
+				switch (state) {
+					case Characteristic.PowerModeSelection.SHOW:
+						command = me.switchInfoMenu ? 'MNOPT' : 'MNINF';
+						break;
+					case Characteristic.PowerModeSelection.HIDE:
+						command = 'MNRTN';
+						break;
+				}
 				const response = await axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + command);
 				me.log.info('Device: %s %s, setPowerModeSelection successful, command: %s', me.host, me.name, command);
 			} catch (error) {
@@ -695,36 +673,28 @@ class denonTvDevice {
 
 	async setVolumeSelector(state, callback) {
 		var me = this;
-		let command = null;
-		let zone = ['MV', 'Z2', 'Z3', 'MV'][me.zoneControl];
 		if (me.currentPowerState) {
-			switch (state) {
-				case Characteristic.VolumeSelector.INCREMENT:
-					command = 'UP';
-					break;
-				case Characteristic.VolumeSelector.DECREMENT:
-					command = 'DOWN';
-					break;
-			}
 			try {
+				let command;
+				let zone = ['MV', 'Z2', 'Z3', 'MV'][me.zoneControl];
+				switch (state) {
+					case Characteristic.VolumeSelector.INCREMENT:
+						command = 'UP';
+						break;
+					case Characteristic.VolumeSelector.DECREMENT:
+						command = 'DOWN';
+						break;
+				}
 				const response = await axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + zone + command);
-				me.log.info('Device: %s %s %s, setVolumeSelector successful, command: %s', me.host, me.name, me.zoneName, command);
 				if (me.zoneControl == 3) {
 					if (me.zones >= 2) {
-						try {
-							const response1 = await axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + 'Z2' + command);
-						} catch (error) {
-							me.log.error('Device: %s %s %s, can not setVolumeSelector command. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
-						};
+						const response1 = await axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + 'Z2' + command);
 					}
 					if (me.zones >= 3) {
-						try {
-							const response2 = await axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + 'Z3' + command);
-						} catch (error) {
-							me.log.error('Device: %s %s %s, can not setVolumeSelector command. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
-						};
+						const response2 = await axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + 'Z3' + command);
 					}
 				}
+				me.log.info('Device: %s %s %s, setVolumeSelector successful, command: %s', me.host, me.name, me.zoneName, command);
 			} catch (error) {
 				me.log.error('Device: %s %s %s, can not setVolumeSelector command. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
 			};
@@ -734,56 +704,101 @@ class denonTvDevice {
 
 	async setRemoteKey(remoteKey, callback) {
 		var me = this;
-		let command = null;
 		if (me.currentPowerState) {
-			switch (remoteKey) {
-				case Characteristic.RemoteKey.REWIND:
-					command = 'MN9E';
-					break;
-				case Characteristic.RemoteKey.FAST_FORWARD:
-					command = 'MN9D';
-					break;
-				case Characteristic.RemoteKey.NEXT_TRACK:
-					command = 'MN9F';
-					break;
-				case Characteristic.RemoteKey.PREVIOUS_TRACK:
-					command = 'MN9G';
-					break;
-				case Characteristic.RemoteKey.ARROW_UP:
-					command = 'MNCUP';
-					break;
-				case Characteristic.RemoteKey.ARROW_DOWN:
-					command = 'MNCDN';
-					break;
-				case Characteristic.RemoteKey.ARROW_LEFT:
-					command = 'MNCLT';
-					break;
-				case Characteristic.RemoteKey.ARROW_RIGHT:
-					command = 'MNCRT';
-					break;
-				case Characteristic.RemoteKey.SELECT:
-					command = 'MNENT';
-					break;
-				case Characteristic.RemoteKey.BACK:
-					command = 'MNRTN';
-					break;
-				case Characteristic.RemoteKey.EXIT:
-					command = 'MNRTN';
-					break;
-				case Characteristic.RemoteKey.PLAY_PAUSE:
-					command = 'NS94';
-					break;
-				case Characteristic.RemoteKey.INFORMATION:
-					command = me.switchInfoMenu ? 'MNINF' : 'MNOPT';
-					break;
-			}
 			try {
+				let command;
+				if (me.currentInputReference === 'SPOTIFY' || me.currentInputReference === 'BT' || me.currentInputReference === 'USB/IPOD' || me.currentInputReference === 'NET' || me.currentInputReference === 'MPLAY') {
+					switch (remoteKey) {
+						case Characteristic.RemoteKey.REWIND:
+							command = 'NS9E';
+							break;
+						case Characteristic.RemoteKey.FAST_FORWARD:
+							command = 'NS9D';
+							break;
+						case Characteristic.RemoteKey.NEXT_TRACK:
+							command = 'MN9D';
+							break;
+						case Characteristic.RemoteKey.PREVIOUS_TRACK:
+							command = 'MN9E';
+							break;
+						case Characteristic.RemoteKey.ARROW_UP:
+							command = 'NS90';
+							break;
+						case Characteristic.RemoteKey.ARROW_DOWN:
+							command = 'NS91';
+							break;
+						case Characteristic.RemoteKey.ARROW_LEFT:
+							command = 'NS92';
+							break;
+						case Characteristic.RemoteKey.ARROW_RIGHT:
+							command = 'NS93';
+							break;
+						case Characteristic.RemoteKey.SELECT:
+							command = 'NS94';
+							break;
+						case Characteristic.RemoteKey.BACK:
+							command = 'MNRTN';
+							break;
+						case Characteristic.RemoteKey.EXIT:
+							command = 'MNRTN';
+							break;
+						case Characteristic.RemoteKey.PLAY_PAUSE:
+							command = me.currentPlayPause ? 'NS9B' : 'NS9A';
+							me.currentPlayPause = !me.currentPlayPause;
+							break;
+						case Characteristic.RemoteKey.INFORMATION:
+							command = me.switchInfoMenu ? 'MNINF' : 'MNOPT';
+							break;
+					}
+				} else {
+					switch (remoteKey) {
+						case Characteristic.RemoteKey.REWIND:
+							command = 'MN9E';
+							break;
+						case Characteristic.RemoteKey.FAST_FORWARD:
+							command = 'MN9D';
+							break;
+						case Characteristic.RemoteKey.NEXT_TRACK:
+							command = 'MN9F';
+							break;
+						case Characteristic.RemoteKey.PREVIOUS_TRACK:
+							command = 'MN9G';
+							break;
+						case Characteristic.RemoteKey.ARROW_UP:
+							command = 'MNCUP';
+							break;
+						case Characteristic.RemoteKey.ARROW_DOWN:
+							command = 'MNCDN';
+							break;
+						case Characteristic.RemoteKey.ARROW_LEFT:
+							command = 'MNCLT';
+							break;
+						case Characteristic.RemoteKey.ARROW_RIGHT:
+							command = 'MNCRT';
+							break;
+						case Characteristic.RemoteKey.SELECT:
+							command = 'MNENT';
+							break;
+						case Characteristic.RemoteKey.BACK:
+							command = 'MNRTN';
+							break;
+						case Characteristic.RemoteKey.EXIT:
+							command = 'MNRTN';
+							break;
+						case Characteristic.RemoteKey.PLAY_PAUSE:
+							command = 'NS94';
+							break;
+						case Characteristic.RemoteKey.INFORMATION:
+							command = me.switchInfoMenu ? 'MNINF' : 'MNOPT';
+							break;
+					}
+				}
 				const response = await axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + command);
 				me.log.info('Device: %s %s, setRemoteKey successful, command: %s', me.host, me.name, command);
-				callback(null);
 			} catch (error) {
-				me.log.error('Device: %s %s %s, can not setRemoteKey command. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
+				me.log.error('Device: %s %s, can not setRemoteKey command. Might be due to a wrong settings in config, error: %s', me.host, me.name, error);
 			};
 		}
+		callback(null);
 	}
 };
