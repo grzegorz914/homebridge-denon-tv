@@ -410,10 +410,10 @@ class denonTvDevice {
 		var me = this;
 		me.log.debug('Device: %s %s, requesting Device state.', me.host, me.name);
 		try {
-			const response = await axios.get(this.url + '/goform/form' + this.zoneNumber + 'XmlStatusLite.xml');
+			const response = await axios.get(me.url + '/goform/form' + me.zoneNumber + 'XmlStatusLite.xml');
 			const result = await parseStringPromise(response.data);
 			let powerState = (result.item.Power[0].value[0] === 'ON');
-			if (me.televisionService) {
+			if (me.televisionService && (powerState !== me.currentPowerState)) {
 				me.televisionService.updateCharacteristic(Characteristic.Active, powerState ? 1 : 0);
 			}
 			me.log.debug('Device: %s %s, get current Power state successful: %s', me.host, me.name, powerState ? 'ON' : 'OFF');
@@ -425,7 +425,7 @@ class denonTvDevice {
 				inputIdentifier = me.inputReferences.indexOf(inputReference);
 			}
 			let inputName = me.inputNames[inputIdentifier];
-			if (me.televisionService) {
+			if (me.televisionService && (inputReference !== me.currentInputReference)) {
 				me.televisionService.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
 			}
 			me.log.debug('Device: %s %s %s, get current Input successful: %s %s', me.host, me.name, me.zoneName, inputName, inputReference);
@@ -460,7 +460,6 @@ class denonTvDevice {
 
 	async getPower(callback) {
 		var me = this;
-		let state = me.currentPowerState;
 		try {
 			const response = await axios.get(me.url + '/goform/form' + me.zoneNumber + 'XmlStatusLite.xml');
 			const result = await parseStringPromise(response.data);
@@ -534,9 +533,9 @@ class denonTvDevice {
 		try {
 			const response = await axios.get(me.url + '/goform/form' + me.zoneNumber + 'XmlStatusLite.xml');
 			const result = await parseStringPromise(response.data);
-			let currentVolume = parseInt(result.item.MasterVolume[0].value[0]) + 80;
-			me.log.info('Device: %s %s %s, get current Volume level successful: %s dB', me.host, me.name, me.zoneName, (currentVolume - 80));
-			callback(null, currentVolume);
+			let volume = parseInt(result.item.MasterVolume[0].value[0]) + 80;
+			me.log.info('Device: %s %s %s, get current Volume level successful: %s dB', me.host, me.name, me.zoneName, (volume - 80));
+			callback(null, volume);
 		} catch (error) {
 			me.log.error('Device: %s %s %s, get current Volume error: %s', me.host, me.name, me.zoneName, error);
 		};
@@ -570,7 +569,7 @@ class denonTvDevice {
 	async getInput(callback) {
 		var me = this;
 		try {
-			const response = await axios.get(this.url + '/goform/form' + me.zoneNumber + 'XmlStatusLite.xml');
+			const response = await axios.get(me.url + '/goform/form' + me.zoneNumber + 'XmlStatusLite.xml');
 			const result = await parseStringPromise(response.data);
 			let inputReference = result.item.InputFuncSelect[0].value[0];
 			let inputIdentifier = 0;
