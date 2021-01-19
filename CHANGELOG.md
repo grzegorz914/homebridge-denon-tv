@@ -3,42 +3,47 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [3.5.0] - (19.01.2021)
+## Changes
+- some improvements and fixes
+- fix delay of inputs reads/changes
+
 ## [3.4.16] - (06.01.2021)
-## Changs
+## Changes
 - bump dependiencies
 
 ## [3.4.15] - (20.11.2020)
-## Changs
+## Changes
 - fixed slow response on RC control
 
 ## [3.4.2] - (17.11.2020)
-## Changs
+## Changes
 - fixed #53
 
 ## [3.4.1] - (17.11.2020)
-## Changs
+## Changes
 - fixed broken input switch in scene #50 
 
 ## [3.4.0] - (17.11.2020)
-## Changs
+## Changes
 - added master Power control
 - fixed bug in mute control
 - update config.schema.json
 
 ## [3.3.1] - (14.09.2020)
-## Changs
+## Changes
 - added refreshInterval, default 5sec
 
 ## [3.3.0] - (10.09.2020)
-## Changs
+## Changes
 - added async/await function
 
 ## [3.2.0] - (08.09.2020)
-## Changs
+## Changes
 - added async/await function to read deviceInfo and updateStatus
 
 ## [3.1.0] - (06.09.2020)
-## Changs
+## Changes
 - completly reconfigured layout of config schema
 
 ## [3.0.4] - (25.08.2020)

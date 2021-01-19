@@ -305,7 +305,7 @@ class denonTvDevice {
 				.setCharacteristic(Characteristic.Identifier, i)
 				.setCharacteristic(Characteristic.ConfiguredName, inputName)
 				.setCharacteristic(Characteristic.IsConfigured, Characteristic.IsConfigured.CONFIGURED)
-				//.setCharacteristic(Characteristic.InputSourceType, Characteristic.InputSourceType.TV)
+				.setCharacteristic(Characteristic.InputSourceType, inputType)
 				.setCharacteristic(Characteristic.CurrentVisibilityState, Characteristic.CurrentVisibilityState.SHOWN);
 
 			this.inputsService
@@ -473,12 +473,11 @@ class denonTvDevice {
 
 	async setPower(state, callback) {
 		var me = this;
-		let powerState = me.currentPowerState;
 		const zControl = me.masterPower ? 3 : me.zoneControl
 		me.log.debug('zControl is %s', zControl)
-		if ((state && !powerState) || (!state && powerState)) {
+		if (state != me.currentPowerState) {
 			try {
-				let newState = [(powerState ? 'ZMOFF' : 'ZMON'), (powerState ? 'Z2OFF' : 'Z2ON'), (powerState ? 'Z3OFF' : 'Z3ON'), (powerState ? 'PWSTANDBY' : 'PWON')][zControl];
+				let newState = [(state ? 'ZMON' : 'ZMOFF'), (state ? 'Z2ON' : 'Z2OFF'), (state ? 'Z3ON' : 'Z3OFF'), (state ? 'PWON' : 'PWSTANDBY')][zControl];
 				const response = await axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + newState);
 				me.log.info('Device: %s %s %s, set new Power state successful: %s', me.host, me.name, me.zoneName, newState);
 			} catch (error) {
@@ -504,8 +503,7 @@ class denonTvDevice {
 
 	async setMute(state, callback) {
 		var me = this;
-		let muteState = me.currentMuteState;
-		if (me.currentPowerState && state !== muteState) {
+		if (me.currentPowerState && state !== me.currentMuteState) {
 			try {
 				const newState = [(state ? 'MUON' : 'MUOFF'), (state ? 'Z2MUON' : 'Z2MUOFF'), (state ? 'Z3MUON' : 'Z3MUOFF'), (state ? 'MUON' : 'MUOFF')][me.zoneControl];
 				const response = await axios.get(me.url + '/goform/formiPhoneAppDirect.xml?' + newState);
