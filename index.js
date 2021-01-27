@@ -482,7 +482,6 @@ class denonTvDevice {
 				me.log.info('Device: %s %s %s, set new Power state successful: %s', me.host, me.name, me.zoneName, newState);
 			} catch (error) {
 				me.log.error('Device: %s %s %s, can not set new Power state. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
-				callback(error);
 			};
 		}
 		callback(null);
@@ -520,7 +519,6 @@ class denonTvDevice {
 				me.log.info('Device: %s %s %s, set new Mute state successful: %s', me.host, me.name, me.zoneName, state ? 'ON' : 'OFF');
 			} catch (error) {
 				me.log.error('Device: %s %s %s, can not set new Mute state. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
-				callback(error);
 			};
 		}
 		callback(null);
@@ -557,11 +555,10 @@ class denonTvDevice {
 				}
 			}
 			me.log.info('Device: %s %s %s, set new Volume level successful: %s', me.host, me.name, me.zoneName, volume);
-			callback(null);
 		} catch (error) {
 			me.log.error('Device: %s %s %s, can not set new Volume level. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
-			callback(error);
 		};
+		callback(null);
 	}
 
 	async getInput(callback) {
@@ -599,11 +596,10 @@ class denonTvDevice {
 				}
 			}
 			me.log.info('Device: %s %s %s, set new Input successful: %s %s', me.host, me.name, me.zoneName, inputName, inputReference);
-			callback(null);
 		} catch (error) {
 			me.log.error('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s', me.host, me.name, me.zoneName, error);
-			callback(error);
 		};
+		callback(null);
 	}
 
 	async setPictureMode(mode, callback) {
