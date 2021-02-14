@@ -336,70 +336,66 @@ class denonTvDevice {
 		me.log.debug('Device: %s %s, requesting Device information.', me.host, me.name);
 		try {
 			const response = await axios.get(me.url + '/goform/Deviceinfo.xml');
-			try {
-				const result = await parseStringPromise(response.data);
-				me.log.info('Device: %s %s %s, state: Online.', me.host, me.name, me.zoneName);
-				if (typeof result.Device_Info !== 'undefined') {
-					if (typeof result.Device_Info.BrandCode[0] !== 'undefined') {
-						me.manufacturer = ['Denon', 'Marantz'][result.Device_Info.BrandCode[0]];
-					} else {
-						me.manufacturer = me.manufacturer;
-					};
-					if (typeof result.Device_Info.ModelName[0] !== 'undefined') {
-						me.modelName = result.Device_Info.ModelName[0];
-					} else {
-						me.modelName = me.modelName;
-					};
-					if (typeof result.Device_Info.MacAddress[0] !== 'undefined') {
-						me.serialNumber = result.Device_Info.MacAddress[0];
-					} else {
-						me.serialNumber = me.serialNumber;
-					};
-					if (typeof result.Device_Info.UpgradeVersion[0] !== 'undefined') {
-						me.firmwareRevision = result.Device_Info.UpgradeVersion[0];
-					} else {
-						me.firmwareRevision = me.firmwareRevision;
-					};
-					me.zones = result.Device_Info.DeviceZones[0];
-					me.apiVersion = result.Device_Info.CommApiVers[0];
-				}
-				if (me.zoneControl == 0 || me.zoneControl == 3) {
-					if (fs.existsSync(me.devInfoFile) === false) {
-						try {
-							await fsPromises.writeFile(me.devInfoFile, JSON.stringify(result, null, 2));
-							me.log.debug('Device: %s %s, devInfoFile saved successful in: %s %s', me.host, me.name, me.prefDir, JSON.stringify(result, null, 2));
-						} catch (error) {
-							me.log.error('Device: %s %s, could not write devInfoFile, error: %s', me.host, me.name, error);
-						}
+			const result = await parseStringPromise(response.data);
+			me.log.info('Device: %s %s %s, state: Online.', me.host, me.name, me.zoneName);
+			if (typeof result.Device_Info !== 'undefined') {
+				if (typeof result.Device_Info.BrandCode[0] !== 'undefined') {
+					me.manufacturer = ['Denon', 'Marantz'][result.Device_Info.BrandCode[0]];
+				} else {
+					me.manufacturer = me.manufacturer;
+				};
+				if (typeof result.Device_Info.ModelName[0] !== 'undefined') {
+					me.modelName = result.Device_Info.ModelName[0];
+				} else {
+					me.modelName = me.modelName;
+				};
+				if (typeof result.Device_Info.MacAddress[0] !== 'undefined') {
+					me.serialNumber = result.Device_Info.MacAddress[0];
+				} else {
+					me.serialNumber = me.serialNumber;
+				};
+				if (typeof result.Device_Info.UpgradeVersion[0] !== 'undefined') {
+					me.firmwareRevision = result.Device_Info.UpgradeVersion[0];
+				} else {
+					me.firmwareRevision = me.firmwareRevision;
+				};
+				me.zones = result.Device_Info.DeviceZones[0];
+				me.apiVersion = result.Device_Info.CommApiVers[0];
+			}
+			if (me.zoneControl == 0 || me.zoneControl == 3) {
+				if (fs.existsSync(me.devInfoFile) === false) {
+					try {
+						await fsPromises.writeFile(me.devInfoFile, JSON.stringify(result, null, 2));
+						me.log.debug('Device: %s %s, devInfoFile saved successful in: %s %s', me.host, me.name, me.prefDir, JSON.stringify(result, null, 2));
+					} catch (error) {
+						me.log.error('Device: %s %s, could not write devInfoFile, error: %s', me.host, me.name, error);
 					}
-					me.log('-------- %s --------', me.name);
-					me.log('Manufacturer: %s', me.manufacturer);
-					me.log('Model: %s', me.modelName);
-					me.log('Zones: %s', me.zones);
-					me.log('Api version: %s', me.apiVersion);
-					me.log('Serialnr: %s', me.serialNumber);
-					me.log('Firmware: %s', me.firmwareRevision);
-					me.log('----------------------------------');
 				}
-				if (me.zoneControl == 1) {
-					me.log('-------- %s --------', me.name);
-					me.log('Manufacturer: %s', me.manufacturer);
-					me.log('Model: %s', me.modelName);
-					me.log('Zone: 2');
-					me.log('----------------------------------');
-				}
-				if (me.zoneControl == 2) {
-					me.log('-------- %s --------', me.name);
-					me.log('Manufacturer: %s', me.manufacturer);
-					me.log('Model: %s', me.modelName);
-					me.log('Zone: 3');
-					me.log('----------------------------------');
-				}
-				me.updateDeviceState();
-			} catch (error) {
-				me.log.error('Device %s %s, getDeviceInfo parse string error: %s', me.host, me.name, error);
-				me.checkDeviceInfo = true;
-			};
+				me.log('-------- %s --------', me.name);
+				me.log('Manufacturer: %s', me.manufacturer);
+				me.log('Model: %s', me.modelName);
+				me.log('Zones: %s', me.zones);
+				me.log('Api version: %s', me.apiVersion);
+				me.log('Serialnr: %s', me.serialNumber);
+				me.log('Firmware: %s', me.firmwareRevision);
+				me.log('----------------------------------');
+			}
+			if (me.zoneControl == 1) {
+				me.log('-------- %s --------', me.name);
+				me.log('Manufacturer: %s', me.manufacturer);
+				me.log('Model: %s', me.modelName);
+				me.log('Zone: 2');
+				me.log('----------------------------------');
+			}
+			if (me.zoneControl == 2) {
+				me.log('-------- %s --------', me.name);
+				me.log('Manufacturer: %s', me.manufacturer);
+				me.log('Model: %s', me.modelName);
+				me.log('Zone: 3');
+				me.log('----------------------------------');
+			}
+			me.checkDeviceInfo = false;
+			me.updateDeviceState();
 		} catch (error) {
 			me.log.error('Device: %s %s, getDeviceInfo eror: %s, state: Offline', me.host, me.name, error);
 			me.checkDeviceInfo = true;
