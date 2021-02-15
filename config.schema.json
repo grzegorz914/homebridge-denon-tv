@@ -116,6 +116,13 @@
               "required": false,
               "description": "This toggle behaviour for *I* button in RC app and *PowerModeSelection* in settings."
             },
+            "disableLogInfo": {
+              "title": "Disable log info",
+              "type": "boolean",
+              "default": false,
+              "required": false,
+              "description": "This disable log info, all values and state will not be displayed in Homebridge log console."
+            },
             "inputs": {
               "title": "Inputs",
               "buttonText": "Add input",
@@ -302,6 +309,7 @@
           "expandable": true,
           "expanded": false,
           "items": [
+            "devices[].disableLogInfo",
             "devices[].switchInfoMenu",
             "devices[].masterPower",
             "devices[].zoneControl",

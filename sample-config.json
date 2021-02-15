@@ -27,6 +27,7 @@
                     "volumeControl": 0,
                     "masterPower": false,
                     "switchInfoMenu": false,
+                    "disableLogInfo": false,
                     "inputs": [
                         {
                             "name": "Xbox One",

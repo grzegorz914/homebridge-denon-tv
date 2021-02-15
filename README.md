@@ -67,6 +67,7 @@ Tested with AVR-X6300H.
 9. If `masterPower` is `true` the power switch for that zone (typically you would only use this for the Main Zone) will turn the entire receiver `ON` or `OFF/STANDBY` rather than just the zone itself.
 10. In `volumeControl` You can select what a additional volume control mode You want to use (None, Slider, Fan).
 11. If `switchInfoMenu` is enabled, `I` button toggle its behaviour in RC app and `PowerModeSelection` in settings.
+11. If `disableLogInfo` is enabled, disable log info, all values and state will not be displayed in Homebridge log console.
 12. All possible commands can be found in [Denon Control Protocol 2020](http://assets.denon.com/_layouts/15/xlviewer.aspx?id=/DocumentMaster/us/DENON_FY20%20AVR_PROTOCOL_V03_03042020.xlsx)
 13. `manufacturer`, `modelName`, `serialNumber`, `firmwareRevision` - optional branding data displayed in Home.app
 
@@ -88,6 +89,7 @@ Tested with AVR-X6300H.
             "volumeControl": 0,
             "masterPower": false,
             "switchInfoMenu": false,
+            "disableLogInfo": false,
             "inputs": [
                         {
                             "name": "Xbox One",
@@ -158,6 +160,7 @@ Tested with AVR-X6300H.
             "volumeControl": 0,
             "masterPower": false,
             "switchInfoMenu": false,
+            "disableLogInfo": false,
             "inputs": [
                 {
                     "name": "Xbox One",
@@ -212,6 +215,7 @@ Tested with AVR-X6300H.
             "volumeControl": 0,
             "masterPower": false,
             "switchInfoMenu": false,
+            "disableLogInfo": false,
             "inputs": [
                 {
                     "name": "Xbox One",
