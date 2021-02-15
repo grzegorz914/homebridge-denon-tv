@@ -299,48 +299,31 @@ class denonTvDevice {
 		const accessoryName = this.name;
 		const accessoryUUID = UUID.generate(accessoryName);
 		const accessoryCategory = Categories.AUDIO_RECEIVER;
-		this.accessory = new Accessory(accessoryName, accessoryUUID, accessoryCategory);
+		const accessory = new Accessory(accessoryName, accessoryUUID, accessoryCategory);
 
-		this.prepareInformationService();
-		this.prepareTelevisionService();
-		this.prepareSpeakerService();
-		if (this.volumeControl >= 1) {
-			this.prepareVolumeService();
-		}
-		this.prepareInputsService();
-
-		this.startPrepareAccessory = false;
-
-		this.log.debug('Device: %s %s, publishExternalAccessories.', this.host, accessoryName);
-		this.api.publishExternalAccessories(PLUGIN_NAME, [this.accessory]);
-	}
-
-	//Prepare information service
-	prepareInformationService() {
+		//Prepare information service
 		this.log.debug('prepareInformationService');
 
-		let manufacturer = this.manufacturer;
-		let modelName = this.modelName;
-		let serialNumber = this.serialNumber;
-		let firmwareRevision = this.firmwareRevision;
+		const manufacturer = this.manufacturer;
+		const modelName = this.modelName;
+		const serialNumber = this.serialNumber;
+		const firmwareRevision = this.firmwareRevision;
 
-		this.accessory.removeService(this.accessory.getService(Service.AccessoryInformation));
+		accessory.removeService(accessory.getService(Service.AccessoryInformation));
 		const informationService = new Service.AccessoryInformation();
 		informationService
-			.setCharacteristic(Characteristic.Name, this.name)
+			.setCharacteristic(Characteristic.Name, accessoryName)
 			.setCharacteristic(Characteristic.Manufacturer, manufacturer)
 			.setCharacteristic(Characteristic.Model, modelName)
 			.setCharacteristic(Characteristic.SerialNumber, serialNumber)
 			.setCharacteristic(Characteristic.FirmwareRevision, firmwareRevision);
 
-		this.accessory.addService(informationService);
-	}
+		accessory.addService(informationService);
 
-	//Prepare television service
-	prepareTelevisionService() {
+		//Prepare television service
 		this.log.debug('prepareTelevisionService');
-		this.televisionService = new Service.Television(this.name, 'televisionService');
-		this.televisionService.setCharacteristic(Characteristic.ConfiguredName, this.name);
+		this.televisionService = new Service.Television(accessoryName, 'televisionService');
+		this.televisionService.setCharacteristic(Characteristic.ConfiguredName, accessoryName);
 		this.televisionService.setCharacteristic(Characteristic.SleepDiscoveryMode, Characteristic.SleepDiscoveryMode.ALWAYS_DISCOVERABLE);
 
 		this.televisionService.getCharacteristic(Characteristic.Active)
@@ -360,13 +343,11 @@ class denonTvDevice {
 		this.televisionService.getCharacteristic(Characteristic.PictureMode)
 			.on('set', this.setPictureMode.bind(this));
 
-		this.accessory.addService(this.televisionService);
-	}
+		accessory.addService(this.televisionService);
 
-	//Prepare speaker service
-	prepareSpeakerService() {
+		//Prepare speaker service
 		this.log.debug('prepareSpeakerService');
-		this.speakerService = new Service.TelevisionSpeaker(this.name + ' Speaker', 'speakerService');
+		this.speakerService = new Service.TelevisionSpeaker(accessoryName + ' Speaker', 'speakerService');
 		this.speakerService
 			.setCharacteristic(Characteristic.Active, Characteristic.Active.ACTIVE)
 			.setCharacteristic(Characteristic.VolumeControlType, Characteristic.VolumeControlType.ABSOLUTE);
@@ -379,54 +360,51 @@ class denonTvDevice {
 			.on('get', this.getMute.bind(this))
 			.on('set', this.setMute.bind(this));
 
-		this.accessory.addService(this.speakerService);
+		accessory.addService(this.speakerService);
 		this.televisionService.addLinkedService(this.speakerService);
-	}
 
-	//Prepare volume service
-	prepareVolumeService() {
-		this.log.debug('prepareVolumeService');
-		if (this.volumeControl == 1) {
-			this.volumeService = new Service.Lightbulb(this.name + ' Volume', 'volumeService');
-			this.volumeService.getCharacteristic(Characteristic.Brightness)
-				.on('get', this.getVolume.bind(this))
-				.on('set', (volume, callback) => {
-					this.speakerService.setCharacteristic(Characteristic.Volume, volume);
+		//Prepare volume service
+		if (this.volumeControl >= 1) {
+			this.log.debug('prepareVolumeService');
+			if (this.volumeControl == 1) {
+				this.volumeService = new Service.Lightbulb(accessoryName + ' Volume', 'volumeService');
+				this.volumeService.getCharacteristic(Characteristic.Brightness)
+					.on('get', this.getVolume.bind(this))
+					.on('set', (volume, callback) => {
+						this.speakerService.setCharacteristic(Characteristic.Volume, volume);
+						callback(null);
+					});
+			}
+			if (this.volumeControl == 2) {
+				this.volumeService = new Service.Fan(accessoryName + ' Volume', 'volumeService');
+				this.volumeService.getCharacteristic(Characteristic.RotationSpeed)
+					.on('get', this.getVolume.bind(this))
+					.on('set', (volume, callback) => {
+						this.speakerService.setCharacteristic(Characteristic.Volume, volume);
+						callback(null);
+					});
+			}
+			this.volumeService.getCharacteristic(Characteristic.On)
+				.on('get', (callback) => {
+					let state = !this.currentMuteState;
+					callback(null, state);
+				})
+				.on('set', (state, callback) => {
+					this.speakerService.setCharacteristic(Characteristic.Mute, !state);
 					callback(null);
 				});
-		}
-		if (this.volumeControl == 2) {
-			this.volumeService = new Service.Fan(this.name + ' Volume', 'volumeService');
-			this.volumeService.getCharacteristic(Characteristic.RotationSpeed)
-				.on('get', this.getVolume.bind(this))
-				.on('set', (volume, callback) => {
-					this.speakerService.setCharacteristic(Characteristic.Volume, volume);
-					callback(null);
-				});
-		}
-		this.volumeService.getCharacteristic(Characteristic.On)
-			.on('get', (callback) => {
-				let state = !this.currentMuteState;
-				callback(null, state);
-			})
-			.on('set', (state, callback) => {
-				this.speakerService.setCharacteristic(Characteristic.Mute, !state);
-				callback(null);
-			});
 
-		this.accessory.addService(this.volumeService);
-		this.televisionService.addLinkedService(this.volumeService);
-	}
+			accessory.addService(this.volumeService);
+			this.televisionService.addLinkedService(this.volumeService);
+		}
 
-	//Prepare inputs services
-	prepareInputsService() {
+		//Prepare inputs services
 		this.log.debug('prepareInputsService');
-
 		let savedNames = {};
 		try {
 			savedNames = JSON.parse(fs.readFileSync(this.customInputsFile));
 		} catch (error) {
-			this.log.debug('Device: %s %s, customInputs file does not exist', this.host, this.name)
+			this.log.debug('Device: %s %s, customInputs file does not exist', this.host, accessoryName)
 		}
 
 		this.inputs.forEach((input, i) => {
@@ -461,10 +439,10 @@ class denonTvDevice {
 					savedNames[inputReference] = name;
 					fs.writeFile(this.customInputsFile, JSON.stringify(savedNames, null, 2), (error) => {
 						if (error) {
-							this.log.error('Device: %s %s, can not write new Input name, error: %s', this.host, this.name, error);
+							this.log.error('Device: %s %s, can not write new Input name, error: %s', this.host, accessoryName, error);
 						} else {
 							if (!this.disableLogInfo) {
-								this.log('Device: %s %s, saved new Input successful, name: %s reference: %s', this.host, this.name, name, inputReference);
+								this.log('Device: %s %s, saved new Input successful, name: %s reference: %s', this.host, accessoryName, name, inputReference);
 							}
 						}
 					});
@@ -475,9 +453,13 @@ class denonTvDevice {
 			this.inputTypes.push(inputType);
 			this.inputModes.push(inputMode);
 
-			this.accessory.addService(this.inputsService);
+			accessory.addService(this.inputsService);
 			this.televisionService.addLinkedService(this.inputsService);
 		});
+
+		this.startPrepareAccessory = false;
+		this.log.debug('Device: %s %s, publishExternalAccessories.', this.host, accessoryName);
+		this.api.publishExternalAccessories(PLUGIN_NAME, [accessory]);
 	}
 
 
