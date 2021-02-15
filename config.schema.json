@@ -301,7 +301,6 @@
         "devices[].name",
         "devices[].host",
         "devices[].port",
-        "devices[].refreshInterval",
         {
           "key": "devices[]",
           "type": "section",
@@ -310,6 +309,7 @@
           "expanded": false,
           "items": [
             "devices[].disableLogInfo",
+            "devices[].refreshInterval",
             "devices[].switchInfoMenu",
             "devices[].masterPower",
             "devices[].zoneControl",

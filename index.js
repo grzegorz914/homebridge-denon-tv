@@ -159,27 +159,35 @@ class denonTvDevice {
 			}
 			if (typeof result.Device_Info !== 'undefined') {
 				if (typeof result.Device_Info.BrandCode[0] !== 'undefined') {
-					me.manufacturer = ['Denon', 'Marantz'][result.Device_Info.BrandCode[0]];
+					var manufacturer = ['Denon', 'Marantz'][result.Device_Info.BrandCode[0]];
 				} else {
-					me.manufacturer = me.manufacturer;
+					manufacturer = me.manufacturer;
 				};
 				if (typeof result.Device_Info.ModelName[0] !== 'undefined') {
-					me.modelName = result.Device_Info.ModelName[0];
+					var modelName = result.Device_Info.ModelName[0];
 				} else {
-					me.modelName = me.modelName;
+					modelName = me.modelName;
 				};
 				if (typeof result.Device_Info.MacAddress[0] !== 'undefined') {
-					me.serialNumber = result.Device_Info.MacAddress[0];
+					var serialNumber = result.Device_Info.MacAddress[0];
 				} else {
-					me.serialNumber = me.serialNumber;
+					serialNumber = me.serialNumber;
 				};
 				if (typeof result.Device_Info.UpgradeVersion[0] !== 'undefined') {
-					me.firmwareRevision = result.Device_Info.UpgradeVersion[0];
+					var firmwareRevision = result.Device_Info.UpgradeVersion[0];
 				} else {
-					me.firmwareRevision = me.firmwareRevision;
+					firmwareRevision = me.firmwareRevision;
 				};
-				me.zones = result.Device_Info.DeviceZones[0];
-				me.apiVersion = result.Device_Info.CommApiVers[0];
+				if (typeof result.Device_Info.DeviceZones[0] !== 'undefined') {
+					var zones = result.Device_Info.DeviceZones[0];
+				} else {
+					zones = 'Undefined'
+				};
+				if (typeof result.Device_Info.CommApiVers[0] !== 'undefined') {
+					var apiVersion = result.Device_Info.CommApiVers[0];
+				} else {
+					apiVersion = 'Undefined';
+				};
 			}
 			if (me.zoneControl == 0 || me.zoneControl == 3) {
 				if (fs.existsSync(me.devInfoFile) === false) {
@@ -191,28 +199,33 @@ class denonTvDevice {
 					}
 				}
 				me.log('-------- %s --------', me.name);
-				me.log('Manufacturer: %s', me.manufacturer);
-				me.log('Model: %s', me.modelName);
-				me.log('Zones: %s', me.zones);
-				me.log('Api version: %s', me.apiVersion);
-				me.log('Serialnr: %s', me.serialNumber);
-				me.log('Firmware: %s', me.firmwareRevision);
+				me.log('Manufacturer: %s', manufacturer);
+				me.log('Model: %s', modelName);
+				me.log('Zones: %s', zones);
+				me.log('Api version: %s', apiVersion);
+				me.log('Serialnr: %s', serialNumber);
+				me.log('Firmware: %s', firmwareRevision);
 				me.log('----------------------------------');
 			}
 			if (me.zoneControl == 1) {
 				me.log('-------- %s --------', me.name);
-				me.log('Manufacturer: %s', me.manufacturer);
-				me.log('Model: %s', me.modelName);
+				me.log('Manufacturer: %s', manufacturer);
+				me.log('Model: %s', modelName);
 				me.log('Zone: 2');
 				me.log('----------------------------------');
 			}
 			if (me.zoneControl == 2) {
 				me.log('-------- %s --------', me.name);
-				me.log('Manufacturer: %s', me.manufacturer);
-				me.log('Model: %s', me.modelName);
+				me.log('Manufacturer: %s', manufacturer);
+				me.log('Model: %s', modelName);
 				me.log('Zone: 3');
 				me.log('----------------------------------');
 			}
+			me.manufacturer = manufacturer;
+			me.modelName = modelName;
+			me.serialNumber = serialNumber;
+			me.firmwareRevision = firmwareRevision;
+
 			me.checkDeviceInfo = false;
 			me.updateDeviceState();
 		} catch (error) {
