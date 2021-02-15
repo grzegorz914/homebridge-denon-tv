@@ -34,12 +34,13 @@
               "required": true
             },
             "refreshInterval": {
-              "title": "Refresh interval (sec)",
-              "type": "integer",
-              "default": 5,
-              "maximum": 3600,
-              "required": true
-            },
+							"title": "Refresh interval (sec)",
+							"type": "integer",
+							"default": 5,
+							"minimum": 0,
+							"maximum": 3600,
+							"required": true
+						},
             "zoneControl": {
               "title": "Zone control",
               "type": "integer",
