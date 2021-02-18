@@ -24,7 +24,7 @@
               "type": "string",
               "default": "192.168.1.5",
               "required": true,
-              "format": "ipv4"
+              "format": "hostname"
             },
             "port": {
               "title": "Port",
