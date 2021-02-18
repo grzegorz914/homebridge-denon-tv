@@ -247,39 +247,41 @@ class denonTvDevice {
 			me.log.debug('Device: %s %s, get current Power state successful: %s', me.host, me.name, powerState ? 'ON' : 'OFF');
 			me.currentPowerState = powerState;
 
-			let inputReference = result.item.InputFuncSelect[0].value[0];
-			let inputIdentifier = 0;
-			if (me.inputReferences.indexOf(inputReference) >= 0) {
-				inputIdentifier = me.inputReferences.indexOf(inputReference);
-			}
-			let inputName = me.inputNames[inputIdentifier];
-			if (me.televisionService && (inputReference !== me.currentInputReference)) {
-				me.televisionService.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
-			}
-			me.log.debug('Device: %s %s %s, get current Input successful: %s %s', me.host, me.name, me.zoneName, inputName, inputReference);
-			me.currentInputReference = inputReference;
-			me.currentInputIdentifier = inputIdentifier;
-			me.currentInputName = inputName;
+			if (powerState) {
+				let inputReference = result.item.InputFuncSelect[0].value[0];
+				let inputIdentifier = 0;
+				if (me.inputReferences.indexOf(inputReference) >= 0) {
+					inputIdentifier = me.inputReferences.indexOf(inputReference);
+				}
+				let inputName = me.inputNames[inputIdentifier];
+				if (me.televisionService && (inputReference !== me.currentInputReference)) {
+					me.televisionService.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
+				}
+				me.log.debug('Device: %s %s %s, get current Input successful: %s %s', me.host, me.name, me.zoneName, inputName, inputReference);
+				me.currentInputReference = inputReference;
+				me.currentInputIdentifier = inputIdentifier;
+				me.currentInputName = inputName;
 
-			let mute = powerState ? (result.item.Mute[0].value[0] === 'on') : true;
-			let volume = parseInt(result.item.MasterVolume[0].value[0]) + 80;
-			if (me.speakerService) {
-				me.speakerService.updateCharacteristic(Characteristic.Mute, mute);
-				me.speakerService.updateCharacteristic(Characteristic.Volume, volume);
-				if (me.volumeService && me.volumeControl == 1) {
-					me.volumeService.updateCharacteristic(Characteristic.Brightness, volume);
-					me.volumeService.updateCharacteristic(Characteristic.On, !mute);
+				let mute = powerState ? (result.item.Mute[0].value[0] === 'on') : true;
+				let volume = parseInt(result.item.MasterVolume[0].value[0]) + 80;
+				if (me.speakerService) {
+					me.speakerService.updateCharacteristic(Characteristic.Mute, mute);
+					me.speakerService.updateCharacteristic(Characteristic.Volume, volume);
+					if (me.volumeService && me.volumeControl == 1) {
+						me.volumeService.updateCharacteristic(Characteristic.Brightness, volume);
+						me.volumeService.updateCharacteristic(Characteristic.On, !mute);
+					}
+					if (me.volumeServiceFan && me.volumeControl == 2) {
+						me.volumeServiceFan.updateCharacteristic(Characteristic.RotationSpeed, volume);
+						me.volumeServiceFan.updateCharacteristic(Characteristic.On, !mute);
+					}
 				}
-				if (me.volumeServiceFan && me.volumeControl == 2) {
-					me.volumeServiceFan.updateCharacteristic(Characteristic.RotationSpeed, volume);
-					me.volumeServiceFan.updateCharacteristic(Characteristic.On, !mute);
-				}
+				me.log.debug('Device: %s %s %s, get current Mute state: %s', me.host, me.name, me.zoneName, mute ? 'ON' : 'OFF');
+				me.log.debug('Device: %s %s %s, get current Volume level: %s dB ', me.host, me.name, me.zoneName, (volume - 80));
+				me.currentMuteState = mute;
+				me.currentVolume = volume;
 			}
-			me.log.debug('Device: %s %s %s, get current Mute state: %s', me.host, me.name, me.zoneName, mute ? 'ON' : 'OFF');
-			me.log.debug('Device: %s %s %s, get current Volume level: %s dB ', me.host, me.name, me.zoneName, (volume - 80));
-			me.currentMuteState = mute;
-			me.currentVolume = volume;
-			me.checkDeviceState = true;
+			me.checkDeviceState = true
 
 			//start prepare accessory
 			if (me.startPrepareAccessory) {
@@ -729,19 +731,18 @@ class denonTvDevice {
 
 			this.inputsService
 				.getCharacteristic(Characteristic.ConfiguredName)
-				.on('set', (name, callback) => {
-					savedNames[inputReference] = name;
-					fs.writeFile(this.customInputsFile, JSON.stringify(savedNames, null, 2), (error) => {
-						if (error) {
-							this.log.error('Device: %s %s, can not write new Input name, error: %s', this.host, accessoryName, error);
-						} else {
-							if (!this.disableLogInfo) {
-								this.log('Device: %s %s, saved new Input successful, name: %s reference: %s', this.host, accessoryName, name, inputReference);
-							}
+				.onSet(async (name) => {
+					try {
+						savedNames[inputReference] = name;
+						await fsPromises.writeFile(this.customInputsFile, JSON.stringify(savedNames, null, 2));
+						if (!this.disableLogInfo) {
+							this.log('Device: %s %s, saved new Input successful, name: %s reference: %s', this.host, accessoryName, name, inputReference);
 						}
-					});
-					callback(null)
+					} catch (error) {
+						this.log.error('Device: %s %s, can not write new Input name, error: %s', this.host, accessoryName, error);
+					}
 				});
+
 			this.inputReferences.push(inputReference);
 			this.inputNames.push(inputName);
 			this.inputTypes.push(inputType);
