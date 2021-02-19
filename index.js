@@ -36,7 +36,7 @@ class denonTvPlatform {
 
 		this.api.on('didFinishLaunching', () => {
 			this.log.debug('didFinishLaunching');
-			for (let i = 0, len = this.devices.length; i < len; i++) {
+			for (let i = 0; i < this.devices.length; i++) {
 				let deviceName = this.devices[i];
 				if (!deviceName.name) {
 					this.log.warn('Device Name Missing')
@@ -88,7 +88,7 @@ class denonTvDevice {
 		this.zoneNumber = ZONE_NUMBER[this.zoneControl];
 
 		//setup variables
-		this.checkDeviceInfo = false;
+		this.checkDeviceInfo = true;
 		this.checkDeviceState = false;
 		this.startPrepareAccessory = true;
 		this.currentPowerState = false;
@@ -144,8 +144,6 @@ class denonTvDevice {
 				this.updateDeviceState();
 			}
 		}.bind(this), this.refreshInterval * 1000);
-
-		this.getDeviceInfo()
 	}
 
 	async getDeviceInfo() {
@@ -154,9 +152,9 @@ class denonTvDevice {
 		try {
 			const response = await axios.get(me.url + '/goform/Deviceinfo.xml');
 			const result = await parseStringPromise(response.data);
-			if (!me.disableLogInfo) {
-				me.log('Device: %s %s %s, state: Online.', me.host, me.name, me.zoneName);
-			}
+			const writeFile = await fsPromises.writeFile(me.devInfoFile, JSON.stringify(result, null, 2));
+			me.log.debug('Device: %s %s, devInfoFile saved successful in: %s %s', me.host, me.name, me.prefDir, JSON.stringify(result, null, 2));
+
 			if (typeof result.Device_Info !== 'undefined') {
 				if (typeof result.Device_Info.BrandCode[0] !== 'undefined') {
 					var manufacturer = ['Denon', 'Marantz'][result.Device_Info.BrandCode[0]];
@@ -189,15 +187,11 @@ class denonTvDevice {
 					apiVersion = 'Undefined';
 				};
 			}
+
+			if (!me.disableLogInfo) {
+				me.log('Device: %s %s %s, state: Online.', me.host, me.name, me.zoneName);
+			}
 			if (me.zoneControl == 0 || me.zoneControl == 3) {
-				if (fs.existsSync(me.devInfoFile) === false) {
-					try {
-						await fsPromises.writeFile(me.devInfoFile, JSON.stringify(result, null, 2));
-						me.log.debug('Device: %s %s, devInfoFile saved successful in: %s %s', me.host, me.name, me.prefDir, JSON.stringify(result, null, 2));
-					} catch (error) {
-						me.log.error('Device: %s %s, could not write devInfoFile, error: %s', me.host, me.name, error);
-					}
-				}
 				me.log('-------- %s --------', me.name);
 				me.log('Manufacturer: %s', manufacturer);
 				me.log('Model: %s', modelName);
@@ -281,7 +275,7 @@ class denonTvDevice {
 				me.currentMuteState = mute;
 				me.currentVolume = volume;
 			}
-			me.checkDeviceState = true
+			me.checkDeviceState = true;
 
 			//start prepare accessory
 			if (me.startPrepareAccessory) {
@@ -352,9 +346,9 @@ class denonTvDevice {
 
 		this.televisionService.getCharacteristic(Characteristic.ActiveIdentifier)
 			.on('get', (callback) => {
-				let inputReference = this.currentInputReference;
 				let inputIdentifier = 0;
-				if (this.inputReferences.indexOf(inputReference) >= 0) {
+				let inputReference = this.currentInputReference;
+				if (this.inputReferences.indexOf(inputReference) !== -1) {
 					inputIdentifier = this.inputReferences.indexOf(inputReference);
 				}
 				let inputName = this.inputNames[inputIdentifier];
@@ -696,6 +690,21 @@ class denonTvDevice {
 
 		//Prepare inputs services
 		this.log.debug('prepareInputsService');
+		let devInputs = {};
+		try {
+			devInputs = JSON.parse(fs.readFileSync(this.devInfoFile));
+		} catch (error) {
+			this.log.debug('Device: %s %s, devInfoFile file does not exist', this.host, accessoryName)
+		}
+		let zone = [0, 1, 2, 0][this.zoneControl];
+		//let inputs = devInputs.Device_Info.DeviceZoneCapabilities[zone].ShortcutControl[0].EntryList[0].Shortcut; //Schortcuts
+		//let inputs = devInputs.Device_Info.DeviceZoneCapabilities[zone].InputSource[0].List[0].Source; //sources list
+		let inputs = this.inputs;
+		let inputsLength = inputs.length;
+		if (inputsLength > 94) {
+			inputsLength = 94
+		}
+
 		let savedNames = {};
 		try {
 			savedNames = JSON.parse(fs.readFileSync(this.customInputsFile));
@@ -703,23 +712,24 @@ class denonTvDevice {
 			this.log.debug('Device: %s %s, customInputs file does not exist', this.host, accessoryName)
 		}
 
-		this.inputs.forEach((input, i) => {
+		for (let i = 0; i < inputsLength; i++) {
 
 			//get input reference
-			let inputReference = input.reference;
+			let inputReference = inputs[i].reference;
 
 			//get input name		
-			let inputName = input.name;
-
+			let inputName = inputs[i].name;
 			if (savedNames && savedNames[inputReference]) {
 				inputName = savedNames[inputReference];
-			};
+			} else {
+				inputName = inputs[i].name;
+			}
 
 			//get input type
-			let inputType = input.type;
+			let inputType = inputs[i].type;
 
 			//get input mode
-			let inputMode = input.mode;
+			let inputMode = inputs[i].mode;
 
 			this.inputsService = new Service.InputSource(inputReference, 'input' + i);
 			this.inputsService
@@ -727,7 +737,8 @@ class denonTvDevice {
 				.setCharacteristic(Characteristic.ConfiguredName, inputName)
 				.setCharacteristic(Characteristic.IsConfigured, Characteristic.IsConfigured.CONFIGURED)
 				.setCharacteristic(Characteristic.InputSourceType, inputType)
-				.setCharacteristic(Characteristic.CurrentVisibilityState, Characteristic.CurrentVisibilityState.SHOWN);
+				.setCharacteristic(Characteristic.CurrentVisibilityState, Characteristic.CurrentVisibilityState.SHOWN)
+				.setCharacteristic(Characteristic.TargetVisibilityState, Characteristic.TargetVisibilityState.SHOWN);
 
 			this.inputsService
 				.getCharacteristic(Characteristic.ConfiguredName)
@@ -750,7 +761,7 @@ class denonTvDevice {
 
 			accessory.addService(this.inputsService);
 			this.televisionService.addLinkedService(this.inputsService);
-		});
+		};
 
 		this.startPrepareAccessory = false;
 		this.log.debug('Device: %s %s, publishExternalAccessories.', this.host, accessoryName);

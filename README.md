@@ -34,7 +34,7 @@ Tested with AVR-X6300H.
 5. Enter the Homebridge PIN, this can be found under the QR code in Homebridge UI or your Homebridge logs, alternatively you can select *Use Camera* and scan the QR code again.
 
 ## Note
-1. Versin 3.6.0 and abowe need to be used with Homebridge min. v1.3.x.
+1. Versin 3.6.0 and above need to be used with Homebridge min. v1.3.x.
 
 ## Info
 1. Power ON/OFF short press tile in HomeKit app.
