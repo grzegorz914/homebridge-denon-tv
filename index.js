@@ -233,46 +233,48 @@ class denonTvDevice {
 		try {
 			me.log.debug('Device: %s %s, requesting Device state.', me.host, me.name);
 			const response = await axios.get(me.url + '/goform/form' + me.zoneNumber + 'XmlStatusLite.xml');
-			const result = await parseStringPromise(response.data);
-			let powerState = (result.item.Power[0].value[0] === 'ON');
-			if (me.televisionService && (powerState !== me.currentPowerState)) {
-				me.televisionService.updateCharacteristic(Characteristic.Active, powerState ? 1 : 0);
-			}
-			me.log.debug('Device: %s %s, get current Power state successful: %s', me.host, me.name, powerState ? 'ON' : 'OFF');
-			me.currentPowerState = powerState;
+			if (response.data !== undefined) {
+				const result = await parseStringPromise(response.data);
+				let powerState = (result.item.Power[0].value[0] === 'ON');
+				if (me.televisionService && (powerState !== me.currentPowerState)) {
+					me.televisionService.updateCharacteristic(Characteristic.Active, powerState ? 1 : 0);
+				}
+				me.log.debug('Device: %s %s, get current Power state successful: %s', me.host, me.name, powerState ? 'ON' : 'OFF');
+				me.currentPowerState = powerState;
 
-			let inputReference = result.item.InputFuncSelect[0].value[0];
-			let inputIdentifier = me.inputReferences.indexOf(inputReference);
-			if (inputIdentifier === -1) {
-				inputIdentifier = 0;
-			}
-			let inputName = me.inputNames[inputIdentifier];
-			if (me.televisionService && (inputReference !== me.currentInputReference)) {
-				me.televisionService.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
-			}
-			me.log.debug('Device: %s %s %s, get current Input successful: %s %s', me.host, me.name, me.zoneName, inputName, inputReference);
-			me.currentInputReference = inputReference;
-			me.currentInputIdentifier = inputIdentifier;
-			me.currentInputName = inputName;
-			let mute = powerState ? (result.item.Mute[0].value[0] === 'on') : true;
-			let volume = parseInt(result.item.MasterVolume[0].value[0]) + 80;
-			if (me.speakerService) {
-				me.speakerService.updateCharacteristic(Characteristic.Mute, mute);
-				me.speakerService.updateCharacteristic(Characteristic.Volume, volume);
-				if (me.volumeService && me.volumeControl == 1) {
-					me.volumeService.updateCharacteristic(Characteristic.Brightness, volume);
-					me.volumeService.updateCharacteristic(Characteristic.On, !mute);
+				let inputReference = result.item.InputFuncSelect[0].value[0];
+				let inputIdentifier = me.inputReferences.indexOf(inputReference);
+				let inputName = me.inputNames[inputIdentifier];
+				if (inputIdentifier >= 0) {
+					if (me.televisionService && (inputReference !== me.currentInputReference)) {
+						me.televisionService.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
+					}
+					me.log.debug('Device: %s %s %s, get current Input successful: %s %s', me.host, me.name, me.zoneName, inputName, inputReference);
+					me.currentInputReference = inputReference;
+					me.currentInputIdentifier = inputIdentifier;
+					me.currentInputName = inputName;
 				}
-				if (me.volumeServiceFan && me.volumeControl == 2) {
-					me.volumeServiceFan.updateCharacteristic(Characteristic.RotationSpeed, volume);
-					me.volumeServiceFan.updateCharacteristic(Characteristic.On, !mute);
+
+				let mute = powerState ? (result.item.Mute[0].value[0] === 'on') : true;
+				let volume = parseInt(result.item.MasterVolume[0].value[0]) + 80;
+				if (me.speakerService) {
+					me.speakerService.updateCharacteristic(Characteristic.Mute, mute);
+					me.speakerService.updateCharacteristic(Characteristic.Volume, volume);
+					if (me.volumeService && me.volumeControl == 1) {
+						me.volumeService.updateCharacteristic(Characteristic.Brightness, volume);
+						me.volumeService.updateCharacteristic(Characteristic.On, !mute);
+					}
+					if (me.volumeServiceFan && me.volumeControl == 2) {
+						me.volumeServiceFan.updateCharacteristic(Characteristic.RotationSpeed, volume);
+						me.volumeServiceFan.updateCharacteristic(Characteristic.On, !mute);
+					}
 				}
+				me.log.debug('Device: %s %s %s, get current Mute state: %s', me.host, me.name, me.zoneName, mute ? 'ON' : 'OFF');
+				me.log.debug('Device: %s %s %s, get current Volume level: %s dB ', me.host, me.name, me.zoneName, (volume - 80));
+				me.currentMuteState = mute;
+				me.currentVolume = volume;
+				me.checkDeviceState = true;
 			}
-			me.log.debug('Device: %s %s %s, get current Mute state: %s', me.host, me.name, me.zoneName, mute ? 'ON' : 'OFF');
-			me.log.debug('Device: %s %s %s, get current Volume level: %s dB ', me.host, me.name, me.zoneName, (volume - 80));
-			me.currentMuteState = mute;
-			me.currentVolume = volume;
-			me.checkDeviceState = true;
 
 			//start prepare accessory
 			if (me.startPrepareAccessory) {
@@ -344,7 +346,7 @@ class denonTvDevice {
 		this.televisionService.getCharacteristic(Characteristic.ActiveIdentifier)
 			.onGet(async () => {
 				let inputReference = this.currentInputReference;
-				let inputIdentifier = this.inputReferences.indexOf(inputReference);
+				let inputIdentifier = this.currentInputIdentifier;
 				if (inputIdentifier === -1) {
 					inputIdentifier = 0;
 				}
@@ -579,9 +581,11 @@ class denonTvDevice {
 			.onSet(async (volume) => {
 				try {
 					let zone = ['MV', 'Z2', 'Z3', 'MV'][this.zoneControl];
-					if (volume == 0 || volume == 100) {
+					if (volume === 0 || volume === 100) {
 						if (this.currentVolume < 10) {
 							volume = '0' + this.currentVolume;
+						} else {
+							volume = this.currentVolume;
 						}
 					} else {
 						if (volume < 10) {
@@ -654,7 +658,7 @@ class denonTvDevice {
 					});
 				this.volumeService.getCharacteristic(Characteristic.On)
 					.onGet(async () => {
-						let state = this.currentPowerState ? this.currentMuteState : true;
+						let state = !this.currentMuteState;
 						return state;
 					})
 					.onSet(async (state) => {
@@ -675,7 +679,7 @@ class denonTvDevice {
 					});
 				this.volumeServiceFan.getCharacteristic(Characteristic.On)
 					.onGet(async () => {
-						let state = this.currentPowerState ? this.currentMuteState : true;
+						let state = !this.currentMuteState;
 						return state;
 					})
 					.onSet(async (state) => {
