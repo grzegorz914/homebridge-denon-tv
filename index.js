@@ -243,9 +243,9 @@ class denonTvDevice {
 
 			if (powerState) {
 				let inputReference = result.item.InputFuncSelect[0].value[0];
-				let inputIdentifier = 0;
-				if (me.inputReferences.indexOf(inputReference) >= 0) {
-					inputIdentifier = me.inputReferences.indexOf(inputReference);
+				let inputIdentifier = me.inputReferences.indexOf(inputReference);
+				if (inputIdentifier === -1) {
+					inputIdentifier = 0;
 				}
 				let inputName = me.inputNames[inputIdentifier];
 				if (me.televisionService && (inputReference !== me.currentInputReference)) {
@@ -321,12 +321,12 @@ class denonTvDevice {
 		this.televisionService.setCharacteristic(Characteristic.SleepDiscoveryMode, Characteristic.SleepDiscoveryMode.ALWAYS_DISCOVERABLE);
 
 		this.televisionService.getCharacteristic(Characteristic.Active)
-			.on('get', (callback) => {
+			.onGet(async () => {
 				let state = this.currentPowerState ? 1 : 0;
 				if (!this.disableLogInfo) {
 					this.log('Device: %s %s, get current Power state successfull, state: %s', this.host, accessoryName, state ? 'ON' : 'OFF');
 				}
-				callback(null, state);
+				return state;
 			})
 			.onSet(async (state) => {
 				if (state != this.currentPowerState) {
@@ -345,17 +345,17 @@ class denonTvDevice {
 			});
 
 		this.televisionService.getCharacteristic(Characteristic.ActiveIdentifier)
-			.on('get', (callback) => {
-				let inputIdentifier = 0;
+			.onGet(async () => {
 				let inputReference = this.currentInputReference;
-				if (this.inputReferences.indexOf(inputReference) !== -1) {
-					inputIdentifier = this.inputReferences.indexOf(inputReference);
+				let inputIdentifier = this.inputReferences.indexOf(inputReference);
+				if (inputIdentifier === -1) {
+					inputIdentifier = 0;
 				}
 				let inputName = this.inputNames[inputIdentifier];
 				if (!this.disableLogInfo) {
 					this.log('Device: %s %s %s, get current Input successful: %s %s', this.host, accessoryName, this.zoneName, inputName, inputReference);
 				}
-				callback(null, inputIdentifier);
+				return inputIdentifier;
 			})
 			.onSet(async (inputIdentifier) => {
 				try {
@@ -572,19 +572,24 @@ class denonTvDevice {
 				};
 			});
 		this.speakerService.getCharacteristic(Characteristic.Volume)
-			.on('get', (callback) => {
+			.onGet(async () => {
 				let volume = this.currentVolume;
 				if (!this.disableLogInfo) {
 					this.log('Device: %s %s %s, get current Volume level successful: %s dB', this.host, accessoryName, this.zoneName, (volume - 80));
 				}
-				callback(null, volume);
+				return volume;
 			})
 			.onSet(async (volume) => {
 				try {
-					let currentVolume = this.currentVolume;
 					let zone = ['MV', 'Z2', 'Z3', 'MV'][this.zoneControl];
 					if (volume == 0 || volume == 100) {
-						volume = currentVolume;
+						if (this.currentVolume < 10) {
+							volume = '0' + this.currentVolume;
+						}
+					} else {
+						if (volume < 10) {
+							volume = '0' + volume;
+						}
 					}
 					const response = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + zone + volume);
 					if (this.zoneControl == 3) {
@@ -603,12 +608,12 @@ class denonTvDevice {
 				};
 			});
 		this.speakerService.getCharacteristic(Characteristic.Mute)
-			.on('get', (callback) => {
+			.onGet(async () => {
 				let state = this.currentMuteState;
 				if (!this.disableLogInfo) {
 					this.log('Device: %s %s %s, get current Mute state successful: %s', this.host, accessoryName, this.zoneName, state ? 'ON' : 'OFF');
 				}
-				callback(null, state);
+				return state;
 			})
 			.onSet(async (state) => {
 				if (state !== this.currentMuteState) {
@@ -643,22 +648,20 @@ class denonTvDevice {
 			if (this.volumeControl == 1) {
 				this.volumeService = new Service.Lightbulb(accessoryName + ' Volume', 'volumeService');
 				this.volumeService.getCharacteristic(Characteristic.Brightness)
-					.on('get', (callback) => {
+					.onGet(async () => {
 						let volume = this.currentVolume;
-						callback(null, volume);
+						return volume;
 					})
-					.on('set', (volume, callback) => {
+					.onSet(async (volume) => {
 						this.speakerService.setCharacteristic(Characteristic.Volume, volume);
-						callback(null);
 					});
 				this.volumeService.getCharacteristic(Characteristic.On)
-					.on('get', (callback) => {
+					.onGet(async () => {
 						let state = this.currentPowerState ? this.currentMuteState : true;
-						callback(null, !state);
+						return state;
 					})
-					.on('set', (state, callback) => {
+					.onSet(async (state) => {
 						this.speakerService.setCharacteristic(Characteristic.Mute, !state);
-						callback(null);
 					});
 				accessory.addService(this.volumeService);
 				this.volumeService.addLinkedService(this.volumeService);
@@ -666,22 +669,20 @@ class denonTvDevice {
 			if (this.volumeControl == 2) {
 				this.volumeServiceFan = new Service.Fan(accessoryName + ' Volume', 'volumeServiceFan');
 				this.volumeServiceFan.getCharacteristic(Characteristic.RotationSpeed)
-					.on('get', (callback) => {
+					.onGet(async () => {
 						let volume = this.currentVolume;
-						callback(null, volume);
+						return volume;
 					})
-					.on('set', (volume, callback) => {
+					.onSet(async (volume) => {
 						this.speakerService.setCharacteristic(Characteristic.Volume, volume);
-						callback(null);
 					});
 				this.volumeServiceFan.getCharacteristic(Characteristic.On)
-					.on('get', (callback) => {
+					.onGet(async () => {
 						let state = this.currentPowerState ? this.currentMuteState : true;
-						callback(null, !state);
+						return state;
 					})
-					.on('set', (state, callback) => {
+					.onSet(async (state) => {
 						this.speakerService.setCharacteristic(Characteristic.Mute, !state);
-						callback(null);
 					});
 				accessory.addService(this.volumeServiceFan);
 				this.televisionService.addLinkedService(this.volumeServiceFan);

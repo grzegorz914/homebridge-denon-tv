@@ -34,13 +34,13 @@
               "required": true
             },
             "refreshInterval": {
-							"title": "Refresh interval (sec)",
-							"type": "integer",
-							"default": 5,
-							"minimum": 0,
-							"maximum": 100,
-							"required": true
-						},
+              "title": "Refresh interval (sec)",
+              "type": "integer",
+              "default": 5,
+              "minimum": 0,
+              "maximum": 100,
+              "required": true
+            },
             "zoneControl": {
               "title": "Zone control",
               "type": "integer",
@@ -237,22 +237,34 @@
                         ]
                       },
                       {
-                        "title": "Surround mode",
+                        "title": "Audio input mode",
+                        "enum": [
+                          "SD"
+                        ]
+                      },
+                      {
+                        "title": "Video select mode",
+                        "enum": [
+                          "SV"
+                        ]
+                      },
+                      {
+                        "title": "Favorite station",
+                        "enum": [
+                          "ZM"
+                        ]
+                      },
+                      {
+                        "title": "Surround mode and quick select",
                         "enum": [
                           "MS"
-                        ],
-                        "condition": {
-                          "functionBody": "return model.devices[arrayIndices].zoneControl === 0;"
-                        }
+                        ]
                       },
                       {
                         "title": "Surround mode all zones",
                         "enum": [
                           "MN"
-                        ],
-                        "condition": {
-                          "functionBody": "return model.devices[arrayIndices].zoneControl === 0;"
-                        }
+                        ]
                       }
                     ],
                     "required": true
