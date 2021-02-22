@@ -155,21 +155,25 @@ class denonTvDevice {
 		me.log.debug('Device: %s %s, requesting Device information.', me.host, me.name);
 		try {
 			const response = await axios.get(me.url + '/goform/Deviceinfo.xml');
-			const result = await parseStringPromise(response.data);
+			if (response !== undefined) {
+				const result = await parseStringPromise(response.data);
 
-			var manufacturer = ['Denon', 'Marantz'][result.Device_Info.BrandCode[0]];
-			var modelName = result.Device_Info.ModelName[0];
-			var serialNumber = result.Device_Info.MacAddress[0];
-			var firmwareRevision = result.Device_Info.UpgradeVersion[0];
-			var zones = result.Device_Info.DeviceZones[0];
-			var apiVersion = result.Device_Info.CommApiVers[0];
+				var manufacturer = ['Denon', 'Marantz'][result.Device_Info.BrandCode[0]];
+				var modelName = result.Device_Info.ModelName[0];
+				var serialNumber = result.Device_Info.MacAddress[0];
+				var firmwareRevision = result.Device_Info.UpgradeVersion[0];
+				var zones = result.Device_Info.DeviceZones[0];
+				var apiVersion = result.Device_Info.CommApiVers[0];
 
-			me.manufacturer = manufacturer;
-			me.modelName = modelName;
-			me.serialNumber = serialNumber;
-			me.firmwareRevision = firmwareRevision;
+				me.manufacturer = manufacturer;
+				me.modelName = modelName;
+				me.serialNumber = serialNumber;
+				me.firmwareRevision = firmwareRevision;
 
-			me.saveData = { 'Manufacturer': manufacturer, 'Model': modelName, 'Serial': serialNumber, 'Firmware': firmwareRevision, 'Zones': zones, 'Api': apiVersion };
+				me.saveData = { 'Manufacturer': manufacturer, 'Model': modelName, 'Serial': serialNumber, 'Firmware': firmwareRevision, 'Zones': zones, 'Api': apiVersion };
+			} else {
+				me.saveData = { 'Manufacturer': 'Manufacturer', 'Model': 'Model name', 'Serial': 'Serial number', 'Firmware': 'Firmware', 'zones': 'Zones', 'Api': 'Api' };
+			}
 			let data = JSON.stringify(me.saveData, null, 2);
 			await fsPromises.writeFile(me.devInfoFile, data);
 			me.log.debug('Device: %s %s, saved devInfoFile successful.', me.host, me.name);
@@ -179,12 +183,12 @@ class denonTvDevice {
 			}
 			if (me.zoneControl == 0 || me.zoneControl == 3) {
 				me.log('-------- %s --------', me.name);
-				me.log('Manufacturer: %s', manufacturer);
-				me.log('Model: %s', modelName);
-				me.log('Zones: %s', zones);
-				me.log('Api version: %s', apiVersion);
-				me.log('Serialnr: %s', serialNumber);
-				me.log('Firmware: %s', firmwareRevision);
+				me.log('Manufacturer: %s', me.saveData.Manufacturer);
+				me.log('Model: %s', me.saveData.Model);
+				me.log('Zones: %s', me.saveData.Zones);
+				me.log('Api version: %s', me.saveData.Api);
+				me.log('Serialnr: %s', me.saveData.Serial);
+				me.log('Firmware: %s', me.saveData.Firmware);
 				me.log('----------------------------------');
 			}
 			if (me.zoneControl == 1) {
