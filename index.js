@@ -109,31 +109,35 @@ class denonTvDevice {
 		this.url = ('http://' + this.host + ':' + this.port);
 
 		if (!Array.isArray(this.inputs) || this.inputs === undefined || this.inputs === null) {
-			let defaultInputs = [
+			this.inputs = [
 				{
-					name: 'No inputs configured',
-					reference: 'No references configured',
-					type: 'No types configured',
-					mode: 'No modes configured'
+					'name': 'No inputs configured',
+					'reference': 'No references configured',
+					'type': 'HDMI',
+					'mode': 'SI'
 				}
 			];
-			this.inputs = defaultInputs;
 		}
 
 		//check if prefs directory ends with a /, if not then add it
 		if (this.prefDir.endsWith('/') === false) {
 			this.prefDir = this.prefDir + '/';
 		}
-
 		//check if the directory exists, if not then create it
 		if (fs.existsSync(this.prefDir) === false) {
-			fs.mkdir(this.prefDir, { recursive: false }, (error) => {
-				if (error) {
-					this.log.error('Device: %s %s, create directory: %s, error: %s', this.host, this.name, this.prefDir, error);
-				} else {
-					this.log.debug('Device: %s %s, create directory successful: %s', this.host, this.name, this.prefDir);
-				}
-			});
+			fsPromises.mkdir(this.prefDir);
+		}
+		//check if the files exists, if not then create it
+		if (fs.existsSync(this.inputsFile) === false) {
+			fsPromises.writeFile(this.inputsFile, '{}');
+		}
+		//check if the files exists, if not then create it
+		if (fs.existsSync(this.customInputsFile) === false) {
+			fsPromises.writeFile(this.customInputsFile, '{}');
+		}
+		//check if the files exists, if not then create it
+		if (fs.existsSync(this.devInfoFile) === false) {
+			fsPromises.writeFile(this.devInfoFile, '{}');
 		}
 
 		//Check device state
@@ -152,41 +156,23 @@ class denonTvDevice {
 		try {
 			const response = await axios.get(me.url + '/goform/Deviceinfo.xml');
 			const result = await parseStringPromise(response.data);
-			const writeFile = await fsPromises.writeFile(me.devInfoFile, JSON.stringify(result, null, 2));
-			me.log.debug('Device: %s %s, devInfoFile saved successful in: %s %s', me.host, me.name, me.prefDir, JSON.stringify(result, null, 2));
 
-			if (typeof result.Device_Info !== 'undefined') {
-				if (typeof result.Device_Info.BrandCode[0] !== 'undefined') {
-					var manufacturer = ['Denon', 'Marantz'][result.Device_Info.BrandCode[0]];
-				} else {
-					manufacturer = me.manufacturer;
-				};
-				if (typeof result.Device_Info.ModelName[0] !== 'undefined') {
-					var modelName = result.Device_Info.ModelName[0];
-				} else {
-					modelName = me.modelName;
-				};
-				if (typeof result.Device_Info.MacAddress[0] !== 'undefined') {
-					var serialNumber = result.Device_Info.MacAddress[0];
-				} else {
-					serialNumber = me.serialNumber;
-				};
-				if (typeof result.Device_Info.UpgradeVersion[0] !== 'undefined') {
-					var firmwareRevision = result.Device_Info.UpgradeVersion[0];
-				} else {
-					firmwareRevision = me.firmwareRevision;
-				};
-				if (typeof result.Device_Info.DeviceZones[0] !== 'undefined') {
-					var zones = result.Device_Info.DeviceZones[0];
-				} else {
-					zones = 'Undefined'
-				};
-				if (typeof result.Device_Info.CommApiVers[0] !== 'undefined') {
-					var apiVersion = result.Device_Info.CommApiVers[0];
-				} else {
-					apiVersion = 'Undefined';
-				};
-			}
+			var manufacturer = ['Denon', 'Marantz'][result.Device_Info.BrandCode[0]];
+			var modelName = result.Device_Info.ModelName[0];
+			var serialNumber = result.Device_Info.MacAddress[0];
+			var firmwareRevision = result.Device_Info.UpgradeVersion[0];
+			var zones = result.Device_Info.DeviceZones[0];
+			var apiVersion = result.Device_Info.CommApiVers[0];
+
+			me.manufacturer = manufacturer;
+			me.modelName = modelName;
+			me.serialNumber = serialNumber;
+			me.firmwareRevision = firmwareRevision;
+
+			me.saveData = { 'Manufacturer': manufacturer, 'Model': modelName, 'Serial': serialNumber, 'Firmware': firmwareRevision, 'Zones': zones, 'Api': apiVersion };
+			let data = JSON.stringify(me.saveData, null, 2);
+			await fsPromises.writeFile(me.devInfoFile, data);
+			me.log.debug('Device: %s %s, saved devInfoFile successful.', me.host, me.name);
 
 			if (!me.disableLogInfo) {
 				me.log('Device: %s %s %s, state: Online.', me.host, me.name, me.zoneName);
@@ -215,10 +201,6 @@ class denonTvDevice {
 				me.log('Zone: 3');
 				me.log('----------------------------------');
 			}
-			me.manufacturer = manufacturer;
-			me.modelName = modelName;
-			me.serialNumber = serialNumber;
-			me.firmwareRevision = firmwareRevision;
 
 			me.checkDeviceInfo = false;
 			me.updateDeviceState();
@@ -297,10 +279,26 @@ class denonTvDevice {
 
 		//Prepare information service
 		this.log.debug('prepareInformationService');
+		try {
+			var readData = JSON.parse(fs.readFileSync(this.devInfoFile));
+		} catch (error) {
+			this.log.debug('Device: %s %s, readData failed, error: %s', this.host, accessoryName, error)
+		}
+
+		if (readData && readData.Model !== undefined) {
+			readData = readData;
+		} else {
+			if (this.saveData !== undefined) {
+				readData = this.saveData;
+			} else {
+				readData = { 'Model': 'Model name', 'Serial': 'Serial number', 'Firmware': 'Firmware' };
+			}
+		}
+
 		const manufacturer = this.manufacturer;
-		const modelName = this.modelName;
-		const serialNumber = this.serialNumber;
-		const firmwareRevision = this.firmwareRevision;
+		const modelName = readData.Model;
+		const serialNumber = readData.Serial;
+		const firmwareRevision = readData.Firmware;
 
 		accessory.removeService(accessory.getService(Service.AccessoryInformation));
 		const informationService = new Service.AccessoryInformation();
