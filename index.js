@@ -291,11 +291,11 @@ class denonTvDevice {
 			if (this.saveData !== undefined) {
 				readData = this.saveData;
 			} else {
-				readData = { 'Model': 'Model name', 'Serial': 'Serial number', 'Firmware': 'Firmware' };
+				readData = { 'Manufacturer': 'Manufacturer', 'Model': 'Model name', 'Serial': 'Serial number', 'Firmware': 'Firmware' };
 			}
 		}
 
-		const manufacturer = this.manufacturer;
+		const manufacturer = readData.Manufacturer;
 		const modelName = readData.Model;
 		const serialNumber = readData.Serial;
 		const firmwareRevision = readData.Firmware;
