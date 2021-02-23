@@ -155,40 +155,61 @@ class denonTvDevice {
 		me.log.debug('Device: %s %s, requesting Device information.', me.host, me.name);
 		try {
 			const response = await axios.get(me.url + '/goform/Deviceinfo.xml');
-			if (response !== undefined) {
-				const result = await parseStringPromise(response.data);
+			const result = await parseStringPromise(response.data);
 
-				var manufacturer = ['Denon', 'Marantz'][result.Device_Info.BrandCode[0]];
-				var modelName = result.Device_Info.ModelName[0];
-				var serialNumber = result.Device_Info.MacAddress[0];
-				var firmwareRevision = result.Device_Info.UpgradeVersion[0];
-				var zones = result.Device_Info.DeviceZones[0];
-				var apiVersion = result.Device_Info.CommApiVers[0];
+			let devInfo = JSON.stringify(result.Device_Info, null, 2);
+			const writeDevInfoFile = await fsPromises.writeFile(me.devInfoFile, devInfo);
+			me.log.debug('Device: %s %s, saved Device Info successful.', me.host, me.name);
 
-				me.manufacturer = manufacturer;
-				me.modelName = modelName;
-				me.serialNumber = serialNumber;
-				me.firmwareRevision = firmwareRevision;
-
-				me.saveData = { 'Manufacturer': manufacturer, 'Model': modelName, 'Serial': serialNumber, 'Firmware': firmwareRevision, 'Zones': zones, 'Api': apiVersion };
-			} else {
-				me.saveData = { 'Manufacturer': 'Manufacturer', 'Model': 'Model name', 'Serial': 'Serial number', 'Firmware': 'Firmware', 'zones': 'Zones', 'Api': 'Api' };
+			if (typeof result.Device_Info !== 'undefined') {
+				if (typeof result.Device_Info.BrandCode[0] !== 'undefined') {
+					var manufacturer = ['Denon', 'Marantz'][result.Device_Info.BrandCode[0]];
+				} else {
+					manufacturer = me.manufacturer;
+				};
+				if (typeof result.Device_Info.ModelName[0] !== 'undefined') {
+					var modelName = result.Device_Info.ModelName[0];
+				} else {
+					modelName = me.modelName;
+				};
+				if (typeof result.Device_Info.MacAddress[0] !== 'undefined') {
+					var serialNumber = result.Device_Info.MacAddress[0];
+				} else {
+					serialNumber = me.serialNumber;
+				};
+				if (typeof result.Device_Info.UpgradeVersion[0] !== 'undefined') {
+					var firmwareRevision = result.Device_Info.UpgradeVersion[0];
+				} else {
+					firmwareRevision = me.firmwareRevision;
+				};
+				if (typeof result.Device_Info.DeviceZones[0] !== 'undefined') {
+					var zones = result.Device_Info.DeviceZones[0];
+				} else {
+					zones = 'Undefined'
+				};
+				if (typeof result.Device_Info.CommApiVers[0] !== 'undefined') {
+					var apiVersion = result.Device_Info.CommApiVers[0];
+				} else {
+					apiVersion = 'Undefined';
+				};
 			}
-			let data = JSON.stringify(me.saveData, null, 2);
-			await fsPromises.writeFile(me.devInfoFile, data);
-			me.log.debug('Device: %s %s, saved devInfoFile successful.', me.host, me.name);
+
+			me.manufacturer = manufacturer;
+			me.modelName = modelName;
+			me.serialNumber = serialNumber;
+			me.firmwareRevision = firmwareRevision;
 
 			if (!me.disableLogInfo) {
 				me.log('Device: %s %s %s, state: Online.', me.host, me.name, me.zoneName);
 			}
 			if (me.zoneControl == 0 || me.zoneControl == 3) {
 				me.log('-------- %s --------', me.name);
-				me.log('Manufacturer: %s', me.saveData.Manufacturer);
-				me.log('Model: %s', me.saveData.Model);
-				me.log('Zones: %s', me.saveData.Zones);
-				me.log('Api version: %s', me.saveData.Api);
-				me.log('Serialnr: %s', me.saveData.Serial);
-				me.log('Firmware: %s', me.saveData.Firmware);
+				me.log('Manufacturer: %s', manufacturer);
+				me.log('Model: %s', modelName);
+				me.log('Zones: %s', zones);
+				me.log('Api version: %s', apiVersion);
+				me.log('Serialnr: %s', serialNumber);
+				me.log('Firmware: %s', firmwareRevision);
 				me.log('----------------------------------');
 			}
 			if (me.zoneControl == 1) {
@@ -284,25 +305,22 @@ class denonTvDevice {
 		//Prepare information service
 		this.log.debug('prepareInformationService');
 		try {
-			var readData = JSON.parse(fs.readFileSync(this.devInfoFile));
+			const response = fsPromises.readFile(this.devInfoFile);
+			var devInfo = JSON.parse(response.Device_Info);
 		} catch (error) {
-			this.log.debug('Device: %s %s, readData failed, error: %s', this.host, accessoryName, error)
+			this.log.debug('Device: %s %s, read devInfo failed, error: %s', this.host, accessoryName, error)
 		}
 
-		if (readData && readData.Model !== undefined) {
-			readData = readData;
+		if (devInfo !== undefined) {
+			devInfo = devInfo;
 		} else {
-			if (this.saveData !== undefined) {
-				readData = this.saveData;
-			} else {
-				readData = { 'Manufacturer': 'Manufacturer', 'Model': 'Model name', 'Serial': 'Serial number', 'Firmware': 'Firmware' };
-			}
+			devInfo = { 'BrandCode': 'Manufacturer', 'ModelName': 'Model name', 'MacAddress': 'Serial number', 'UpgradeVersion': 'Firmware' };
 		}
 
-		const manufacturer = readData.Manufacturer;
-		const modelName = readData.Model;
-		const serialNumber = readData.Serial;
-		const firmwareRevision = readData.Firmware;
+		const manufacturer = ['Denon', 'Marantz'][devInfo.BrandCode[0]];
+		const modelName = devInfo.ModelName[0]
+		const serialNumber = devInfo.MacAddress[0];
+		const firmwareRevision = devInfo.UpgradeVersion[0];
 
 		accessory.removeService(accessory.getService(Service.AccessoryInformation));
 		const informationService = new Service.AccessoryInformation();
