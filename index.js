@@ -292,11 +292,11 @@ class denonTvDevice {
 			this.log.debug('Device: %s %s, read devInfo failed, error: %s', this.host, accessoryName, error)
 		}
 		if (devInfo === undefined) {
-			devInfo = { 'BrandCode': 'Manufacturer', 'ModelName': 'Model name', 'MacAddress': 'Serial number', 'UpgradeVersion': 'Firmware' };
+			devInfo = { 'BrandCode': ['2'], 'ModelName': ['Model name'], 'MacAddress': ['Serial number'], 'UpgradeVersion': ['Firmware'] };
 		}
 
-		const manufacturer = devInfo.BrandCode;
-		const modelName = devInfo.ModelName[0]
+		const manufacturer = ['Denon', 'Marantz', 'Manufacturer'][devInfo.BrandCode[0]];
+		const modelName = devInfo.ModelName[0];
 		const serialNumber = devInfo.MacAddress[0];
 		const firmwareRevision = devInfo.UpgradeVersion[0];
 
