@@ -235,6 +235,7 @@ class denonTvDevice {
 
 			const inputReference = result.item.InputFuncSelect[0].value[0];
 			const inputIdentifier = (this.inputReferences.indexOf(inputReference) >= 0) ? this.inputReferences.indexOf(inputReference) : 0;
+			const inputName = this.inputNames[inputIdentifier];
 			if (this.televisionService && (inputReference !== this.currentInputReference)) {
 				this.televisionService.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
 			}
