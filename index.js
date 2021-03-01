@@ -756,8 +756,8 @@ class denonTvDevice {
 						return state;
 					})
 					.onSet(async (state) => {
-						try {
-							if (state) {
+						if (state) {
+							try {
 								const inputName = this.inputsButton[i].name;
 								const inputReference = this.inputsButton[i].reference;
 								const inputMode = this.inputsButton[i].mode;
@@ -775,10 +775,10 @@ class denonTvDevice {
 								if (!this.disableLogInfo) {
 									this.log('Device: %s %s %s, set new Input successful: %s %s', this.host, accessoryName, this.zoneName, inputName[i], inputReference[i]);
 								}
-							}
-						} catch (error) {
-							this.log.error('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, error);
-						};
+							} catch (error) {
+								this.log.error('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, error);
+							};
+						}
 					});
 				accessory.addService(this.inputsButtonService);
 			}
