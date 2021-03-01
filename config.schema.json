@@ -143,7 +143,6 @@
                   "type": {
                     "title": "Type",
                     "type": "string",
-                    "default": "HDMI",
                     "description": "Here select type.",
                     "oneOf": [
                       {
@@ -213,12 +212,11 @@
                         ]
                       }
                     ],
-                    "required": true
+                    "required": false
                   },
                   "mode": {
                     "title": "Mode",
                     "type": "string",
-                    "default": "SI",
                     "description": "Here select mode. Do not select *Surround mode* if You added Zone 2 or 3.",
                     "oneOf": [
                       {
@@ -278,17 +276,16 @@
                   "name": {
                     "title": "Name",
                     "type": "string",
-                    "required": false
+                    "required": true
                   },
                   "reference": {
                     "title": "Reference",
                     "type": "string",
-                    "required": false
+                    "required": true
                   },
                   "type": {
                     "title": "Input type",
                     "type": "string",
-                    "default": "OTHER",
                     "description": "Here select type.",
                     "oneOf": [
                       {
@@ -363,7 +360,6 @@
                   "mode": {
                     "title": "Mode",
                     "type": "string",
-                    "default": "MS",
                     "description": "Here select mode. Do not select *Surround mode* if You added Zone 2 or 3.",
                     "oneOf": [
                       {

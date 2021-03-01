@@ -73,8 +73,8 @@ class denonTvDevice {
 		this.volumeControl = config.volumeControl;
 		this.switchInfoMenu = config.switchInfoMenu;
 		this.disableLogInfo = config.disableLogInfo;
-		this.inputs = config.inputs;
-		this.inputsButton = config.inputsButton;
+		this.inputs = config.inputs || [];
+		this.inputsButton = config.inputsButton || [];
 
 		//get Device info
 		this.manufacturer = config.manufacturer || 'Denon/Marantz';
@@ -108,17 +108,6 @@ class denonTvDevice {
 		this.customInputsFile = this.prefDir + '/' + 'customInputs_' + this.host.split('.').join('');
 		this.devInfoFile = this.prefDir + '/' + 'devInfo_' + this.host.split('.').join('');
 		this.url = ('http://' + this.host + ':' + this.port);
-
-		if (!Array.isArray(this.inputs) || this.inputs === undefined || this.inputs === null) {
-			this.inputs = [
-				{
-					'name': 'No inputs configured',
-					'reference': 'No references configured',
-					'type': 'HDMI',
-					'mode': 'SI'
-				}
-			];
-		}
 
 		//check if prefs directory ends with a /, if not then add it
 		if (this.prefDir.endsWith('/') === false) {
@@ -676,119 +665,123 @@ class denonTvDevice {
 		}
 
 		//Prepare inputs services
-		this.log.debug('prepareInputsService');
-		let devInputs = {};
-		try {
-			devInputs = JSON.parse(fs.readFileSync(this.devInfoFile));
-		} catch (error) {
-			this.log.debug('Device: %s %s, devInfoFile file does not exist', this.host, accessoryName)
-		}
-		let zone = [0, 1, 2, 0][this.zoneControl];
-		//let inputs = devInputs.Device_Info.DeviceZoneCapabilities[zone].ShortcutControl[0].EntryList[0].Shortcut; //Schortcuts
-		//let inputs = devInputs.Device_Info.DeviceZoneCapabilities[zone].InputSource[0].List[0].Source; //sources list
+		if (this.inputs.length > 0) {
+			this.log.debug('prepareInputsService');
+			let devInputs = {};
+			try {
+				devInputs = JSON.parse(fs.readFileSync(this.devInfoFile));
+			} catch (error) {
+				this.log.debug('Device: %s %s, devInfoFile file does not exist', this.host, accessoryName)
+			}
+			let zone = [0, 1, 2, 0][this.zoneControl];
+			//let inputs = devInputs.Device_Info.DeviceZoneCapabilities[zone].ShortcutControl[0].EntryList[0].Shortcut; //Schortcuts
+			//let inputs = devInputs.Device_Info.DeviceZoneCapabilities[zone].InputSource[0].List[0].Source; //sources list
 
-		let savedNames = {};
-		try {
-			savedNames = JSON.parse(fs.readFileSync(this.customInputsFile));
-		} catch (error) {
-			this.log.debug('Device: %s %s, customInputs file does not exist', this.host, accessoryName)
-		}
-
-		const inputs = this.inputs;
-		let inputsLength = inputs.length;
-		if (inputsLength > 94) {
-			inputsLength = 94
-		}
-
-		for (let i = 0; i < inputsLength; i++) {
-
-			//get input reference
-			const inputReference = inputs[i].reference;
-
-			//get input name		
-			let inputName = inputs[i].name;
-			if (savedNames && savedNames[inputReference]) {
-				inputName = savedNames[inputReference];
-			} else {
-				inputName = inputs[i].name;
+			let savedNames = {};
+			try {
+				savedNames = JSON.parse(fs.readFileSync(this.customInputsFile));
+			} catch (error) {
+				this.log.debug('Device: %s %s, customInputs file does not exist', this.host, accessoryName)
 			}
 
-			//get input type
-			const inputType = inputs[i].type;
+			const inputs = this.inputs;
+			let inputsLength = inputs.length;
+			if (inputsLength > 94) {
+				inputsLength = 94
+			}
 
-			//get input mode
-			const inputMode = inputs[i].mode;
+			for (let i = 0; i < inputsLength; i++) {
 
-			this.inputsService = new Service.InputSource(inputReference, 'input' + i);
-			this.inputsService
-				.setCharacteristic(Characteristic.Identifier, i)
-				.setCharacteristic(Characteristic.ConfiguredName, inputName)
-				.setCharacteristic(Characteristic.IsConfigured, Characteristic.IsConfigured.CONFIGURED)
-				.setCharacteristic(Characteristic.InputSourceType, inputType)
-				.setCharacteristic(Characteristic.CurrentVisibilityState, Characteristic.CurrentVisibilityState.SHOWN)
-				.setCharacteristic(Characteristic.TargetVisibilityState, Characteristic.TargetVisibilityState.SHOWN);
+				//get input reference
+				const inputReference = inputs[i].reference;
 
-			this.inputsService
-				.getCharacteristic(Characteristic.ConfiguredName)
-				.onSet(async (name) => {
-					try {
-						savedNames[inputReference] = name;
-						await fsPromises.writeFile(this.customInputsFile, JSON.stringify(savedNames, null, 2));
-						if (!this.disableLogInfo) {
-							this.log('Device: %s %s, saved new Input successful, name: %s reference: %s', this.host, accessoryName, name, inputReference);
+				//get input name		
+				let inputName = inputs[i].name;
+				if (savedNames && savedNames[inputReference]) {
+					inputName = savedNames[inputReference];
+				} else {
+					inputName = inputs[i].name;
+				}
+
+				//get input type
+				const inputType = inputs[i].type;
+
+				//get input mode
+				const inputMode = inputs[i].mode;
+
+				this.inputsService = new Service.InputSource(inputReference, 'input' + i);
+				this.inputsService
+					.setCharacteristic(Characteristic.Identifier, i)
+					.setCharacteristic(Characteristic.ConfiguredName, inputName)
+					.setCharacteristic(Characteristic.IsConfigured, Characteristic.IsConfigured.CONFIGURED)
+					.setCharacteristic(Characteristic.InputSourceType, inputType)
+					.setCharacteristic(Characteristic.CurrentVisibilityState, Characteristic.CurrentVisibilityState.SHOWN)
+					.setCharacteristic(Characteristic.TargetVisibilityState, Characteristic.TargetVisibilityState.SHOWN);
+
+				this.inputsService
+					.getCharacteristic(Characteristic.ConfiguredName)
+					.onSet(async (name) => {
+						try {
+							savedNames[inputReference] = name;
+							await fsPromises.writeFile(this.customInputsFile, JSON.stringify(savedNames, null, 2));
+							if (!this.disableLogInfo) {
+								this.log('Device: %s %s, saved new Input successful, name: %s reference: %s', this.host, accessoryName, name, inputReference);
+							}
+						} catch (error) {
+							this.log.error('Device: %s %s, can not write new Input name, error: %s', this.host, accessoryName, error);
 						}
-					} catch (error) {
-						this.log.error('Device: %s %s, can not write new Input name, error: %s', this.host, accessoryName, error);
-					}
-				});
+					});
 
-			this.inputReferences.push(inputReference);
-			this.inputNames.push(inputName);
-			this.inputTypes.push(inputType);
-			this.inputModes.push(inputMode);
+				this.inputReferences.push(inputReference);
+				this.inputNames.push(inputName);
+				this.inputTypes.push(inputType);
+				this.inputModes.push(inputMode);
 
-			accessory.addService(this.inputsService);
-			this.televisionService.addLinkedService(this.inputsService);
+				accessory.addService(this.inputsService);
+				this.televisionService.addLinkedService(this.inputsService);
+			}
 		};
 
 		//Prepare inputs button services
-		this.log.debug('prepareInputsButtonService');
-		for (let i = 0; i < this.inputsButton.length; i++) {
-			this.inputsButtonService = new Service.Switch(this.zoneName + ' ' + this.inputsButton[i].name, 'inputsButtonService' + i);
-			this.inputsButtonService.getCharacteristic(Characteristic.On)
-				.onGet(async () => {
-					const state = false;
-					if (!this.disableLogInfo) {
-						this.log('Device: %s %s %s, get current state successful: %s', this.host, accessoryName, this.zoneName, state);
-					}
-					return state;
-				})
-				.onSet(async (state) => {
-					try {
-						if (state) {
-							const inputName = this.inputsButton[i].name;
-							const inputReference = this.inputsButton[i].reference;
-							const inputMode = this.inputsButton[i].mode;
-							const zone = [inputMode, 'Z2', 'Z3', inputMode][this.zoneControl];
-							const response = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + zone + inputReference[i]);
-							if (this.zoneControl === 3) {
-								if (this.zones >= 2) {
-									const response1 = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + 'Z2' + inputReference[i]);
-								}
-								if (this.zones >= 3) {
-									const response1 = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + 'Z3' + inputReference[i]);
-								}
-							}
-							this.inputsButtonService.setCharacteristic(Characteristic.On, !state);
-							if (!this.disableLogInfo) {
-								this.log('Device: %s %s %s, set new Input successful: %s %s', this.host, accessoryName, this.zoneName, inputName[i], inputReference[i]);
-							}
+		if (this.inputsButton.length > 0) {
+			this.log.debug('prepareInputsButtonService');
+			for (let i = 0; i < this.inputsButton.length; i++) {
+				this.inputsButtonService = new Service.Switch(accessoryName + ' ' + this.inputsButton[i].name, 'inputsButtonService' + i);
+				this.inputsButtonService.getCharacteristic(Characteristic.On)
+					.onGet(async () => {
+						const state = false;
+						if (!this.disableLogInfo) {
+							this.log('Device: %s %s %s, get current state successful: %s', this.host, accessoryName, this.zoneName, state);
 						}
-					} catch (error) {
-						this.log.error('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, error);
-					};
-				});
-			accessory.addService(this.inputsButtonService);
+						return state;
+					})
+					.onSet(async (state) => {
+						try {
+							if (state) {
+								const inputName = this.inputsButton[i].name;
+								const inputReference = this.inputsButton[i].reference;
+								const inputMode = this.inputsButton[i].mode;
+								const zone = [inputMode, 'Z2', 'Z3', inputMode][this.zoneControl];
+								const response = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + zone + inputReference[i]);
+								if (this.zoneControl === 3) {
+									if (this.zones >= 2) {
+										const response1 = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + 'Z2' + inputReference[i]);
+									}
+									if (this.zones >= 3) {
+										const response1 = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + 'Z3' + inputReference[i]);
+									}
+								}
+								this.inputsButtonService.setCharacteristic(Characteristic.On, !state);
+								if (!this.disableLogInfo) {
+									this.log('Device: %s %s %s, set new Input successful: %s %s', this.host, accessoryName, this.zoneName, inputName[i], inputReference[i]);
+								}
+							}
+						} catch (error) {
+							this.log.error('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, error);
+						};
+					});
+				accessory.addService(this.inputsButtonService);
+			}
 		}
 
 		this.startPrepareAccessory = false;
