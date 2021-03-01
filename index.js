@@ -756,7 +756,7 @@ class denonTvDevice {
 						return state;
 					})
 					.onSet(async (state) => {
-						if (state) {
+						if (state && this.currentPowerState) {
 							try {
 								const inputName = this.inputsButton[i].name;
 								const inputReference = this.inputsButton[i].reference;
@@ -771,16 +771,23 @@ class denonTvDevice {
 										const response1 = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + 'Z3' + inputReference[i]);
 									}
 								}
-								this.inputsButtonService.setCharacteristic(Characteristic.On, !state);
+								setTimeout(() => {
+									this.inputsButtonService.getCharacteristic(Characteristic.On).updateValue(false);
+								}, 350);
 								if (!this.disableLogInfo) {
 									this.log('Device: %s %s %s, set new Input successful: %s %s', this.host, accessoryName, this.zoneName, inputName[i], inputReference[i]);
 								}
 							} catch (error) {
 								this.log.error('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, error);
 							};
+						} else {
+							setTimeout(() => {
+								this.inputsButtonService.getCharacteristic(Characteristic.On).updateValue(false);
+							}, 350);
 						}
 					});
 				accessory.addService(this.inputsButtonService);
+				this.televisionService.addLinkedService(this.inputsButtonService);
 			}
 		}
 
