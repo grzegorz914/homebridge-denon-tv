@@ -125,29 +125,26 @@
               "description": "This disable log info, all values and state will not be displayed in Homebridge log console."
             },
             "inputs": {
-              "title": "Inputs",
-              "buttonText": "Add input",
+              "title": "Inputs and functions",
               "type": "array",
               "items": {
                 "type": "object",
                 "properties": {
                   "name": {
-                    "title": "Input name",
+                    "title": "Name",
                     "type": "string",
-                    "default": "DVD",
                     "required": true
                   },
                   "reference": {
-                    "title": "Input reference",
+                    "title": "Reference",
                     "type": "string",
-                    "default": "DVD",
                     "required": true
                   },
                   "type": {
-                    "title": "Input type",
+                    "title": "Type",
                     "type": "string",
                     "default": "HDMI",
-                    "description": "Here select source input type.",
+                    "description": "Here select type.",
                     "oneOf": [
                       {
                         "title": "Other",
@@ -219,10 +216,155 @@
                     "required": true
                   },
                   "mode": {
-                    "title": "Input mode",
+                    "title": "Mode",
                     "type": "string",
                     "default": "SI",
-                    "description": "Here select source input mode. Do not select *Surround mode* if You added Zone 2 or 3.",
+                    "description": "Here select mode. Do not select *Surround mode* if You added Zone 2 or 3.",
+                    "oneOf": [
+                      {
+                        "title": "Source input",
+                        "enum": [
+                          "SI"
+                        ]
+                      },
+                      {
+                        "title": "Digital input",
+                        "enum": [
+                          "DC"
+                        ]
+                      },
+                      {
+                        "title": "Audio input mode",
+                        "enum": [
+                          "SD"
+                        ]
+                      },
+                      {
+                        "title": "Video select mode",
+                        "enum": [
+                          "SV"
+                        ]
+                      },
+                      {
+                        "title": "Favorite station",
+                        "enum": [
+                          "ZM"
+                        ]
+                      },
+                      {
+                        "title": "Surround mode and quick select",
+                        "enum": [
+                          "MS"
+                        ]
+                      },
+                      {
+                        "title": "Surround mode all zones",
+                        "enum": [
+                          "MN"
+                        ]
+                      }
+                    ],
+                    "required": true
+                  }
+                }
+              }
+            },
+            "inputsButton": {
+              "title": "Inputs and functions button",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "title": "Name",
+                    "type": "string",
+                    "required": false
+                  },
+                  "reference": {
+                    "title": "Reference",
+                    "type": "string",
+                    "required": false
+                  },
+                  "type": {
+                    "title": "Input type",
+                    "type": "string",
+                    "default": "OTHER",
+                    "description": "Here select type.",
+                    "oneOf": [
+                      {
+                        "title": "Other",
+                        "enum": [
+                          "OTHER"
+                        ]
+                      },
+                      {
+                        "title": "Home screen",
+                        "enum": [
+                          "HOME_SCREEN"
+                        ]
+                      },
+                      {
+                        "title": "Tuner",
+                        "enum": [
+                          "TUNER"
+                        ]
+                      },
+                      {
+                        "title": "HDMI",
+                        "enum": [
+                          "HDMI"
+                        ]
+                      },
+                      {
+                        "title": "Composite video",
+                        "enum": [
+                          "COMPOSITE_VIDEO"
+                        ]
+                      },
+                      {
+                        "title": "S Video",
+                        "enum": [
+                          "S_VIDEO"
+                        ]
+                      },
+                      {
+                        "title": "Component video",
+                        "enum": [
+                          "COMPONENT_VIDEO"
+                        ]
+                      },
+                      {
+                        "title": "Digital video input",
+                        "enum": [
+                          "DVI"
+                        ]
+                      },
+                      {
+                        "title": "Airplay",
+                        "enum": [
+                          "AIRPLAY"
+                        ]
+                      },
+                      {
+                        "title": "USB",
+                        "enum": [
+                          "USB"
+                        ]
+                      },
+                      {
+                        "title": "Application",
+                        "enum": [
+                          "APPLICATION"
+                        ]
+                      }
+                    ],
+                    "required": false
+                  },
+                  "mode": {
+                    "title": "Mode",
+                    "type": "string",
+                    "default": "MS",
+                    "description": "Here select mode. Do not select *Surround mode* if You added Zone 2 or 3.",
                     "oneOf": [
                       {
                         "title": "Source input",
@@ -332,7 +474,7 @@
         {
           "key": "devices[]",
           "type": "section",
-          "title": "Inputs",
+          "title": "Inputs and functions",
           "expandable": true,
           "expanded": false,
           "items": [
@@ -340,12 +482,33 @@
               "key": "devices[].inputs",
               "type": "array",
               "orderable": false,
-              "buttonText": "Add input/mode",
+              "buttonText": "Add input/function",
               "items": [
                 "devices[].inputs[].name",
                 "devices[].inputs[].reference",
                 "devices[].inputs[].type",
                 "devices[].inputs[].mode"
+              ]
+            }
+          ]
+        },
+        {
+          "key": "devices[]",
+          "type": "section",
+          "title": "Inputs and functions button",
+          "expandable": true,
+          "expanded": false,
+          "items": [
+            {
+              "key": "devices[].inputsButton",
+              "type": "array",
+              "orderable": false,
+              "buttonText": "Add input/function",
+              "items": [
+                "devices[].inputsButton[].name",
+                "devices[].inputsButton[].reference",
+                "devices[].inputsButton[].type",
+                "devices[].inputsButton[].mode"
               ]
             }
           ]

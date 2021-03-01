@@ -57,22 +57,24 @@ Tested with AVR-X6300H.
 ## Configuration
 1. If port `8080` not working check with port `80`, different receivers uses different ports, You need to check which one is correct for you.
 2. Use [Homebridge Config UI X](https://github.com/oznu/homebridge-config-ui-x) to configure the plugin (strongly recomended), or update your configuration file manually. See `sample-config.json` in this repository for a sample or add the bottom example to Your config.json file.
-3. Different model of AV Receiver uses different `Inputs`, `SI` reference:
+3. In `inputs` configure Ypur inputs and functions (this will be displayed as TV Services list inside main accessory).
+4. In `inputsButton` configure Ypur inputs and functions (this will be displayed as separate tile inside main accessory or direct in HomeKit main screen).
+5. Different model of AV Receiver uses different `Inputs`, `SI` reference:
 `PHONO, CD, TUNER, DVD, BD, TV, SAT/CBL, MPLAY, GAME, HDRADIO, NET, PANDORA, SIRIUSXM, SPOTIFY, LASTFM, FLICKR, IRADIO, SERVER, FAVORITES, AUX1, AUX2, AUX3, AUX4, AUX5, AUX6, AUX7, BT, USB/IPOD, USB, IPD, IRP, FVP, HDP, VCR, DVR, SAT, XM`
-4. Different model of AV Receiver uses different `Digital Inputs`, `DC` reference:
+6. Different model of AV Receiver uses different `Digital Inputs`, `DC` reference:
 `AUTO` - set DIGITAL INPUT AUTO mode, `PCM` - set DIGITAL INPUT force PCM, `DTS` - set DIGITAL INPUT force DTS.
-5. Different model of AV Receiver uses different `Surrounds Modes`, `MS` reference:
+7. Different model of AV Receiver uses different `Surrounds Modes`, `MS` reference:
 `DIRECT, PURE DIRECT, STEREO, STANDARD, DOLBY DIGITAL, DTS SUROUND, 7CH STEREO, MCH STEREO, ROCK ARENA, JAZZ CLUB, MONO MOVIE, MATRIX, GAME, VIRTUAL, AURO3D, AURO2DSURR, WIDE SCREEN, SUPER STADIUM, CLASSIC CONCERT, LEFT, RIGHT, AUX3, AUX4, AUX5, AUX6, AUX7, BT, USB/IPOD, USB, QUICK1, QUICK2, QUICK3, QUICK4, QUICK1 MEMORY, QUICK2 MEMORY, QUICK3 MEMORY, QUICK4 MEMORY`
-6. Different model of AV Receiver uses different `Surrounds Modes`, `MN` to controll all zones stereo reference:
+8. Different model of AV Receiver uses different `Surrounds Modes`, `MN` to controll all zones stereo reference:
 `ZST ON, ZST OFF`
-7. In `refreshInterval` set the data refresh time in seconds, default 5sec.
-8. In `zoneControl` You can select which zone U want to control.
-9. If `masterPower` is `true` the power switch for that zone (typically you would only use this for the Main Zone) will turn the entire receiver `ON` or `OFF/STANDBY` rather than just the zone itself.
-10. In `volumeControl` You can select what a additional volume control mode You want to use (None, Slider, Fan).
-11. If `switchInfoMenu` is enabled, `I` button toggle its behaviour in RC app and `PowerModeSelection` in settings.
-12. If `disableLogInfo` is enabled, disable log info, all values and state will not be displayed in Homebridge log console.
-13. All possible commands can be found in [Denon Control Protocol 2020](http://assets.denon.com/_layouts/15/xlviewer.aspx?id=/DocumentMaster/us/DENON_FY20%20AVR_PROTOCOL_V03_03042020.xlsx)
-14. `manufacturer`, `modelName`, `serialNumber`, `firmwareRevision` - optional branding data displayed in Home.app
+9. In `refreshInterval` set the data refresh time in seconds, default 5sec.
+10. In `zoneControl` You can select which zone U want to control.
+11. If `masterPower` is `true` the power switch for that zone (typically you would only use this for the Main Zone) will turn the entire receiver `ON` or `OFF/STANDBY` rather than just the zone itself.
+12. In `volumeControl` You can select what a additional volume control mode You want to use (None, Slider, Fan).
+13. If `switchInfoMenu` is enabled, `I` button toggle its behaviour in RC app and `PowerModeSelection` in settings.
+14. If `disableLogInfo` is enabled, disable log info, all values and state will not be displayed in Homebridge log console.
+15. All possible commands can be found in [Denon Control Protocol 2020](http://assets.denon.com/_layouts/15/xlviewer.aspx?id=/DocumentMaster/us/DENON_FY20%20AVR_PROTOCOL_V03_03042020.xlsx)
+16. `manufacturer`, `modelName`, `serialNumber`, `firmwareRevision` - optional branding data displayed in Home.app
 
 <p align="left">
   <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/ustawienia.png" height="150"></a>
@@ -123,6 +125,38 @@ Tested with AVR-X6300H.
                             "reference": "MCH STEREO",
                             "type": "OTHER",
                             "mode": "MS"
+                        },
+                        {
+                            "name": "Digital Input AUTO",
+                            "reference": "AUTO",
+                            "type": "OTHER",
+                            "mode": "DC"
+                        }
+                    ],
+                    "inputsButton": [
+                        {
+                            "name": "Sat Receiver",
+                            "reference": "SAT/CBL",
+                            "type": "HDMI",
+                            "mode": "SI"
+                        },
+                        {
+                            "name": "Tuner",
+                            "reference": "TUNER",
+                            "type": "TUNER",
+                            "mode": "SI"
+                        },
+                        {
+                            "name": "Multi Channel Stereo",
+                            "reference": "MCH STEREO",
+                            "type": "OTHER",
+                            "mode": "MS"
+                        },
+                        {
+                            "name": "All zones stereo ON",
+                            "reference": "ZST ON",
+                            "type": "OTHER",
+                            "mode": "MN"
                         },
                         {
                             "name": "Digital Input AUTO",
@@ -207,7 +241,39 @@ Tested with AVR-X6300H.
                     "type": "OTHER",
                     "mode": "MN"
                 },
-            ]
+            ],
+            "inputsButton": [
+                        {
+                            "name": "Sat Receiver",
+                            "reference": "SAT/CBL",
+                            "type": "HDMI",
+                            "mode": "SI"
+                        },
+                        {
+                            "name": "Tuner",
+                            "reference": "TUNER",
+                            "type": "TUNER",
+                            "mode": "SI"
+                        },
+                        {
+                            "name": "Multi Channel Stereo",
+                            "reference": "MCH STEREO",
+                            "type": "OTHER",
+                            "mode": "MS"
+                        },
+                        {
+                            "name": "All zones stereo ON",
+                            "reference": "ZST ON",
+                            "type": "OTHER",
+                            "mode": "MN"
+                        },
+                        {
+                            "name": "Digital Input AUTO",
+                            "reference": "AUTO",
+                            "type": "OTHER",
+                            "mode": "DC"
+                        }
+                    ],
         },
         {
             "name": "AV Zone 1",
@@ -244,7 +310,39 @@ Tested with AVR-X6300H.
                     "type": "OTHER",
                     "mode": "DC"
                 }
-            ]
+            ],
+            "inputsButton": [
+                        {
+                            "name": "Sat Receiver",
+                            "reference": "SAT/CBL",
+                            "type": "HDMI",
+                            "mode": "SI"
+                        },
+                        {
+                            "name": "Tuner",
+                            "reference": "TUNER",
+                            "type": "TUNER",
+                            "mode": "SI"
+                        },
+                        {
+                            "name": "Multi Channel Stereo",
+                            "reference": "MCH STEREO",
+                            "type": "OTHER",
+                            "mode": "MS"
+                        },
+                        {
+                            "name": "All zones stereo ON",
+                            "reference": "ZST ON",
+                            "type": "OTHER",
+                            "mode": "MN"
+                        },
+                        {
+                            "name": "Digital Input AUTO",
+                            "reference": "AUTO",
+                            "type": "OTHER",
+                            "mode": "DC"
+                        }
+                    ],
         },
         {
             "name": "AV Zone 2",
@@ -279,7 +377,39 @@ Tested with AVR-X6300H.
                     "type": "OTHER",
                     "mode": "DC"
                 }
-            ]
+            ],
+            "inputsButton": [
+                        {
+                            "name": "Sat Receiver",
+                            "reference": "SAT/CBL",
+                            "type": "HDMI",
+                            "mode": "SI"
+                        },
+                        {
+                            "name": "Tuner",
+                            "reference": "TUNER",
+                            "type": "TUNER",
+                            "mode": "SI"
+                        },
+                        {
+                            "name": "Multi Channel Stereo",
+                            "reference": "MCH STEREO",
+                            "type": "OTHER",
+                            "mode": "MS"
+                        },
+                        {
+                            "name": "All zones stereo ON",
+                            "reference": "ZST ON",
+                            "type": "OTHER",
+                            "mode": "MN"
+                        },
+                        {
+                            "name": "Digital Input AUTO",
+                            "reference": "AUTO",
+                            "type": "OTHER",
+                            "mode": "DC"
+                        }
+                    ],
         }
     ]
 }

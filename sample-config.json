@@ -144,6 +144,38 @@
                             "mode": "DC"
                         }
                     ],
+                    "inputsButton": [
+                        {
+                            "name": "Sat Receiver",
+                            "reference": "SAT/CBL",
+                            "type": "HDMI",
+                            "mode": "SI"
+                        },
+                        {
+                            "name": "Tuner",
+                            "reference": "TUNER",
+                            "type": "TUNER",
+                            "mode": "SI"
+                        },
+                        {
+                            "name": "Multi Channel Stereo",
+                            "reference": "MCH STEREO",
+                            "type": "OTHER",
+                            "mode": "MS"
+                        },
+                        {
+                            "name": "All zones stereo ON",
+                            "reference": "ZST ON",
+                            "type": "OTHER",
+                            "mode": "MN"
+                        },
+                        {
+                            "name": "Digital Input AUTO",
+                            "reference": "AUTO",
+                            "type": "OTHER",
+                            "mode": "DC"
+                        }
+                    ],
                     "manufacturer": "Manufacturer",
                     "modelName": "Model",
                     "serialNumber": "Serial Number",

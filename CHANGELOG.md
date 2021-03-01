@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [3.6.0] - (18.02.2021)
 ## Changes
+- added possibility to create separate buttons for all functions of Receiver
+
+## [3.6.0] - (18.02.2021)
+## Changes
 - code rebuild, use Characteristic.onSet/onGet
 - require Homebridge 1.3.x or above
 

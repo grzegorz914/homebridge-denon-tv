@@ -74,6 +74,7 @@ class denonTvDevice {
 		this.switchInfoMenu = config.switchInfoMenu;
 		this.disableLogInfo = config.disableLogInfo;
 		this.inputs = config.inputs;
+		this.inputsButton = config.inputsButton;
 
 		//get Device info
 		this.manufacturer = config.manufacturer || 'Denon/Marantz';
@@ -154,35 +155,28 @@ class denonTvDevice {
 		this.log.debug('Device: %s %s, requesting Device information.', this.host, this.name);
 		try {
 			const response = await axios.get(this.url + '/goform/Deviceinfo.xml');
-			const result = await parseStringPromise(response.data);
-
-			const devInfo = JSON.stringify(result.Device_Info, null, 2);
-			const writeDevInfoFile = await fsPromises.writeFile(this.devInfoFile, devInfo);
-			this.log.debug('Device: %s %s, saved Device Info successful.', this.host, this.name);
 
 			let manufacturer = this.manufacturer;
-			if (typeof result.Device_Info.BrandCode[0] !== undefined) {
-				manufacturer = ['Denon', 'Marantz'][result.Device_Info.BrandCode[0]];
-			};
 			let modelName = this.modelName;
-			if (typeof result.Device_Info.ModelName[0] !== undefined) {
-				modelName = result.Device_Info.ModelName[0];
-			};
 			let serialNumber = this.serialNumber;
-			if (typeof result.Device_Info.MacAddress[0] !== undefined) {
-				serialNumber = result.Device_Info.MacAddress[0];
-			};
 			let firmwareRevision = this.firmwareRevision;
-			if (typeof result.Device_Info.UpgradeVersion[0] !== undefined) {
-				firmwareRevision = result.Device_Info.UpgradeVersion[0];
-			};
 			let zones = 'Undefined'
-			if (typeof result.Device_Info.DeviceZones[0] !== undefined) {
-				zones = result.Device_Info.DeviceZones[0];
-			};
 			let apiVersion = 'Undefined';
-			if (typeof result.Device_Info.CommApiVers[0] !== undefined) {
+
+			try {
+				const result = await parseStringPromise(response.data);
+				const devInfo = JSON.stringify(result.Device_Info, null, 2);
+				const writeDevInfoFile = await fsPromises.writeFile(this.devInfoFile, devInfo);
+				this.log.debug('Device: %s %s, saved Device Info successful.', this.host, this.name);
+
+				manufacturer = ['Denon', 'Marantz'][result.Device_Info.BrandCode[0]];
+				modelName = result.Device_Info.ModelName[0];
+				serialNumber = result.Device_Info.MacAddress[0];
+				firmwareRevision = result.Device_Info.UpgradeVersion[0];
+				zones = result.Device_Info.DeviceZones[0];
 				apiVersion = result.Device_Info.CommApiVers[0];
+			} catch (error) {
+				this.log.error('Device: %s %s, parse Deviceinfo.xml failed: %s,', this.host, this.name, error);
 			};
 
 			if (!this.disableLogInfo) {
@@ -285,14 +279,11 @@ class denonTvDevice {
 
 		//Prepare information service
 		this.log.debug('prepareInformationService');
-		let devInfo = {};
+		let devInfo = { 'BrandCode': ['2'], 'ModelName': ['Model name'], 'MacAddress': ['Serial number'], 'UpgradeVersion': ['Firmware'] };
 		try {
 			devInfo = JSON.parse(fs.readFileSync(this.devInfoFile));
 		} catch (error) {
 			this.log.debug('Device: %s %s, read devInfo failed, error: %s', this.host, accessoryName, error)
-		}
-		if (devInfo === undefined) {
-			devInfo = { 'BrandCode': ['2'], 'ModelName': ['Model name'], 'MacAddress': ['Serial number'], 'UpgradeVersion': ['Firmware'] };
 		}
 
 		const manufacturer = ['Denon', 'Marantz', 'Manufacturer'][devInfo.BrandCode[0]];
@@ -759,6 +750,46 @@ class denonTvDevice {
 			accessory.addService(this.inputsService);
 			this.televisionService.addLinkedService(this.inputsService);
 		};
+
+		//Prepare inputs button services
+		this.log.debug('prepareInputsButtonService');
+		for (let i = 0; i < this.inputsButton.length; i++) {
+			this.inputsButtonService = new Service.Switch(this.zoneName + ' ' + this.inputsButton[i].name, 'inputsButtonService' + i);
+			this.inputsButtonService.getCharacteristic(Characteristic.On)
+				.onGet(async () => {
+					const state = false;
+					if (!this.disableLogInfo) {
+						this.log('Device: %s %s %s, get current state successful: %s', this.host, accessoryName, this.zoneName, state);
+					}
+					return state;
+				})
+				.onSet(async (state) => {
+					try {
+						if (state) {
+							const inputName = this.inputsButton[i].name;
+							const inputReference = this.inputsButton[i].reference;
+							const inputMode = this.inputsButton[i].mode;
+							const zone = [inputMode, 'Z2', 'Z3', inputMode][this.zoneControl];
+							const response = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + zone + inputReference[i]);
+							if (this.zoneControl === 3) {
+								if (this.zones >= 2) {
+									const response1 = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + 'Z2' + inputReference[i]);
+								}
+								if (this.zones >= 3) {
+									const response1 = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + 'Z3' + inputReference[i]);
+								}
+							}
+							this.inputsButtonService.setCharacteristic(Characteristic.On, !state);
+							if (!this.disableLogInfo) {
+								this.log('Device: %s %s %s, set new Input successful: %s %s', this.host, accessoryName, this.zoneName, inputName[i], inputReference[i]);
+							}
+						}
+					} catch (error) {
+						this.log.error('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, error);
+					};
+				});
+			accessory.addService(this.inputsButtonService);
+		}
 
 		this.startPrepareAccessory = false;
 		this.log.debug('Device: %s %s, publishExternalAccessories.', this.host, accessoryName);
