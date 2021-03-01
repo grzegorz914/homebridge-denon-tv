@@ -68,9 +68,9 @@ class denonTvDevice {
 		this.host = config.host;
 		this.port = config.port;
 		this.refreshInterval = config.refreshInterval || 5;
-		this.zoneControl = config.zoneControl;
+		this.zoneControl = config.zoneControl || 0;
 		this.masterPower = config.masterPower;
-		this.volumeControl = config.volumeControl;
+		this.volumeControl = config.volumeControl || 0;
 		this.switchInfoMenu = config.switchInfoMenu;
 		this.disableLogInfo = config.disableLogInfo;
 		this.inputs = config.inputs || [];
