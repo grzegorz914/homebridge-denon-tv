@@ -41,9 +41,9 @@ Tested with AVR-X6300H.
 2. RC/Media control is possible after you go to the RC app on iPhone/iPad.
 3. Speaker control is possible after you go to RC app on iPhone/iPad `Speaker Service`.
 4. Legacy volume and mute control is possible throught extra `lightbulb` (slider) or using Siri `Volume Service`.
-5. Inputs can be changed after loong press tile in HomeKit app and select from the list.
-6. Surround Modes control from the inputs list.
-7. Digital Input Modes control from the inputs list.
+5. Inputs can be changed after loong press tile in HomeKit app and select from the list or create separate tile in the Inputs and functions button.
+6. Surround Modes control from the inputs list or create separate tile in the Inputs and functions button.
+7. Digital Input Modes control from the inputs list or create separate tile in the Inputs and functions button.
 8. Siri control.
 9. Zones control.
 
@@ -57,8 +57,8 @@ Tested with AVR-X6300H.
 ## Configuration
 1. If port `8080` not working check with port `80`, different receivers uses different ports, You need to check which one is correct for you.
 2. Use [Homebridge Config UI X](https://github.com/oznu/homebridge-config-ui-x) to configure the plugin (strongly recomended), or update your configuration file manually. See `sample-config.json` in this repository for a sample or add the bottom example to Your config.json file.
-3. In `inputs` configure Ypur inputs and functions (this will be displayed as TV Services list inside main accessory).
-4. In `inputsButton` configure Your inputs and functions (this will be displayed as separate tile inside main accessory or direct in HomeKit main screen).
+3. In `inputs` configure inputs and functions (this will be displayed as TV Services list inside main accessory).
+4. In `inputsButton` configure inputs and functions (this will be displayed as separate tile inside main accessory or direct in HomeKit main screen).
 5. Different model of AV Receiver uses different `Inputs`, `SI` reference:
 `PHONO, CD, TUNER, DVD, BD, TV, SAT/CBL, MPLAY, GAME, HDRADIO, NET, PANDORA, SIRIUSXM, SPOTIFY, LASTFM, FLICKR, IRADIO, SERVER, FAVORITES, AUX1, AUX2, AUX3, AUX4, AUX5, AUX6, AUX7, BT, USB/IPOD, USB, IPD, IRP, FVP, HDP, VCR, DVR, SAT, XM`
 6. Different model of AV Receiver uses different `Digital Inputs`, `DC` reference:
