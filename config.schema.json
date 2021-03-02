@@ -142,7 +142,7 @@
                   "type": {
                     "title": "Type",
                     "type": "string",
-                    "description": "Here select type.",
+                    "description": "Here select function type.",
                     "oneOf": [
                       {
                         "title": "Other",
@@ -151,7 +151,7 @@
                         ]
                       },
                       {
-                        "title": "Home screen",
+                        "title": "Home Screen",
                         "enum": [
                           "HOME_SCREEN"
                         ]
@@ -169,7 +169,7 @@
                         ]
                       },
                       {
-                        "title": "Composite video",
+                        "title": "Composite Video",
                         "enum": [
                           "COMPOSITE_VIDEO"
                         ]
@@ -181,13 +181,13 @@
                         ]
                       },
                       {
-                        "title": "Component video",
+                        "title": "Component Video",
                         "enum": [
                           "COMPONENT_VIDEO"
                         ]
                       },
                       {
-                        "title": "Digital video input",
+                        "title": "Digital Video Input",
                         "enum": [
                           "DVI"
                         ]
@@ -216,48 +216,54 @@
                   "mode": {
                     "title": "Mode",
                     "type": "string",
-                    "description": "Here select mode. Do not select *Surround mode* if You added Zone 2 or 3.",
+                    "description": "Here select function mode.",
                     "oneOf": [
                       {
-                        "title": "Source input",
+                        "title": "Source Input",
                         "enum": [
                           "SI"
                         ]
                       },
                       {
-                        "title": "Digital input",
+                        "title": "Digital Input",
                         "enum": [
                           "DC"
                         ]
                       },
                       {
-                        "title": "Audio input mode",
+                        "title": "Audio Input Mode",
                         "enum": [
                           "SD"
                         ]
                       },
                       {
-                        "title": "Video select mode",
+                        "title": "Video Select Mode",
                         "enum": [
                           "SV"
                         ]
                       },
                       {
-                        "title": "Favorite station",
+                        "title": "Favorite Station",
                         "enum": [
                           "ZM"
                         ]
                       },
                       {
-                        "title": "Surround mode and quick select",
+                        "title": "Quick Select",
                         "enum": [
                           "MS"
                         ]
                       },
                       {
-                        "title": "Surround mode all zones",
+                        "title": "All Zone Stereo",
                         "enum": [
                           "MN"
+                        ]
+                      },
+                      {
+                        "title": "Surround Mode (Only Main Zone)",
+                        "enum": [
+                          "MS"
                         ]
                       }
                     ],
@@ -267,7 +273,7 @@
               }
             },
             "inputsButton": {
-              "title": "Inputs and functions button",
+              "title": "Inputs and Functions (Buttons)",
               "type": "array",
               "items": {
                 "type": "object",
@@ -285,7 +291,7 @@
                   "type": {
                     "title": "Input type",
                     "type": "string",
-                    "description": "Here select type.",
+                    "description": "Here select function type.",
                     "oneOf": [
                       {
                         "title": "Other",
@@ -294,7 +300,7 @@
                         ]
                       },
                       {
-                        "title": "Home screen",
+                        "title": "Home Screen",
                         "enum": [
                           "HOME_SCREEN"
                         ]
@@ -312,7 +318,7 @@
                         ]
                       },
                       {
-                        "title": "Composite video",
+                        "title": "Composite Video",
                         "enum": [
                           "COMPOSITE_VIDEO"
                         ]
@@ -324,13 +330,13 @@
                         ]
                       },
                       {
-                        "title": "Component video",
+                        "title": "Component Video",
                         "enum": [
                           "COMPONENT_VIDEO"
                         ]
                       },
                       {
-                        "title": "Digital video input",
+                        "title": "Digital Video Input",
                         "enum": [
                           "DVI"
                         ]
@@ -359,48 +365,198 @@
                   "mode": {
                     "title": "Mode",
                     "type": "string",
-                    "description": "Here select mode. Do not select *Surround mode* if You added Zone 2 or 3.",
+                    "description": "Here select function mode.",
                     "oneOf": [
                       {
-                        "title": "Source input",
+                        "title": "Master Power",
                         "enum": [
-                          "SI"
+                          "PW"
                         ]
                       },
                       {
-                        "title": "Digital input",
-                        "enum": [
-                          "DC"
-                        ]
-                      },
-                      {
-                        "title": "Audio input mode",
-                        "enum": [
-                          "SD"
-                        ]
-                      },
-                      {
-                        "title": "Video select mode",
-                        "enum": [
-                          "SV"
-                        ]
-                      },
-                      {
-                        "title": "Favorite station",
+                        "title": "Power",
                         "enum": [
                           "ZM"
                         ]
                       },
                       {
-                        "title": "Surround mode and quick select",
+                        "title": "Volume",
+                        "enum": [
+                          "MV"
+                        ]
+                      },
+                      {
+                        "title": "Mute",
+                        "enum": [
+                          "MU"
+                        ]
+                      },
+                      {
+                        "title": "Channel Volume",
+                        "enum": [
+                          "CV"
+                        ]
+                      },
+                      {
+                        "title": "Source Input",
+                        "enum": [
+                          "SI"
+                        ]
+                      },
+                      {
+                        "title": "Quick Select",
                         "enum": [
                           "MS"
                         ]
                       },
                       {
-                        "title": "Surround mode all zones",
+                        "title": "Auto Standby",
+                        "enum": [
+                          "STBY"
+                        ]
+                      },
+                      {
+                        "title": "Sleep Mode",
+                        "enum": [
+                          "SLP"
+                        ]
+                      },
+                      {
+                        "title": "Digital Input (Only Main Zone)",
+                        "enum": [
+                          "DC"
+                        ]
+                      },
+                      {
+                        "title": "Favorite Station (Only Main Zone)",
+                        "enum": [
+                          "ZM"
+                        ]
+                      },
+                      {
+                        "title": "Audio Input Mode (Only Main Zone)",
+                        "enum": [
+                          "SD"
+                        ]
+                      },
+                      {
+                        "title": "Video Select Mode (Only Main Zone)",
+                        "enum": [
+                          "SV"
+                        ]
+                      },
+                      {
+                        "title": "Eco Mode (Only Main Zone)",
+                        "enum": [
+                          "ECO"
+                        ]
+                      },
+                      {
+                        "title": "Surround Mode (Only Main Zone)",
+                        "enum": [
+                          "MS"
+                        ]
+                      },
+                      {
+                        "title": "ALL Zone Stereo (Only Main Zone)",
                         "enum": [
                           "MN"
+                        ]
+                      },
+                      {
+                        "title": "Video Settings (Only Main Zone)",
+                        "enum": [
+                          "VS"
+                        ]
+                      },
+                      {
+                        "title": "Speaker Tone and Settings (PS)",
+                        "enum": [
+                          "PS"
+                        ]
+                      },
+                      {
+                        "title": "Picture Mode and Settings (Only Main Zone)",
+                        "enum": [
+                          "PV"
+                        ]
+                      },
+                      {
+                        "title": "RC Control (Only Main Zone)",
+                        "enum": [
+                          "NN"
+                        ]
+                      },
+                      {
+                        "title": "Control Lock and System Reset (Only Main Zone)",
+                        "enum": [
+                          "SY"
+                        ]
+                      },
+                      {
+                        "title": "Network Restart (Only Main Zone)",
+                        "enum": [
+                          "NS"
+                        ]
+                      },
+                      {
+                        "title": "Relay Trigger (Only Main Zone)",
+                        "enum": [
+                          "TR"
+                        ]
+                      },
+                      {
+                        "title": "Upgrade ID (Only Main Zone)",
+                        "enum": [
+                          "UG"
+                        ]
+                      },
+                      {
+                        "title": "Dimmer (Only Main Zone)",
+                        "enum": [
+                          "DIM"
+                        ]
+                      },
+                      {
+                        "title": "Tuner Control (FM/AM/DAB, Only Main Zone)",
+                        "enum": [
+                          "TF"
+                        ]
+                      },
+                      {
+                        "title": "Tuner Control (Preset, Only Main Zone)",
+                        "enum": [
+                          "TP"
+                        ]
+                      },
+                      {
+                        "title": "Tuner Control (Band, Only Main Zone)",
+                        "enum": [
+                          "TM"
+                        ]
+                      },
+                      {
+                        "title": "Tuner Control (DAB, Only Main Zone)",
+                        "enum": [
+                          "DA"
+                        ]
+                      },
+                      {
+                        "title": "HDMI Audio (Only Z2)",
+                        "enum": [
+                          "HDA"
+                        ]
+                      },
+                      {
+                        "title": "High Pass Filter (Only Z2 and Z3)",
+                        "enum": [
+                          "HPF"
+                        ]
+                      },
+                      {
+                        "title": "Stereo and Mono (Only Z2 and Z3)",
+                        "enum": [
+                          "CS"
                         ]
                       }
                     ],

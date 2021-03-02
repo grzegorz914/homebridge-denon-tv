@@ -758,24 +758,24 @@ class denonTvDevice {
 					.onSet(async (state) => {
 						if (state && this.currentPowerState) {
 							try {
-								const inputName = this.inputsButton[i].name;
-								const inputReference = this.inputsButton[i].reference;
-								const inputMode = this.inputsButton[i].mode;
+								const inputButtonName = this.inputsButton[i].name;
+								const inputButtonReference = this.inputsButton[i].reference;
+								const inputButtonMode = this.inputsButton[i].mode;
 								const zone = [inputMode, 'Z2', 'Z3', inputMode][this.zoneControl];
-								const response = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + zone + inputReference);
+								const response = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + zone + inputButtonReference);
 								if (this.zoneControl === 3) {
 									if (this.zones >= 2) {
-										const response1 = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + 'Z2' + inputReference);
+										const response1 = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + 'Z2' + inputButtonReference);
 									}
 									if (this.zones >= 3) {
-										const response1 = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + 'Z3' + inputReference);
+										const response1 = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + 'Z3' + inputButtonReference);
 									}
 								}
 								setTimeout(() => {
 									this.inputsButtonService.getCharacteristic(Characteristic.On).updateValue(false);
 								}, 350);
 								if (!this.disableLogInfo) {
-									this.log('Device: %s %s %s, set new Input successful: %s %s', this.host, accessoryName, this.zoneName, inputName, inputReference);
+									this.log('Device: %s %s %s, set new Input successful: %s %s', this.host, accessoryName, this.zoneName, inputName, inputButtonReference);
 								}
 							} catch (error) {
 								this.log.error('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, error);
