@@ -87,7 +87,7 @@ class denonTvDevice {
 
 		//zones
 		this.zoneName = ZONE_NAME[this.zoneControl];
-		this.shortZoneName = ZSHORT_ONE_NAME[this.zoneControl];
+		this.shortZoneName = SHORT_ZONE_NAME[this.zoneControl];
 		this.zoneNumber = ZONE_NUMBER[this.zoneControl];
 
 		//setup variables
