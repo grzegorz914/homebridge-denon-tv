@@ -761,7 +761,7 @@ class denonTvDevice {
 								const inputButtonName = this.inputsButton[i].name;
 								const inputButtonReference = this.inputsButton[i].reference;
 								const inputButtonMode = this.inputsButton[i].mode;
-								const zone = [inputMode, 'Z2', 'Z3', inputMode][this.zoneControl];
+								const zone = [inputButtonMode, 'Z2', 'Z3', inputButtonMode][this.zoneControl];
 								const response = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + zone + inputButtonReference);
 								if (this.zoneControl === 3) {
 									if (this.zones >= 2) {
@@ -775,7 +775,7 @@ class denonTvDevice {
 									this.inputsButtonService.getCharacteristic(Characteristic.On).updateValue(false);
 								}, 350);
 								if (!this.disableLogInfo) {
-									this.log('Device: %s %s %s, set new Input successful: %s %s', this.host, accessoryName, this.zoneName, inputName, inputButtonReference);
+									this.log('Device: %s %s %s, set new Input successful: %s %s', this.host, accessoryName, this.zoneName, inputButtonName, inputButtonReference);
 								}
 							} catch (error) {
 								this.log.error('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, error);
