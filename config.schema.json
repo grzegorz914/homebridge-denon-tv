@@ -249,19 +249,13 @@
                         ]
                       },
                       {
-                        "title": "Quick Select",
-                        "enum": [
-                          "MS"
-                        ]
-                      },
-                      {
                         "title": "All Zone Stereo",
                         "enum": [
                           "MN"
                         ]
                       },
                       {
-                        "title": "Surround Mode (Only Main Zone)",
+                        "title": "Surround Mode and Quick Select (Only Main Zone)",
                         "enum": [
                           "MS"
                         ]
