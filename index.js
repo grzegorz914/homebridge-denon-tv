@@ -9,6 +9,7 @@ const parseStringPromise = require('xml2js').parseStringPromise;
 const PLUGIN_NAME = 'homebridge-denon-tv';
 const PLATFORM_NAME = 'DenonTv';
 const ZONE_NAME = ['Main Zone', 'Zone 2', 'Zone 3', 'All Zones'];
+const SHORT_ZONE_NAME = ['MZ', 'Z2', 'Z3', 'AZ'];
 const ZONE_NUMBER = ['MainZone_MainZone', 'Zone2_Zone2', 'Zone3_Zone3', 'MainZone_MainZone'];
 
 let Accessory, Characteristic, Service, Categories, UUID;
@@ -86,6 +87,7 @@ class denonTvDevice {
 
 		//zones
 		this.zoneName = ZONE_NAME[this.zoneControl];
+		this.shortZoneName = ZSHORT_ONE_NAME[this.zoneControl];
 		this.zoneNumber = ZONE_NUMBER[this.zoneControl];
 
 		//setup variables
@@ -746,7 +748,7 @@ class denonTvDevice {
 		if (this.inputsButton.length > 0) {
 			this.log.debug('prepareInputsButtonService');
 			for (let i = 0; i < this.inputsButton.length; i++) {
-				this.inputsButtonService = new Service.Switch(accessoryName + ' ' + this.inputsButton[i].name, 'inputsButtonService' + i);
+				this.inputsButtonService = new Service.Switch(this.shortZoneName + ' ' + this.inputsButton[i].name, 'inputsButtonService' + i);
 				this.inputsButtonService.getCharacteristic(Characteristic.On)
 					.onGet(async () => {
 						const state = false;
