@@ -374,7 +374,7 @@
                         ]
                       },
                       {
-                        "title": "Power",
+                        "title": "Power and Favorite Stations",
                         "enum": [
                           "ZM"
                         ]
@@ -404,12 +404,6 @@
                         ]
                       },
                       {
-                        "title": "Quick Select",
-                        "enum": [
-                          "MS"
-                        ]
-                      },
-                      {
                         "title": "Auto Standby",
                         "enum": [
                           "STBY"
@@ -425,12 +419,6 @@
                         "title": "Digital Input (Only Main Zone)",
                         "enum": [
                           "DC"
-                        ]
-                      },
-                      {
-                        "title": "Favorite Station (Only Main Zone)",
-                        "enum": [
-                          "ZM"
                         ]
                       },
                       {
@@ -452,15 +440,9 @@
                         ]
                       },
                       {
-                        "title": "Surround Mode (Only Main Zone)",
+                        "title": "Surround Mode and Quick Select (Only Main Zone)",
                         "enum": [
                           "MS"
-                        ]
-                      },
-                      {
-                        "title": "ALL Zone Stereo (Only Main Zone)",
-                        "enum": [
-                          "MN"
                         ]
                       },
                       {
@@ -482,9 +464,9 @@
                         ]
                       },
                       {
-                        "title": "RC Control (Only Main Zone)",
+                        "title": "RC Control and All Zone Stereo (Only Main Zone)",
                         "enum": [
-                          "NN"
+                          "MN"
                         ]
                       },
                       {
