@@ -14,7 +14,7 @@
           "type": "object",
           "properties": {
             "name": {
-              "title": "Device name",
+              "title": "Device Name",
               "type": "string",
               "default": "AV Receiver",
               "required": true
@@ -34,7 +34,7 @@
               "required": true
             },
             "refreshInterval": {
-              "title": "Refresh interval (sec)",
+              "title": "Refresh Interval (sec)",
               "type": "integer",
               "default": 5,
               "minimum": 0,
@@ -42,7 +42,7 @@
               "required": true
             },
             "zoneControl": {
-              "title": "Zone control",
+              "title": "Zone Control",
               "type": "integer",
               "maximum": 3,
               "description": "Here select which Zone You want control. Do not enable *All zones* if You added Zone 2 or 3 and want separate control it at the same time.",
@@ -75,7 +75,7 @@
               "required": true
             },
             "volumeControl": {
-              "title": "Volume control mode",
+              "title": "Volume Control Mode",
               "type": "integer",
               "minimum": 0,
               "maximum": 2,
@@ -103,7 +103,7 @@
               "required": false
             },
             "masterPower": {
-              "title": "Master Power control",
+              "title": "Master Power Control",
               "type": "boolean",
               "default": false,
               "required": false,
@@ -124,7 +124,7 @@
               "description": "This disable log info, all values and state will not be displayed in Homebridge log console."
             },
             "inputs": {
-              "title": "Inputs and functions",
+              "title": "Inputs and Functions",
               "type": "array",
               "items": {
                 "type": "object",
@@ -283,7 +283,7 @@
                     "required": true
                   },
                   "type": {
-                    "title": "Input type",
+                    "title": "Type",
                     "type": "string",
                     "description": "Here select function type.",
                     "oneOf": [
@@ -488,7 +488,7 @@
                         ]
                       },
                       {
-                        "title": "Dimmer (Only Main Zone)",
+                        "title": "Display Dimmer (Only Main Zone)",
                         "enum": [
                           "DIM"
                         ]
@@ -601,7 +601,7 @@
         {
           "key": "devices[]",
           "type": "section",
-          "title": "Inputs and functions",
+          "title": "Inputs and Functions",
           "expandable": true,
           "expanded": false,
           "items": [
@@ -622,7 +622,7 @@
         {
           "key": "devices[]",
           "type": "section",
-          "title": "Inputs and functions button",
+          "title": "Inputs and Functions (Buttons)",
           "expandable": true,
           "expanded": false,
           "items": [
