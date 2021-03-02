@@ -38,7 +38,7 @@ class denonTvPlatform {
 		this.api.on('didFinishLaunching', () => {
 			this.log.debug('didFinishLaunching');
 			for (let i = 0; i < this.devices.length; i++) {
-				let deviceName = this.devices[i];
+				const deviceName = this.devices[i];
 				if (!deviceName.name) {
 					this.log.warn('Device Name Missing')
 				} else {
@@ -146,57 +146,38 @@ class denonTvDevice {
 		this.log.debug('Device: %s %s, requesting Device information.', this.host, this.name);
 		try {
 			const response = await axios.get(this.url + '/goform/Deviceinfo.xml');
-
-			let manufacturer = this.manufacturer;
-			let modelName = this.modelName;
-			let serialNumber = this.serialNumber;
-			let firmwareRevision = this.firmwareRevision;
-			let zones = 'Undefined'
-			let apiVersion = 'Undefined';
-
-			try {
-				const result = await parseStringPromise(response.data);
-				const devInfo = JSON.stringify(result.Device_Info, null, 2);
-				const writeDevInfoFile = await fsPromises.writeFile(this.devInfoFile, devInfo);
-				this.log.debug('Device: %s %s, saved Device Info successful.', this.host, this.name);
-
-				manufacturer = ['Denon', 'Marantz'][result.Device_Info.BrandCode[0]];
-				modelName = result.Device_Info.ModelName[0];
-				serialNumber = result.Device_Info.MacAddress[0];
-				firmwareRevision = result.Device_Info.UpgradeVersion[0];
-				zones = result.Device_Info.DeviceZones[0];
-				apiVersion = result.Device_Info.CommApiVers[0];
-			} catch (error) {
-				this.log.error('Device: %s %s, parse Deviceinfo.xml failed: %s,', this.host, this.name, error);
-			};
-
+			const result = await parseStringPromise(response.data);
+			const devInfo = JSON.stringify(result.Device_Info, null, 2);
+			const writeDevInfoFile = await fsPromises.writeFile(this.devInfoFile, devInfo);
+			this.log.debug('Device: %s %s, saved Device Info successful.', this.host, this.name);
 			if (!this.disableLogInfo) {
 				this.log('Device: %s %s %s, state: Online.', this.host, this.name, this.zoneName);
 			}
-			if (this.zoneControl == 0 || this.zoneControl == 3) {
-				this.log('-------- %s --------', this.name);
-				this.log('Manufacturer: %s', manufacturer);
-				this.log('Model: %s', modelName);
+
+			const manufacturer = ['Denon', 'Marantz'][result.Device_Info.BrandCode[0]] || this.manufacturer;
+			const modelName = result.Device_Info.ModelName[0] || this.modelName;
+			const serialNumber = result.Device_Info.MacAddress[0] || this.serialNumber;
+			const firmwareRevision = result.Device_Info.UpgradeVersion[0] || this.firmwareRevision;
+			const zones = result.Device_Info.DeviceZones[0] || 'Undefined';
+			const apiVersion = result.Device_Info.CommApiVers[0] || 'Undefined';
+
+
+			this.log('-------- %s --------', this.name);
+			this.log('Manufacturer: %s', manufacturer);
+			this.log('Model: %s', modelName);
+			if (this.zoneControl === 0 || this.zoneControl === 3) {
 				this.log('Zones: %s', zones);
+				this.log('Firmware: %s', firmwareRevision);
 				this.log('Api version: %s', apiVersion);
 				this.log('Serialnr: %s', serialNumber);
-				this.log('Firmware: %s', firmwareRevision);
-				this.log('----------------------------------');
 			}
 			if (this.zoneControl == 1) {
-				this.log('-------- %s --------', this.name);
-				this.log('Manufacturer: %s', manufacturer);
-				this.log('Model: %s', modelName);
 				this.log('Zone: 2');
-				this.log('----------------------------------');
 			}
 			if (this.zoneControl == 2) {
-				this.log('-------- %s --------', this.name);
-				this.log('Manufacturer: %s', manufacturer);
-				this.log('Model: %s', modelName);
 				this.log('Zone: 3');
-				this.log('----------------------------------');
 			}
+			this.log('----------------------------------');
 
 			this.checkDeviceInfo = false;
 			this.updateDeviceState();
@@ -300,7 +281,7 @@ class denonTvDevice {
 
 		this.televisionService.getCharacteristic(Characteristic.Active)
 			.onGet(async () => {
-				let state = this.currentPowerState ? 1 : 0;
+				const state = this.currentPowerState ? 1 : 0;
 				if (!this.disableLogInfo) {
 					this.log('Device: %s %s, get current Power state successfull, state: %s', this.host, accessoryName, state ? 'ON' : 'OFF');
 				}
@@ -669,16 +650,6 @@ class denonTvDevice {
 		//Prepare inputs services
 		if (this.inputs.length > 0) {
 			this.log.debug('prepareInputsService');
-			let devInputs = {};
-			try {
-				devInputs = JSON.parse(fs.readFileSync(this.devInfoFile));
-			} catch (error) {
-				this.log.debug('Device: %s %s, devInfoFile file does not exist', this.host, accessoryName)
-			}
-			let zone = [0, 1, 2, 0][this.zoneControl];
-			//let inputs = devInputs.Device_Info.DeviceZoneCapabilities[zone].ShortcutControl[0].EntryList[0].Shortcut; //Schortcuts
-			//let inputs = devInputs.Device_Info.DeviceZoneCapabilities[zone].InputSource[0].List[0].Source; //sources list
-
 			let savedNames = {};
 			try {
 				savedNames = JSON.parse(fs.readFileSync(this.customInputsFile));

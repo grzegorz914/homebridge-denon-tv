@@ -77,7 +77,6 @@
             "volumeControl": {
               "title": "Volume Control Mode",
               "type": "integer",
-              "minimum": 0,
               "maximum": 2,
               "description": "Here select what a volume control mode You want to use. If select *None* only hardware buttons in RC app can be used to control volume.",
               "oneOf": [
@@ -100,7 +99,7 @@
                   ]
                 }
               ],
-              "required": false
+              "required": true
             },
             "masterPower": {
               "title": "Master Power Control",
@@ -142,7 +141,7 @@
                   "type": {
                     "title": "Type",
                     "type": "string",
-                    "description": "Here select function type.",
+                    "description": "Here select input/function type.",
                     "oneOf": [
                       {
                         "title": "Other",
@@ -211,12 +210,12 @@
                         ]
                       }
                     ],
-                    "required": false
+                    "required": true
                   },
                   "mode": {
                     "title": "Mode",
                     "type": "string",
-                    "description": "Here select function mode.",
+                    "description": "Here select input/function mode.",
                     "oneOf": [
                       {
                         "title": "Source Input",
@@ -285,7 +284,7 @@
                   "type": {
                     "title": "Type",
                     "type": "string",
-                    "description": "Here select function type.",
+                    "description": "Here select input/function type.",
                     "oneOf": [
                       {
                         "title": "Other",
@@ -354,12 +353,12 @@
                         ]
                       }
                     ],
-                    "required": false
+                    "required": true
                   },
                   "mode": {
                     "title": "Mode",
                     "type": "string",
-                    "description": "Here select function mode.",
+                    "description": "Here select input/function mode.",
                     "oneOf": [
                       {
                         "title": "Master Power",
@@ -591,9 +590,9 @@
           "expanded": false,
           "items": [
             "devices[].disableLogInfo",
-            "devices[].refreshInterval",
             "devices[].switchInfoMenu",
             "devices[].masterPower",
+            "devices[].refreshInterval",
             "devices[].zoneControl",
             "devices[].volumeControl"
           ]
