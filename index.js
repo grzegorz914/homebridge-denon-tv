@@ -212,12 +212,12 @@ class denonTvDevice {
 			this.currentInputIdentifier = inputIdentifier;
 			this.currentInputName = inputName;
 
-			const mute = powerState ? (result.item.Mute[0].value[0] === 'on') : true;
 			const volume = parseInt(result.item.MasterVolume[0].value[0]) + 80;
+			const mute = powerState ? (result.item.Mute[0].value[0] === 'on') : true;
 			if (this.speakerService) {
 				this.speakerService
-					.updateCharacteristic(Characteristic.Mute, mute)
-					.updateCharacteristic(Characteristic.Volume, volume);
+					.updateCharacteristic(Characteristic.Volume, volume)
+					.updateCharacteristic(Characteristic.Mute, mute);
 				if (this.volumeService && this.volumeControl === 1) {
 					this.volumeService
 						.updateCharacteristic(Characteristic.Brightness, volume)
