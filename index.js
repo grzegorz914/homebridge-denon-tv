@@ -146,43 +146,47 @@ class denonTvDevice {
 		this.log.debug('Device: %s %s, requesting Device information.', this.host, this.name);
 		try {
 			const response = await axios.get(this.url + '/goform/Deviceinfo.xml');
-			const result = await parseStringPromise(response.data);
-			const devInfo = JSON.stringify(result.Device_Info, null, 2);
-			const writeDevInfoFile = await fsPromises.writeFile(this.devInfoFile, devInfo);
-			this.log.debug('Device: %s %s, saved Device Info successful.', this.host, this.name);
-			if (!this.disableLogInfo) {
-				this.log('Device: %s %s %s, state: Online.', this.host, this.name, this.zoneName);
-			}
+			try {
+				const result = await parseStringPromise(response.data);
+				const devInfo = JSON.stringify(result.Device_Info, null, 2);
+				const writeDevInfoFile = await fsPromises.writeFile(this.devInfoFile, devInfo);
+				this.log.debug('Device: %s %s, saved Device Info successful.', this.host, this.name);
+				if (!this.disableLogInfo) {
+					this.log('Device: %s %s %s, state: Online.', this.host, this.name, this.zoneName);
+				}
 
-			const manufacturer = ['Denon', 'Marantz'][result.Device_Info.BrandCode[0]] || this.manufacturer;
-			const modelName = result.Device_Info.ModelName[0] || this.modelName;
-			const serialNumber = result.Device_Info.MacAddress[0] || this.serialNumber;
-			const firmwareRevision = result.Device_Info.UpgradeVersion[0] || this.firmwareRevision;
-			const zones = result.Device_Info.DeviceZones[0] || 'Undefined';
-			const apiVersion = result.Device_Info.CommApiVers[0] || 'Undefined';
+				const manufacturer = ['Denon', 'Marantz'][result.Device_Info.BrandCode[0]] || this.manufacturer;
+				const modelName = result.Device_Info.ModelName[0] || this.modelName;
+				const serialNumber = result.Device_Info.MacAddress[0] || this.serialNumber;
+				const firmwareRevision = result.Device_Info.UpgradeVersion[0] || this.firmwareRevision;
+				const zones = result.Device_Info.DeviceZones[0] || 'Undefined';
+				const apiVersion = result.Device_Info.CommApiVers[0] || 'Undefined';
 
 
-			this.log('-------- %s --------', this.name);
-			this.log('Manufacturer: %s', manufacturer);
-			this.log('Model: %s', modelName);
-			if (this.zoneControl === 0 || this.zoneControl === 3) {
-				this.log('Zones: %s', zones);
-				this.log('Firmware: %s', firmwareRevision);
-				this.log('Api version: %s', apiVersion);
-				this.log('Serialnr: %s', serialNumber);
-			}
-			if (this.zoneControl == 1) {
-				this.log('Zone: 2');
-			}
-			if (this.zoneControl == 2) {
-				this.log('Zone: 3');
-			}
-			this.log('----------------------------------');
-
+				this.log('-------- %s --------', this.name);
+				this.log('Manufacturer: %s', manufacturer);
+				this.log('Model: %s', modelName);
+				if (this.zoneControl === 0 || this.zoneControl === 3) {
+					this.log('Zones: %s', zones);
+					this.log('Firmware: %s', firmwareRevision);
+					this.log('Api version: %s', apiVersion);
+					this.log('Serialnr: %s', serialNumber);
+				}
+				if (this.zoneControl == 1) {
+					this.log('Zone: 2');
+				}
+				if (this.zoneControl == 2) {
+					this.log('Zone: 3');
+				}
+				this.log('----------------------------------');
+			} catch (error) {
+				this.log.error('Device: %s %s, parse string error: %s', this.host, this.name, error);
+				this.checkDeviceInfo = true;
+			};
 			this.checkDeviceInfo = false;
 			this.updateDeviceState();
 		} catch (error) {
-			this.log.error('Device: %s %s, Device Info eror: %s, state: Offline, trying to reconnect', this.host, this.name, error);
+			this.log.error('Device: %s %s, Device Info error: %s, state: Offline, trying to reconnect', this.host, this.name, error);
 			this.checkDeviceInfo = true;
 		};
 	}
@@ -768,7 +772,6 @@ class denonTvDevice {
 				this.televisionService.addLinkedService(this.inputsButtonService);
 			}
 		}
-
 		this.startPrepareAccessory = false;
 		this.log.debug('Device: %s %s, publishExternalAccessories.', this.host, accessoryName);
 		this.api.publishExternalAccessories(PLUGIN_NAME, [accessory]);
