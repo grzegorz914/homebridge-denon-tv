@@ -91,14 +91,14 @@ class denonTvDevice {
 		this.zoneNumber = ZONE_NUMBER[this.zoneControl];
 
 		//setup variables
+		this.inputsName = new Array();
+		this.inputsReference = new Array();
+		this.inputsType = new Array();
+		this.inputsMode = new Array();
 		this.checkDeviceInfo = true;
 		this.checkDeviceState = false;
 		this.startPrepareAccessory = true;
 		this.currentPowerState = false;
-		this.inputNames = new Array();
-		this.inputReferences = new Array();
-		this.inputTypes = new Array();
-		this.inputModes = new Array();
 		this.currentMuteState = false;
 		this.currentVolume = 0;
 		this.currentInputName = '';
@@ -205,9 +205,9 @@ class denonTvDevice {
 			this.currentPowerState = powerState;
 
 			const inputReference = result.item.InputFuncSelect[0].value[0];
-			const inputIdentifier = (this.inputReferences.indexOf(inputReference) >= 0) ? this.inputReferences.indexOf(inputReference) : 0;
-			const inputName = this.inputNames[inputIdentifier];
-			if (this.televisionService && (inputReference !== this.currentInputReference)) {
+			const inputIdentifier = (this.inputsReference.indexOf(inputReference) > 0) ? this.inputsReference.indexOf(inputReference) : 0;
+			const inputName = this.inputsName[inputIdentifier];
+			if (this.televisionService) {
 				this.televisionService
 					.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
 			}
@@ -315,8 +315,8 @@ class denonTvDevice {
 		this.televisionService.getCharacteristic(Characteristic.ActiveIdentifier)
 			.onGet(async () => {
 				const inputReference = this.currentInputReference;
-				const inputIdentifier = (this.currentInputIdentifier >= 0) ? this.currentInputIdentifier : 0;
-				const inputName = this.inputNames[inputIdentifier];
+				const inputIdentifier = (this.inputsReference.indexOf(inputReference) > 0) ? this.inputsReference.indexOf(inputReference) : 0;
+				const inputName = this.inputsName[inputIdentifier];
 				if (!this.disableLogInfo) {
 					this.log('Device: %s %s %s, get current Input successful: %s %s', this.host, accessoryName, this.zoneName, inputName, inputReference);
 				}
@@ -324,9 +324,9 @@ class denonTvDevice {
 			})
 			.onSet(async (inputIdentifier) => {
 				try {
-					const inputName = this.inputNames[inputIdentifier];
-					const inputReference = this.inputReferences[inputIdentifier];
-					const inputMode = this.inputModes[inputIdentifier];
+					const inputName = this.inputsName[inputIdentifier];
+					const inputReference = this.inputsReference[inputIdentifier];
+					const inputMode = this.inputsMode[inputIdentifier];
 					const zone = [inputMode, 'Z2', 'Z3', inputMode][this.zoneControl];
 					const response = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + zone + inputReference);
 					if (this.zoneControl === 3) {
@@ -659,6 +659,7 @@ class denonTvDevice {
 		//Prepare inputs services
 		if (this.inputs.length > 0) {
 			this.log.debug('prepareInputsService');
+			this.inputsService = new Array();
 			let savedNames = {};
 			try {
 				savedNames = JSON.parse(fs.readFileSync(this.customInputsFile));
@@ -691,8 +692,8 @@ class denonTvDevice {
 				//get input mode
 				const inputMode = inputs[i].mode;
 
-				this.inputsService = new Service.InputSource(inputReference, 'input' + i);
-				this.inputsService
+				const inputService = new Service.InputSource(inputReference, 'input' + i);
+				inputService
 					.setCharacteristic(Characteristic.Identifier, i)
 					.setCharacteristic(Characteristic.ConfiguredName, inputName)
 					.setCharacteristic(Characteristic.IsConfigured, Characteristic.IsConfigured.CONFIGURED)
@@ -700,7 +701,7 @@ class denonTvDevice {
 					.setCharacteristic(Characteristic.CurrentVisibilityState, Characteristic.CurrentVisibilityState.SHOWN)
 					.setCharacteristic(Characteristic.TargetVisibilityState, Characteristic.TargetVisibilityState.SHOWN);
 
-				this.inputsService
+				inputService
 					.getCharacteristic(Characteristic.ConfiguredName)
 					.onSet(async (name) => {
 						try {
@@ -714,22 +715,24 @@ class denonTvDevice {
 						}
 					});
 
-				this.inputReferences.push(inputReference);
-				this.inputNames.push(inputName);
-				this.inputTypes.push(inputType);
-				this.inputModes.push(inputMode);
+				this.inputsReference.push(inputReference);
+				this.inputsName.push(inputName);
+				this.inputsType.push(inputType);
+				this.inputsMode.push(inputMode);
 
-				accessory.addService(this.inputsService);
-				this.televisionService.addLinkedService(this.inputsService);
+				this.inputsService.push(inputService);
+				accessory.addService(this.inputsService[i]);
+				this.televisionService.addLinkedService(this.inputsService[i]);
 			}
 		};
 
 		//Prepare inputs button services
 		if (this.inputsButton.length > 0) {
 			this.log.debug('prepareInputsButtonService');
+			this.buttonsService = new Array();
 			for (let i = 0; i < this.inputsButton.length; i++) {
-				this.inputsButtonService = new Service.Switch(this.shortZoneName + ' ' + this.inputsButton[i].name, 'inputsButtonService' + i);
-				this.inputsButtonService.getCharacteristic(Characteristic.On)
+				const inputButtonService = new Service.Switch(this.shortZoneName + ' ' + this.inputsButton[i].name, 'inputsButtonService' + i);
+				inputButtonService.getCharacteristic(Characteristic.On)
 					.onGet(async () => {
 						const state = false;
 						if (!this.disableLogInfo) {
@@ -754,7 +757,7 @@ class denonTvDevice {
 									}
 								}
 								setTimeout(() => {
-									this.inputsButtonService.getCharacteristic(Characteristic.On).updateValue(false);
+									inputButtonService.getCharacteristic(Characteristic.On).updateValue(false);
 								}, 350);
 								if (!this.disableLogInfo) {
 									this.log('Device: %s %s %s, set new Input successful: %s %s', this.host, accessoryName, this.zoneName, inputButtonName, inputButtonReference);
@@ -764,12 +767,13 @@ class denonTvDevice {
 							};
 						} else {
 							setTimeout(() => {
-								this.inputsButtonService.getCharacteristic(Characteristic.On).updateValue(false);
+								inputButtonService.getCharacteristic(Characteristic.On).updateValue(false);
 							}, 350);
 						}
 					});
-				accessory.addService(this.inputsButtonService);
-				this.televisionService.addLinkedService(this.inputsButtonService);
+				this.buttonsService.push(inputButtonService)
+				accessory.addService(this.buttonsService[i]);
+				this.televisionService.addLinkedService(this.buttonsService[i]);
 			}
 		}
 		this.startPrepareAccessory = false;
