@@ -143,17 +143,15 @@ class denonTvDevice {
 	}
 
 	async getDeviceInfo() {
-		this.log.debug('Device: %s %s, requesting Device information.', this.host, this.name);
+		this.log.debug('Device: %s %s, requesting Device Info.', this.host, this.name);
 		try {
 			const response = await axios.get(this.url + '/goform/Deviceinfo.xml');
+			this.log.debug('Device: %s %s, debug response: %s', this.host, this.name, response.data);
 			try {
 				const result = await parseStringPromise(response.data);
 				const devInfo = JSON.stringify(result.Device_Info, null, 2);
 				const writeDevInfoFile = await fsPromises.writeFile(this.devInfoFile, devInfo);
-				this.log.debug('Device: %s %s, saved Device Info successful.', this.host, this.name);
-				if (!this.disableLogInfo) {
-					this.log('Device: %s %s %s, state: Online.', this.host, this.name, this.zoneName);
-				}
+				this.log.debug('Device: %s %s, saved Device Info successful.', this.host, this.name, devInfo);
 
 				const manufacturer = ['Denon', 'Marantz'][result.Device_Info.BrandCode[0]] || this.manufacturer;
 				const modelName = result.Device_Info.ModelName[0] || this.modelName;
@@ -162,6 +160,9 @@ class denonTvDevice {
 				const zones = result.Device_Info.DeviceZones[0] || 'Undefined';
 				const apiVersion = result.Device_Info.CommApiVers[0] || 'Undefined';
 
+				if (!this.disableLogInfo) {
+					this.log('Device: %s %s %s, state: Online.', this.host, this.name, this.zoneName);
+				}
 
 				this.log('-------- %s --------', this.name);
 				this.log('Manufacturer: %s', manufacturer);
@@ -196,12 +197,12 @@ class denonTvDevice {
 		try {
 			const response = await axios.get(this.url + '/goform/form' + this.zoneNumber + 'XmlStatusLite.xml');
 			const result = await parseStringPromise(response.data);
+			this.log.debug('Device: %s %s, debug response: %s, result: %s', this.host, this.name, response.data, result);
 			const powerState = (result.item.Power[0].value[0] === 'ON');
 			if (this.televisionService && (powerState !== this.currentPowerState)) {
 				this.televisionService
 					.updateCharacteristic(Characteristic.Active, powerState ? 1 : 0);
 			}
-			this.log.debug('Device: %s %s, get current Power state successful: %s', this.host, this.name, powerState ? 'ON' : 'OFF');
 			this.currentPowerState = powerState;
 
 			const inputReference = result.item.InputFuncSelect[0].value[0];
@@ -211,7 +212,6 @@ class denonTvDevice {
 				this.televisionService
 					.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
 			}
-			this.log.debug('Device: %s %s %s, get current Input successful: %s %s', this.host, this.name, this.zoneName, inputName, inputReference);
 			this.currentInputReference = inputReference;
 			this.currentInputIdentifier = inputIdentifier;
 			this.currentInputName = inputName;
@@ -233,8 +233,6 @@ class denonTvDevice {
 						.updateCharacteristic(Characteristic.On, !mute);
 				}
 			}
-			this.log.debug('Device: %s %s %s, get current Mute state: %s', this.host, this.name, this.zoneName, mute ? 'ON' : 'OFF');
-			this.log.debug('Device: %s %s %s, get current Volume level: %s dB ', this.host, this.name, this.zoneName, (volume - 80));
 			this.currentMuteState = mute;
 			this.currentVolume = volume;
 			this.checkDeviceState = true;
@@ -263,8 +261,9 @@ class denonTvDevice {
 		let devInfo = { 'BrandCode': ['2'], 'ModelName': ['Model name'], 'MacAddress': ['Serial number'], 'UpgradeVersion': ['Firmware'] };
 		try {
 			devInfo = JSON.parse(fs.readFileSync(this.devInfoFile));
+			this.log.debug('Device: %s %s, read devInfo: %s', this.host, accessoryName, devInfo)
 		} catch (error) {
-			this.log.debug('Device: %s %s, read devInfo failed, error: %s', this.host, accessoryName, error)
+			this.log.error('Device: %s %s, read devInfo failed, error: %s', this.host, accessoryName, error)
 		}
 
 		const manufacturer = ['Denon', 'Marantz', 'Manufacturer'][devInfo.BrandCode[0]];
@@ -663,8 +662,9 @@ class denonTvDevice {
 			let savedNames = {};
 			try {
 				savedNames = JSON.parse(fs.readFileSync(this.customInputsFile));
+				this.log.debug('Device: %s %s, read devInfo: %s', this.host, accessoryName, savedNames)
 			} catch (error) {
-				this.log.debug('Device: %s %s, customInputs file does not exist', this.host, accessoryName)
+				this.log.error('Device: %s %s, customInputs file does not exist', this.host, accessoryName)
 			}
 
 			const inputs = this.inputs;
@@ -707,6 +707,7 @@ class denonTvDevice {
 						try {
 							savedNames[inputReference] = name;
 							await fsPromises.writeFile(this.customInputsFile, JSON.stringify(savedNames, null, 2));
+							this.log.debug('Device: %s %s, saved new Input successful, savedNames: %s', this.host, accessoryName, JSON.stringify(savedNames, null, 2));
 							if (!this.disableLogInfo) {
 								this.log('Device: %s %s, saved new Input successful, name: %s reference: %s', this.host, accessoryName, name, inputReference);
 							}
