@@ -223,7 +223,7 @@ class denonTvDevice {
 			this.currentInputIdentifier = inputIdentifier;
 			this.currentInputName = inputName;
 
-			const volume = parseInt(result.item.MasterVolume[0].value[0]) + 80;
+			const volume = (parseFloat(result.item.MasterVolume[0].value[0]) >= -79.5) ? parseInt(result.item.MasterVolume[0].value[0]) + 80 : 0;
 			const mute = powerState ? (result.item.Mute[0].value[0] === 'on') : true;
 			if (this.speakerService) {
 				this.speakerService
