@@ -553,7 +553,7 @@ class denonTvDevice {
 					}
 					const response = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + zone + volume);
 					if (!this.disableLogInfo) {
-						this.log('Device: %s %s %s, set new Volume level successful: %s', this.host, accessoryName, this.zoneName, volume);
+						this.log('Device: %s %s %s, set new Volume level successful: %s dB', this.host, accessoryName, this.zoneName, volume - 80);
 					}
 				} catch (error) {
 					this.log.error('Device: %s %s %s, can not set new Volume level. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, error);

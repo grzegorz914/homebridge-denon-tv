@@ -941,25 +941,25 @@
                         ]
                       },
                       {
-                        "title": "INPUT MODE:ANALOG",
+                        "title": "INPUT MODE ANALOG",
                         "enum": [
                           "RCKSK0410353"
                         ]
                       },
                       {
-                        "title": "INPUT MODE:HDMI",
+                        "title": "INPUT MODE HDMI",
                         "enum": [
                           "RCKSK0410357"
                         ]
                       },
                       {
-                        "title": "INPUT MODE:AUTO",
+                        "title": "INPUT MODE AUTO",
                         "enum": [
                           "RCKSK0410358"
                         ]
                       },
                       {
-                        "title": "INPUT MODE:DIGITAL",
+                        "title": "INPUT MODE DIGITAL",
                         "enum": [
                           "RCKSK0410359"
                         ]
@@ -1163,37 +1163,37 @@
                         ]
                       },
                       {
-                        "title": "RESTORER(OFF)",
+                        "title": "RESTORER (OFF)",
                         "enum": [
                           "RCKSK0410556"
                         ]
                       },
                       {
-                        "title": "RESTORER(Mode1)",
+                        "title": "RESTORER (Mode1)",
                         "enum": [
                           "RCKSK0410557"
                         ]
                       },
                       {
-                        "title": "RESTORER(Mode2)",
+                        "title": "RESTORER (Mode2)",
                         "enum": [
                           "RCKSK0410558"
                         ]
                       },
                       {
-                        "title": "RESTORER(Mode3)",
+                        "title": "RESTORER (Mode3)",
                         "enum": [
                           "RCKSK0410559"
                         ]
                       },
                       {
-                        "title": "FRONTSP A ON/OFF",
+                        "title": "FRONT SPEAKER A ON/OFF",
                         "enum": [
                           "RCKSK0410605"
                         ]
                       },
                       {
-                        "title": "FRONTSP B ON/OFF",
+                        "title": "FRONT SPEAKER B ON/OFF",
                         "enum": [
                           "RCKSK0410606"
                         ]
@@ -1211,7 +1211,7 @@
                         ]
                       },
                       {
-                        "title": "AUDIODELAYDOWN",
+                        "title": "AUDIO DELAY DOWN",
                         "enum": [
                           "RCKSK0410622"
                         ]
@@ -1253,13 +1253,13 @@
                         ]
                       },
                       {
-                        "title": "AUDYSSEY DSX ON(Height)",
+                        "title": "AUDYSSEY DSX ON (Height)",
                         "enum": [
                           "RCKSK0410642"
                         ]
                       },
                       {
-                        "title": "AUDYSSEY DSX ON(Wide)",
+                        "title": "AUDYSSEY DSX ON (Wide)",
                         "enum": [
                           "RCKSK0410643"
                         ]
@@ -1295,31 +1295,31 @@
                         ]
                       },
                       {
-                        "title": "FRONT DISPLAY(Dimmer)",
+                        "title": "FRONT DISPLAY (Dimmer)",
                         "enum": [
                           "RCKSK0410656"
                         ]
                       },
                       {
-                        "title": "iPOD PLAY",
+                        "title": "IPOD PLAY",
                         "enum": [
                           "RCKSK0410667"
                         ]
                       },
                       {
-                        "title": "HDMI Monitor SELECT 1",
+                        "title": "HDMI MONITOR SELECT 1",
                         "enum": [
                           "RCKSK0410669"
                         ]
                       },
                       {
-                        "title": "HDMI Monitor SELECT 2",
+                        "title": "HDMI MONITOR SELECT 2",
                         "enum": [
                           "RCKSK0410670"
                         ]
                       },
                       {
-                        "title": "HDMI Monitor SELECT 3",
+                        "title": "HDMI MONITOR SELECT 3",
                         "enum": [
                           "RCKSK0410671"
                         ]
@@ -1337,7 +1337,7 @@
                         ]
                       },
                       {
-                        "title": "CD/PHONO(CD)",
+                        "title": "CD/PHONO",
                         "enum": [
                           "RCKSK0410698"
                         ]
@@ -1373,7 +1373,7 @@
                         ]
                       },
                       {
-                        "title": "SIRIUSXM (NA only)",
+                        "title": "SIRIUS XM (NA only)",
                         "enum": [
                           "RCKSK0410714"
                         ]
@@ -1391,7 +1391,7 @@
                         ]
                       },
                       {
-                        "title": "iPOD/USB",
+                        "title": "IPOD/USB",
                         "enum": [
                           "RCKSK0410718"
                         ]
@@ -1475,7 +1475,7 @@
                         ]
                       },
                       {
-                        "title": "INTERNET RADIO(Recent Play)",
+                        "title": "INTERNET RADIO (Recent Play)",
                         "enum": [
                           "RCKSK0410741"
                         ]
@@ -1493,19 +1493,19 @@
                         ]
                       },
                       {
-                        "title": "DYNAMIC VOLUME(Heavy)",
+                        "title": "DYNAMIC VOLUME (Heavy)",
                         "enum": [
                           "RCKSK0410748"
                         ]
                       },
                       {
-                        "title": "DYNAMIC VOLUME(Medium)",
+                        "title": "DYNAMIC VOLUME (Medium)",
                         "enum": [
                           "RCKSK0410749"
                         ]
                       },
                       {
-                        "title": "DYNAMIC VOLUME(Light)",
+                        "title": "DYNAMIC VOLUME (Light)",
                         "enum": [
                           "RCKSK0410750"
                         ]
@@ -1517,37 +1517,37 @@
                         ]
                       },
                       {
-                        "title": "Monitor SELECT",
+                        "title": "MONITOR SELECT",
                         "enum": [
                           "RCKSK0410753"
                         ]
                       },
                       {
-                        "title": "RESOLUTION(HDMI)",
+                        "title": "RESOLUTION (HDMI)",
                         "enum": [
                           "RCKSK0410754"
                         ]
                       },
                       {
-                        "title": "Reference Level Offset (0dB) for Dynamic EQ",
+                        "title": "REFERENCE LEVEL OFFSET (0dB) FOR DYNAMIC EQ",
                         "enum": [
                           "RCKSK0410760"
                         ]
                       },
                       {
-                        "title": "Reference Level Offset (5dB) for Dynamic EQ",
+                        "title": "REFERENCE LEVEL OFFSET (5dB) FOR DYNAMIC EQ",
                         "enum": [
                           "RCKSK0410761"
                         ]
                       },
                       {
-                        "title": "Reference Level Offset (10dB) for Dynamic EQ",
+                        "title": "REFERENCE LEVEL OFFSET (10dB) FOR DYNAMIC EQ",
                         "enum": [
                           "RCKSK0410762"
                         ]
                       },
                       {
-                        "title": "Reference Level Offset (15dB) for Dynamic EQ",
+                        "title": "REFERENCE LEVEL OFFSET (15dB) FOR DYNAMIC EQ",
                         "enum": [
                           "RCKSK0410763"
                         ]
@@ -1577,31 +1577,31 @@
                         ]
                       },
                       {
-                        "title": "HDMI(CEC)Control ON",
+                        "title": "HDMI(CEC) CONTROL ON",
                         "enum": [
                           "RCKSK0410826"
                         ]
                       },
                       {
-                        "title": "HDMI(CEC)Control OFF",
+                        "title": "HDMI (CEC) CONTROL OFF",
                         "enum": [
                           "RCKSK0410827"
                         ]
                       },
                       {
-                        "title": "HDMI Audio Out SELECT",
+                        "title": "HDMI AUDIO OUT SELECT",
                         "enum": [
                           "RCKSK0410829"
                         ]
                       },
                       {
-                        "title": "HDMI Audio Out TV",
+                        "title": "HDMI AUDIO OUT TV",
                         "enum": [
                           "RCKSK0410830"
                         ]
                       },
                       {
-                        "title": "HDMI Audio Out AMP",
+                        "title": "HDMI AUDIO OUT AMP",
                         "enum": [
                           "RCKSK0410831"
                         ]
@@ -1709,7 +1709,7 @@
                         ]
                       },
                       {
-                        "title": "SKIP MINUS/ TUNING DOWN",
+                        "title": "SKIP MINUS/TUNING DOWN",
                         "enum": [
                           "RCKSK0410995"
                         ]
@@ -2017,7 +2017,7 @@
                         ]
                       },
                       {
-                        "title": "iPOD PLAY",
+                        "title": "IPOD PLAY",
                         "enum": [
                           "RCKSK0430667"
                         ]
@@ -2101,7 +2101,7 @@
                         ]
                       },
                       {
-                        "title": "iPOD/USB",
+                        "title": "IPOD/USB",
                         "enum": [
                           "RCKSK0430718"
                         ]
@@ -2209,7 +2209,7 @@
                         ]
                       },
                       {
-                        "title": "iPOD DOCK",
+                        "title": "IPOD DOCK",
                         "enum": [
                           "RCKSK0430954"
                         ]
@@ -2607,7 +2607,7 @@
                         ]
                       },
                       {
-                        "title": "iPOD PLAY",
+                        "title": "IPOD PLAY",
                         "enum": [
                           "RCKSK0450667"
                         ]
@@ -2691,7 +2691,7 @@
                         ]
                       },
                       {
-                        "title": "iPOD/USB",
+                        "title": "IPOD/USB",
                         "enum": [
                           "RCKSK0450718"
                         ]
@@ -2799,7 +2799,7 @@
                         ]
                       },
                       {
-                        "title": "iPOD DOCK",
+                        "title": "IPOD DOCK",
                         "enum": [
                           "RCKSK0450954"
                         ]
