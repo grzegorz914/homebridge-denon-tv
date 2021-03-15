@@ -45,7 +45,7 @@
               "title": "Zone Control",
               "type": "integer",
               "maximum": 3,
-              "description": "Here select which Zone You want control. Do not enable *All zones* if You added Zone 2 or 3 and want separate control it at the same time.",
+              "description": "Here select which Zone You want control.",
               "oneOf": [
                 {
                   "title": "Main Zone",
@@ -659,6 +659,18 @@
                         ]
                       },
                       {
+                        "title": "INFO",
+                        "enum": [
+                          "RCKSK0410624"
+                        ]
+                      },
+                      {
+                        "title": "SETUP MENU",
+                        "enum": [
+                          "RCKSK0410035"
+                        ]
+                      },
+                      {
                         "title": "PAGE PREVIOUS",
                         "enum": [
                           "RCKSK0410950"
@@ -710,12 +722,6 @@
                         "title": "RANDOM/SHUFFLE",
                         "enum": [
                           "RCKSK0410957"
-                        ]
-                      },
-                      {
-                        "title": "SETUP MENU",
-                        "enum": [
-                          "RCKSK0410035"
                         ]
                       },
                       {
@@ -971,6 +977,12 @@
                         ]
                       },
                       {
+                        "title": "FLD STATUS",
+                        "enum": [
+                          "RCKSK0410640"
+                        ]
+                      },
+                      {
                         "title": "CHANNEL LEVEL",
                         "enum": [
                           "RCKSK0410378"
@@ -1073,6 +1085,60 @@
                         ]
                       },
                       {
+                        "title": "FWL LEVEL DOWN",
+                        "enum": [
+                          "RCKSK0410636"
+                        ]
+                      },
+                      {
+                        "title": "FWR LEVEL UP",
+                        "enum": [
+                          "RCKSK0410637"
+                        ]
+                      },
+                      {
+                        "title": "FWR LEVEL DOWN",
+                        "enum": [
+                          "RCKSK0410638"
+                        ]
+                      },
+                      {
+                        "title": "FWL LEVEL UP",
+                        "enum": [
+                          "RCKSK0410635"
+                        ]
+                      },
+                      {
+                        "title": "FHL LEVEL UP",
+                        "enum": [
+                          "RCKSK0410649"
+                        ]
+                      },
+                      {
+                        "title": "FHL LEVEL DOWN",
+                        "enum": [
+                          "RCKSK0410650"
+                        ]
+                      },
+                      {
+                        "title": "FHR LEVEL UP",
+                        "enum": [
+                          "RCKSK0410651"
+                        ]
+                      },
+                      {
+                        "title": "FHR LEVEL DOWN",
+                        "enum": [
+                          "RCKSK0410652"
+                        ]
+                      },
+                      {
+                        "title": "LOUDNESS ON/OFF",
+                        "enum": [
+                          "RCKSK0410857"
+                        ]
+                      },
+                      {
                         "title": "ALL TREBLE UP",
                         "enum": [
                           "RCKSK0410400"
@@ -1115,15 +1181,27 @@
                         ]
                       },
                       {
-                        "title": "FRONT SPEAKER",
-                        "enum": [
-                          "RCKSK0410518"
-                        ]
-                      },
-                      {
                         "title": "AUDYSSEY DSX SELECT",
                         "enum": [
                           "RCKSK0410529"
+                        ]
+                      },
+                      {
+                        "title": "AUDYSSEY DSX ON (Height)",
+                        "enum": [
+                          "RCKSK0410642"
+                        ]
+                      },
+                      {
+                        "title": "AUDYSSEY DSX ON (Wide)",
+                        "enum": [
+                          "RCKSK0410643"
+                        ]
+                      },
+                      {
+                        "title": "AUDYSSEY DSX OFF",
+                        "enum": [
+                          "RCKSK0410644"
                         ]
                       },
                       {
@@ -1187,6 +1265,12 @@
                         ]
                       },
                       {
+                        "title": "FRONT SPEAKER",
+                        "enum": [
+                          "RCKSK0410518"
+                        ]
+                      },
+                      {
                         "title": "FRONT SPEAKER A ON/OFF",
                         "enum": [
                           "RCKSK0410605"
@@ -1214,84 +1298,6 @@
                         "title": "AUDIO DELAY DOWN",
                         "enum": [
                           "RCKSK0410622"
-                        ]
-                      },
-                      {
-                        "title": "INFO",
-                        "enum": [
-                          "RCKSK0410624"
-                        ]
-                      },
-                      {
-                        "title": "FWL LEVEL UP",
-                        "enum": [
-                          "RCKSK0410635"
-                        ]
-                      },
-                      {
-                        "title": "FWL LEVEL DOWN",
-                        "enum": [
-                          "RCKSK0410636"
-                        ]
-                      },
-                      {
-                        "title": "FWR LEVEL UP",
-                        "enum": [
-                          "RCKSK0410637"
-                        ]
-                      },
-                      {
-                        "title": "FWR LEVEL DOWN",
-                        "enum": [
-                          "RCKSK0410638"
-                        ]
-                      },
-                      {
-                        "title": "FLD STATUS",
-                        "enum": [
-                          "RCKSK0410640"
-                        ]
-                      },
-                      {
-                        "title": "AUDYSSEY DSX ON (Height)",
-                        "enum": [
-                          "RCKSK0410642"
-                        ]
-                      },
-                      {
-                        "title": "AUDYSSEY DSX ON (Wide)",
-                        "enum": [
-                          "RCKSK0410643"
-                        ]
-                      },
-                      {
-                        "title": "AUDYSSEY DSX OFF",
-                        "enum": [
-                          "RCKSK0410644"
-                        ]
-                      },
-                      {
-                        "title": "FHL LEVEL UP",
-                        "enum": [
-                          "RCKSK0410649"
-                        ]
-                      },
-                      {
-                        "title": "FHL LEVEL DOWN",
-                        "enum": [
-                          "RCKSK0410650"
-                        ]
-                      },
-                      {
-                        "title": "FHR LEVEL UP",
-                        "enum": [
-                          "RCKSK0410651"
-                        ]
-                      },
-                      {
-                        "title": "FHR LEVEL DOWN",
-                        "enum": [
-                          "RCKSK0410652"
                         ]
                       },
                       {
@@ -1577,7 +1583,7 @@
                         ]
                       },
                       {
-                        "title": "HDMI(CEC) CONTROL ON",
+                        "title": "HDMI (CEC) CONTROL ON",
                         "enum": [
                           "RCKSK0410826"
                         ]
@@ -1640,12 +1646,6 @@
                         "title": "VIDEO MODE SELECT GAME",
                         "enum": [
                           "RCKSK0410852"
-                        ]
-                      },
-                      {
-                        "title": "LOUDNESS ON/OFF",
-                        "enum": [
-                          "RCKSK0410857"
                         ]
                       },
                       {
