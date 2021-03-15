@@ -26,154 +26,81 @@
                     "zoneControl": 0,
                     "volumeControl": 0,
                     "masterPower": false,
+                    "masterVolume": false,
+                    "masterMute": false,
                     "switchInfoMenu": false,
                     "disableLogInfo": false,
                     "inputs": [
                         {
                             "name": "Xbox One",
                             "reference": "GAME",
-                            "type": "HDMI",
                             "mode": "SI"
                         },
                         {
                             "name": "Television",
                             "reference": "TV",
-                            "type": "HDMI",
                             "mode": "SI"
                         },
                         {
                             "name": "Sat Receiver",
                             "reference": "SAT/CBL",
-                            "type": "HDMI",
                             "mode": "SI"
                         },
                         {
                             "name": "CD",
                             "reference": "CD",
-                            "type": "OTHER",
                             "mode": "SI"
                         },
                         {
                             "name": "DVD",
                             "reference": "DVD",
-                            "type": "HDMI",
                             "mode": "SI"
                         },
                         {
                             "name": "Bluray",
                             "reference": "BD",
-                            "type": "HDMI",
                             "mode": "SI"
                         },
                         {
                             "name": "Tuner",
                             "reference": "TUNER",
-                            "type": "TUNER",
                             "mode": "SI"
                         },
                         {
                             "name": "Spotify",
                             "reference": "SPOTIFY",
-                            "type": "APPLICATION",
                             "mode": "SI"
                         },
                         {
                             "name": "Net",
                             "reference": "NET",
-                            "type": "APPLICATION",
                             "mode": "SI"
                         },
                         {
                             "name": "Media player",
                             "reference": "MPLAY",
-                            "type": "APPLICATION",
                             "mode": "SI"
                         },
                         {
                             "name": "USB IPOD",
                             "reference": "USB/IPOD",
-                            "type": "USB",
                             "mode": "SI"
                         },
                         {
                             "name": "AUX 1",
                             "reference": "AUX1",
-                            "type": "HDMI",
                             "mode": "SI"
                         },
                         {
                             "name": "AUX 2",
                             "reference": "AUX2",
-                            "type": "HDMI",
                             "mode": "SI"
-                        },
-                        {
-                            "name": "Source",
-                            "reference": "SOURCE",
-                            "type": "HDMI",
-                            "mode": "SI"
-                        },
-                        {
-                            "name": "Stereo",
-                            "reference": "STEREO",
-                            "type": "OTHER",
-                            "mode": "MS"
-                        },
-                        {
-                            "name": "Multi Channel Stereo",
-                            "reference": "MCH STEREO",
-                            "type": "OTHER",
-                            "mode": "MS"
-                        },
-                        {
-                            "name": "All zones stereo ON",
-                            "reference": "ZST ON",
-                            "type": "OTHER",
-                            "mode": "MN"
-                        },
-                        {
-                            "name": "All zones stereo OFF",
-                            "reference": "ZST OFF",
-                            "type": "OTHER",
-                            "mode": "MN"
-                        },
-                        {
-                            "name": "Digital Input AUTO",
-                            "reference": "AUTO",
-                            "type": "OTHER",
-                            "mode": "DC"
                         }
                     ],
-                    "inputsButton": [
+                    "buttonsMainZone": [
                         {
-                            "name": "Sat Receiver",
-                            "reference": "SAT/CBL",
-                            "type": "HDMI",
-                            "mode": "SI"
-                        },
-                        {
-                            "name": "Tuner",
-                            "reference": "TUNER",
-                            "type": "TUNER",
-                            "mode": "SI"
-                        },
-                        {
-                            "name": "Multi Channel Stereo",
-                            "reference": "MCH STEREO",
-                            "type": "OTHER",
-                            "mode": "MS"
-                        },
-                        {
-                            "name": "All zones stereo ON",
-                            "reference": "ZST ON",
-                            "type": "OTHER",
-                            "mode": "MN"
-                        },
-                        {
-                            "name": "Digital Input AUTO",
-                            "reference": "AUTO",
-                            "type": "OTHER",
-                            "mode": "DC"
+                            "name": "POWER ON/OFF",
+                            "reference": "RCKSK0410005"
                         }
                     ],
                     "manufacturer": "Manufacturer",

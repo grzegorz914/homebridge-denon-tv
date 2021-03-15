@@ -8,9 +8,9 @@ const parseStringPromise = require('xml2js').parseStringPromise;
 
 const PLUGIN_NAME = 'homebridge-denon-tv';
 const PLATFORM_NAME = 'DenonTv';
-const ZONE_NAME = ['Main Zone', 'Zone 2', 'Zone 3', 'All Zones'];
-const SHORT_ZONE_NAME = ['MZ', 'Z2', 'Z3', 'AZ'];
-const ZONE_NUMBER = ['MainZone_MainZone', 'Zone2_Zone2', 'Zone3_Zone3', 'MainZone_MainZone'];
+const ZONE_NAME = ['Main Zone', 'Zone 2', 'Zone 3'];
+const SHORT_ZONE_NAME = ['MZ', 'Z2', 'Z3'];
+const ZONE_NUMBER = ['MainZone_MainZone', 'Zone2_Zone2', 'Zone3_Zone3'];
 
 let Accessory, Characteristic, Service, Categories, UUID;
 
@@ -70,12 +70,16 @@ class denonTvDevice {
 		this.port = config.port;
 		this.refreshInterval = config.refreshInterval || 5;
 		this.zoneControl = config.zoneControl || 0;
-		this.masterPower = config.masterPower;
+		this.masterPower = config.masterPower || false;
+		this.masterVolume = config.masterVolume || false;
+		this.masterMute = config.masterMute || false;
 		this.volumeControl = config.volumeControl || 0;
 		this.switchInfoMenu = config.switchInfoMenu;
 		this.disableLogInfo = config.disableLogInfo;
 		this.inputs = config.inputs || [];
-		this.inputsButton = config.inputsButton || [];
+		this.buttonsMainZone = config.buttonsMainZone || [];
+		this.buttonsZone2 = config.buttonsZone2 || [];
+		this.buttonsZone3 = config.buttonsZone3 || [];
 
 		//get Device info
 		this.manufacturer = config.manufacturer || 'Denon/Marantz';
@@ -89,12 +93,15 @@ class denonTvDevice {
 		this.zoneName = ZONE_NAME[this.zoneControl];
 		this.shortZoneName = SHORT_ZONE_NAME[this.zoneControl];
 		this.zoneNumber = ZONE_NUMBER[this.zoneControl];
+		this.inputsLength = this.inputs.length;
+		this.buttonsLength = [this.buttonsMainZone.length, this.buttonsZone2.length, this.buttonsZone3.length][this.zoneControl];
 
 		//setup variables
 		this.inputsName = new Array();
 		this.inputsReference = new Array();
-		this.inputsType = new Array();
 		this.inputsMode = new Array();
+		this.buttonsName = new Array();
+		this.buttonsReference = new Array();
 		this.checkDeviceInfo = true;
 		this.checkDeviceState = false;
 		this.startPrepareAccessory = true;
@@ -167,16 +174,16 @@ class denonTvDevice {
 				this.log('-------- %s --------', this.name);
 				this.log('Manufacturer: %s', manufacturer);
 				this.log('Model: %s', modelName);
-				if (this.zoneControl === 0 || this.zoneControl === 3) {
+				if (this.zoneControl >= 0) {
 					this.log('Zones: %s', zones);
 					this.log('Firmware: %s', firmwareRevision);
 					this.log('Api version: %s', apiVersion);
 					this.log('Serialnr: %s', serialNumber);
 				}
-				if (this.zoneControl == 1) {
+				if (this.zoneControl === 1) {
 					this.log('Zone: 2');
 				}
-				if (this.zoneControl == 2) {
+				if (this.zoneControl === 2) {
 					this.log('Zone: 3');
 				}
 				this.log('----------------------------------');
@@ -206,7 +213,7 @@ class denonTvDevice {
 			this.currentPowerState = powerState;
 
 			const inputReference = result.item.InputFuncSelect[0].value[0];
-			const inputIdentifier = (this.inputsReference.indexOf(inputReference) > 0) ? this.inputsReference.indexOf(inputReference) : 0;
+			const inputIdentifier = (this.inputsReference.indexOf(inputReference) >= 0) ? this.inputsReference.indexOf(inputReference) : 0;
 			const inputName = this.inputsName[inputIdentifier];
 			if (this.televisionService) {
 				this.televisionService
@@ -314,7 +321,7 @@ class denonTvDevice {
 		this.televisionService.getCharacteristic(Characteristic.ActiveIdentifier)
 			.onGet(async () => {
 				const inputReference = this.currentInputReference;
-				const inputIdentifier = (this.inputsReference.indexOf(inputReference) > 0) ? this.inputsReference.indexOf(inputReference) : 0;
+				const inputIdentifier = (this.inputsReference.indexOf(inputReference) >= 0) ? this.inputsReference.indexOf(inputReference) : 0;
 				const inputName = this.inputsName[inputIdentifier];
 				if (!this.disableLogInfo) {
 					this.log('Device: %s %s %s, get current Input successful: %s %s', this.host, accessoryName, this.zoneName, inputName, inputReference);
@@ -326,19 +333,12 @@ class denonTvDevice {
 					const inputName = this.inputsName[inputIdentifier];
 					const inputReference = this.inputsReference[inputIdentifier];
 					const inputMode = this.inputsMode[inputIdentifier];
-					const zone = [inputMode, 'Z2', 'Z3', inputMode][this.zoneControl];
+					const zone = [inputMode, 'Z2', 'Z3'][this.zoneControl];
 					const response = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + zone + inputReference);
-					if (this.zoneControl === 3) {
-						if (this.zones >= 2) {
-							const response1 = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + 'Z2' + inputReference);
-						}
-						if (this.zones >= 3) {
-							const response1 = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + 'Z3' + inputReference);
-						}
-					}
 					if (!this.disableLogInfo) {
 						this.log('Device: %s %s %s, set new Input successful: %s %s', this.host, accessoryName, this.zoneName, inputName, inputReference);
 					}
+					this.currentInputReference = inputReference;
 				} catch (error) {
 					this.log.error('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, error);
 				};
@@ -510,7 +510,8 @@ class denonTvDevice {
 		this.speakerService.getCharacteristic(Characteristic.VolumeSelector)
 			.onSet(async (command) => {
 				try {
-					const zone = ['MV', 'Z2', 'Z3', 'MV'][this.zoneControl];
+					const zControl = this.masterVolume ? 3 : this.zoneControl
+					const zone = ['MV', 'Z2', 'Z3', 'MV'][zControl];
 					switch (command) {
 						case Characteristic.VolumeSelector.INCREMENT:
 							command = 'UP';
@@ -520,14 +521,6 @@ class denonTvDevice {
 							break;
 					}
 					const response = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + zone + command);
-					if (this.zoneControl === 3) {
-						if (this.zones >= 2) {
-							const response1 = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + 'Z2' + command);
-						}
-						if (this.zones >= 3) {
-							const response2 = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + 'Z3' + command);
-						}
-					}
 					if (!this.disableLogInfo) {
 						this.log('Device: %s %s %s, setVolumeSelector successful, command: %s', this.host, accessoryName, this.zoneName, command);
 					}
@@ -545,7 +538,8 @@ class denonTvDevice {
 			})
 			.onSet(async (volume) => {
 				try {
-					const zone = ['MV', 'Z2', 'Z3', 'MV'][this.zoneControl];
+					const zControl = this.masterVolume ? 3 : this.zoneControl
+					const zone = ['MV', 'Z2', 'Z3', 'MV'][zControl];
 					if (volume === 0 || volume === 100) {
 						if (this.currentVolume < 10) {
 							volume = '0' + this.currentVolume;
@@ -558,14 +552,6 @@ class denonTvDevice {
 						}
 					}
 					const response = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + zone + volume);
-					if (this.zoneControl == 3) {
-						if (this.zones >= 2) {
-							const response1 = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + 'Z2' + volume);
-						}
-						if (this.zones >= 3) {
-							const response2 = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + 'Z3' + volume);
-						}
-					}
 					if (!this.disableLogInfo) {
 						this.log('Device: %s %s %s, set new Volume level successful: %s', this.host, accessoryName, this.zoneName, volume);
 					}
@@ -584,18 +570,9 @@ class denonTvDevice {
 			.onSet(async (state) => {
 				if (state !== this.currentMuteState) {
 					try {
-						const newState = [(state ? 'MUON' : 'MUOFF'), (state ? 'Z2MUON' : 'Z2MUOFF'), (state ? 'Z3MUON' : 'Z3MUOFF'), (state ? 'MUON' : 'MUOFF')][this.zoneControl];
+						const zControl = this.masterMute ? 3 : this.zoneControl
+						const newState = [(state ? 'MUON' : 'MUOFF'), (state ? 'Z2MUON' : 'Z2MUOFF'), (state ? 'Z3MUON' : 'Z3MUOFF'), (state ? 'MUON' : 'MUOFF')][zControl];
 						const response = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + newState);
-						if (this.zoneControl === 3) {
-							if (this.zones >= 2) {
-								newState = state ? 'Z2MUON' : 'Z2MUOFF';
-								const response1 = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + newState);
-							}
-							if (this.zones >= 3) {
-								newState = state ? 'Z3MUON' : 'Z3MUOFF';
-								const response2 = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + newState);
-							}
-						}
 						if (!this.disableLogInfo) {
 							this.log('Device: %s %s %s, set new Mute state successful: %s', this.host, accessoryName, this.zoneName, state ? 'ON' : 'OFF');
 						}
@@ -656,7 +633,7 @@ class denonTvDevice {
 		}
 
 		//Prepare inputs services
-		if (this.inputs.length > 0) {
+		if (this.inputsLength > 0) {
 			this.log.debug('prepareInputsService');
 			this.inputsService = new Array();
 			let savedNames = {};
@@ -668,12 +645,7 @@ class denonTvDevice {
 			}
 
 			const inputs = this.inputs;
-			let inputsLength = inputs.length;
-			if (inputsLength > 94) {
-				inputsLength = 94
-			}
-
-			for (let i = 0; i < inputsLength; i++) {
+			for (let i = 0; i < this.inputsLength; i++) {
 
 				//get input reference
 				const inputReference = inputs[i].reference;
@@ -683,11 +655,8 @@ class denonTvDevice {
 				if (savedNames && savedNames[inputReference]) {
 					inputName = savedNames[inputReference];
 				} else {
-					inputName = inputs[i].name;
+					inputName = (inputs[i].name !== undefined) ? inputs[i].name : inputs[i].reference;;
 				}
-
-				//get input type
-				const inputType = inputs[i].type;
 
 				//get input mode
 				const inputMode = inputs[i].mode;
@@ -697,7 +666,7 @@ class denonTvDevice {
 					.setCharacteristic(Characteristic.Identifier, i)
 					.setCharacteristic(Characteristic.ConfiguredName, inputName)
 					.setCharacteristic(Characteristic.IsConfigured, Characteristic.IsConfigured.CONFIGURED)
-					.setCharacteristic(Characteristic.InputSourceType, inputType)
+					//.setCharacteristic(Characteristic.InputSourceType)
 					.setCharacteristic(Characteristic.CurrentVisibilityState, Characteristic.CurrentVisibilityState.SHOWN)
 					.setCharacteristic(Characteristic.TargetVisibilityState, Characteristic.TargetVisibilityState.SHOWN);
 
@@ -718,7 +687,6 @@ class denonTvDevice {
 
 				this.inputsReference.push(inputReference);
 				this.inputsName.push(inputName);
-				this.inputsType.push(inputType);
 				this.inputsMode.push(inputMode);
 
 				this.inputsService.push(inputService);
@@ -728,12 +696,16 @@ class denonTvDevice {
 		};
 
 		//Prepare inputs button services
-		if (this.inputsButton.length > 0) {
+		if (this.buttonsLength > 0) {
+			this.log(this.buttonsLength)
 			this.log.debug('prepareInputsButtonService');
+			const buttons = [this.buttonsMainZone, this.buttonsZone2, this.buttonsZone3][this.zoneControl];
 			this.buttonsService = new Array();
-			for (let i = 0; i < this.inputsButton.length; i++) {
-				const inputButtonService = new Service.Switch(this.shortZoneName + ' ' + this.inputsButton[i].name, 'inputsButtonService' + i);
-				inputButtonService.getCharacteristic(Characteristic.On)
+			for (let i = 0; i < this.buttonsLength; i++) {
+				const buttonName = (buttons[i].name !== undefined) ? buttons[i].name : buttons[i].reference;
+				const buttonReference = buttons[i].reference;
+				const buttonService = new Service.Switch(this.shortZoneName + ' ' + buttonName, 'buttonService' + i);
+				buttonService.getCharacteristic(Characteristic.On)
 					.onGet(async () => {
 						const state = false;
 						if (!this.disableLogInfo) {
@@ -744,35 +716,32 @@ class denonTvDevice {
 					.onSet(async (state) => {
 						if (state && this.currentPowerState) {
 							try {
-								const inputButtonName = this.inputsButton[i].name;
-								const inputButtonReference = this.inputsButton[i].reference;
-								const inputButtonMode = this.inputsButton[i].mode;
-								const zone = [inputButtonMode, 'Z2', 'Z3', inputButtonMode][this.zoneControl];
-								const response = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + zone + inputButtonReference);
-								if (this.zoneControl === 3) {
-									if (this.zones >= 2) {
-										const response1 = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + 'Z2' + inputButtonReference);
-									}
-									if (this.zones >= 3) {
-										const response1 = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + 'Z3' + inputButtonReference);
-									}
+								const response = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + buttonReference);
+								if (!this.disableLogInfo) {
+									this.log('Device: %s %s %s, set new Input successful: %s %s', this.host, accessoryName, this.zoneName, buttonName, buttonReference);
 								}
 								setTimeout(() => {
-									inputButtonService.getCharacteristic(Characteristic.On).updateValue(false);
-								}, 350);
-								if (!this.disableLogInfo) {
-									this.log('Device: %s %s %s, set new Input successful: %s %s', this.host, accessoryName, this.zoneName, inputButtonName, inputButtonReference);
-								}
+									buttonService
+										.getCharacteristic(Characteristic.On).updateValue(false);
+								}, 50);
 							} catch (error) {
 								this.log.error('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, error);
+								setTimeout(() => {
+									buttonService
+										.getCharacteristic(Characteristic.On).updateValue(false);
+								}, 50);
 							};
 						} else {
 							setTimeout(() => {
-								inputButtonService.getCharacteristic(Characteristic.On).updateValue(false);
-							}, 350);
+								buttonService
+									.getCharacteristic(Characteristic.On).updateValue(false);
+							}, 50);
 						}
 					});
-				this.buttonsService.push(inputButtonService)
+				this.buttonsReference.push(buttonReference);
+				this.buttonsName.push(buttonName);
+
+				this.buttonsService.push(buttonService)
 				accessory.addService(this.buttonsService[i]);
 				this.televisionService.addLinkedService(this.buttonsService[i]);
 			}

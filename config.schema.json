@@ -64,12 +64,6 @@
                   "enum": [
                     2
                   ]
-                },
-                {
-                  "title": "All zones",
-                  "enum": [
-                    3
-                  ]
                 }
               ],
               "required": true
@@ -108,12 +102,26 @@
               "required": false,
               "description": "The power switch for that zone will turn the entire receiver `ON` or `OFF/STANDBY` rather than just the zone itself."
             },
+            "masterVolume": {
+              "title": "Master Volume Control",
+              "type": "boolean",
+              "default": false,
+              "required": false,
+              "description": "The volume for that zone will set the entire receiver volume `UP` or `DOWN` rather than just the zone itself."
+            },
+            "masterMute": {
+              "title": "Master Mute Control",
+              "type": "boolean",
+              "default": false,
+              "required": false,
+              "description": "The mute switch for that zone will muted the entire receiver `ON` or `OFF` rather than just the zone itself."
+            },
             "switchInfoMenu": {
               "title": "Switch Info/Menu",
               "type": "boolean",
               "default": false,
               "required": false,
-              "description": "This toggle behaviour for *I* button in RC app and *PowerModeSelection* in settings."
+              "description": "This toggle behaviour for *I* button in RC app and *PowerModeSELECTion* in settings."
             },
             "disableLogInfo": {
               "title": "Disable log info",
@@ -123,7 +131,7 @@
               "description": "This disable log info, all values and state will not be displayed in Homebridge log console."
             },
             "inputs": {
-              "title": "Inputs and Functions",
+              "title": "Inputs",
               "type": "array",
               "items": {
                 "type": "object",
@@ -131,82 +139,276 @@
                   "name": {
                     "title": "Name",
                     "type": "string",
-                    "required": true
+                    "description": "Here set Your own name.",
+                    "required": false
                   },
                   "reference": {
                     "title": "Reference",
                     "type": "string",
-                    "required": true
-                  },
-                  "type": {
-                    "title": "Type",
-                    "type": "string",
-                    "description": "Here select input/function type.",
+                    "description": "Here select input.",
                     "oneOf": [
                       {
-                        "title": "Other",
+                        "title": "CD",
                         "enum": [
-                          "OTHER"
+                          "CD"
                         ]
                       },
                       {
-                        "title": "Home Screen",
+                        "title": "DVD",
                         "enum": [
-                          "HOME_SCREEN"
+                          "DVD"
                         ]
                       },
                       {
-                        "title": "Tuner",
+                        "title": "BLUE-RAY",
+                        "enum": [
+                          "BD"
+                        ]
+                      },
+                      {
+                        "title": "TV AUDIO",
+                        "enum": [
+                          "TV"
+                        ]
+                      },
+                      {
+                        "title": "SAT/CBL",
+                        "enum": [
+                          "SAT/CBL"
+                        ]
+                      },
+                      {
+                        "title": "CBL/SAT",
+                        "enum": [
+                          "CBL/SAT"
+                        ]
+                      },
+                      {
+                        "title": "GAME",
+                        "enum": [
+                          "GAME"
+                        ]
+                      },
+                      {
+                        "title": "GAME2",
+                        "enum": [
+                          "GAME2"
+                        ]
+                      },
+                      {
+                        "title": "AUX1",
+                        "enum": [
+                          "AUX1"
+                        ]
+                      },
+                      {
+                        "title": "AUX2",
+                        "enum": [
+                          "AUX2"
+                        ]
+                      },
+                      {
+                        "title": "AUX3",
+                        "enum": [
+                          "AUX3"
+                        ]
+                      },
+                      {
+                        "title": "AUX4",
+                        "enum": [
+                          "AUX4"
+                        ]
+                      },
+                      {
+                        "title": "BLUETOTH",
+                        "enum": [
+                          "BT"
+                        ]
+                      },
+                      {
+                        "title": "PHONO",
+                        "enum": [
+                          "PHONO"
+                        ]
+                      },
+                      {
+                        "title": "SOURCE",
+                        "enum": [
+                          "SOURCE"
+                        ]
+                      },
+                      {
+                        "title": "MEDIA PLAYER",
+                        "enum": [
+                          "MPLAY"
+                        ]
+                      },
+                      {
+                        "title": "FM TUNER",
                         "enum": [
                           "TUNER"
                         ]
                       },
                       {
-                        "title": "HDMI",
+                        "title": "FAVORITE STATION 1",
                         "enum": [
-                          "HDMI"
+                          "FAVORITE1"
                         ]
                       },
                       {
-                        "title": "Composite Video",
+                        "title": "FAVORITE STATION 2",
                         "enum": [
-                          "COMPOSITE_VIDEO"
+                          "FAVORITE2"
                         ]
                       },
                       {
-                        "title": "S Video",
+                        "title": "FAVORITE STATION 3",
                         "enum": [
-                          "S_VIDEO"
+                          "FAVORITE3"
                         ]
                       },
                       {
-                        "title": "Component Video",
+                        "title": "FAVORITE STATION 4",
                         "enum": [
-                          "COMPONENT_VIDEO"
+                          "FAVORITE4"
                         ]
                       },
                       {
-                        "title": "Digital Video Input",
+                        "title": "QUICK SELECT 1",
                         "enum": [
-                          "DVI"
+                          "QUICK1"
                         ]
                       },
                       {
-                        "title": "Airplay",
+                        "title": "QUICK SELECT 2",
                         "enum": [
-                          "AIRPLAY"
+                          "QUICK2"
                         ]
                       },
                       {
-                        "title": "USB",
+                        "title": "QUICK SELECT 3",
+                        "enum": [
+                          "QUICK3"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT 4",
+                        "enum": [
+                          "QUICK4"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT 5",
+                        "enum": [
+                          "QUICK5"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT MEMORY 1",
+                        "enum": [
+                          "QUICK1 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT MEMORY 2",
+                        "enum": [
+                          "QUICK2 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT MEMORY 3",
+                        "enum": [
+                          "QUICK3 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT MEMORY 4",
+                        "enum": [
+                          "QUICK4 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT MEMORY 5",
+                        "enum": [
+                          "QUICK5 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "IRADIO",
+                        "enum": [
+                          "IRADIO"
+                        ]
+                      },
+                      {
+                        "title": "HD RADIO",
+                        "enum": [
+                          "HDRADIO"
+                        ]
+                      },
+                      {
+                        "title": "MEDIA SERVER",
+                        "enum": [
+                          "SERVER"
+                        ]
+                      },
+                      {
+                        "title": "SPOTIFY",
+                        "enum": [
+                          "SPOTIFY"
+                        ]
+                      },
+                      {
+                        "title": "LAST.FM",
+                        "enum": [
+                          "LASTFM"
+                        ]
+                      },
+                      {
+                        "title": "NETWORK",
+                        "enum": [
+                          "NET"
+                        ]
+                      },
+                      {
+                        "title": "USB/IPOD",
+                        "enum": [
+                          "USB/IPOD"
+                        ]
+                      },
+                      {
+                        "title": "USB START PLAYBACK",
                         "enum": [
                           "USB"
                         ]
                       },
                       {
-                        "title": "Application",
+                        "title": "IPOD START PLAYBACK",
                         "enum": [
-                          "APPLICATION"
+                          "IPD"
+                        ]
+                      },
+                      {
+                        "title": "iRADIO RECENT PLAY",
+                        "enum": [
+                          "IRP"
+                        ]
+                      },
+                      {
+                        "title": "ONLINE MIUSIC FAVORITES PLAY",
+                        "enum": [
+                          "FVP"
+                        ]
+                      },
+                      {
+                        "title": "SIRIUSXM (NA only)",
+                        "enum": [
+                          "SIRIUSXM"
+                        ]
+                      },
+                      {
+                        "title": "PANDORA",
+                        "enum": [
+                          "PANDORA"
                         ]
                       }
                     ],
@@ -215,46 +417,22 @@
                   "mode": {
                     "title": "Mode",
                     "type": "string",
-                    "description": "Here select input/function mode.",
+                    "description": "Here select input mode.",
                     "oneOf": [
                       {
-                        "title": "Source Input",
+                        "title": "INPUT",
                         "enum": [
                           "SI"
                         ]
                       },
                       {
-                        "title": "Digital Input",
-                        "enum": [
-                          "DC"
-                        ]
-                      },
-                      {
-                        "title": "Audio Input Mode",
-                        "enum": [
-                          "SD"
-                        ]
-                      },
-                      {
-                        "title": "Video Select Mode",
-                        "enum": [
-                          "SV"
-                        ]
-                      },
-                      {
-                        "title": "Favorite Station",
+                        "title": "FAVORITE",
                         "enum": [
                           "ZM"
                         ]
                       },
                       {
-                        "title": "All Zone Stereo",
-                        "enum": [
-                          "MN"
-                        ]
-                      },
-                      {
-                        "title": "Surround Mode and Quick Select (Only Main Zone)",
+                        "title": "QUICK SELECT",
                         "enum": [
                           "MS"
                         ]
@@ -265,8 +443,8 @@
                 }
               }
             },
-            "inputsButton": {
-              "title": "Inputs and Functions (Buttons)",
+            "buttonsMainZone": {
+              "title": "Buttons",
               "type": "array",
               "items": {
                 "type": "object",
@@ -274,270 +452,2461 @@
                   "name": {
                     "title": "Name",
                     "type": "string",
-                    "required": true
+                    "description": "Here set Your own name.",
+                    "required": false
                   },
                   "reference": {
-                    "title": "Reference",
+                    "title": "Function",
                     "type": "string",
-                    "required": true
-                  },
-                  "type": {
-                    "title": "Type",
-                    "type": "string",
-                    "description": "Here select input/function type.",
+                    "description": "Here select function.",
                     "oneOf": [
                       {
-                        "title": "Other",
+                        "title": "ALL POWER ON/OFF",
                         "enum": [
-                          "OTHER"
+                          "RCKSK0410001"
                         ]
                       },
                       {
-                        "title": "Home Screen",
+                        "title": "ALL POWER ON",
                         "enum": [
-                          "HOME_SCREEN"
+                          "RCKSK0410002"
                         ]
                       },
                       {
-                        "title": "Tuner",
+                        "title": "ALL POWER OFF",
                         "enum": [
-                          "TUNER"
+                          "RCKSK0410003"
                         ]
                       },
                       {
-                        "title": "HDMI",
+                        "title": "POWER ON/OFF",
                         "enum": [
-                          "HDMI"
+                          "RCKSK0410005"
                         ]
                       },
                       {
-                        "title": "Composite Video",
+                        "title": "POWER ON",
                         "enum": [
-                          "COMPOSITE_VIDEO"
+                          "RCKSK0410006"
                         ]
                       },
                       {
-                        "title": "S Video",
+                        "title": "POWER OFF",
                         "enum": [
-                          "S_VIDEO"
+                          "RCKSK0410007"
                         ]
                       },
                       {
-                        "title": "Component Video",
+                        "title": "VOLUME UP",
                         "enum": [
-                          "COMPONENT_VIDEO"
+                          "RCKSK0410368"
                         ]
                       },
                       {
-                        "title": "Digital Video Input",
+                        "title": "VOLUME DOWN",
                         "enum": [
-                          "DVI"
+                          "RCKSK0410369"
                         ]
                       },
                       {
-                        "title": "Airplay",
+                        "title": "MUTE",
                         "enum": [
-                          "AIRPLAY"
+                          "RCKSK0410370"
                         ]
                       },
                       {
-                        "title": "USB",
+                        "title": "M.VR PRESET1(0dB)",
                         "enum": [
-                          "USB"
+                          "RCKSK0410372"
                         ]
                       },
                       {
-                        "title": "Application",
+                        "title": "M.VR PRESET2(-20dB)",
                         "enum": [
-                          "APPLICATION"
-                        ]
-                      }
-                    ],
-                    "required": true
-                  },
-                  "mode": {
-                    "title": "Mode",
-                    "type": "string",
-                    "description": "Here select input/function mode.",
-                    "oneOf": [
-                      {
-                        "title": "Master Power",
-                        "enum": [
-                          "PW"
+                          "RCKSK0410373"
                         ]
                       },
                       {
-                        "title": "Power and Favorite Stations",
+                        "title": "M.VR PRESET3(-40dB)",
                         "enum": [
-                          "ZM"
+                          "RCKSK0410374"
                         ]
                       },
                       {
-                        "title": "Volume",
+                        "title": "TRIGGER-1 ON",
                         "enum": [
-                          "MV"
+                          "RCKSK0410012"
                         ]
                       },
                       {
-                        "title": "Mute",
+                        "title": "TRIGGER-1 OFF",
                         "enum": [
-                          "MU"
+                          "RCKSK0410013"
                         ]
                       },
                       {
-                        "title": "Channel Volume",
+                        "title": "TRIGGER-2 ON",
                         "enum": [
-                          "CV"
+                          "RCKSK0410014"
                         ]
                       },
                       {
-                        "title": "Source Input",
+                        "title": "TRIGGER-2 OFF",
                         "enum": [
-                          "SI"
+                          "RCKSK0410015"
                         ]
                       },
                       {
-                        "title": "Auto Standby",
+                        "title": "KEY 0",
                         "enum": [
-                          "STBY"
+                          "RCKSK0410025"
                         ]
                       },
                       {
-                        "title": "Sleep Mode",
+                        "title": "KEY 1",
                         "enum": [
-                          "SLP"
+                          "RCKSK0410016"
                         ]
                       },
                       {
-                        "title": "Digital Input (Only Main Zone)",
+                        "title": "KEY 2",
                         "enum": [
-                          "DC"
+                          "RCKSK0410017"
                         ]
                       },
                       {
-                        "title": "Audio Input Mode (Only Main Zone)",
+                        "title": "KEY 3",
                         "enum": [
-                          "SD"
+                          "RCKSK0410018"
                         ]
                       },
                       {
-                        "title": "Video Select Mode (Only Main Zone)",
+                        "title": "KEY 4",
                         "enum": [
-                          "SV"
+                          "RCKSK0410019"
                         ]
                       },
                       {
-                        "title": "Eco Mode (Only Main Zone)",
+                        "title": "KEY 5",
                         "enum": [
-                          "ECO"
+                          "RCKSK0410020"
                         ]
                       },
                       {
-                        "title": "Surround Mode and Quick Select (Only Main Zone)",
+                        "title": "KEY 6",
                         "enum": [
-                          "MS"
+                          "RCKSK0410021"
                         ]
                       },
                       {
-                        "title": "Video Settings (Only Main Zone)",
+                        "title": "KEY 7",
                         "enum": [
-                          "VS"
+                          "RCKSK0410022"
                         ]
                       },
                       {
-                        "title": "Speaker Tone and Settings (PS)",
+                        "title": "KEY 8",
                         "enum": [
-                          "PS"
+                          "RCKSK0410023"
                         ]
                       },
                       {
-                        "title": "Picture Mode and Settings (Only Main Zone)",
+                        "title": "KEY 9",
                         "enum": [
-                          "PV"
+                          "RCKSK0410024"
                         ]
                       },
                       {
-                        "title": "RC Control and All Zone Stereo (Only Main Zone)",
+                        "title": "CURSOR UP",
                         "enum": [
-                          "MN"
+                          "RCKSK0410027"
                         ]
                       },
                       {
-                        "title": "Control Lock and System Reset (Only Main Zone)",
+                        "title": "CURSOR DOWN",
                         "enum": [
-                          "SY"
+                          "RCKSK0410028"
                         ]
                       },
                       {
-                        "title": "Network Restart (Only Main Zone)",
+                        "title": "CURSOR LEFT",
                         "enum": [
-                          "NS"
+                          "RCKSK0410029"
                         ]
                       },
                       {
-                        "title": "Relay Trigger (Only Main Zone)",
+                        "title": "CURSOR RIGHT",
                         "enum": [
-                          "TR"
+                          "RCKSK0410030"
                         ]
                       },
                       {
-                        "title": "Upgrade ID (Only Main Zone)",
+                        "title": "ENTER",
                         "enum": [
-                          "UG"
+                          "RCKSK0410031"
                         ]
                       },
                       {
-                        "title": "Display Dimmer (Only Main Zone)",
+                        "title": "RETURN",
                         "enum": [
-                          "DIM"
+                          "RCKSK0410034"
                         ]
                       },
                       {
-                        "title": "Tuner Control (FM/AM/DAB, Only Main Zone)",
+                        "title": "OPTION",
                         "enum": [
-                          "TF"
+                          "RCKSK0410949"
                         ]
                       },
                       {
-                        "title": "Tuner Control (Preset, Only Main Zone)",
+                        "title": "PAGE PREVIOUS",
                         "enum": [
-                          "TP"
+                          "RCKSK0410950"
                         ]
                       },
                       {
-                        "title": "Tuner Control (Band, Only Main Zone)",
+                        "title": "PAGE NEXT",
                         "enum": [
-                          "TM"
+                          "RCKSK0410951"
                         ]
                       },
                       {
-                        "title": "Tuner Control (DAB, Only Main Zone)",
+                        "title": "PLAY/PAUSE",
                         "enum": [
-                          "DA"
+                          "RCKSK0410992"
                         ]
                       },
                       {
-                        "title": "HDMI Audio (Only Z2)",
+                        "title": "PAUSE",
                         "enum": [
-                          "HDA"
+                          "RCKSK0410994"
                         ]
                       },
                       {
-                        "title": "High Pass Filter (Only Z2 and Z3)",
+                        "title": "PAUSE",
                         "enum": [
-                          "HPF"
+                          "RCKSK0410947"
                         ]
                       },
                       {
-                        "title": "Stereo and Mono (Only Z2 and Z3)",
+                        "title": "STOP",
                         "enum": [
-                          "CS"
+                          "RCKSK0410993"
+                        ]
+                      },
+                      {
+                        "title": "REWIND",
+                        "enum": [
+                          "RCKSK0410976"
+                        ]
+                      },
+                      {
+                        "title": "REPEAT",
+                        "enum": [
+                          "RCKSK0410956"
+                        ]
+                      },
+                      {
+                        "title": "RANDOM/SHUFFLE",
+                        "enum": [
+                          "RCKSK0410957"
+                        ]
+                      },
+                      {
+                        "title": "SETUP MENU",
+                        "enum": [
+                          "RCKSK0410035"
+                        ]
+                      },
+                      {
+                        "title": "MEMORY",
+                        "enum": [
+                          "RCKSK0410036"
+                        ]
+                      },
+                      {
+                        "title": "UPGRADE ID ON",
+                        "enum": [
+                          "RCKSK0410042"
+                        ]
+                      },
+                      {
+                        "title": "BILINGUAL MODE (JP only)",
+                        "enum": [
+                          "RCKSK0410045"
+                        ]
+                      },
+                      {
+                        "title": "VIDEO SELECT",
+                        "enum": [
+                          "RCKSK0410112"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE STATION 1",
+                        "enum": [
+                          "RCKSK0410242"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE STATION 2",
+                        "enum": [
+                          "RCKSK0410243"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE STATION 3",
+                        "enum": [
+                          "RCKSK0410244"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE STATION 4",
+                        "enum": [
+                          "RCKSK0410245"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT 1",
+                        "enum": [
+                          "RCKSK0410292"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT 2",
+                        "enum": [
+                          "RCKSK0410293"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT 3",
+                        "enum": [
+                          "RCKSK0410294"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT 4",
+                        "enum": [
+                          "RCKSK0410295"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT 5",
+                        "enum": [
+                          "RCKSK0410296"
+                        ]
+                      },
+                      {
+                        "title": "STEREO",
+                        "enum": [
+                          "RCKSK0410304"
+                        ]
+                      },
+                      {
+                        "title": "DIRECT/STEREO",
+                        "enum": [
+                          "RCKSK0410305"
+                        ]
+                      },
+                      {
+                        "title": "DIRECT",
+                        "enum": [
+                          "RCKSK0410306"
+                        ]
+                      },
+                      {
+                        "title": "PURE DIRECT",
+                        "enum": [
+                          "RCKSK0410307"
+                        ]
+                      },
+                      {
+                        "title": "STANDARD",
+                        "enum": [
+                          "RCKSK0410308"
+                        ]
+                      },
+                      {
+                        "title": "DIRECT/PURE DIRECT",
+                        "enum": [
+                          "RCKSK0410309"
+                        ]
+                      },
+                      {
+                        "title": "DOLBY PLII CINEMA",
+                        "enum": [
+                          "RCKSK0410314"
+                        ]
+                      },
+                      {
+                        "title": "DOLBY PLII MUSIC",
+                        "enum": [
+                          "RCKSK0410315"
+                        ]
+                      },
+                      {
+                        "title": "DOLBY PROLOGIC",
+                        "enum": [
+                          "RCKSK0410316"
+                        ]
+                      },
+                      {
+                        "title": "DTS SURROUND",
+                        "enum": [
+                          "RCKSK0410320"
+                        ]
+                      },
+                      {
+                        "title": "DTS NEO6 CINEMA",
+                        "enum": [
+                          "RCKSK0410322"
+                        ]
+                      },
+                      {
+                        "title": "DTS NEO6 MUSIC",
+                        "enum": [
+                          "RCKSK0410323"
+                        ]
+                      },
+                      {
+                        "title": "MOVIE SURROUND",
+                        "enum": [
+                          "RCKSK0410329"
+                        ]
+                      },
+                      {
+                        "title": "MUSIC SURROUND",
+                        "enum": [
+                          "RCKSK0410330"
+                        ]
+                      },
+                      {
+                        "title": "GAME SURROUND",
+                        "enum": [
+                          "RCKSK0410331"
+                        ]
+                      },
+                      {
+                        "title": "DSP SIMULATION",
+                        "enum": [
+                          "RCKSK0410336"
+                        ]
+                      },
+                      {
+                        "title": "MULTI CH STEREO",
+                        "enum": [
+                          "RCKSK0410337"
+                        ]
+                      },
+                      {
+                        "title": "ROCK ARENA",
+                        "enum": [
+                          "RCKSK0410340"
+                        ]
+                      },
+                      {
+                        "title": "JAZZ CLUB",
+                        "enum": [
+                          "RCKSK0410341"
+                        ]
+                      },
+                      {
+                        "title": "MONO MOVIE",
+                        "enum": [
+                          "RCKSK0410343"
+                        ]
+                      },
+                      {
+                        "title": "MATRIX",
+                        "enum": [
+                          "RCKSK0410344"
+                        ]
+                      },
+                      {
+                        "title": "VIDEO GAME",
+                        "enum": [
+                          "RCKSK0410345"
+                        ]
+                      },
+                      {
+                        "title": "VIRTUAL",
+                        "enum": [
+                          "RCKSK0410346"
+                        ]
+                      },
+                      {
+                        "title": "INPUT MODE SELECT",
+                        "enum": [
+                          "RCKSK0410352"
+                        ]
+                      },
+                      {
+                        "title": "INPUT MODE:ANALOG",
+                        "enum": [
+                          "RCKSK0410353"
+                        ]
+                      },
+                      {
+                        "title": "INPUT MODE:HDMI",
+                        "enum": [
+                          "RCKSK0410357"
+                        ]
+                      },
+                      {
+                        "title": "INPUT MODE:AUTO",
+                        "enum": [
+                          "RCKSK0410358"
+                        ]
+                      },
+                      {
+                        "title": "INPUT MODE:DIGITAL",
+                        "enum": [
+                          "RCKSK0410359"
+                        ]
+                      },
+                      {
+                        "title": "DECODE MODE",
+                        "enum": [
+                          "RCKSK0410364"
+                        ]
+                      },
+                      {
+                        "title": "CHANNEL LEVEL",
+                        "enum": [
+                          "RCKSK0410378"
+                        ]
+                      },
+                      {
+                        "title": "FL LEVEL UP",
+                        "enum": [
+                          "RCKSK0410384"
+                        ]
+                      },
+                      {
+                        "title": "FL LEVEL DOWN",
+                        "enum": [
+                          "RCKSK0410385"
+                        ]
+                      },
+                      {
+                        "title": "FR LEVEL UP",
+                        "enum": [
+                          "RCKSK0410386"
+                        ]
+                      },
+                      {
+                        "title": "FR LEVEL DOWN",
+                        "enum": [
+                          "RCKSK0410387"
+                        ]
+                      },
+                      {
+                        "title": "C LEVEL UP",
+                        "enum": [
+                          "RCKSK0410388"
+                        ]
+                      },
+                      {
+                        "title": "C LEVEL DOWN",
+                        "enum": [
+                          "RCKSK0410389"
+                        ]
+                      },
+                      {
+                        "title": "SW LEVEL UP",
+                        "enum": [
+                          "RCKSK0410390"
+                        ]
+                      },
+                      {
+                        "title": "SW LEVEL DOWN",
+                        "enum": [
+                          "RCKSK0410391"
+                        ]
+                      },
+                      {
+                        "title": "SL LEVEL UP",
+                        "enum": [
+                          "RCKSK0410392"
+                        ]
+                      },
+                      {
+                        "title": "SL LEVEL DOWN",
+                        "enum": [
+                          "RCKSK0410393"
+                        ]
+                      },
+                      {
+                        "title": "SR LEVEL UP",
+                        "enum": [
+                          "RCKSK0410394"
+                        ]
+                      },
+                      {
+                        "title": "SR LEVEL DOWN",
+                        "enum": [
+                          "RCKSK0410395"
+                        ]
+                      },
+                      {
+                        "title": "SBL LEVEL UP",
+                        "enum": [
+                          "RCKSK0410396"
+                        ]
+                      },
+                      {
+                        "title": "SBL LEVEL DOWN",
+                        "enum": [
+                          "RCKSK0410397"
+                        ]
+                      },
+                      {
+                        "title": "SBR LEVEL UP",
+                        "enum": [
+                          "RCKSK0410398"
+                        ]
+                      },
+                      {
+                        "title": "SBR LEVEL DOWN",
+                        "enum": [
+                          "RCKSK0410399"
+                        ]
+                      },
+                      {
+                        "title": "ALL TREBLE UP",
+                        "enum": [
+                          "RCKSK0410400"
+                        ]
+                      },
+                      {
+                        "title": "ALL TREBLE DOWN",
+                        "enum": [
+                          "RCKSK0410401"
+                        ]
+                      },
+                      {
+                        "title": "ALL BASS UP",
+                        "enum": [
+                          "RCKSK0410403"
+                        ]
+                      },
+                      {
+                        "title": "ALL BASS DOWN",
+                        "enum": [
+                          "RCKSK0410404"
+                        ]
+                      },
+                      {
+                        "title": "TONE CONTROL ON/OFF",
+                        "enum": [
+                          "RCKSK0410406"
+                        ]
+                      },
+                      {
+                        "title": "TONE CONTROL OFF",
+                        "enum": [
+                          "RCKSK0410407"
+                        ]
+                      },
+                      {
+                        "title": "TONE CONTROL ON",
+                        "enum": [
+                          "RCKSK0410408"
+                        ]
+                      },
+                      {
+                        "title": "FRONT SPEAKER",
+                        "enum": [
+                          "RCKSK0410518"
+                        ]
+                      },
+                      {
+                        "title": "AUDYSSEY DSX SELECT",
+                        "enum": [
+                          "RCKSK0410529"
+                        ]
+                      },
+                      {
+                        "title": "FRONT HEIGHT ON/OFF",
+                        "enum": [
+                          "RCKSK0410533"
+                        ]
+                      },
+                      {
+                        "title": "DYNAMIC VOLUME OFF",
+                        "enum": [
+                          "RCKSK0410542"
+                        ]
+                      },
+                      {
+                        "title": "DYNAMIC VOLUME SELECT",
+                        "enum": [
+                          "RCKSK0410545"
+                        ]
+                      },
+                      {
+                        "title": "DYNAMIC EQ SELECT",
+                        "enum": [
+                          "RCKSK0410547"
+                        ]
+                      },
+                      {
+                        "title": "AUDIO RESTORER SELECT",
+                        "enum": [
+                          "RCKSK0410548"
+                        ]
+                      },
+                      {
+                        "title": "DYNAMIC EQ/VOLUME SELECT",
+                        "enum": [
+                          "RCKSK0410549"
+                        ]
+                      },
+                      {
+                        "title": "RESTORER(OFF)",
+                        "enum": [
+                          "RCKSK0410556"
+                        ]
+                      },
+                      {
+                        "title": "RESTORER(Mode1)",
+                        "enum": [
+                          "RCKSK0410557"
+                        ]
+                      },
+                      {
+                        "title": "RESTORER(Mode2)",
+                        "enum": [
+                          "RCKSK0410558"
+                        ]
+                      },
+                      {
+                        "title": "RESTORER(Mode3)",
+                        "enum": [
+                          "RCKSK0410559"
+                        ]
+                      },
+                      {
+                        "title": "FRONTSP A ON/OFF",
+                        "enum": [
+                          "RCKSK0410605"
+                        ]
+                      },
+                      {
+                        "title": "FRONTSP B ON/OFF",
+                        "enum": [
+                          "RCKSK0410606"
+                        ]
+                      },
+                      {
+                        "title": "AUDIO DELAY MODE",
+                        "enum": [
+                          "RCKSK0410620"
+                        ]
+                      },
+                      {
+                        "title": "AUDIO DELAY UP",
+                        "enum": [
+                          "RCKSK0410621"
+                        ]
+                      },
+                      {
+                        "title": "AUDIODELAYDOWN",
+                        "enum": [
+                          "RCKSK0410622"
+                        ]
+                      },
+                      {
+                        "title": "INFO",
+                        "enum": [
+                          "RCKSK0410624"
+                        ]
+                      },
+                      {
+                        "title": "FWL LEVEL UP",
+                        "enum": [
+                          "RCKSK0410635"
+                        ]
+                      },
+                      {
+                        "title": "FWL LEVEL DOWN",
+                        "enum": [
+                          "RCKSK0410636"
+                        ]
+                      },
+                      {
+                        "title": "FWR LEVEL UP",
+                        "enum": [
+                          "RCKSK0410637"
+                        ]
+                      },
+                      {
+                        "title": "FWR LEVEL DOWN",
+                        "enum": [
+                          "RCKSK0410638"
+                        ]
+                      },
+                      {
+                        "title": "FLD STATUS",
+                        "enum": [
+                          "RCKSK0410640"
+                        ]
+                      },
+                      {
+                        "title": "AUDYSSEY DSX ON(Height)",
+                        "enum": [
+                          "RCKSK0410642"
+                        ]
+                      },
+                      {
+                        "title": "AUDYSSEY DSX ON(Wide)",
+                        "enum": [
+                          "RCKSK0410643"
+                        ]
+                      },
+                      {
+                        "title": "AUDYSSEY DSX OFF",
+                        "enum": [
+                          "RCKSK0410644"
+                        ]
+                      },
+                      {
+                        "title": "FHL LEVEL UP",
+                        "enum": [
+                          "RCKSK0410649"
+                        ]
+                      },
+                      {
+                        "title": "FHL LEVEL DOWN",
+                        "enum": [
+                          "RCKSK0410650"
+                        ]
+                      },
+                      {
+                        "title": "FHR LEVEL UP",
+                        "enum": [
+                          "RCKSK0410651"
+                        ]
+                      },
+                      {
+                        "title": "FHR LEVEL DOWN",
+                        "enum": [
+                          "RCKSK0410652"
+                        ]
+                      },
+                      {
+                        "title": "FRONT DISPLAY(Dimmer)",
+                        "enum": [
+                          "RCKSK0410656"
+                        ]
+                      },
+                      {
+                        "title": "iPOD PLAY",
+                        "enum": [
+                          "RCKSK0410667"
+                        ]
+                      },
+                      {
+                        "title": "HDMI Monitor SELECT 1",
+                        "enum": [
+                          "RCKSK0410669"
+                        ]
+                      },
+                      {
+                        "title": "HDMI Monitor SELECT 2",
+                        "enum": [
+                          "RCKSK0410670"
+                        ]
+                      },
+                      {
+                        "title": "HDMI Monitor SELECT 3",
+                        "enum": [
+                          "RCKSK0410671"
+                        ]
+                      },
+                      {
+                        "title": "INTERNET RADIO",
+                        "enum": [
+                          "RCKSK0410691"
+                        ]
+                      },
+                      {
+                        "title": "FLICKR SELECT",
+                        "enum": [
+                          "RCKSK0410697"
+                        ]
+                      },
+                      {
+                        "title": "CD/PHONO(CD)",
+                        "enum": [
+                          "RCKSK0410698"
+                        ]
+                      },
+                      {
+                        "title": "MEDIA SERVER",
+                        "enum": [
+                          "RCKSK0410699"
+                        ]
+                      },
+                      {
+                        "title": "PHONO",
+                        "enum": [
+                          "RCKSK0410704"
+                        ]
+                      },
+                      {
+                        "title": "FM TUNER",
+                        "enum": [
+                          "RCKSK0410705"
+                        ]
+                      },
+                      {
+                        "title": "CD",
+                        "enum": [
+                          "RCKSK0410706"
+                        ]
+                      },
+                      {
+                        "title": "NETWORK",
+                        "enum": [
+                          "RCKSK0410711"
+                        ]
+                      },
+                      {
+                        "title": "SIRIUSXM (NA only)",
+                        "enum": [
+                          "RCKSK0410714"
+                        ]
+                      },
+                      {
+                        "title": "HD RADIO",
+                        "enum": [
+                          "RCKSK0410715"
+                        ]
+                      },
+                      {
+                        "title": "NETWORK",
+                        "enum": [
+                          "RCKSK0410716"
+                        ]
+                      },
+                      {
+                        "title": "iPOD/USB",
+                        "enum": [
+                          "RCKSK0410718"
+                        ]
+                      },
+                      {
+                        "title": "FM TUNER",
+                        "enum": [
+                          "RCKSK0410719"
+                        ]
+                      },
+                      {
+                        "title": "DVD",
+                        "enum": [
+                          "RCKSK0410720"
+                        ]
+                      },
+                      {
+                        "title": "BLUE-RAY",
+                        "enum": [
+                          "RCKSK0410721"
+                        ]
+                      },
+                      {
+                        "title": "TV AUDIO",
+                        "enum": [
+                          "RCKSK0410722"
+                        ]
+                      },
+                      {
+                        "title": "CBL/SAT",
+                        "enum": [
+                          "RCKSK0410723"
+                        ]
+                      },
+                      {
+                        "title": "GAME",
+                        "enum": [
+                          "RCKSK0410725"
+                        ]
+                      },
+                      {
+                        "title": "MEDIA PLAYER",
+                        "enum": [
+                          "RCKSK0410726"
+                        ]
+                      },
+                      {
+                        "title": "GAME2",
+                        "enum": [
+                          "RCKSK0410727"
+                        ]
+                      },
+                      {
+                        "title": "AUX1",
+                        "enum": [
+                          "RCKSK0410729"
+                        ]
+                      },
+                      {
+                        "title": "AUX2",
+                        "enum": [
+                          "RCKSK0410730"
+                        ]
+                      },
+                      {
+                        "title": "DVD/BLUE-RAY",
+                        "enum": [
+                          "RCKSK0410732"
+                        ]
+                      },
+                      {
+                        "title": "MEDIA PLAYER",
+                        "enum": [
+                          "RCKSK0410735"
+                        ]
+                      },
+                      {
+                        "title": "MULTIEQ/MULTIEQ XT",
+                        "enum": [
+                          "RCKSK0410736"
+                        ]
+                      },
+                      {
+                        "title": "INTERNET RADIO(Recent Play)",
+                        "enum": [
+                          "RCKSK0410741"
+                        ]
+                      },
+                      {
+                        "title": "DYNAMIC EQ ON",
+                        "enum": [
+                          "RCKSK0410746"
+                        ]
+                      },
+                      {
+                        "title": "DYNAMIC EQ OFF",
+                        "enum": [
+                          "RCKSK0410747"
+                        ]
+                      },
+                      {
+                        "title": "DYNAMIC VOLUME(Heavy)",
+                        "enum": [
+                          "RCKSK0410748"
+                        ]
+                      },
+                      {
+                        "title": "DYNAMIC VOLUME(Medium)",
+                        "enum": [
+                          "RCKSK0410749"
+                        ]
+                      },
+                      {
+                        "title": "DYNAMIC VOLUME(Light)",
+                        "enum": [
+                          "RCKSK0410750"
+                        ]
+                      },
+                      {
+                        "title": "RESOLUTION",
+                        "enum": [
+                          "RCKSK0410752"
+                        ]
+                      },
+                      {
+                        "title": "Monitor SELECT",
+                        "enum": [
+                          "RCKSK0410753"
+                        ]
+                      },
+                      {
+                        "title": "RESOLUTION(HDMI)",
+                        "enum": [
+                          "RCKSK0410754"
+                        ]
+                      },
+                      {
+                        "title": "Reference Level Offset (0dB) for Dynamic EQ",
+                        "enum": [
+                          "RCKSK0410760"
+                        ]
+                      },
+                      {
+                        "title": "Reference Level Offset (5dB) for Dynamic EQ",
+                        "enum": [
+                          "RCKSK0410761"
+                        ]
+                      },
+                      {
+                        "title": "Reference Level Offset (10dB) for Dynamic EQ",
+                        "enum": [
+                          "RCKSK0410762"
+                        ]
+                      },
+                      {
+                        "title": "Reference Level Offset (15dB) for Dynamic EQ",
+                        "enum": [
+                          "RCKSK0410763"
+                        ]
+                      },
+                      {
+                        "title": "PANDORA (NA only)",
+                        "enum": [
+                          "RCKSK0410765"
+                        ]
+                      },
+                      {
+                        "title": "LAST.FM (EU only)",
+                        "enum": [
+                          "RCKSK0410767"
+                        ]
+                      },
+                      {
+                        "title": "INPUT SOURCE SELECT RIGHT",
+                        "enum": [
+                          "RCKSK0410787"
+                        ]
+                      },
+                      {
+                        "title": "INPUT SOURCE SELECT LEFT",
+                        "enum": [
+                          "RCKSK0410788"
+                        ]
+                      },
+                      {
+                        "title": "HDMI(CEC)Control ON",
+                        "enum": [
+                          "RCKSK0410826"
+                        ]
+                      },
+                      {
+                        "title": "HDMI(CEC)Control OFF",
+                        "enum": [
+                          "RCKSK0410827"
+                        ]
+                      },
+                      {
+                        "title": "HDMI Audio Out SELECT",
+                        "enum": [
+                          "RCKSK0410829"
+                        ]
+                      },
+                      {
+                        "title": "HDMI Audio Out TV",
+                        "enum": [
+                          "RCKSK0410830"
+                        ]
+                      },
+                      {
+                        "title": "HDMI Audio Out AMP",
+                        "enum": [
+                          "RCKSK0410831"
+                        ]
+                      },
+                      {
+                        "title": "PARTY MODE",
+                        "enum": [
+                          "RCKSK0410835"
+                        ]
+                      },
+                      {
+                        "title": "SLEEP MODE",
+                        "enum": [
+                          "RCKSK0410836"
+                        ]
+                      },
+                      {
+                        "title": "VIDEO MODE SELECT",
+                        "enum": [
+                          "RCKSK0410849"
+                        ]
+                      },
+                      {
+                        "title": "VIDEO MODE SELECT AUTO",
+                        "enum": [
+                          "RCKSK0410850"
+                        ]
+                      },
+                      {
+                        "title": "VIDEO MODE SELECT MOVIE",
+                        "enum": [
+                          "RCKSK0410851"
+                        ]
+                      },
+                      {
+                        "title": "VIDEO MODE SELECT GAME",
+                        "enum": [
+                          "RCKSK0410852"
+                        ]
+                      },
+                      {
+                        "title": "LOUDNESS ON/OFF",
+                        "enum": [
+                          "RCKSK0410857"
+                        ]
+                      },
+                      {
+                        "title": "USB DIRECT PLAY",
+                        "enum": [
+                          "RCKSK0410958"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE DIRECT PLAY",
+                        "enum": [
+                          "RCKSK0410959"
+                        ]
+                      },
+                      {
+                        "title": "TUNING UP",
+                        "enum": [
+                          "RCKSK0410959"
+                        ]
+                      },
+                      {
+                        "title": "TUNING DOWN",
+                        "enum": [
+                          "RCKSK0410971"
+                        ]
+                      },
+                      {
+                        "title": "PRESET CH UP",
+                        "enum": [
+                          "RCKSK0410972"
+                        ]
+                      },
+                      {
+                        "title": "PRESET CH DOWN",
+                        "enum": [
+                          "RCKSK0410973"
+                        ]
+                      },
+                      {
+                        "title": "BAND FM",
+                        "enum": [
+                          "RCKSK0410977"
+                        ]
+                      },
+                      {
+                        "title": "BAND AM",
+                        "enum": [
+                          "RCKSK0410978"
+                        ]
+                      },
+                      {
+                        "title": "TUNING MODE FORWARD",
+                        "enum": [
+                          "RCKSK0410979"
+                        ]
+                      },
+                      {
+                        "title": "SEARCH RDS",
+                        "enum": [
+                          "RCKSK0410983"
+                        ]
+                      },
+                      {
+                        "title": "SKIP MINUS/ TUNING DOWN",
+                        "enum": [
+                          "RCKSK0410995"
+                        ]
+                      },
+                      {
+                        "title": "SKIP PLUS/TUNING UP",
+                        "enum": [
+                          "RCKSK0410996"
+                        ]
+                      },
+                      {
+                        "title": "TUNING ▼",
+                        "enum": [
+                          "RCKSK0410997"
+                        ]
+                      },
+                      {
+                        "title": "TUNING ▲",
+                        "enum": [
+                          "RCKSK0410998"
                         ]
                       }
                     ],
                     "required": true
                   }
                 }
+              },
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].zoneControl === 0;"
+              }
+            },
+            "buttonsZone2": {
+              "title": "Buttons",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "title": "Name",
+                    "type": "string",
+                    "description": "Here set Your own name.",
+                    "required": false
+                  },
+                  "reference": {
+                    "title": "Function",
+                    "type": "string",
+                    "description": "Here select function.",
+                    "oneOf": [
+                      {
+                        "title": "POWER ON/OFF",
+                        "enum": [
+                          "RCKSK0430005"
+                        ]
+                      },
+                      {
+                        "title": "POWER ON",
+                        "enum": [
+                          "RCKSK0430006"
+                        ]
+                      },
+                      {
+                        "title": "POWER OFF",
+                        "enum": [
+                          "RCKSK0430007"
+                        ]
+                      },
+                      {
+                        "title": "VOLUME UP",
+                        "enum": [
+                          "RCKSK0430368"
+                        ]
+                      },
+                      {
+                        "title": "VOLUME DOWN",
+                        "enum": [
+                          "RCKSK0430369"
+                        ]
+                      },
+                      {
+                        "title": "MUTE",
+                        "enum": [
+                          "RCKSK0430370"
+                        ]
+                      },
+                      {
+                        "title": "VR MUTE",
+                        "enum": [
+                          "RCKSK0430371"
+                        ]
+                      },
+                      {
+                        "title": "VR PRESET1(0dB)",
+                        "enum": [
+                          "RCKSK0430372"
+                        ]
+                      },
+                      {
+                        "title": "VR PRESET2(-20dB)",
+                        "enum": [
+                          "RCKSK0430373"
+                        ]
+                      },
+                      {
+                        "title": "VR PRESET3(-40dB)",
+                        "enum": [
+                          "RCKSK0430374"
+                        ]
+                      },
+                      {
+                        "title": "KEY 0",
+                        "enum": [
+                          "RCKSK0430025"
+                        ]
+                      },
+                      {
+                        "title": "KEY 1",
+                        "enum": [
+                          "RCKSK0430016"
+                        ]
+                      },
+                      {
+                        "title": "KEY 2",
+                        "enum": [
+                          "RCKSK0430017"
+                        ]
+                      },
+                      {
+                        "title": "KEY 3",
+                        "enum": [
+                          "RCKSK0430018"
+                        ]
+                      },
+                      {
+                        "title": "KEY 4",
+                        "enum": [
+                          "RCKSK0430019"
+                        ]
+                      },
+                      {
+                        "title": "KEY 5",
+                        "enum": [
+                          "RCKSK0430020"
+                        ]
+                      },
+                      {
+                        "title": "KEY 6",
+                        "enum": [
+                          "RCKSK0430021"
+                        ]
+                      },
+                      {
+                        "title": "KEY 7",
+                        "enum": [
+                          "RCKSK0430022"
+                        ]
+                      },
+                      {
+                        "title": "KEY 8",
+                        "enum": [
+                          "RCKSK0430023"
+                        ]
+                      },
+                      {
+                        "title": "KEY 9",
+                        "enum": [
+                          "RCKSK0430024"
+                        ]
+                      },
+                      {
+                        "title": "CURSOR UP",
+                        "enum": [
+                          "RCKSK0430027"
+                        ]
+                      },
+                      {
+                        "title": "CURSOR DOWN",
+                        "enum": [
+                          "RCKSK0430028"
+                        ]
+                      },
+                      {
+                        "title": "CURSOR LEFT",
+                        "enum": [
+                          "RCKSK0430029"
+                        ]
+                      },
+                      {
+                        "title": "CURSOR RIGHT",
+                        "enum": [
+                          "RCKSK0430030"
+                        ]
+                      },
+                      {
+                        "title": "ENTER",
+                        "enum": [
+                          "RCKSK0430031"
+                        ]
+                      },
+                      {
+                        "title": "RETURN",
+                        "enum": [
+                          "RCKSK0430034"
+                        ]
+                      },
+                      {
+                        "title": "PAGE PREVIOUS",
+                        "enum": [
+                          "RCKSK0430950"
+                        ]
+                      },
+                      {
+                        "title": "PAGE NEXT",
+                        "enum": [
+                          "RCKSK0430951"
+                        ]
+                      },
+                      {
+                        "title": "PLAY/PAUSE",
+                        "enum": [
+                          "RCKSK0430992"
+                        ]
+                      },
+                      {
+                        "title": "PAUSE",
+                        "enum": [
+                          "RCKSK0430994"
+                        ]
+                      },
+                      {
+                        "title": "PAUSE",
+                        "enum": [
+                          "RCKSK0430947"
+                        ]
+                      },
+                      {
+                        "title": "STOP",
+                        "enum": [
+                          "RCKSK0430993"
+                        ]
+                      },
+                      {
+                        "title": "REPEAT",
+                        "enum": [
+                          "RCKSK0430956"
+                        ]
+                      },
+                      {
+                        "title": "MEMORY",
+                        "enum": [
+                          "RCKSK0430036"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE STATION 1",
+                        "enum": [
+                          "RCKSK0430242"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE STATION 2",
+                        "enum": [
+                          "RCKSK0430243"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE STATION 3",
+                        "enum": [
+                          "RCKSK0430244"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE STATION 4",
+                        "enum": [
+                          "RCKSK0430245"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT 1",
+                        "enum": [
+                          "RCKSK0430292"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT 2",
+                        "enum": [
+                          "RCKSK0430293"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT 3",
+                        "enum": [
+                          "RCKSK0430294"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT 4",
+                        "enum": [
+                          "RCKSK0430295"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT 5",
+                        "enum": [
+                          "RCKSK0430296"
+                        ]
+                      },
+                      {
+                        "title": "iPOD PLAY",
+                        "enum": [
+                          "RCKSK0430667"
+                        ]
+                      },
+                      {
+                        "title": "INTERNET RADIO",
+                        "enum": [
+                          "RCKSK0430691"
+                        ]
+                      },
+                      {
+                        "title": "MAIN ZONE SOURCE CALL",
+                        "enum": [
+                          "RCKSK0430692"
+                        ]
+                      },
+                      {
+                        "title": "FLICKR",
+                        "enum": [
+                          "RCKSK0430697"
+                        ]
+                      },
+                      {
+                        "title": "CD/PHONO",
+                        "enum": [
+                          "RCKSK0430698"
+                        ]
+                      },
+                      {
+                        "title": "MEDIA SERVER",
+                        "enum": [
+                          "RCKSK0430699"
+                        ]
+                      },
+                      {
+                        "title": "PHONO",
+                        "enum": [
+                          "RCKSK0430704"
+                        ]
+                      },
+                      {
+                        "title": "FM TUNER",
+                        "enum": [
+                          "RCKSK0430705"
+                        ]
+                      },
+                      {
+                        "title": "CD",
+                        "enum": [
+                          "RCKSK0430706"
+                        ]
+                      },
+                      {
+                        "title": "NETWORK",
+                        "enum": [
+                          "RCKSK0430711"
+                        ]
+                      },
+                      {
+                        "title": "SIRIUS XM (NA only)",
+                        "enum": [
+                          "RCKSK0430714"
+                        ]
+                      },
+                      {
+                        "title": "FM TUNER",
+                        "enum": [
+                          "RCKSK0430715"
+                        ]
+                      },
+                      {
+                        "title": "NETWORK",
+                        "enum": [
+                          "RCKSK0430716"
+                        ]
+                      },
+                      {
+                        "title": "DOCK",
+                        "enum": [
+                          "RCKSK0430717"
+                        ]
+                      },
+                      {
+                        "title": "iPOD/USB",
+                        "enum": [
+                          "RCKSK0430718"
+                        ]
+                      },
+                      {
+                        "title": "FM TUNER",
+                        "enum": [
+                          "RCKSK0430719"
+                        ]
+                      },
+                      {
+                        "title": "DVD",
+                        "enum": [
+                          "RCKSK0430720"
+                        ]
+                      },
+                      {
+                        "title": "BLU-RAY",
+                        "enum": [
+                          "RCKSK0430721"
+                        ]
+                      },
+                      {
+                        "title": "TV AUDIO",
+                        "enum": [
+                          "RCKSK0430722"
+                        ]
+                      },
+                      {
+                        "title": "CBL/SAT",
+                        "enum": [
+                          "RCKSK0430723"
+                        ]
+                      },
+                      {
+                        "title": "GAME",
+                        "enum": [
+                          "RCKSK0430725"
+                        ]
+                      },
+                      {
+                        "title": "MEDIA PLAYER",
+                        "enum": [
+                          "RCKSK0430726"
+                        ]
+                      },
+                      {
+                        "title": "GAME2",
+                        "enum": [
+                          "RCKSK0430727"
+                        ]
+                      },
+                      {
+                        "title": "AUX1",
+                        "enum": [
+                          "RCKSK0430729"
+                        ]
+                      },
+                      {
+                        "title": "DVD/BLU-RAY",
+                        "enum": [
+                          "RCKSK0430732"
+                        ]
+                      },
+                      {
+                        "title": "MEDIA PLAYER",
+                        "enum": [
+                          "RCKSK0430735"
+                        ]
+                      },
+                      {
+                        "title": "INTERNET RADIO(Recent Play)",
+                        "enum": [
+                          "RCKSK0430741"
+                        ]
+                      },
+                      {
+                        "title": "PANDORA (NA only)",
+                        "enum": [
+                          "RCKSK0430765"
+                        ]
+                      },
+                      {
+                        "title": "LAST.FM (EU only)",
+                        "enum": [
+                          "RCKSK0430767"
+                        ]
+                      },
+                      {
+                        "title": "INPUT SOURCE SELECT RIGHT",
+                        "enum": [
+                          "RCKSK0430787"
+                        ]
+                      },
+                      {
+                        "title": "INPUT SOURCE SELECT LEFT",
+                        "enum": [
+                          "RCKSK0430788"
+                        ]
+                      },
+                      {
+                        "title": "SLEEP",
+                        "enum": [
+                          "RCKSK0430788"
+                        ]
+                      },
+                      {
+                        "title": "iPOD DOCK",
+                        "enum": [
+                          "RCKSK0430954"
+                        ]
+                      },
+                      {
+                        "title": "RANDOM/SHUFFLE",
+                        "enum": [
+                          "RCKSK0430957"
+                        ]
+                      },
+                      {
+                        "title": "USB DIRECT PLAY",
+                        "enum": [
+                          "RCKSK0430958"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE DIRECT PLAY",
+                        "enum": [
+                          "RCKSK0430959"
+                        ]
+                      },
+                      {
+                        "title": "TUNING UP",
+                        "enum": [
+                          "RCKSK0430970"
+                        ]
+                      },
+                      {
+                        "title": "TUNING DOWN",
+                        "enum": [
+                          "RCKSK0430971"
+                        ]
+                      },
+                      {
+                        "title": "PRESET CH UP",
+                        "enum": [
+                          "RCKSK0430972"
+                        ]
+                      },
+                      {
+                        "title": "PRESET CH DOWN",
+                        "enum": [
+                          "RCKSK0430973"
+                        ]
+                      },
+                      {
+                        "title": "PRESET CH SHIFT",
+                        "enum": [
+                          "RCKSK0430974"
+                        ]
+                      },
+                      {
+                        "title": "TUNER REWIND",
+                        "enum": [
+                          "RCKSK0430976"
+                        ]
+                      },
+                      {
+                        "title": "BAND FM",
+                        "enum": [
+                          "RCKSK0430977"
+                        ]
+                      },
+                      {
+                        "title": "BAND AM",
+                        "enum": [
+                          "RCKSK0430978"
+                        ]
+                      },
+                      {
+                        "title": "TUNER MODE FAST FORWARD",
+                        "enum": [
+                          "RCKSK0430979"
+                        ]
+                      },
+                      {
+                        "title": "SEARCH RDS",
+                        "enum": [
+                          "RCKSK0430983"
+                        ]
+                      },
+                      {
+                        "title": "SKIP MINUS/TUNING DOWN",
+                        "enum": [
+                          "RCKSK0430995"
+                        ]
+                      },
+                      {
+                        "title": "SKIP PLUS/TUNING UP",
+                        "enum": [
+                          "RCKSK0430996"
+                        ]
+                      },
+                      {
+                        "title": "TUNING ▼",
+                        "enum": [
+                          "RCKSK0430997"
+                        ]
+                      },
+                      {
+                        "title": "TUNING ▲",
+                        "enum": [
+                          "RCKSK0430998"
+                        ]
+                      }
+                    ],
+                    "required": true
+                  }
+                }
+              },
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].zoneControl === 1;"
+              }
+            },
+            "buttonsZone3": {
+              "title": "Buttons",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "title": "Name",
+                    "type": "string",
+                    "description": "Here set Your own name.",
+                    "required": false
+                  },
+                  "reference": {
+                    "title": "Function",
+                    "type": "string",
+                    "description": "Here select function.",
+                    "oneOf": [
+                      {
+                        "title": "POWER ON/OFF",
+                        "enum": [
+                          "RCKSK0450005"
+                        ]
+                      },
+                      {
+                        "title": "POWER ON",
+                        "enum": [
+                          "RCKSK0450006"
+                        ]
+                      },
+                      {
+                        "title": "POWER OFF",
+                        "enum": [
+                          "RCKSK0450007"
+                        ]
+                      },
+                      {
+                        "title": "VOLUME UP",
+                        "enum": [
+                          "RCKSK0450368"
+                        ]
+                      },
+                      {
+                        "title": "VOLUME DOWN",
+                        "enum": [
+                          "RCKSK0450369"
+                        ]
+                      },
+                      {
+                        "title": "MUTE",
+                        "enum": [
+                          "RCKSK0450370"
+                        ]
+                      },
+                      {
+                        "title": "VR MUTE",
+                        "enum": [
+                          "RCKSK0450371"
+                        ]
+                      },
+                      {
+                        "title": "VR PRESET1(0dB)",
+                        "enum": [
+                          "RCKSK0450372"
+                        ]
+                      },
+                      {
+                        "title": "VR PRESET2(-20dB)",
+                        "enum": [
+                          "RCKSK0450373"
+                        ]
+                      },
+                      {
+                        "title": "VR PRESET3(-40dB)",
+                        "enum": [
+                          "RCKSK0450374"
+                        ]
+                      },
+                      {
+                        "title": "KEY 0",
+                        "enum": [
+                          "RCKSK0450025"
+                        ]
+                      },
+                      {
+                        "title": "KEY 1",
+                        "enum": [
+                          "RCKSK0450016"
+                        ]
+                      },
+                      {
+                        "title": "KEY 2",
+                        "enum": [
+                          "RCKSK0450017"
+                        ]
+                      },
+                      {
+                        "title": "KEY 3",
+                        "enum": [
+                          "RCKSK0450018"
+                        ]
+                      },
+                      {
+                        "title": "KEY 4",
+                        "enum": [
+                          "RCKSK0450019"
+                        ]
+                      },
+                      {
+                        "title": "KEY 5",
+                        "enum": [
+                          "RCKSK0450020"
+                        ]
+                      },
+                      {
+                        "title": "KEY 6",
+                        "enum": [
+                          "RCKSK0450021"
+                        ]
+                      },
+                      {
+                        "title": "KEY 7",
+                        "enum": [
+                          "RCKSK0450022"
+                        ]
+                      },
+                      {
+                        "title": "KEY 8",
+                        "enum": [
+                          "RCKSK0450023"
+                        ]
+                      },
+                      {
+                        "title": "KEY 9",
+                        "enum": [
+                          "RCKSK0450024"
+                        ]
+                      },
+                      {
+                        "title": "CURSOR UP",
+                        "enum": [
+                          "RCKSK0450027"
+                        ]
+                      },
+                      {
+                        "title": "CURSOR DOWN",
+                        "enum": [
+                          "RCKSK0450028"
+                        ]
+                      },
+                      {
+                        "title": "CURSOR LEFT",
+                        "enum": [
+                          "RCKSK0450029"
+                        ]
+                      },
+                      {
+                        "title": "CURSOR RIGHT",
+                        "enum": [
+                          "RCKSK0450030"
+                        ]
+                      },
+                      {
+                        "title": "ENTER",
+                        "enum": [
+                          "RCKSK0450031"
+                        ]
+                      },
+                      {
+                        "title": "RETURN",
+                        "enum": [
+                          "RCKSK0450034"
+                        ]
+                      },
+                      {
+                        "title": "PAGE PREVIOUS",
+                        "enum": [
+                          "RCKSK0450950"
+                        ]
+                      },
+                      {
+                        "title": "PAGE NEXT",
+                        "enum": [
+                          "RCKSK0450951"
+                        ]
+                      },
+                      {
+                        "title": "PLAY/PAUSE",
+                        "enum": [
+                          "RCKSK0450992"
+                        ]
+                      },
+                      {
+                        "title": "PAUSE",
+                        "enum": [
+                          "RCKSK0450994"
+                        ]
+                      },
+                      {
+                        "title": "PAUSE",
+                        "enum": [
+                          "RCKSK0450947"
+                        ]
+                      },
+                      {
+                        "title": "STOP",
+                        "enum": [
+                          "RCKSK0450993"
+                        ]
+                      },
+                      {
+                        "title": "REPEAT",
+                        "enum": [
+                          "RCKSK0450956"
+                        ]
+                      },
+                      {
+                        "title": "RANDOM/SHUFFLE",
+                        "enum": [
+                          "RCKSK0450957"
+                        ]
+                      },
+                      {
+                        "title": "MEMORY",
+                        "enum": [
+                          "RCKSK0450036"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE STATION 1",
+                        "enum": [
+                          "RCKSK0450242"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE STATION 2",
+                        "enum": [
+                          "RCKSK0450243"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE STATION 3",
+                        "enum": [
+                          "RCKSK0450244"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE STATION 4",
+                        "enum": [
+                          "RCKSK0450245"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT 1",
+                        "enum": [
+                          "RCKSK0450292"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT 2",
+                        "enum": [
+                          "RCKSK0450293"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT 3",
+                        "enum": [
+                          "RCKSK0450294"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT 4",
+                        "enum": [
+                          "RCKSK0450295"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT 5",
+                        "enum": [
+                          "RCKSK0450296"
+                        ]
+                      },
+                      {
+                        "title": "iPOD PLAY",
+                        "enum": [
+                          "RCKSK0450667"
+                        ]
+                      },
+                      {
+                        "title": "INTERNET RADIO",
+                        "enum": [
+                          "RCKSK0450691"
+                        ]
+                      },
+                      {
+                        "title": "MAIN ZONE SOURCE CALL",
+                        "enum": [
+                          "RCKSK0450692"
+                        ]
+                      },
+                      {
+                        "title": "FLICKR",
+                        "enum": [
+                          "RCKSK0450697"
+                        ]
+                      },
+                      {
+                        "title": "CD/PHONO",
+                        "enum": [
+                          "RCKSK0450698"
+                        ]
+                      },
+                      {
+                        "title": "MEDIA SERVER",
+                        "enum": [
+                          "RCKSK0450699"
+                        ]
+                      },
+                      {
+                        "title": "PHONO",
+                        "enum": [
+                          "RCKSK0450704"
+                        ]
+                      },
+                      {
+                        "title": "FM TUNER",
+                        "enum": [
+                          "RCKSK0450705"
+                        ]
+                      },
+                      {
+                        "title": "CD",
+                        "enum": [
+                          "RCKSK0450706"
+                        ]
+                      },
+                      {
+                        "title": "NETWORK",
+                        "enum": [
+                          "RCKSK0450711"
+                        ]
+                      },
+                      {
+                        "title": "SIRIUSXM (NA only)",
+                        "enum": [
+                          "RCKSK0450714"
+                        ]
+                      },
+                      {
+                        "title": "FM TUNER",
+                        "enum": [
+                          "RCKSK0450715"
+                        ]
+                      },
+                      {
+                        "title": "NETWORK",
+                        "enum": [
+                          "RCKSK0450716"
+                        ]
+                      },
+                      {
+                        "title": "DOCK",
+                        "enum": [
+                          "RCKSK0450717"
+                        ]
+                      },
+                      {
+                        "title": "iPOD/USB",
+                        "enum": [
+                          "RCKSK0450718"
+                        ]
+                      },
+                      {
+                        "title": "FM TUNER",
+                        "enum": [
+                          "RCKSK0450719"
+                        ]
+                      },
+                      {
+                        "title": "DVD",
+                        "enum": [
+                          "RCKSK0450720"
+                        ]
+                      },
+                      {
+                        "title": "BLUE-RAY",
+                        "enum": [
+                          "RCKSK0450721"
+                        ]
+                      },
+                      {
+                        "title": "TV AUDIO",
+                        "enum": [
+                          "RCKSK0450722"
+                        ]
+                      },
+                      {
+                        "title": "CBL/SAT",
+                        "enum": [
+                          "RCKSK0450723"
+                        ]
+                      },
+                      {
+                        "title": "GAME",
+                        "enum": [
+                          "RCKSK0450725"
+                        ]
+                      },
+                      {
+                        "title": "MEDIA PLAYER",
+                        "enum": [
+                          "RCKSK0450726"
+                        ]
+                      },
+                      {
+                        "title": "GAME2",
+                        "enum": [
+                          "RCKSK0450727"
+                        ]
+                      },
+                      {
+                        "title": "AUX1",
+                        "enum": [
+                          "RCKSK0450729"
+                        ]
+                      },
+                      {
+                        "title": "DVD/BLUE-RAY",
+                        "enum": [
+                          "RCKSK0450732"
+                        ]
+                      },
+                      {
+                        "title": "MEDIA PLAYER",
+                        "enum": [
+                          "RCKSK0450735"
+                        ]
+                      },
+                      {
+                        "title": "INTERNET RADIO(Recent Play)",
+                        "enum": [
+                          "RCKSK0450741"
+                        ]
+                      },
+                      {
+                        "title": "PANDORA (NA only)",
+                        "enum": [
+                          "RCKSK0450765"
+                        ]
+                      },
+                      {
+                        "title": "LAST.FM (EU only)",
+                        "enum": [
+                          "RCKSK0450767"
+                        ]
+                      },
+                      {
+                        "title": "INPUT SOURCE SELECT RIGHT",
+                        "enum": [
+                          "RCKSK0450787"
+                        ]
+                      },
+                      {
+                        "title": "INPUT SOURCE SELECT LEFT",
+                        "enum": [
+                          "RCKSK0450788"
+                        ]
+                      },
+                      {
+                        "title": "SLEEP",
+                        "enum": [
+                          "RCKSK0450788"
+                        ]
+                      },
+                      {
+                        "title": "iPOD DOCK",
+                        "enum": [
+                          "RCKSK0450954"
+                        ]
+                      },
+                      {
+                        "title": "USB DIRECT PLAY",
+                        "enum": [
+                          "RCKSK0450958"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE DIRECT PLAY",
+                        "enum": [
+                          "RCKSK0450959"
+                        ]
+                      },
+                      {
+                        "title": "TUNING UP",
+                        "enum": [
+                          "RCKSK0450970"
+                        ]
+                      },
+                      {
+                        "title": "TUNING DOWN",
+                        "enum": [
+                          "RCKSK0450971"
+                        ]
+                      },
+                      {
+                        "title": "PRESET CH UP",
+                        "enum": [
+                          "RCKSK0450972"
+                        ]
+                      },
+                      {
+                        "title": "PRESET CH DOWN",
+                        "enum": [
+                          "RCKSK0450973"
+                        ]
+                      },
+                      {
+                        "title": "PRESET CH SHIFT",
+                        "enum": [
+                          "RCKSK0450974"
+                        ]
+                      },
+                      {
+                        "title": "TUNER REWIND",
+                        "enum": [
+                          "RCKSK0450976"
+                        ]
+                      },
+                      {
+                        "title": "BAND FM",
+                        "enum": [
+                          "RCKSK0450977"
+                        ]
+                      },
+                      {
+                        "title": "BAND AM",
+                        "enum": [
+                          "RCKSK0450978"
+                        ]
+                      },
+                      {
+                        "title": "TUNER MODE FAST FORWARD",
+                        "enum": [
+                          "RCKSK0450979"
+                        ]
+                      },
+                      {
+                        "title": "SEARCH RDS",
+                        "enum": [
+                          "RCKSK0450983"
+                        ]
+                      },
+                      {
+                        "title": "SKIP MINUS/TUNING DOWN",
+                        "enum": [
+                          "RCKSK0450995"
+                        ]
+                      },
+                      {
+                        "title": "SKIP PLUS/TUNING UP",
+                        "enum": [
+                          "RCKSK0450996"
+                        ]
+                      },
+                      {
+                        "title": "TUNING ▼",
+                        "enum": [
+                          "RCKSK0450997"
+                        ]
+                      },
+                      {
+                        "title": "TUNING ▲",
+                        "enum": [
+                          "RCKSK0450998"
+                        ]
+                      }
+                    ],
+                    "required": true
+                  }
+                }
+              },
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].zoneControl === 2;"
               }
             },
             "manufacturer": {
@@ -592,6 +2961,8 @@
             "devices[].disableLogInfo",
             "devices[].switchInfoMenu",
             "devices[].masterPower",
+            "devices[].masterVolume",
+            "devices[].masterMute",
             "devices[].refreshInterval",
             "devices[].zoneControl",
             "devices[].volumeControl"
@@ -600,7 +2971,7 @@
         {
           "key": "devices[]",
           "type": "section",
-          "title": "Inputs and Functions",
+          "title": "Inputs",
           "expandable": true,
           "expanded": false,
           "items": [
@@ -608,11 +2979,10 @@
               "key": "devices[].inputs",
               "type": "array",
               "orderable": false,
-              "buttonText": "Add input/function",
+              "buttonText": "Add input",
               "items": [
                 "devices[].inputs[].name",
                 "devices[].inputs[].reference",
-                "devices[].inputs[].type",
                 "devices[].inputs[].mode"
               ]
             }
@@ -621,23 +2991,68 @@
         {
           "key": "devices[]",
           "type": "section",
-          "title": "Inputs and Functions (Buttons)",
+          "title": "Buttons",
           "expandable": true,
           "expanded": false,
           "items": [
             {
-              "key": "devices[].inputsButton",
+              "key": "devices[].buttonsMainZone",
               "type": "array",
               "orderable": false,
-              "buttonText": "Add input/function",
+              "buttonText": "Add button",
               "items": [
-                "devices[].inputsButton[].name",
-                "devices[].inputsButton[].reference",
-                "devices[].inputsButton[].type",
-                "devices[].inputsButton[].mode"
+                "devices[].buttonsMainZone[].name",
+                "devices[].buttonsMainZone[].reference"
               ]
             }
-          ]
+          ],
+          "condition": {
+            "functionBody": "return model.devices[arrayIndices].zoneControl === 0;"
+          }
+        },
+        {
+          "key": "devices[]",
+          "type": "section",
+          "title": "Buttons",
+          "expandable": true,
+          "expanded": false,
+          "items": [
+            {
+              "key": "devices[].buttonsZone2",
+              "type": "array",
+              "orderable": false,
+              "buttonText": "Add button",
+              "items": [
+                "devices[].buttonsZone2[].name",
+                "devices[].buttonsZone2[].reference"
+              ]
+            }
+          ],
+          "condition": {
+            "functionBody": "return model.devices[arrayIndices].zoneControl === 1;"
+          }
+        },
+        {
+          "key": "devices[]",
+          "type": "section",
+          "title": "Buttons",
+          "expandable": true,
+          "expanded": false,
+          "items": [
+            {
+              "key": "devices[].buttonsZone3",
+              "type": "array",
+              "orderable": false,
+              "buttonText": "Add button",
+              "items": [
+                "devices[].buttonsZone3[].name",
+                "devices[].buttonsZone3[].reference"
+              ]
+            }
+          ],
+          "condition": {
+            "functionBody": "return model.devices[arrayIndices].zoneControl === 2;"
+          }
         },
         {
           "key": "devices[]",
