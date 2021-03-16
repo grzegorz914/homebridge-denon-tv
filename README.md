@@ -140,7 +140,7 @@ To enable the ability to control each zone seperately then use the configuration
 | `inputs` | Choose from available inputs |
 | `buttonsMainZone` | Choose the function for additional control button |
 | `buttonsZon2` | Choose the function for additional control button for Zone 2 |
-| `buttonsZone2` | Choose the function for additional control button for Zone 3 |
+| `buttonsZone3` | Choose the function for additional control button for Zone 3 |
 
 After editing the conf.json or using homebridge-config-ui-x to configure this plugin then save the settings and restart Homebridge. If the configuration has multiple zones then each zone will show up as a separate Homekit Accessory that will need be be added to Home individually using the same PIN code that is used for Homebridge.
 
