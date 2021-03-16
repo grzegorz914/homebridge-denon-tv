@@ -148,6 +148,12 @@
                     "description": "Here select input.",
                     "oneOf": [
                       {
+                        "title": "TV AUDIO",
+                        "enum": [
+                          "TV"
+                        ]
+                      },
+                      {
                         "title": "CD",
                         "enum": [
                           "CD"
@@ -160,18 +166,6 @@
                         ]
                       },
                       {
-                        "title": "BLUE-RAY",
-                        "enum": [
-                          "BD"
-                        ]
-                      },
-                      {
-                        "title": "TV AUDIO",
-                        "enum": [
-                          "TV"
-                        ]
-                      },
-                      {
                         "title": "SAT/CBL",
                         "enum": [
                           "SAT/CBL"
@@ -181,6 +175,12 @@
                         "title": "CBL/SAT",
                         "enum": [
                           "CBL/SAT"
+                        ]
+                      },
+                      {
+                        "title": "BLUE-RAY",
+                        "enum": [
+                          "BD"
                         ]
                       },
                       {
@@ -238,15 +238,93 @@
                         ]
                       },
                       {
+                        "title": "FM TUNER",
+                        "enum": [
+                          "TUNER"
+                        ]
+                      },
+                      {
+                        "title": "IRADIO",
+                        "enum": [
+                          "IRADIO"
+                        ]
+                      },
+                      {
+                        "title": "HD RADIO",
+                        "enum": [
+                          "HDRADIO"
+                        ]
+                      },
+                      {
                         "title": "MEDIA PLAYER",
                         "enum": [
                           "MPLAY"
                         ]
                       },
                       {
-                        "title": "FM TUNER",
+                        "title": "MEDIA SERVER",
                         "enum": [
-                          "TUNER"
+                          "SERVER"
+                        ]
+                      },
+                      {
+                        "title": "NETWORK",
+                        "enum": [
+                          "NET"
+                        ]
+                      },
+                      {
+                        "title": "ONLINE MIUSIC FAVORITES PLAY",
+                        "enum": [
+                          "FVP"
+                        ]
+                      },
+                      {
+                        "title": "USB/IPOD",
+                        "enum": [
+                          "USB/IPOD"
+                        ]
+                      },
+                      {
+                        "title": "USB START PLAYBACK",
+                        "enum": [
+                          "USB"
+                        ]
+                      },
+                      {
+                        "title": "IPOD START PLAYBACK",
+                        "enum": [
+                          "IPD"
+                        ]
+                      },
+                      {
+                        "title": "iRADIO RECENT PLAY",
+                        "enum": [
+                          "IRP"
+                        ]
+                      },
+                      {
+                        "title": "SPOTIFY",
+                        "enum": [
+                          "SPOTIFY"
+                        ]
+                      },
+                      {
+                        "title": "LAST.FM",
+                        "enum": [
+                          "LASTFM"
+                        ]
+                      },
+                      {
+                        "title": "PANDORA",
+                        "enum": [
+                          "PANDORA"
+                        ]
+                      },
+                      {
+                        "title": "SIRIUSXM (NA only)",
+                        "enum": [
+                          "SIRIUSXM"
                         ]
                       },
                       {
@@ -331,84 +409,6 @@
                         "title": "QUICK SELECT MEMORY 5",
                         "enum": [
                           "QUICK5 MEMORY"
-                        ]
-                      },
-                      {
-                        "title": "IRADIO",
-                        "enum": [
-                          "IRADIO"
-                        ]
-                      },
-                      {
-                        "title": "HD RADIO",
-                        "enum": [
-                          "HDRADIO"
-                        ]
-                      },
-                      {
-                        "title": "MEDIA SERVER",
-                        "enum": [
-                          "SERVER"
-                        ]
-                      },
-                      {
-                        "title": "SPOTIFY",
-                        "enum": [
-                          "SPOTIFY"
-                        ]
-                      },
-                      {
-                        "title": "LAST.FM",
-                        "enum": [
-                          "LASTFM"
-                        ]
-                      },
-                      {
-                        "title": "NETWORK",
-                        "enum": [
-                          "NET"
-                        ]
-                      },
-                      {
-                        "title": "USB/IPOD",
-                        "enum": [
-                          "USB/IPOD"
-                        ]
-                      },
-                      {
-                        "title": "USB START PLAYBACK",
-                        "enum": [
-                          "USB"
-                        ]
-                      },
-                      {
-                        "title": "IPOD START PLAYBACK",
-                        "enum": [
-                          "IPD"
-                        ]
-                      },
-                      {
-                        "title": "iRADIO RECENT PLAY",
-                        "enum": [
-                          "IRP"
-                        ]
-                      },
-                      {
-                        "title": "ONLINE MIUSIC FAVORITES PLAY",
-                        "enum": [
-                          "FVP"
-                        ]
-                      },
-                      {
-                        "title": "SIRIUSXM (NA only)",
-                        "enum": [
-                          "SIRIUSXM"
-                        ]
-                      },
-                      {
-                        "title": "PANDORA",
-                        "enum": [
-                          "PANDORA"
                         ]
                       }
                     ],
@@ -746,6 +746,12 @@
                         "title": "VIDEO SELECT",
                         "enum": [
                           "RCKSK0410112"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE DIRECT PLAY",
+                        "enum": [
+                          "RCKSK0410959"
                         ]
                       },
                       {
@@ -1133,12 +1139,6 @@
                         ]
                       },
                       {
-                        "title": "LOUDNESS ON/OFF",
-                        "enum": [
-                          "RCKSK0410857"
-                        ]
-                      },
-                      {
                         "title": "ALL TREBLE UP",
                         "enum": [
                           "RCKSK0410400"
@@ -1160,6 +1160,12 @@
                         "title": "ALL BASS DOWN",
                         "enum": [
                           "RCKSK0410404"
+                        ]
+                      },
+                      {
+                        "title": "LOUDNESS ON/OFF",
+                        "enum": [
+                          "RCKSK0410857"
                         ]
                       },
                       {
@@ -1211,15 +1217,15 @@
                         ]
                       },
                       {
-                        "title": "DYNAMIC VOLUME OFF",
-                        "enum": [
-                          "RCKSK0410542"
-                        ]
-                      },
-                      {
                         "title": "DYNAMIC VOLUME SELECT",
                         "enum": [
                           "RCKSK0410545"
+                        ]
+                      },
+                      {
+                        "title": "DYNAMIC VOLUME OFF",
+                        "enum": [
+                          "RCKSK0410542"
                         ]
                       },
                       {
@@ -1265,24 +1271,6 @@
                         ]
                       },
                       {
-                        "title": "FRONT SPEAKER",
-                        "enum": [
-                          "RCKSK0410518"
-                        ]
-                      },
-                      {
-                        "title": "FRONT SPEAKER A ON/OFF",
-                        "enum": [
-                          "RCKSK0410605"
-                        ]
-                      },
-                      {
-                        "title": "FRONT SPEAKER B ON/OFF",
-                        "enum": [
-                          "RCKSK0410606"
-                        ]
-                      },
-                      {
                         "title": "AUDIO DELAY MODE",
                         "enum": [
                           "RCKSK0410620"
@@ -1301,39 +1289,33 @@
                         ]
                       },
                       {
-                        "title": "FRONT DISPLAY (Dimmer)",
+                        "title": "FRONT SPEAKER",
                         "enum": [
-                          "RCKSK0410656"
+                          "RCKSK0410518"
                         ]
                       },
                       {
-                        "title": "IPOD PLAY",
+                        "title": "FRONT SPEAKER A ON/OFF",
                         "enum": [
-                          "RCKSK0410667"
+                          "RCKSK0410605"
                         ]
                       },
                       {
-                        "title": "HDMI MONITOR SELECT 1",
+                        "title": "FRONT SPEAKER B ON/OFF",
                         "enum": [
-                          "RCKSK0410669"
+                          "RCKSK0410606"
                         ]
                       },
                       {
-                        "title": "HDMI MONITOR SELECT 2",
-                        "enum": [
-                          "RCKSK0410670"
-                        ]
-                      },
-                      {
-                        "title": "HDMI MONITOR SELECT 3",
-                        "enum": [
-                          "RCKSK0410671"
-                        ]
-                      },
-                      {
-                        "title": "INTERNET RADIO",
+                        "title": "IRADIO",
                         "enum": [
                           "RCKSK0410691"
+                        ]
+                      },
+                      {
+                        "title": "IRADIO (Recent Play)",
+                        "enum": [
+                          "RCKSK0410741"
                         ]
                       },
                       {
@@ -1403,6 +1385,18 @@
                         ]
                       },
                       {
+                        "title": "IPOD PLAY",
+                        "enum": [
+                          "RCKSK0410667"
+                        ]
+                      },
+                      {
+                        "title": "USB DIRECT PLAY",
+                        "enum": [
+                          "RCKSK0410958"
+                        ]
+                      },
+                      {
                         "title": "FM TUNER",
                         "enum": [
                           "RCKSK0410719"
@@ -1439,12 +1433,6 @@
                         ]
                       },
                       {
-                        "title": "MEDIA PLAYER",
-                        "enum": [
-                          "RCKSK0410726"
-                        ]
-                      },
-                      {
                         "title": "GAME2",
                         "enum": [
                           "RCKSK0410727"
@@ -1471,19 +1459,31 @@
                       {
                         "title": "MEDIA PLAYER",
                         "enum": [
+                          "RCKSK0410726"
+                        ]
+                      },
+                      {
+                        "title": "MEDIA PLAYER",
+                        "enum": [
                           "RCKSK0410735"
+                        ]
+                      },
+                      {
+                        "title": "PANDORA (NA only)",
+                        "enum": [
+                          "RCKSK0410765"
+                        ]
+                      },
+                      {
+                        "title": "LAST.FM (EU only)",
+                        "enum": [
+                          "RCKSK0410767"
                         ]
                       },
                       {
                         "title": "MULTIEQ/MULTIEQ XT",
                         "enum": [
                           "RCKSK0410736"
-                        ]
-                      },
-                      {
-                        "title": "INTERNET RADIO (Recent Play)",
-                        "enum": [
-                          "RCKSK0410741"
                         ]
                       },
                       {
@@ -1517,15 +1517,39 @@
                         ]
                       },
                       {
-                        "title": "RESOLUTION",
+                        "title": "FRONT DISPLAY (Dimmer)",
                         "enum": [
-                          "RCKSK0410752"
+                          "RCKSK0410656"
                         ]
                       },
                       {
                         "title": "MONITOR SELECT",
                         "enum": [
                           "RCKSK0410753"
+                        ]
+                      },
+                      {
+                        "title": "HDMI MONITOR SELECT 1",
+                        "enum": [
+                          "RCKSK0410669"
+                        ]
+                      },
+                      {
+                        "title": "HDMI MONITOR SELECT 2",
+                        "enum": [
+                          "RCKSK0410670"
+                        ]
+                      },
+                      {
+                        "title": "HDMI MONITOR SELECT 3",
+                        "enum": [
+                          "RCKSK0410671"
+                        ]
+                      },
+                      {
+                        "title": "RESOLUTION",
+                        "enum": [
+                          "RCKSK0410752"
                         ]
                       },
                       {
@@ -1556,18 +1580,6 @@
                         "title": "REFERENCE LEVEL OFFSET (15dB) FOR DYNAMIC EQ",
                         "enum": [
                           "RCKSK0410763"
-                        ]
-                      },
-                      {
-                        "title": "PANDORA (NA only)",
-                        "enum": [
-                          "RCKSK0410765"
-                        ]
-                      },
-                      {
-                        "title": "LAST.FM (EU only)",
-                        "enum": [
-                          "RCKSK0410767"
                         ]
                       },
                       {
@@ -1646,18 +1658,6 @@
                         "title": "VIDEO MODE SELECT GAME",
                         "enum": [
                           "RCKSK0410852"
-                        ]
-                      },
-                      {
-                        "title": "USB DIRECT PLAY",
-                        "enum": [
-                          "RCKSK0410958"
-                        ]
-                      },
-                      {
-                        "title": "FAVORITE DIRECT PLAY",
-                        "enum": [
-                          "RCKSK0410959"
                         ]
                       },
                       {
