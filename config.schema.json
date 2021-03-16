@@ -2954,23 +2954,6 @@
         {
           "key": "devices[]",
           "type": "section",
-          "title": "Advanced Settings",
-          "expandable": true,
-          "expanded": false,
-          "items": [
-            "devices[].disableLogInfo",
-            "devices[].switchInfoMenu",
-            "devices[].masterPower",
-            "devices[].masterVolume",
-            "devices[].masterMute",
-            "devices[].refreshInterval",
-            "devices[].zoneControl",
-            "devices[].volumeControl"
-          ]
-        },
-        {
-          "key": "devices[]",
-          "type": "section",
           "title": "Inputs",
           "expandable": true,
           "expanded": false,
@@ -3053,6 +3036,23 @@
           "condition": {
             "functionBody": "return model.devices[arrayIndices].zoneControl === 2;"
           }
+        },
+        {
+          "key": "devices[]",
+          "type": "section",
+          "title": "Advanced Settings",
+          "expandable": true,
+          "expanded": false,
+          "items": [
+            "devices[].disableLogInfo",
+            "devices[].switchInfoMenu",
+            "devices[].masterPower",
+            "devices[].masterVolume",
+            "devices[].masterMute",
+            "devices[].refreshInterval",
+            "devices[].zoneControl",
+            "devices[].volumeControl"
+          ]
         },
         {
           "key": "devices[]",
