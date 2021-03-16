@@ -100,8 +100,6 @@ class denonTvDevice {
 		this.inputsName = new Array();
 		this.inputsReference = new Array();
 		this.inputsMode = new Array();
-		this.buttonsName = new Array();
-		this.buttonsReference = new Array();
 		this.checkDeviceInfo = true;
 		this.checkDeviceState = false;
 		this.startPrepareAccessory = true;
@@ -699,8 +697,10 @@ class denonTvDevice {
 		if (this.buttonsLength > 0) {
 			this.log(this.buttonsLength)
 			this.log.debug('prepareInputsButtonService');
-			const buttons = [this.buttonsMainZone, this.buttonsZone2, this.buttonsZone3][this.zoneControl];
 			this.buttonsService = new Array();
+			this.buttonsName = new Array();
+			this.buttonsReference = new Array();
+			const buttons = [this.buttonsMainZone, this.buttonsZone2, this.buttonsZone3][this.zoneControl];
 			for (let i = 0; i < this.buttonsLength; i++) {
 				const buttonName = (buttons[i].name !== undefined) ? buttons[i].name : buttons[i].reference;
 				const buttonReference = buttons[i].reference;
