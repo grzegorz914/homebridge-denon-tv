@@ -66,7 +66,10 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
 | `volumeControl`| Select what a additional volume control mode You want to use (None, Slider, Fan) |
 | `switchInfoMenu`| If `true` then the `I` button will toggle its behaviour in the Apple Remote in Control Center and `PowerModeSelection` in settings |
 | `disableLogInfo`| If `true` then disable log info, all values and state will not be displayed in Homebridge log console |
-| `manufacturer` | `modelName`, `serialNumber`, `firmwareRevision` - optional branding data displayed in Home.app |
+| `manufacturer` | Optional free-form informational data that will be displayed in the Home.app if it is filled in |
+| `modelName` | Optional free-form informational data that will be displayed in the Home.app if it is filled in |
+| `serialNumber` | Optional free-form informational data that will be displayed in the Home.app if it is filled in |
+| `firmwareRevision` | Optional free-form informational data that will be displayed in the Home.app if it is filled in |
 
 All possible commands can be found in [Denon Control Protocol 2020](http://assets.denon.com/_layouts/15/xlviewer.aspx?id=/DocumentMaster/us/DENON_FY20%20AVR_PROTOCOL_V03_03042020.xlsx)
 
