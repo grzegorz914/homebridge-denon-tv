@@ -729,7 +729,6 @@ class denonTvDevice {
 
 		//Prepare inputs button services
 		if (this.buttonsLength > 0) {
-			this.log(this.buttonsLength)
 			this.log.debug('prepareInputsButtonService');
 			this.buttonsService = new Array();
 			this.buttonsName = new Array();
