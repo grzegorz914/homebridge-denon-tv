@@ -99,8 +99,8 @@
                     ],
                     "buttonsMainZone": [
                         {
-                            "name": "POWER ON/OFF",
-                            "reference": "RCKSK0410005"
+                            "name": "POWER ON",
+                            "reference": "ZMON"
                         }
                     ],
                     "manufacturer": "Manufacturer",

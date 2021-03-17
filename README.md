@@ -114,8 +114,8 @@ All possible commands can be found in [Denon Control Protocol 2020](http://asset
                     ],
                     "inputsButtonMainZone": [
                         {
-                            "name": "POWER ON/OFF",
-                            "reference": "RCKSK0410005"
+                            "name": "POWER ON",
+                            "reference": "ZMON"
                         }
                     ],
             "manufacturer": "Manufacturer",
@@ -179,8 +179,8 @@ After editing the conf.json or using homebridge-config-ui-x to configure this pl
             ],
             "buttonsMainZone": [
                         {
-                            "name": "POWER ON/OFF",
-                            "reference": "RCKSK0410005"
+                            "name": "POWER ON",
+                            "reference": "ZMON"
                         }
                     ],
         },
@@ -215,8 +215,8 @@ After editing the conf.json or using homebridge-config-ui-x to configure this pl
             ],
             "buttonsZone2": [
                         {
-                            "name": "POWER ON/OFF",
-                            "reference": "RCKSK0430005"
+                            "name": "POWER ON",
+                            "reference": "Z2ON"
                         }
                     ],
         },
@@ -249,8 +249,8 @@ After editing the conf.json or using homebridge-config-ui-x to configure this pl
             ],
             "buttonsZone3": [
                         {
-                            "name": "POWER ON/OFF",
-                            "reference": "RCKSK0450005"
+                            "name": "POWER ON",
+                            "reference": "Z3ON"
                         }
                     ],
         }
