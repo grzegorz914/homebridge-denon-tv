@@ -13,6 +13,7 @@ Homebridge plugin for Denon/Marantz AV Receivers series X/SR.
 Tested with Denon AVR-X6300H and Marantz SR6013.
 
 This plugin is based upon the official documentation for communicating with and controlling these Denon and Marantz receivers, located here: [Denon Control Protocol 2020](http://assets.denon.com/_layouts/15/xlviewer.aspx?id=/DocumentMaster/us/DENON_FY20%20AVR_PROTOCOL_V03_03042020.xlsx)
+
 </span>
 
 ## Package Requirements
@@ -31,14 +32,6 @@ This plugin is based upon the official documentation for communicating with and 
 1. Follow the step-by-step instructions at [Homebridge Wiki](https://github.com/homebridge/homebridge/wiki) for how to install Homebridge.
 2. Follow the step-by-step instructions at [Homebridge Config UI X](https://github.com/oznu/homebridge-config-ui-x/wiki) for how to install Homebridge Config UI X.
 3. Install homebridge-denon-tv using: `npm install -g homebridge-denon-tv` or search for `Denon TV` in Config UI X.
-
-## HomeKit Pairing
-1. Each accessories needs to be manually paired.
-2. Open the Home <img alt="" src="https://user-images.githubusercontent.com/3979615/78010622-4ea1d380-738e-11ea-8a17-e6a465eeec35.png" height="16.42px" /> app on your device.
-3. Tap the Home tab, then tap <img alt="plus button" src="https://user-images.githubusercontent.com/3979615/78010869-9aed1380-738e-11ea-9644-9f46b3633026.png" height="16.42px" />.
-4. Tap *Add Accessory*, and select *I Don't Have a Code or Cannot Scan*.
-5. You should now see your Xbox, select it
-6. Enter the Homebridge PIN, this can be found under the QR code in Homebridge UI or your Homebridge logs, alternatively you can select *Use Camera* and scan the QR code again.
 
 ## Features and How To Use Them
 1. Power the receiver ON/OFF using a short press of the created device tile in the HomeKit app.
