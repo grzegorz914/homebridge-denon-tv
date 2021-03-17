@@ -31,6 +31,13 @@ Tested with AVR-X6300H.
 2. Follow the step-by-step instructions at [Homebridge Config UI X](https://github.com/oznu/homebridge-config-ui-x/wiki) for how to install Homebridge Config UI X.
 3. Install homebridge-denon-tv using: `npm install -g homebridge-denon-tv` or search for `Denon Tv` in Config UI X.
 
+## HomeKit Pairing
+1. Each accessories needs to be manually paired.
+2. Open the Home <img alt="" src="https://user-images.githubusercontent.com/3979615/78010622-4ea1d380-738e-11ea-8a17-e6a465eeec35.png" height="16.42px" /> app on your device.
+3. Tap the Home tab, then tap <img alt="plus button" src="https://user-images.githubusercontent.com/3979615/78010869-9aed1380-738e-11ea-9644-9f46b3633026.png" height="16.42px" />.
+4. Tap *Add Accessory*, and select *I Don't Have a Code or Cannot Scan*.
+5. You should now see your Xbox, select it
+6. Enter the Homebridge PIN, this can be found under the QR code in Homebridge UI or your Homebridge logs, alternatively you can select *Use Camera* and scan the QR code again.
 
 ## Features and How To Use Them
 1. Power the receiver ON/OFF using a short press of the created device tile in the HomeKit app.
@@ -56,8 +63,8 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
 | Key | Description | 
 | --- | --- |
 | `port` | This is the network port that this plugin will use to communicate with the receiver. If port `8080` is not working then try to use port `80` which some receivers use alternatively. Try the other port if the first one does not work |
-| `inputs` | Choose from available inputs the inputs that should be published to and appear in Homekit apps in the device tile|
-| `buttonsMainZone` | here choice function for additional control button for Main Zone|
+| `inputs` | Choose from available inputs the inputs that should be published to and appear in HomeKit app in the device tile as inputs list |
+| `buttonsMainZone` | here choice function for additional control button for Main Zone |
 | `refreshInterval` | Set the data refresh time in seconds, default is every 5 seconds |
 | `zoneControl` | Selects which zone will will be controlled by this section of the configuration |
 | `masterPower` | If `true` then the power switch for that zone (typically you would only use this for the Main Zone) will turn the entire receiver `ON` or `OFF/STANDBY` rather than just the zone itself |
