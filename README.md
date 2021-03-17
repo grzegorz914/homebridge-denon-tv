@@ -9,9 +9,10 @@
 [![npm](https://badgen.net/npm/dt/homebridge-denon-tv?color=purple)](https://www.npmjs.com/package/homebridge-denon-tv) [![npm](https://badgen.net/npm/v/homebridge-denon-tv?color=purple)](https://www.npmjs.com/package/homebridge-denon-tv) [![GitHub pull requests](https://img.shields.io/github/issues-pr/grzegorz914/homebridge-denon-tv.svg)](https://github.com/grzegorz914/homebridge-denon-tv/pulls)
 [![GitHub issues](https://img.shields.io/github/issues/grzegorz914/homebridge-denon-tv.svg)](https://github.com/grzegorz914/homebridge-denon-tv/issues)
 
-Homebridge plugin for Denon/Marantz AV Receivers series X. 
-Tested with AVR-X6300H.
+Homebridge plugin for Denon/Marantz AV Receivers series X/SR. 
+Tested with Denon AVR-X6300H and Marantz SR6013.
 
+This plugin is based upon the official documentation for communicating with and controlling these Denon and Marantz receivers, located here: [Denon Control Protocol 2020](http://assets.denon.com/_layouts/15/xlviewer.aspx?id=/DocumentMaster/us/DENON_FY20%20AVR_PROTOCOL_V03_03042020.xlsx)
 </span>
 
 ## Package Requirements
@@ -21,7 +22,7 @@ Tested with AVR-X6300H.
 | [Homebridge Config UI X](https://github.com/oznu/homebridge-config-ui-x) | Highly Recommended |
 
 ## Note
-- For homebridge-denon-tv versions 3.6.0 and above the minimum required version of Homebridge is v1.3.x.
+- For homebridge-denon-tv versions 3.6.0 and above the minimum required version of Homebridge is 1.3.x.
 
 ## Know issues
 - If used with Hoobs, there is a possible configuration incompatibilty.
@@ -29,7 +30,7 @@ Tested with AVR-X6300H.
 ## Installation Instructions
 1. Follow the step-by-step instructions at [Homebridge Wiki](https://github.com/homebridge/homebridge/wiki) for how to install Homebridge.
 2. Follow the step-by-step instructions at [Homebridge Config UI X](https://github.com/oznu/homebridge-config-ui-x/wiki) for how to install Homebridge Config UI X.
-3. Install homebridge-denon-tv using: `npm install -g homebridge-denon-tv` or search for `Denon Tv` in Config UI X.
+3. Install homebridge-denon-tv using: `npm install -g homebridge-denon-tv` or search for `Denon TV` in Config UI X.
 
 
 ## Features and How To Use Them
@@ -41,7 +42,7 @@ Tested with AVR-X6300H.
 6. Surround Modes can be controlled from the Inputs List from a long press of the device tile or by creating separate tiles in the Inputs and Functions button.
 7. Digital Input Modes control from the inputs list or create separate tile in the Inputs and Functions button.
 8. Siri control.
-9. Zones control.
+9. Multiple Zone control.
 
 <p align="left">
   <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/homekit.png" height="300"></a> 
@@ -52,7 +53,11 @@ Tested with AVR-X6300H.
 
 ## Configuration
 
-Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-config-ui-x) plugin to configure this plugin (strongly recomended). The sample configuration can be edited and used manually as an alternative. See the `sample-config.json` file in this repository for an example or copy the example below into your config.json file, making the apporpriate changes before saving it. Be sure to always make a backup copy of your config.json file before making any changes to it.
+To ease configuration, install and use the [Homebridge Config UI X](https://github.com/oznu/homebridge-config-ui-x) plugin (highly recomended). 
+
+Alternatively, Tthe sample configuration can be edited and used manually. See the `sample-config.json` file in this repository for an example or copy/paste the example below into your config.json file, making the apporpriate changes before saving it. Be sure to always make a backup copy of your config.json file before making any changes to it.
+
+## Configuration Values
 | Key | Description | 
 | --- | --- |
 | `port` | This is the network port that this plugin will use to communicate with the receiver. If port `8080` is not working then try to use port `80` which some receivers use alternatively. Try the other port if the first one does not work |
@@ -71,14 +76,13 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
 | `serialNumber` | Optional free-form informational data that will be displayed in the Home.app if it is filled in |
 | `firmwareRevision` | Optional free-form informational data that will be displayed in the Home.app if it is filled in |
 
-All possible commands can be found in [Denon Control Protocol 2020](http://assets.denon.com/_layouts/15/xlviewer.aspx?id=/DocumentMaster/us/DENON_FY20%20AVR_PROTOCOL_V03_03042020.xlsx)
 
 
 <p align="left">
   <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/ustawienia.png" height="150"></a>
 </p>
 
-## Main Zone control and settings
+## Main Zone Control and Settings
 ```json
 {
     "platform": "DenonTv",
@@ -271,7 +275,8 @@ The HomeKit app has a limitation of a maximum number of 100 services per 1 acces
   2. Speaker service
   3. Lightbulb service
   4. Television service and inputs service 
-  5. 5-100(where every input = 1 service)). 
+  5. 5-100, where every input = 1 service
+ 
 At this time, if all services are enabled then the number of possible inputs to configure is 96.
 
 ## What's new:
