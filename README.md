@@ -112,7 +112,7 @@ All possible commands can be found in [Denon Control Protocol 2020](http://asset
                             "mode": "SI"
                         }
                     ],
-                    "inputsButtonMainZone": [
+                    "buttonsMainZone": [
                         {
                             "name": "POWER ON",
                             "reference": "ZMON"
