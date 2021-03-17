@@ -646,7 +646,7 @@ class denonTvDevice {
 				savedNames = JSON.parse(fs.readFileSync(this.customInputsFile));
 				this.log.debug('Device: %s %s, read saved Inputs names: %s', this.host, accessoryName, savedNames)
 			} catch (error) {
-				this.log.error('Device: %s %s, read saved Inputs names error: %s', this.host, accessoryName, error)
+				this.log.erdebugror('Device: %s %s, read saved Inputs names error: %s', this.host, accessoryName)
 			}
 
 			let savedTargetVisibility = {};
@@ -654,7 +654,7 @@ class denonTvDevice {
 				savedTargetVisibility = JSON.parse(fs.readFileSync(this.targetVisibilityInputsFile));
 				this.log.debug('Device: %s %s, read savedTargetVisibility: %s', this.host, accessoryName, savedTargetVisibility)
 			} catch (error) {
-				this.log.error('Device: %s %s, read savedTargetVisibility error: %s', this.host, accessoryName, error)
+				this.log.debug('Device: %s %s, read savedTargetVisibility error: %s', this.host, accessoryName)
 			}
 
 			//check possible inputs count
