@@ -659,7 +659,7 @@ class denonTvDevice {
 
 			//check possible inputs count
 			let inputsLength = this.inputsLength;
-			if (this.inputsLength > 97) {
+			if (inputsLength > 97) {
 				inputsLength = 97;
 				this.log('Inputs count reduced to: %s, because excedded maximum of services', inputsLength)
 			}
@@ -675,7 +675,7 @@ class denonTvDevice {
 				const inputMode = inputs[i].mode;
 
 				//get visibility state
-				const targetVisibility = (savedTargetVisibility[inputReference] !== undefined) ? savedTargetVisibility[inputReference] : 1;
+				const targetVisibility = (savedTargetVisibility[inputReference] !== undefined) ? savedTargetVisibility[inputReference] : 0;
 				const currentVisibility = targetVisibility;
 
 				const inputService = new Service.InputSource(inputReference, 'input' + i);
