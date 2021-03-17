@@ -663,7 +663,7 @@ class denonTvDevice {
 				inputsLength = 97;
 				this.log('Inputs count reduced to: %s, because excedded maximum of services', inputsLength)
 			}
-			for (let i = 0; i < this.inputsLength; i++) {
+			for (let i = 0; i < inputsLength; i++) {
 
 				//get input reference
 				const inputReference = inputs[i].reference;
