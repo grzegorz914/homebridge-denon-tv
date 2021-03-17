@@ -639,6 +639,8 @@ class denonTvDevice {
 		if (this.inputsLength > 0) {
 			this.log.debug('prepareInputsService');
 			this.inputsService = new Array();
+			const inputs = this.inputs;
+
 			let savedNames = {};
 			try {
 				savedNames = JSON.parse(fs.readFileSync(this.customInputsFile));
@@ -655,7 +657,12 @@ class denonTvDevice {
 				this.log.error('Device: %s %s, read savedTargetVisibility error: %s', this.host, accessoryName, error)
 			}
 
-			const inputs = this.inputs;
+			//check possible inputs count
+			let inputsLength = this.inputsLength;
+			if (this.inputsLength > 97) {
+				inputsLength = 97;
+				this.log('Inputs count reduced to: %s, because excedded maximum of services', inputsLength)
+			}
 			for (let i = 0; i < this.inputsLength; i++) {
 
 				//get input reference
@@ -728,7 +735,14 @@ class denonTvDevice {
 			this.buttonsName = new Array();
 			this.buttonsReference = new Array();
 			const buttons = [this.buttonsMainZone, this.buttonsZone2, this.buttonsZone3][this.zoneControl];
-			for (let i = 0; i < this.buttonsLength; i++) {
+
+			//check possible buttons count
+			let buttonsLength = this.buttonsLength;
+			if ((this.inputsLength + buttonsLength) > 97) {
+				buttonsLength = 97 - this.inputsLength;
+				this.log('Buttons count reduced to: %s, because excedded maximum of services', buttonsLength)
+			}
+			for (let i = 0; i < buttonsLength; i++) {
 				const buttonName = (buttons[i].name !== undefined) ? buttons[i].name : buttons[i].reference;
 				const buttonReference = buttons[i].reference;
 				const buttonService = new Service.Switch(this.shortZoneName + ' ' + buttonName, 'buttonService' + i);
