@@ -113,6 +113,7 @@ class denonTvDevice {
 		this.prefDir = path.join(api.user.storagePath(), 'denonTv');
 		this.inputsFile = this.prefDir + '/' + 'inputs_' + this.host.split('.').join('');
 		this.customInputsFile = this.prefDir + '/' + 'customInputs_' + this.host.split('.').join('');
+		this.targetVisibilityInputsFile = this.prefDir + '/' + 'targetVisibilityInputs_' + this.host.split('.').join('');
 		this.devInfoFile = this.prefDir + '/' + 'devInfo_' + this.host.split('.').join('');
 		this.url = ('http://' + this.host + ':' + this.port);
 
@@ -131,6 +132,10 @@ class denonTvDevice {
 		//check if the files exists, if not then create it
 		if (fs.existsSync(this.customInputsFile) === false) {
 			fsPromises.writeFile(this.customInputsFile, '{}');
+		}
+		//check if the files exists, if not then create it
+		if (fs.existsSync(this.targetVisibilityInputsFile) === false) {
+			fsPromises.writeFile(this.targetVisibilityInputsFile, '{}');
 		}
 		//check if the files exists, if not then create it
 		if (fs.existsSync(this.devInfoFile) === false) {
@@ -637,9 +642,17 @@ class denonTvDevice {
 			let savedNames = {};
 			try {
 				savedNames = JSON.parse(fs.readFileSync(this.customInputsFile));
-				this.log.debug('Device: %s %s, read devInfo: %s', this.host, accessoryName, savedNames)
+				this.log.debug('Device: %s %s, read saved Inputs names: %s', this.host, accessoryName, savedNames)
 			} catch (error) {
-				this.log.error('Device: %s %s, customInputs file does not exist', this.host, accessoryName)
+				this.log.error('Device: %s %s, read saved Inputs names error: %s', this.host, accessoryName, error)
+			}
+
+			let savedTargetVisibility = {};
+			try {
+				savedTargetVisibility = JSON.parse(fs.readFileSync(this.targetVisibilityInputsFile));
+				this.log.debug('Device: %s %s, read savedTargetVisibility: %s', this.host, accessoryName, savedTargetVisibility)
+			} catch (error) {
+				this.log.error('Device: %s %s, read savedTargetVisibility error: %s', this.host, accessoryName, error)
 			}
 
 			const inputs = this.inputs;
@@ -649,15 +662,14 @@ class denonTvDevice {
 				const inputReference = inputs[i].reference;
 
 				//get input name		
-				let inputName = inputs[i].name;
-				if (savedNames && savedNames[inputReference]) {
-					inputName = savedNames[inputReference];
-				} else {
-					inputName = (inputs[i].name !== undefined) ? inputs[i].name : inputs[i].reference;;
-				}
+				const inputName = (savedNames[inputReference] !== undefined) ? savedNames[inputReference] : (inputs[i].name !== undefined) ? inputs[i].name : inputs[i].reference;
 
 				//get input mode
 				const inputMode = inputs[i].mode;
+
+				//get visibility state
+				const targetVisibility = (savedTargetVisibility[inputReference] !== undefined) ? savedTargetVisibility[inputReference] : 1;
+				const currentVisibility = targetVisibility;
 
 				const inputService = new Service.InputSource(inputReference, 'input' + i);
 				inputService
@@ -665,8 +677,8 @@ class denonTvDevice {
 					.setCharacteristic(Characteristic.ConfiguredName, inputName)
 					.setCharacteristic(Characteristic.IsConfigured, Characteristic.IsConfigured.CONFIGURED)
 					//.setCharacteristic(Characteristic.InputSourceType)
-					.setCharacteristic(Characteristic.CurrentVisibilityState, Characteristic.CurrentVisibilityState.SHOWN)
-					.setCharacteristic(Characteristic.TargetVisibilityState, Characteristic.TargetVisibilityState.SHOWN);
+					.setCharacteristic(Characteristic.CurrentVisibilityState, currentVisibility)
+					.setCharacteristic(Characteristic.TargetVisibilityState, targetVisibility);
 
 				inputService
 					.getCharacteristic(Characteristic.ConfiguredName)
@@ -680,6 +692,21 @@ class denonTvDevice {
 							}
 						} catch (error) {
 							this.log.error('Device: %s %s, can not write new Input name, error: %s', this.host, accessoryName, error);
+						}
+					});
+
+				inputService
+					.getCharacteristic(Characteristic.TargetVisibilityState)
+					.onSet(async (state) => {
+						savedTargetVisibility[inputReference] = state;
+						try {
+							await fsPromises.writeFile(this.targetVisibilityInputsFile, JSON.stringify(savedTargetVisibility, null, 2));
+							this.log.debug('Device: %s %s, Input: %s, saved target visibility state: %s', this.host, accessoryName, inputName, JSON.stringify(savedTargetVisibility, null, 2));
+							if (!this.disableLogInfo) {
+								this.log('Device: %s %s, Input: %s, saved target visibility state: %s', this.host, accessoryName, inputName, state ? 'HIDEN' : 'SHOWN');
+							}
+						} catch (error) {
+							this.log.error('Device: %s %s, Input: %s, saved target visibility state error: %s', this.host, accessoryName, error);
 						}
 					});
 
