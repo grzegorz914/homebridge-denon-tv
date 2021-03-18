@@ -643,10 +643,10 @@ class denonTvDevice {
 			const inputs = this.inputs;
 
 			const savedNames = (fs.readFileSync(this.customInputsFile) !== undefined) ? JSON.parse(fs.readFileSync(this.customInputsFile)) : {};
-			this.log.debug('Device: %s %s, read savedNames: %s', this.host, accessoryName, savedNames)
+			this.log.debug('Device: %s %s, read savedNames: %s', this.host, accessoryName, savedNames);
 
 			const savedTargetVisibility = (fs.readFileSync(this.targetVisibilityInputsFile) !== undefined) ? JSON.parse(fs.readFileSync(this.targetVisibilityInputsFile)) : {};
-			this.log.debug('Device: %s %s, read savedTargetVisibility: %s', this.host, accessoryName, savedTargetVisibility)
+			this.log.debug('Device: %s %s, read savedTargetVisibility: %s', this.host, accessoryName, savedTargetVisibility);
 
 			//check possible inputs count
 			let inputsLength = this.inputsLength;
@@ -663,7 +663,7 @@ class denonTvDevice {
 				const inputName = (savedNames[inputReference] !== undefined) ? savedNames[inputReference] : (inputs[i].name !== undefined) ? inputs[i].name : inputs[i].reference;
 
 				//get input type
-				const inputType = 3;
+				const inputType = 5;
 
 				//get input mode
 				const inputMode = inputs[i].mode;
