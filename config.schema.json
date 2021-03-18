@@ -1157,27 +1157,39 @@
                         ]
                       },
                       {
-                        "title": "FAVORITE STATION 1",
+                        "title": "FAVORITE 1",
                         "enum": [
                           "ZMFAVORITE1"
                         ]
                       },
                       {
-                        "title": "FAVORITE STATION 2",
+                        "title": "FAVORITE 2",
                         "enum": [
                           "ZMFAVORITE2"
                         ]
                       },
                       {
-                        "title": "FAVORITE STATION 3",
+                        "title": "FAVORITE 3",
                         "enum": [
                           "ZMFAVORITE3"
                         ]
                       },
                       {
-                        "title": "FAVORITE STATION 4",
+                        "title": "FAVORITE MEMORY 1",
                         "enum": [
-                          "ZMFAVORITE4"
+                          "ZMFAVORITE1 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE MEMORY 2",
+                        "enum": [
+                          "ZMFAVORITE2 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE MEMORY 3",
+                        "enum": [
+                          "ZMFAVORITE3 MEMORY"
                         ]
                       },
                       {
@@ -1214,6 +1226,24 @@
                         "title": "AUDIO INPUT MODE NO",
                         "enum": [
                           "SDNO"
+                        ]
+                      },
+                      {
+                        "title": "AUDIO DIGITAL INPUT MODE AUTO",
+                        "enum": [
+                          "DCAUTO"
+                        ]
+                      },
+                      {
+                        "title": "AUDIO DIGITAL INPUT MODE PCM",
+                        "enum": [
+                          "DCPCM"
+                        ]
+                      },
+                      {
+                        "title": "AUDIO DIGITAL INPUT MODE DTS",
+                        "enum": [
+                          "DCDTS"
                         ]
                       },
                       {
@@ -3061,27 +3091,39 @@
                         ]
                       },
                       {
-                        "title": "FAVORITE STATION 1",
+                        "title": "FAVORITE 1",
                         "enum": [
                           "ZMFAVORITE1"
                         ]
                       },
                       {
-                        "title": "FAVORITE STATION 2",
+                        "title": "FAVORITE 2",
                         "enum": [
                           "ZMFAVORITE2"
                         ]
                       },
                       {
-                        "title": "FAVORITE STATION 3",
+                        "title": "FAVORITE 3",
                         "enum": [
                           "ZMFAVORITE3"
                         ]
                       },
                       {
-                        "title": "FAVORITE STATION 4",
+                        "title": "FAVORITE MEMORY 1",
                         "enum": [
-                          "ZMFAVORITE4"
+                          "Z2FAVORITE1 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE MEMORY 2",
+                        "enum": [
+                          "Z2FAVORITE2 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE MEMORY 3",
+                        "enum": [
+                          "Z2FAVORITE3 MEMORY"
                         ]
                       },
                       {
@@ -3501,27 +3543,39 @@
                         ]
                       },
                       {
-                        "title": "FAVORITE STATION 1",
+                        "title": "FAVORITE 1",
                         "enum": [
                           "ZMFAVORITE1"
                         ]
                       },
                       {
-                        "title": "FAVORITE STATION 2",
+                        "title": "FAVORITE 2",
                         "enum": [
                           "ZMFAVORITE2"
                         ]
                       },
                       {
-                        "title": "FAVORITE STATION 3",
+                        "title": "FAVORITE 3",
                         "enum": [
                           "ZMFAVORITE3"
                         ]
                       },
                       {
-                        "title": "FAVORITE STATION 4",
+                        "title": "FAVORITE MEMORY 1",
                         "enum": [
-                          "ZMFAVORITE4"
+                          "Z3FAVORITE1 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE MEMORY 2",
+                        "enum": [
+                          "Z3FAVORITE2 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE MEMORY 3",
+                        "enum": [
+                          "Z3FAVORITE3 MEMORY"
                         ]
                       },
                       {
