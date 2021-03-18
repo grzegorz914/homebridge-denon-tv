@@ -140,7 +140,7 @@
                     "title": "Name",
                     "type": "string",
                     "description": "Here set Your own name.",
-                    "required": false
+                    "required": true
                   },
                   "reference": {
                     "title": "Reference",
