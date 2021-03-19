@@ -95,6 +95,10 @@ class denonTvDevice {
 		this.zoneNumber = ZONE_NUMBER[this.zoneControl];
 
 		//setup variables
+		this.inputsReference = new Array();
+		this.inputsName = new Array();
+		this.inputsType = new Array();
+		this.inputsMode = new Array();
 		this.checkDeviceInfo = true;
 		this.checkDeviceState = false;
 		this.startPrepareAccessory = true;
@@ -213,8 +217,8 @@ class denonTvDevice {
 			this.currentPowerState = powerState;
 
 			const inputReference = result.item.InputFuncSelect[0].value[0];
-			const inputIdentifier = (this.inputs.indexOf(inputReference) >= 0) ? this.inputs.indexOf(inputReference) : 0;
-			const inputName = this.inputs[inputIdentifier].name;
+			const inputIdentifier = (this.inputsReference.indexOf(inputReference) >= 0) ? this.inputsReference.indexOf(inputReference) : 0;
+			const inputName = this.inputsName[inputIdentifier];
 			if (this.televisionService) {
 				this.televisionService
 					.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
@@ -321,8 +325,8 @@ class denonTvDevice {
 		this.televisionService.getCharacteristic(Characteristic.ActiveIdentifier)
 			.onGet(async () => {
 				const inputReference = this.currentInputReference;
-				const inputIdentifier = (this.inputs.indexOf(inputReference) >= 0) ? this.inputs.indexOf(inputReference) : 0;
-				const inputName = this.inputs[inputIdentifier].name;
+				const inputIdentifier = (this.inputsReference.indexOf(inputReference) >= 0) ? this.inputsReference.indexOf(inputReference) : 0;
+				const inputName = this.inputsName[inputIdentifier];
 				if (!this.disableLogInfo) {
 					this.log('Device: %s %s %s, get current Input successful: %s %s', this.host, accessoryName, this.zoneName, inputName, inputReference);
 				}
@@ -330,9 +334,9 @@ class denonTvDevice {
 			})
 			.onSet(async (inputIdentifier) => {
 				try {
-					const inputName = this.inputs[inputIdentifier].name;
-					const inputReference = this.inputs[inputIdentifier].reference;
-					const inputMode = this.inputs[inputIdentifier].mode;
+					const inputName = this.inputsName[inputIdentifier];
+					const inputReference = this.inputsReference[inputIdentifier];
+					const inputMode = this.inputsMode[inputIdentifier];
 					const zone = [inputMode, 'Z2', 'Z3'][this.zoneControl];
 					const response = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + zone + inputReference);
 					if (!this.disableLogInfo) {
@@ -636,10 +640,6 @@ class denonTvDevice {
 		if (this.inputsLength > 0) {
 			this.log.debug('prepareInputsService');
 			this.inputsService = new Array();
-			this.inputsReference = new Array();
-			this.inputsName = new Array();
-			this.inputsType = new Array();
-			this.inputsMode = new Array();
 			const inputs = this.inputs;
 
 			const savedNames = (fs.readFileSync(this.customInputsFile) !== undefined) ? JSON.parse(fs.readFileSync(this.customInputsFile)) : {};
