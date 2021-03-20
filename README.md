@@ -41,7 +41,7 @@ This plugin is based upon the official documentation for communicating with and 
 5. Inputs can be changed by performing a long press of the device tile in the HomeKit app and then selecting from the list. It is also possible to create separate tiles in the Inputs and Functions button.
 6. Surround Modes can be controlled from the Inputs List from a long press of the device tile or by creating separate tiles in the Inputs and Functions button.
 7. Digital Input Modes control from the inputs list or create separate tile in the Inputs and Functions button.
-8. Siri control.
+8. Siri control, (Volume, Mute) if volume control enabled Slider or Fan.
 9. Multiple Zone control.
 
 <p align="left">
