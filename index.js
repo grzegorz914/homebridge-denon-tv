@@ -108,6 +108,7 @@ class denonTvDevice {
 		this.currentInputName = '';
 		this.currentInputReference = '';
 		this.currentInputIdentifier = 0;
+		this.startInputIdentifier = 0;
 		this.currentPlayPause = false;
 		this.inputsLength = this.inputs.length;
 		this.buttonsLength = [this.buttonsMainZone.length, this.buttonsZone2.length, this.buttonsZone3.length][this.zoneControl];
@@ -210,11 +211,21 @@ class denonTvDevice {
 			const result = await parseStringPromise(response.data);
 			this.log.debug('Device: %s %s, debug response: %s, result: %s', this.host, this.name, response.data, result);
 			const powerState = (result.item.Power[0].value[0] === 'ON');
-			if (this.televisionService && (powerState !== this.currentPowerState)) {
+			if (this.televisionService && powerState) {
 				this.televisionService
-					.updateCharacteristic(Characteristic.Active, powerState ? 1 : 0);
+					.updateCharacteristic(Characteristic.Active, true);
+				if (!this.currentPowerState) {
+					this.currentPowerState = true;
+					this.televisionService
+						.setCharacteristic(Characteristic.ActiveIdentifier, this.startInputIdentifier);
+				}
+				this.currentPowerState = true;
 			}
-			this.currentPowerState = powerState;
+			if (this.televisionService && !powerState) {
+				this.televisionService
+					.updateCharacteristic(Characteristic.Active, false);
+				this.currentPowerState = false;
+			}
 
 			const inputReference = result.item.InputFuncSelect[0].value[0];
 			const inputIdentifier = (this.inputsReference.indexOf(inputReference) >= 0) ? this.inputsReference.indexOf(inputReference) : 0;
@@ -335,14 +346,17 @@ class denonTvDevice {
 			.onSet(async (inputIdentifier) => {
 				try {
 					const inputName = this.inputsName[inputIdentifier];
-					const inputReference = this.inputsReference[inputIdentifier];
+					const inputReference = (this.inputsReference[inputIdentifier] !== undefined) ? this.inputsReference[inputIdentifier] : 0;
 					const inputMode = this.inputsMode[inputIdentifier];
 					const zone = [inputMode, 'Z2', 'Z3'][this.zoneControl];
-					const response = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + zone + inputReference);
-					if (!this.disableLogInfo) {
-						this.log('Device: %s %s %s, set new Input successful: %s %s', this.host, accessoryName, this.zoneName, inputName, inputReference);
+					if (this.currentPowerState) {
+						const response = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + zone + inputReference);
+						if (!this.disableLogInfo) {
+							this.log('Device: %s %s %s, set new Input successful: %s %s', this.host, accessoryName, this.zoneName, inputName, inputReference);
+						}
 					}
 					this.currentInputReference = inputReference;
+					this.startInputIdentifier = inputIdentifier;
 				} catch (error) {
 					this.log.error('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, error);
 				};
