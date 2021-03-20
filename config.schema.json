@@ -143,7 +143,7 @@
                     "required": true
                   },
                   "reference": {
-                    "title": "Reference",
+                    "title": "Input",
                     "type": "string",
                     "description": "Here select input.",
                     "oneOf": [
@@ -3755,6 +3755,8 @@
         "devices[].name",
         "devices[].host",
         "devices[].port",
+        "devices[].zoneControl",
+        "devices[].volumeControl",
         {
           "key": "devices[]",
           "type": "section",
@@ -3853,9 +3855,7 @@
             "devices[].masterPower",
             "devices[].masterVolume",
             "devices[].masterMute",
-            "devices[].refreshInterval",
-            "devices[].zoneControl",
-            "devices[].volumeControl"
+            "devices[].refreshInterval"
           ]
         },
         {

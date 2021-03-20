@@ -86,8 +86,7 @@ class denonTvDevice {
 		this.modelName = config.modelName || 'Model Name';
 		this.serialNumber = config.serialNumber || 'Serial Number';
 		this.firmwareRevision = config.firmwareRevision || 'Firmware Revision';
-		this.zones = 1;
-		this.apiVersion = null;
+		this.apiVersion = '';
 
 		//zones
 		this.zoneName = ZONE_NAME[this.zoneControl];
@@ -99,6 +98,8 @@ class denonTvDevice {
 		this.inputsName = new Array();
 		this.inputsType = new Array();
 		this.inputsMode = new Array();
+		this.buttonsReference = new Array();
+		this.buttonsName = new Array();
 		this.checkDeviceInfo = true;
 		this.checkDeviceState = false;
 		this.startPrepareAccessory = true;
@@ -753,8 +754,6 @@ class denonTvDevice {
 		if (this.buttonsLength > 0) {
 			this.log.debug('prepareInputsButtonService');
 			this.buttonsService = new Array();
-			this.buttonsReference = new Array();
-			this.buttonsName = new Array();
 			const buttons = [this.buttonsMainZone, this.buttonsZone2, this.buttonsZone3][this.zoneControl];
 
 			//check possible buttons count
@@ -784,19 +783,19 @@ class denonTvDevice {
 								}
 								setTimeout(() => {
 									buttonService
-										.getCharacteristic(Characteristic.On).updateValue(false);
+										.updateCharacteristic(Characteristic.On, false);
 								}, 50);
 							} catch (error) {
 								this.log.error('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, error);
 								setTimeout(() => {
 									buttonService
-										.getCharacteristic(Characteristic.On).updateValue(false);
+										.updateCharacteristic(Characteristic.On, false);
 								}, 50);
 							};
 						} else {
 							setTimeout(() => {
 								buttonService
-									.getCharacteristic(Characteristic.On).updateValue(false);
+									.updateCharacteristic(Characteristic.On, false);
 							}, 50);
 						}
 					});
