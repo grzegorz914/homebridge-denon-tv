@@ -94,10 +94,12 @@ class denonTvDevice {
 		this.zoneNumber = ZONE_NUMBER[this.zoneControl];
 
 		//setup variables
+		this.inputsService = new Array();
 		this.inputsReference = new Array();
 		this.inputsName = new Array();
 		this.inputsType = new Array();
 		this.inputsMode = new Array();
+		this.buttonsService = new Array();
 		this.buttonsReference = new Array();
 		this.buttonsName = new Array();
 		this.checkDeviceInfo = true;
@@ -654,7 +656,6 @@ class denonTvDevice {
 		//Prepare inputs services
 		if (this.inputsLength > 0) {
 			this.log.debug('prepareInputsService');
-			this.inputsService = new Array();
 			const inputs = this.inputs;
 
 			const savedNames = (fs.readFileSync(this.customInputsFile) !== undefined) ? JSON.parse(fs.readFileSync(this.customInputsFile)) : {};
@@ -753,7 +754,6 @@ class denonTvDevice {
 		//Prepare inputs button services
 		if (this.buttonsLength > 0) {
 			this.log.debug('prepareInputsButtonService');
-			this.buttonsService = new Array();
 			const buttons = [this.buttonsMainZone, this.buttonsZone2, this.buttonsZone3][this.zoneControl];
 
 			//check possible buttons count
