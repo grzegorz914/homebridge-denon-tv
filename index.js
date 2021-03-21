@@ -609,8 +609,8 @@ class denonTvDevice {
 				}
 			});
 
-		accessory.addService(this.speakerService);
 		this.televisionService.addLinkedService(this.speakerService);
+		accessory.addService(this.speakerService);
 
 		//Prepare volume service
 		if (this.volumeControl >= 1) {
@@ -655,7 +655,6 @@ class denonTvDevice {
 						this.speakerService.setCharacteristic(Characteristic.Mute, !state);
 					});
 				accessory.addService(this.volumeServiceFan);
-				this.televisionService.addLinkedService(this.volumeServiceFan);
 			}
 		}
 
@@ -752,8 +751,8 @@ class denonTvDevice {
 				this.inputsMode.push(inputMode);
 
 				this.inputsService.push(inputService);
-				accessory.addService(this.inputsService[i]);
 				this.televisionService.addLinkedService(this.inputsService[i]);
+				accessory.addService(this.inputsService[i]);
 			}
 		};
 
@@ -810,7 +809,6 @@ class denonTvDevice {
 
 				this.buttonsService.push(buttonService)
 				accessory.addService(this.buttonsService[i]);
-				this.televisionService.addLinkedService(this.buttonsService[i]);
 			}
 		}
 		this.startPrepareAccessory = false;
