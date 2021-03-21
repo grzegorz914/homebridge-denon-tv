@@ -634,7 +634,6 @@ class denonTvDevice {
 						this.speakerService.setCharacteristic(Characteristic.Mute, !state);
 					});
 				accessory.addService(this.volumeService);
-				this.volumeService.addLinkedService(this.volumeService);
 			}
 			if (this.volumeControl === 2) {
 				this.volumeServiceFan = new Service.Fan(accessoryName + ' Volume', 'volumeServiceFan');
