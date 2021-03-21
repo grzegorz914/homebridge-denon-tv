@@ -64,7 +64,7 @@ Alternatively, Tthe sample configuration can be edited and used manually. See th
 | `inputs` | Choose from available inputs the inputs that should be published to and appear in HomeKit app in the device tile as inputs list |
 | `buttonsMainZone` | here choice function for additional control button for Main Zone |
 | `refreshInterval` | Set the data refresh time in seconds, default is every 5 seconds |
-| `zoneControl` | Selects which zone will will be controlled by this section of the configuration |
+| `zoneControl` | Selects which zone will be controlled by this section (0 - Main Zone, 1 - Zone 2, 2 - Zone 3) or choice from the configurations GUI |
 | `masterPower` | If `true` then the power switch for that zone (typically you would only use this for the Main Zone) will turn the entire receiver `ON` or `OFF/STANDBY` rather than just the zone itself |
 | `masterVolume`| If `true` then the volume for that zone (typically you would only use this for the Main Zone) will set the entire receiver `UP` or `DOWN` rather than just the zone itself |
 | `masterMute`| If `true` then the mute switch for that zone (typically you would only use this for the Main Zone) will muted the entire receiver `ON` or `OFF` rather than just the zone itself |
@@ -133,7 +133,7 @@ Alternatively, Tthe sample configuration can be edited and used manually. See th
 To enable the ability to control each zone seperately then use the configuration below.
 | Key | Description |
 | --- | --- |
-| `zoneControl` | (0 - Main Zone, 1 - Zone 2, 2 - Zone 3) or choice from the configurations GUI |
+| `zoneControl` | Selects which zone will be controlled by this section (0 - Main Zone, 1 - Zone 2, 2 - Zone 3) or choice from the configurations GUI |
 | `masterPower` | If `true` then the power switch for that zone will turn the entire receiver `ON` or `OFF/STANDBY` rather than just the zone itself |
 | `masterVolume` | If `true` then the volume for that zone (typically you would only use this for the Main Zone) will set the entire receiver `UP` or `DOWN` rather than just the zone itself |
 | `masterMute` | If is `true` the mute switch for that zone (typically you would only use this for the Main Zone) will muted the entire receiver `ON` or `OFF` rather than just the zone itself |
