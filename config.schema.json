@@ -154,9 +154,9 @@
                         ]
                       },
                       {
-                        "title": "CHANNEL VOLUME SW2 DOWN",
+                        "title": "CD",
                         "enum": [
-                          "CHANNEL VOLUME SW2 DOWN"
+                          "CD"
                         ]
                       },
                       {
@@ -190,33 +190,51 @@
                         ]
                       },
                       {
-                        "title": "GAME2",
+                        "title": "GAME 2",
                         "enum": [
                           "GAME2"
                         ]
                       },
                       {
-                        "title": "AUX1",
+                        "title": "AUX 1",
                         "enum": [
                           "AUX1"
                         ]
                       },
                       {
-                        "title": "AUX2",
+                        "title": "AUX 2",
                         "enum": [
                           "AUX2"
                         ]
                       },
                       {
-                        "title": "AUX3",
+                        "title": "AUX 3",
                         "enum": [
                           "AUX3"
                         ]
                       },
                       {
-                        "title": "AUX4",
+                        "title": "AUX 4",
                         "enum": [
                           "AUX4"
+                        ]
+                      },
+                      {
+                        "title": "AUX 5",
+                        "enum": [
+                          "AUX5"
+                        ]
+                      },
+                      {
+                        "title": "AUX 6",
+                        "enum": [
+                          "AUX6"
+                        ]
+                      },
+                      {
+                        "title": "AUX 7",
+                        "enum": [
+                          "AUX7"
                         ]
                       },
                       {
@@ -229,12 +247,6 @@
                         "title": "PHONO",
                         "enum": [
                           "PHONO"
-                        ]
-                      },
-                      {
-                        "title": "SOURCE",
-                        "enum": [
-                          "SOURCE"
                         ]
                       },
                       {
@@ -328,27 +340,39 @@
                         ]
                       },
                       {
-                        "title": "FAVORITE STATION 1",
+                        "title": "FAVORITE 1",
                         "enum": [
                           "FAVORITE1"
                         ]
                       },
                       {
-                        "title": "FAVORITE STATION 2",
+                        "title": "FAVORITE 2",
                         "enum": [
                           "FAVORITE2"
                         ]
                       },
                       {
-                        "title": "FAVORITE STATION 3",
+                        "title": "FAVORITE 3",
                         "enum": [
                           "FAVORITE3"
                         ]
                       },
                       {
-                        "title": "FAVORITE STATION 4",
+                        "title": "FAVORITE MEMORY 1",
                         "enum": [
-                          "FAVORITE4"
+                          "FAVORITE1 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE MEMORY 2",
+                        "enum": [
+                          "FAVORITE2 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE MEMORY 3",
+                        "enum": [
+                          "FAVORITE3 MEMORY"
                         ]
                       },
                       {
@@ -962,6 +986,12 @@
                         "title": "INPUT CBL/SAT",
                         "enum": [
                           "SICBL/SAT"
+                        ]
+                      },
+                      {
+                        "title": "INPUT SAT/CBL",
+                        "enum": [
+                          "SISAT/CBL"
                         ]
                       },
                       {
