@@ -947,6 +947,12 @@
                         ]
                       },
                       {
+                        "title": "INPUT AUDIO TV",
+                        "enum": [
+                          "SITV"
+                        ]
+                      },
+                      {
                         "title": "INPUT PHONO",
                         "enum": [
                           "SIPHONO"
@@ -968,12 +974,6 @@
                         "title": "INPUT BLUE-RAY",
                         "enum": [
                           "SIBD"
-                        ]
-                      },
-                      {
-                        "title": "INPUT AUDIO TV",
-                        "enum": [
-                          "SITV"
                         ]
                       },
                       {
@@ -1007,7 +1007,7 @@
                         ]
                       },
                       {
-                        "title": "INPUT GAME2",
+                        "title": "INPUT GAME 2",
                         "enum": [
                           "SIGAME2"
                         ]
