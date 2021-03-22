@@ -34,27 +34,29 @@ class denonTvPlatform {
 		this.config = config;
 		this.api = api;
 		this.devices = config.devices || [];
+		this.accessories = [];
 
 		this.api.on('didFinishLaunching', () => {
 			this.log.debug('didFinishLaunching');
 			for (let i = 0; i < this.devices.length; i++) {
-				const deviceName = this.devices[i];
-				if (!deviceName.name) {
+				const device = this.devices[i];
+				if (!device.name) {
 					this.log.warn('Device Name Missing')
 				} else {
-					new denonTvDevice(this.log, deviceName, this.api);
+					new denonTvDevice(this.log, device, this.api);
 				}
 			}
 		});
 	}
 
-	configureAccessory(platformAccessory) {
+	configureAccessory(accessory) {
 		this.log.debug('configurePlatformAccessory');
+		this.accessories.push(accessory);
 	}
 
-	removeAccessory(platformAccessory) {
+	removeAccessory(accessory) {
 		this.log.debug('removePlatformAccessory');
-		this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [platformAccessory]);
+		this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
 	}
 }
 
@@ -285,13 +287,8 @@ class denonTvDevice {
 
 		//Prepare information service
 		this.log.debug('prepareInformationService');
-		let devInfo = { 'BrandCode': ['2'], 'ModelName': ['Model name'], 'MacAddress': ['Serial number'], 'UpgradeVersion': ['Firmware'] };
-		try {
-			devInfo = JSON.parse(fs.readFileSync(this.devInfoFile));
-			this.log.debug('Device: %s %s, read devInfo: %s', this.host, accessoryName, devInfo)
-		} catch (error) {
-			this.log.error('Device: %s %s, read devInfo failed, error: %s', this.host, accessoryName, error)
-		}
+		const devInfo = (fs.readFileSync(this.devInfoFile) !== undefined) ? JSON.parse(fs.readFileSync(this.devInfoFile)) : { 'BrandCode': ['2'], 'ModelName': ['Model name'], 'MacAddress': ['Serial number'], 'UpgradeVersion': ['Firmware'] };
+		this.log.debug('Device: %s %s, read devInfo: %s', this.host, accessoryName, devInfo)
 
 		const manufacturer = ['Denon', 'Marantz', 'Manufacturer'][devInfo.BrandCode[0]];
 		const modelName = devInfo.ModelName[0];
