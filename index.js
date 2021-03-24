@@ -287,7 +287,7 @@ class denonTvDevice {
 
 		//Prepare information service
 		this.log.debug('prepareInformationService');
-		const devInfo = (fs.readFileSync(this.devInfoFile) !== undefined) ? JSON.parse(fs.readFileSync(this.devInfoFile)) : { 'BrandCode': ['2'], 'ModelName': ['Model name'], 'MacAddress': ['Serial number'], 'UpgradeVersion': ['Firmware'] };
+		const devInfo = ((fs.readFileSync(this.devInfoFile)).length > 0) ? JSON.parse(fs.readFileSync(this.devInfoFile)) : { 'BrandCode': ['2'], 'ModelName': ['Model name'], 'MacAddress': ['Serial number'], 'UpgradeVersion': ['Firmware'] };
 		this.log.debug('Device: %s %s, read devInfo: %s', this.host, accessoryName, devInfo)
 
 		const manufacturer = ['Denon', 'Marantz', 'Manufacturer'][devInfo.BrandCode[0]];
