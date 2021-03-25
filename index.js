@@ -171,17 +171,17 @@ class denonTvDevice {
 			const response = await axios.get(this.url + '/goform/Deviceinfo.xml');
 			this.log.debug('Device: %s %s, debug response: %s', this.host, this.name, response.data);
 			try {
-				const result = await parseStringPromise(response.data);
+				const result = (response.status === 200) ? await parseStringPromise(response.data) : { 'Device_Info': { 'BrandCode': ['2'], 'ModelName': [this.modelName], 'MacAddress': [this.serialNumber], 'UpgradeVersion': [this.firmwareRevision], 'DeviceZones': ['Undefined'], 'CommApiVers': ['Undefined'] } };
 				const devInfo = JSON.stringify(result.Device_Info, null, 2);
 				const writeDevInfoFile = await fsPromises.writeFile(this.devInfoFile, devInfo);
 				this.log.debug('Device: %s %s, saved Device Info successful.', this.host, this.name, devInfo);
 
-				const manufacturer = ['Denon', 'Marantz'][result.Device_Info.BrandCode[0]] || this.manufacturer;
-				const modelName = result.Device_Info.ModelName[0] || this.modelName;
-				const serialNumber = result.Device_Info.MacAddress[0] || this.serialNumber;
-				const firmwareRevision = result.Device_Info.UpgradeVersion[0] || this.firmwareRevision;
-				const zones = result.Device_Info.DeviceZones[0] || 'Undefined';
-				const apiVersion = result.Device_Info.CommApiVers[0] || 'Undefined';
+				const manufacturer = ['Denon', 'Marantz', 'Manufacturer'][result.Device_Info.BrandCode[0]];
+				const modelName = result.Device_Info.ModelName[0];
+				const serialNumber = result.Device_Info.MacAddress[0];
+				const firmwareRevision = result.Device_Info.UpgradeVersion[0];
+				const zones = result.Device_Info.DeviceZones[0];
+				const apiVersion = result.Device_Info.CommApiVers[0];
 
 				if (!this.disableLogInfo) {
 					this.log('Device: %s %s %s, state: Online.', this.host, this.name, this.zoneName);
@@ -225,10 +225,12 @@ class denonTvDevice {
 			if (this.televisionService && powerState) {
 				this.televisionService
 					.updateCharacteristic(Characteristic.Active, true);
+				this.currentPowerState = true;
 			}
 			if (this.televisionService && !powerState) {
 				this.televisionService
 					.updateCharacteristic(Characteristic.Active, false);
+				this.currentPowerState = false;
 			}
 
 			if (this.currentPowerState) {
@@ -263,7 +265,6 @@ class denonTvDevice {
 				this.currentVolume = volume;
 				this.currentMuteState = mute;
 			}
-			this.currentPowerState = powerState;
 
 			this.checkDeviceState = true;
 		} catch (error) {
