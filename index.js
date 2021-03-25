@@ -225,49 +225,45 @@ class denonTvDevice {
 			if (this.televisionService && powerState) {
 				this.televisionService
 					.updateCharacteristic(Characteristic.Active, true);
-				if (!this.currentPowerState) {
-					this.currentPowerState = true;
-					this.televisionService
-						.setCharacteristic(Characteristic.ActiveIdentifier, this.startInputIdentifier);
-				}
-				this.currentPowerState = true;
 			}
 			if (this.televisionService && !powerState) {
 				this.televisionService
 					.updateCharacteristic(Characteristic.Active, false);
-				this.currentPowerState = false;
 			}
 
-			const inputReference = result.item.InputFuncSelect[0].value[0];
-			const inputIdentifier = (this.inputsReference.indexOf(inputReference) >= 0) ? this.inputsReference.indexOf(inputReference) : 0;
-			const inputName = this.inputsName[inputIdentifier];
-			if (this.televisionService) {
-				this.televisionService
-					.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
-			}
-			this.currentInputReference = inputReference;
-			this.currentInputIdentifier = inputIdentifier;
-			this.currentInputName = inputName;
+			if (this.currentPowerState) {
+				const inputReference = result.item.InputFuncSelect[0].value[0];
+				const inputIdentifier = (this.inputsReference.indexOf(inputReference) >= 0) ? this.inputsReference.indexOf(inputReference) : 0;
+				const inputName = this.inputsName[inputIdentifier];
+				if (this.televisionService) {
+					this.televisionService
+						.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
+				}
 
-			const volume = (parseFloat(result.item.MasterVolume[0].value[0]) >= -79.5) ? parseInt(result.item.MasterVolume[0].value[0]) + 80 : 0;
-			const mute = powerState ? (result.item.Mute[0].value[0] === 'on') : true;
-			if (this.speakerService) {
-				this.speakerService
-					.updateCharacteristic(Characteristic.Volume, volume)
-					.updateCharacteristic(Characteristic.Mute, mute);
-				if (this.volumeService && this.volumeControl === 1) {
-					this.volumeService
-						.updateCharacteristic(Characteristic.Brightness, volume)
-						.updateCharacteristic(Characteristic.On, !mute);
+				const volume = (parseFloat(result.item.MasterVolume[0].value[0]) >= -79.5) ? parseInt(result.item.MasterVolume[0].value[0]) + 80 : 0;
+				const mute = powerState ? (result.item.Mute[0].value[0] === 'on') : true;
+				if (this.speakerService) {
+					this.speakerService
+						.updateCharacteristic(Characteristic.Volume, volume)
+						.updateCharacteristic(Characteristic.Mute, mute);
+					if (this.volumeService && this.volumeControl === 1) {
+						this.volumeService
+							.updateCharacteristic(Characteristic.Brightness, volume)
+							.updateCharacteristic(Characteristic.On, !mute);
+					}
+					if (this.volumeServiceFan && this.volumeControl === 2) {
+						this.volumeServiceFan
+							.updateCharacteristic(Characteristic.RotationSpeed, volume)
+							.updateCharacteristic(Characteristic.On, !mute);
+					}
 				}
-				if (this.volumeServiceFan && this.volumeControl === 2) {
-					this.volumeServiceFan
-						.updateCharacteristic(Characteristic.RotationSpeed, volume)
-						.updateCharacteristic(Characteristic.On, !mute);
-				}
+				this.currentInputReference = inputReference;
+				this.currentInputIdentifier = inputIdentifier;
+				this.currentInputName = inputName;
+				this.currentVolume = volume;
+				this.currentMuteState = mute;
 			}
-			this.currentMuteState = mute;
-			this.currentVolume = volume;
+			this.currentPowerState = powerState;
 
 			this.checkDeviceState = true;
 		} catch (error) {
@@ -288,7 +284,7 @@ class denonTvDevice {
 		//Prepare information service
 		this.log.debug('prepareInformationService');
 		const devInfo = ((fs.readFileSync(this.devInfoFile)).length > 0) ? JSON.parse(fs.readFileSync(this.devInfoFile)) : { 'BrandCode': ['2'], 'ModelName': ['Model name'], 'MacAddress': ['Serial number'], 'UpgradeVersion': ['Firmware'] };
-		this.log.debug('Device: %s %s, read devInfo: %s', this.host, accessoryName, devInfo)
+		this.log.debug('Device: %s %s, read devInfo: %s', this.host, accessoryName, devInfo);
 
 		const manufacturer = ['Denon', 'Marantz', 'Manufacturer'][devInfo.BrandCode[0]];
 		const modelName = devInfo.ModelName[0];
@@ -585,7 +581,7 @@ class denonTvDevice {
 			});
 		this.speakerService.getCharacteristic(Characteristic.Mute)
 			.onGet(async () => {
-				const state = this.currentMuteState;
+				const state = this.currentPowerState ? this.currentMuteState : true;
 				if (!this.disableLogInfo) {
 					this.log('Device: %s %s %s, get current Mute state successful: %s', this.host, accessoryName, this.zoneName, state ? 'ON' : 'OFF');
 				}
@@ -624,7 +620,7 @@ class denonTvDevice {
 					});
 				this.volumeService.getCharacteristic(Characteristic.On)
 					.onGet(async () => {
-						const state = !this.currentMuteState;
+						const state = this.currentPowerState ? !this.currentMuteState : false;
 						return state;
 					})
 					.onSet(async (state) => {
@@ -644,7 +640,7 @@ class denonTvDevice {
 					});
 				this.volumeServiceFan.getCharacteristic(Characteristic.On)
 					.onGet(async () => {
-						const state = !this.currentMuteState;
+						const state = this.currentPowerState ? !this.currentMuteState : false;
 						return state;
 					})
 					.onSet(async (state) => {
