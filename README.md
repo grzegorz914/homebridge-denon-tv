@@ -9,43 +9,40 @@
 [![npm](https://badgen.net/npm/dt/homebridge-denon-tv?color=purple)](https://www.npmjs.com/package/homebridge-denon-tv) [![npm](https://badgen.net/npm/v/homebridge-denon-tv?color=purple)](https://www.npmjs.com/package/homebridge-denon-tv) [![GitHub pull requests](https://img.shields.io/github/issues-pr/grzegorz914/homebridge-denon-tv.svg)](https://github.com/grzegorz914/homebridge-denon-tv/pulls)
 [![GitHub issues](https://img.shields.io/github/issues/grzegorz914/homebridge-denon-tv.svg)](https://github.com/grzegorz914/homebridge-denon-tv/issues)
 
-Homebridge plugin for Denon/Marantz AV Receivers series X. 
-Tested with AVR-X6300H.
+Homebridge plugin for Denon/Marantz AV Receivers series X/SR. 
+Tested with Denon AVR-X6300H and Marantz SR6013.
+
+This plugin is based upon the official documentation for communicating with and controlling these Denon and Marantz receivers, located here: [Denon Control Protocol 2020](http://assets.denon.com/_layouts/15/xlviewer.aspx?id=/DocumentMaster/us/DENON_FY20%20AVR_PROTOCOL_V03_03042020.xlsx)
 
 </span>
 
-## Package
-1. [Homebridge](https://github.com/homebridge/homebridge)
-2. [Homebridge Config UI X](https://github.com/oznu/homebridge-config-ui-x)
-
-## Installation
-1. Follow the step-by-step instructions on the [Homebridge Wiki](https://github.com/homebridge/homebridge/wiki) for how to install Homebridge.
-2. Follow the step-by-step instructions on the [Homebridge Config UI X](https://github.com/oznu/homebridge-config-ui-x/wiki) for how to install Homebridge Config UI X.
-3. Install homebridge-denon-tv using: `npm install -g homebridge-denon-tv` or search for `Denon Tv` in Config UI X.
-
-## Know issues
-1. If use with Hoobs possible config incompatibilty.
-
-## HomeKit pairing
-1. Each accessories needs to be manually paired. 
-2. Open the Home <img src='https://user-images.githubusercontent.com/3979615/78010622-4ea1d380-738e-11ea-8a17-e6a465eeec35.png' height='16.42px'> app on your device. 
-3. Tap the Home tab, then tap <img src='https://user-images.githubusercontent.com/3979615/78010869-9aed1380-738e-11ea-9644-9f46b3633026.png' height='16.42px'>. 
-4. Tap *Add Accessory*, and select *I Don't Have a Code or Cannot Scan*. 
-5. Enter the Homebridge PIN, this can be found under the QR code in Homebridge UI or your Homebridge logs, alternatively you can select *Use Camera* and scan the QR code again.
+## Package Requirements
+| Package Link | Required |
+| --- | --- |
+| [Homebridge](https://github.com/homebridge/homebridge) | Required | 
+| [Homebridge Config UI X](https://github.com/oznu/homebridge-config-ui-x) | Highly Recommended |
 
 ## Note
-1. Versin 3.6.0 and above need to be used with Homebridge min. v1.3.x.
+- For homebridge-denon-tv versions 3.6.0 and above the minimum required version of Homebridge is 1.3.x.
 
-## Info
-1. Power ON/OFF short press tile in HomeKit app.
-2. RC/Media control is possible after you go to the RC app on iPhone/iPad.
-3. Speaker control is possible after you go to RC app on iPhone/iPad `Speaker Service`.
-4. Legacy volume and mute control is possible throught extra `lightbulb` (slider) or using Siri `Volume Service`.
-5. Inputs can be changed after loong press tile in HomeKit app and select from the list or create separate tile in the Inputs and functions button.
-6. Surround Modes control from the inputs list or create separate tile in the Inputs and functions button.
-7. Digital Input Modes control from the inputs list or create separate tile in the Inputs and functions button.
-8. Siri control.
-9. Zones control.
+## Know issues
+- If used with Hoobs, there is a possible configuration incompatibilty.
+
+## Installation Instructions
+1. Follow the step-by-step instructions at [Homebridge Wiki](https://github.com/homebridge/homebridge/wiki) for how to install Homebridge.
+2. Follow the step-by-step instructions at [Homebridge Config UI X](https://github.com/oznu/homebridge-config-ui-x/wiki) for how to install Homebridge Config UI X.
+3. Install homebridge-denon-tv using: `npm install -g homebridge-denon-tv` or search for `Denon TV` in Config UI X.
+
+## Features and How To Use Them
+1. Power the receiver ON/OFF using a short press of the created device tile in the HomeKit app.
+2. Remote Control and Media control is possible by using the Apple Remote in Control Center on iPhone/iPad (must be installed from the App store prior to iOS/iPadOS 14).
+3. Speaker control is possible after you go to Apple Remote in Control Center on iPhone/iPad `Speaker Service`.
+4. Legacy volume and mute control is possible throught the extra `lightbulb` (slider) or using Siri `Volume Service`.
+5. Inputs can be changed by performing a long press of the device tile in the HomeKit app and then selecting from the list. It is also possible to create separate tiles in the Inputs and Functions button.
+6. Surround Modes can be controlled from the Inputs List from a long press of the device tile or by creating separate tiles in the Inputs and Functions button.
+7. Digital Input Modes control from the inputs list or create separate tile in the Inputs and Functions button.
+8. Siri control, (Volume, Mute) if volume control enabled Slider or Fan.
+9. Multiple Zone control.
 
 <p align="left">
   <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/homekit.png" height="300"></a> 
@@ -55,26 +52,35 @@ Tested with AVR-X6300H.
 </p>
 
 ## Configuration
-1. If port `8080` not working check with port `80`, different receivers uses different ports, You need to check which one is correct for you.
-2. Use [Homebridge Config UI X](https://github.com/oznu/homebridge-config-ui-x) to configure the plugin (strongly recomended), or update your configuration file manually. See `sample-config.json` in this repository for a sample or add the bottom example to Your config.json file.
-3. The `inputs` - here choice from available inputs.
-4. The `buttonsMainZone` - here choice function for additional control button for Main Zone.
-5. In `refreshInterval` set the data refresh time in seconds, default 5sec.
-6. In `zoneControl` You can select which zone U want to control.
-7. If `masterPower` is `true` the power switch for that zone (typically you would only use this for the Main Zone) will turn the entire receiver `ON` or `OFF/STANDBY` rather than just the zone itself.
-8. If `masterVolume` is `true` the volume for that zone (typically you would only use this for the Main Zone) will set the entire receiver `UP` or `DOWN` rather than just the zone itself.
-9. If `masterMute` is `true` the mute switch for that zone (typically you would only use this for the Main Zone) will muted the entire receiver `ON` or `OFF` rather than just the zone itself.
-10. In `volumeControl` You can select what a additional volume control mode You want to use (None, Slider, Fan).
-11. If `switchInfoMenu` is enabled, `I` button toggle its behaviour in RC app and `PowerModeSelection` in settings.
-12. If `disableLogInfo` is enabled, disable log info, all values and state will not be displayed in Homebridge log console.
-13. All possible commands can be found in [Denon Control Protocol 2020](http://assets.denon.com/_layouts/15/xlviewer.aspx?id=/DocumentMaster/us/DENON_FY20%20AVR_PROTOCOL_V03_03042020.xlsx)
-14. `manufacturer`, `modelName`, `serialNumber`, `firmwareRevision` - optional branding data displayed in Home.app
+
+To ease configuration, install and use the [Homebridge Config UI X](https://github.com/oznu/homebridge-config-ui-x) plugin (highly recomended). 
+
+Alternatively, Tthe sample configuration can be edited and used manually. See the `sample-config.json` file in this repository for an example or copy/paste the example below into your config.json file, making the apporpriate changes before saving it. Be sure to always make a backup copy of your config.json file before making any changes to it.
+
+## Configuration Values
+| Key | Description | 
+| --- | --- |
+| `port` | This is the network port that this plugin will use to communicate with the receiver. If port `8080` is not working then try to use port `80` which some receivers use alternatively. Try the other port if the first one does not work |
+| `inputs` | Choose from available inputs the inputs that should be published to and appear in HomeKit app in the device tile as inputs list |
+| `buttonsMainZone` | here choice function for additional control button for Main Zone |
+| `refreshInterval` | Set the data refresh time in seconds, default is every 5 seconds |
+| `zoneControl` | Selects which zone will be controlled by this section (0 - Main Zone, 1 - Zone 2, 2 - Zone 3) or choice from the configurations GUI |
+| `masterPower` | If `true` then the power switch for that zone (typically you would only use this for the Main Zone) will turn the entire receiver `ON` or `OFF/STANDBY` rather than just the zone itself |
+| `masterVolume`| If `true` then the volume for that zone (typically you would only use this for the Main Zone) will set the entire receiver `UP` or `DOWN` rather than just the zone itself |
+| `masterMute`| If `true` then the mute switch for that zone (typically you would only use this for the Main Zone) will muted the entire receiver `ON` or `OFF` rather than just the zone itself |
+| `volumeControl`| Select what a additional volume control mode You want to use (None, Slider, Fan) |
+| `switchInfoMenu`| If `true` then the `I` button will toggle its behaviour in the Apple Remote in Control Center and `PowerModeSelection` in settings |
+| `disableLogInfo`| If `true` then disable log info, all values and state will not be displayed in Homebridge log console |
+| `manufacturer` | Optional free-form informational data that will be displayed in the Home.app if it is filled in |
+| `modelName` | Optional free-form informational data that will be displayed in the Home.app if it is filled in |
+| `serialNumber` | Optional free-form informational data that will be displayed in the Home.app if it is filled in |
+| `firmwareRevision` | Optional free-form informational data that will be displayed in the Home.app if it is filled in |
 
 <p align="left">
-  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/ustawienia.png" height="150"></a>
+  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/ustawienia.png" height="170"></a>
 </p>
 
-## Main Zone control and settings
+## Main Zone Control and Settings
 ```json
 {
     "platform": "DenonTv",
@@ -108,10 +114,10 @@ Tested with AVR-X6300H.
                             "mode": "SI"
                         }
                     ],
-                    "inputsButtonMainZone": [
+                    "buttonsMainZone": [
                         {
-                            "name": "POWER ON/OFF",
-                            "reference": "RCKSK0410005"
+                            "name": "POWER ON",
+                            "reference": "ZMON"
                         }
                     ],
             "manufacturer": "Manufacturer",
@@ -124,18 +130,21 @@ Tested with AVR-X6300H.
 ```
 
 ## Multi zone control and settings
-1. If U want control all zones seperat at the same time U can use config as present bottom.
-2. Select `zoneControl` (0 - Main Zone, 1 - Zone 2, 2 - Zone 3) or choice from the configurations GUI.
-3. If `masterPower` is `true` the power switch for that zone will turn the entire receiver `ON` or `OFF/STANDBY` rather than just the zone itself.
-4. If `masterVolume` is `true` the volume for that zone (typically you would only use this for the Main Zone) will set the entire receiver `UP` or `DOWN` rather than just the zone itself.
-5. If `masterMute` is `true` the mute switch for that zone (typically you would only use this for the Main Zone) will muted the entire receiver `ON` or `OFF` rather than just the zone itself.
-6. The `volumeControl` will working seperat for every zone.
-7. The `switchInfoMenu` will working for all zones seperat but have same end effect for every zone.
-8. The `inputs` - here choice from available inputs.
-9. The `buttonsMainZone` - here choice function for additional control button.
-4. The `buttonsZon2` - here choice function for additional control button for Zone 2.
-4. The `buttonsZone2` - here choice function for additional control button for Zone 3.
-10. After correct settings and save restart Homebridge, every zone need to be added separat in HomeKit app using same PIN CODE.
+To enable the ability to control each zone seperately then use the configuration below.
+| Key | Description |
+| --- | --- |
+| `zoneControl` | Selects which zone will be controlled by this section (0 - Main Zone, 1 - Zone 2, 2 - Zone 3) or choice from the configurations GUI |
+| `masterPower` | If `true` then the power switch for that zone will turn the entire receiver `ON` or `OFF/STANDBY` rather than just the zone itself |
+| `masterVolume` | If `true` then the volume for that zone (typically you would only use this for the Main Zone) will set the entire receiver `UP` or `DOWN` rather than just the zone itself |
+| `masterMute` | If is `true` the mute switch for that zone (typically you would only use this for the Main Zone) will muted the entire receiver `ON` or `OFF` rather than just the zone itself |
+| `volumeControl` | If `true` then allow for separate volume control for each zone |
+| `switchInfoMenu` | will working for all zones seperat but have same end effect for each zone |
+| `inputs` | Choose from available inputs |
+| `buttonsMainZone` | Choose the function for additional control button |
+| `buttonsZone2` | Choose the function for additional control button for Zone 2 |
+| `buttonsZone3` | Choose the function for additional control button for Zone 3 |
+
+After editing the conf.json or using homebridge-config-ui-x to configure this plugin then save the settings and restart Homebridge. If the configuration has multiple zones then each zone will show up as a separate Homekit Accessory that will need be be added to Home individually using the same PIN code that is used for Homebridge.
 
 ```json
 {
@@ -172,8 +181,8 @@ Tested with AVR-X6300H.
             ],
             "buttonsMainZone": [
                         {
-                            "name": "POWER ON/OFF",
-                            "reference": "RCKSK0410005"
+                            "name": "POWER ON",
+                            "reference": "ZMON"
                         }
                     ],
         },
@@ -208,8 +217,8 @@ Tested with AVR-X6300H.
             ],
             "buttonsZone2": [
                         {
-                            "name": "POWER ON/OFF",
-                            "reference": "RCKSK0430005"
+                            "name": "POWER ON",
+                            "reference": "Z2ON"
                         }
                     ],
         },
@@ -242,8 +251,8 @@ Tested with AVR-X6300H.
             ],
             "buttonsZone3": [
                         {
-                            "name": "POWER ON/OFF",
-                            "reference": "RCKSK0450005"
+                            "name": "POWER ON",
+                            "reference": "Z3ON"
                         }
                     ],
         }
@@ -251,12 +260,26 @@ Tested with AVR-X6300H.
 }
 ```
 
-## Limitations
-1. Due to HomeKit app limitation max. services for 1 accessory is 100. Over this value HomeKit app will no response. As services in this accessory are, (1.information service, 2.speaker service, 3.lightbulb service, 4.television service and inputs service 5-100(where every input = 1 service)). If all services are enabled possible inputs to use is 96.
+## Adding to HomeKit
+Each accessory needs to be manually paired. 
+1. Open the Home <img src='https://user-images.githubusercontent.com/3979615/78010622-4ea1d380-738e-11ea-8a17-e6a465eeec35.png' height='16.42px'> app on your device. 
+2. Tap the Home tab, then tap <img src='https://user-images.githubusercontent.com/3979615/78010869-9aed1380-738e-11ea-9644-9f46b3633026.png' height='16.42px'>. 
+3. Tap *Add Accessory*, and select *I Don't Have a Code or Cannot Scan*. 
+4. Enter the Homebridge PIN, this can be found under the QR code in Homebridge UI or your Homebridge logs, alternatively you can select *Use Camera* and scan the QR code again.
 
-## Whats new:
+## Limitations
+The HomeKit app has a limitation of a maximum number of 100 services per 1 accessory. If the number of services per accessory is over 100 then the Home app will stop responding. Items that are considered to be services in each accessory are when using this plugin are: 
+  1. Information service
+  2. Speaker service
+  3. Lightbulb service
+  4. Television service and inputs service 
+  5. 5-100, where every input = 1 service
+ 
+At this time, if all services are enabled then the number of possible inputs to configure is 96.
+
+## What's new:
 https://github.com/grzegorz914/homebridge-denon-tv/blob/master/CHANGELOG.md
 
 ## Development
-- Pull request and help in development highly appreciated.
+Please feel free to create a Pull request and help in development. It will be highly appreciated.
 
