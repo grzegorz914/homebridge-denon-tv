@@ -104,7 +104,7 @@ class denonTvDevice {
 		this.buttonsService = new Array();
 		this.buttonsReference = new Array();
 		this.buttonsName = new Array();
-		this.checkDeviceInfo = true;
+		this.checkDeviceInfo = false;
 		this.checkDeviceState = false;
 		this.startPrepareAccessory = true;
 		this.currentPowerState = false;
@@ -172,11 +172,8 @@ class denonTvDevice {
 			this.log.debug('Device: %s %s, debug response: %s', this.host, this.name, response.data);
 			try {
 				const result = (response.status === 200) ? await parseStringPromise(response.data) : { 'Device_Info': { 'BrandCode': ['2'], 'ModelName': [this.modelName], 'MacAddress': [this.serialNumber], 'UpgradeVersion': [this.firmwareRevision], 'DeviceZones': ['Undefined'], 'CommApiVers': ['Undefined'] } };
-				const devInfo = JSON.stringify(result.Device_Info, null, 2);
-				const writeDevInfoFile = await fsPromises.writeFile(this.devInfoFile, devInfo);
-				this.log.debug('Device: %s %s, saved Device Info successful.', this.host, this.name, devInfo);
-
-				const manufacturer = ['Denon', 'Marantz', 'Manufacturer'][result.Device_Info.BrandCode[0]];
+				const brandCode = result.Device_Info.BrandCode[0];
+				const manufacturer = ['Denon', 'Marantz', 'Manufacturer'][brandCode];
 				const modelName = result.Device_Info.ModelName[0];
 				const serialNumber = result.Device_Info.MacAddress[0];
 				const firmwareRevision = result.Device_Info.UpgradeVersion[0];
@@ -204,7 +201,7 @@ class denonTvDevice {
 				}
 				this.log('----------------------------------');
 			} catch (error) {
-				this.log.error('Device: %s %s, parse string error: %s', this.host, this.name, error);
+				this.log.error('Device: %s %s, parse or write string error: %s', this.host, this.name, error);
 				this.checkDeviceInfo = true;
 			};
 			this.checkDeviceInfo = false;
@@ -275,7 +272,7 @@ class denonTvDevice {
 	}
 
 	//Prepare accessory
-	prepareAccessory() {
+	async prepareAccessory() {
 		this.log.debug('prepareAccessory');
 		const accessoryName = this.name;
 		const accessoryUUID = UUID.generate(accessoryName);
@@ -284,23 +281,32 @@ class denonTvDevice {
 
 		//Prepare information service
 		this.log.debug('prepareInformationService');
-		const devInfo = ((fs.readFileSync(this.devInfoFile)).length > 0) ? JSON.parse(fs.readFileSync(this.devInfoFile)) : { 'BrandCode': ['2'], 'ModelName': ['Model name'], 'MacAddress': ['Serial number'], 'UpgradeVersion': ['Firmware'] };
-		this.log.debug('Device: %s %s, read devInfo: %s', this.host, accessoryName, devInfo);
+		try {
+			const response = await axios.get(this.url + '/goform/Deviceinfo.xml');
+			const result = (response.status === 200) ? await parseStringPromise(response.data) : { 'Device_Info': { 'BrandCode': ['2'], 'ModelName': [this.modelName], 'MacAddress': [this.serialNumber], 'UpgradeVersion': [this.firmwareRevision], 'DeviceZones': ['Undefined'], 'CommApiVers': ['Undefined'] } };
+			const devInfo = JSON.stringify(result, null, 2);
+			const write = await fsPromises.writeFile(this.devInfoFile, devInfo);
+			this.log.debug('Device: %s %s, saved Device Info successful: %s', this.host, this.name, devInfo);
 
-		const manufacturer = ['Denon', 'Marantz', 'Manufacturer'][devInfo.BrandCode[0]];
-		const modelName = devInfo.ModelName[0];
-		const serialNumber = devInfo.MacAddress[0];
-		const firmwareRevision = devInfo.UpgradeVersion[0];
+			const brandCode = result.Device_Info.BrandCode[0];
+			const manufacturer = ['Denon', 'Marantz', 'Manufacturer'][brandCode];
+			const modelName = result.Device_Info.ModelName[0];
+			const serialNumber = result.Device_Info.MacAddress[0];
+			const firmwareRevision = result.Device_Info.UpgradeVersion[0];
 
-		accessory.removeService(accessory.getService(Service.AccessoryInformation));
-		const informationService = new Service.AccessoryInformation();
-		informationService
-			.setCharacteristic(Characteristic.Name, accessoryName)
-			.setCharacteristic(Characteristic.Manufacturer, manufacturer)
-			.setCharacteristic(Characteristic.Model, modelName)
-			.setCharacteristic(Characteristic.SerialNumber, serialNumber)
-			.setCharacteristic(Characteristic.FirmwareRevision, firmwareRevision);
-		accessory.addService(informationService);
+			accessory.removeService(accessory.getService(Service.AccessoryInformation));
+			const informationService = new Service.AccessoryInformation();
+			informationService
+				.setCharacteristic(Characteristic.Name, accessoryName)
+				.setCharacteristic(Characteristic.Manufacturer, manufacturer)
+				.setCharacteristic(Characteristic.Model, modelName)
+				.setCharacteristic(Characteristic.SerialNumber, serialNumber)
+				.setCharacteristic(Characteristic.FirmwareRevision, firmwareRevision);
+			accessory.addService(informationService);
+		} catch (error) {
+			this.log.error('Device: %s %s, prepareInformationService error: %s', this.host, accessoryName, error);
+			this.checkDeviceInfo = true;
+		};
 
 		//Prepare television service
 		this.log.debug('prepareTelevisionService');
@@ -794,6 +800,7 @@ class denonTvDevice {
 		}
 
 		this.startPrepareAccessory = false;
+		this.checkDeviceInfo = true;
 		this.log.debug('Device: %s %s, publishExternalAccessories.', this.host, accessoryName);
 		this.api.publishExternalAccessories(PLUGIN_NAME, [accessory]);
 	}
