@@ -114,6 +114,7 @@ class denonTvDevice {
 		this.currentInputReference = '';
 		this.currentInputIdentifier = 0;
 		this.startInputIdentifier = 0;
+		this.setStartInput = false;
 		this.currentPlayPause = false;
 		this.inputsLength = this.inputs.length;
 		this.buttonsLength = [this.buttonsMainZone.length, this.buttonsZone2.length, this.buttonsZone3.length][this.zoneControl];
@@ -160,9 +161,7 @@ class denonTvDevice {
 		}.bind(this), this.refreshInterval * 1000);
 
 		//start prepare accessory
-		if (this.startPrepareAccessory) {
-			this.prepareAccessory();
-		}
+		this.prepareAccessory();
 	}
 
 	async getDeviceInfo() {
@@ -170,41 +169,38 @@ class denonTvDevice {
 		try {
 			const response = await axios.get(this.url + '/goform/Deviceinfo.xml');
 			this.log.debug('Device: %s %s, debug response: %s', this.host, this.name, response.data);
-			try {
-				const parseResponse = (response.status === 200) ? await parseStringPromise(response.data) : undefined;
-				const result = (parseResponse.Device_Info.BrandCode !== undefined) ? parseResponse : { 'Device_Info': { 'BrandCode': ['2'], 'ModelName': [this.modelName], 'MacAddress': [this.serialNumber], 'UpgradeVersion': [this.firmwareRevision], 'DeviceZones': ['Undefined'], 'CommApiVers': ['Undefined'] } };
-				const brandCode = result.Device_Info.BrandCode[0];
-				const manufacturer = ['Denon', 'Marantz', 'Manufacturer'][brandCode];
-				const modelName = result.Device_Info.ModelName[0];
-				const serialNumber = result.Device_Info.MacAddress[0];
-				const firmwareRevision = result.Device_Info.UpgradeVersion[0];
-				const zones = result.Device_Info.DeviceZones[0];
-				const apiVersion = result.Device_Info.CommApiVers[0];
 
-				if (!this.disableLogInfo) {
-					this.log('Device: %s %s %s, state: Online.', this.host, this.name, this.zoneName);
-				}
+			const parseResponse = (response.status === 200) ? await parseStringPromise(response.data) : undefined;
+			const result = (parseResponse.Device_Info.BrandCode !== undefined) ? parseResponse : { 'Device_Info': { 'BrandCode': ['2'], 'ModelName': [this.modelName], 'MacAddress': [this.serialNumber], 'UpgradeVersion': [this.firmwareRevision], 'DeviceZones': ['Undefined'], 'CommApiVers': ['Undefined'] } };
+			const brandCode = result.Device_Info.BrandCode[0];
+			const manufacturer = ['Denon', 'Marantz', 'Manufacturer'][brandCode];
+			const modelName = result.Device_Info.ModelName[0];
+			const serialNumber = result.Device_Info.MacAddress[0];
+			const firmwareRevision = result.Device_Info.UpgradeVersion[0];
+			const zones = result.Device_Info.DeviceZones[0];
+			const apiVersion = result.Device_Info.CommApiVers[0];
 
-				this.log('-------- %s --------', this.name);
-				this.log('Manufacturer: %s', manufacturer);
-				this.log('Model: %s', modelName);
-				if (this.zoneControl >= 0) {
-					this.log('Zones: %s', zones);
-					this.log('Firmware: %s', firmwareRevision);
-					this.log('Api version: %s', apiVersion);
-					this.log('Serialnr: %s', serialNumber);
-				}
-				if (this.zoneControl === 1) {
-					this.log('Zone: 2');
-				}
-				if (this.zoneControl === 2) {
-					this.log('Zone: 3');
-				}
-				this.log('----------------------------------');
-			} catch (error) {
-				this.log.error('Device: %s %s, parse or write string error: %s', this.host, this.name, error);
-				this.checkDeviceInfo = true;
-			};
+			if (!this.disableLogInfo) {
+				this.log('Device: %s %s %s, state: Online.', this.host, this.name, this.zoneName);
+			}
+
+			this.log('-------- %s --------', this.name);
+			this.log('Manufacturer: %s', manufacturer);
+			this.log('Model: %s', modelName);
+			if (this.zoneControl >= 0) {
+				this.log('Zones: %s', zones);
+				this.log('Firmware: %s', firmwareRevision);
+				this.log('Api version: %s', apiVersion);
+				this.log('Serialnr: %s', serialNumber);
+			}
+			if (this.zoneControl === 1) {
+				this.log('Zone: 2');
+			}
+			if (this.zoneControl === 2) {
+				this.log('Zone: 3');
+			}
+			this.log('----------------------------------');
+
 			this.checkDeviceInfo = false;
 			this.updateDeviceState();
 		} catch (error) {
@@ -223,6 +219,12 @@ class denonTvDevice {
 			if (this.televisionService && powerState) {
 				this.televisionService
 					.updateCharacteristic(Characteristic.Active, true);
+				if (!this.currentPowerState && this.setStartInput) {
+					this.currentPowerState = true;
+					this.setStartInput = false;
+					this.televisionService
+						.setCharacteristic(Characteristic.ActiveIdentifier, this.startInputIdentifier);
+				}
 				this.currentPowerState = true;
 			}
 			if (this.televisionService && !powerState) {
@@ -369,6 +371,7 @@ class denonTvDevice {
 					}
 					this.currentInputReference = inputReference;
 					this.startInputIdentifier = inputIdentifier;
+					this.setStartInput = true;
 				} catch (error) {
 					this.log.error('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, error);
 				};
@@ -802,7 +805,6 @@ class denonTvDevice {
 			accessory.addService(this.buttonsService[i]);
 		}
 
-		this.startPrepareAccessory = false;
 		this.checkDeviceInfo = true;
 		this.log.debug('Device: %s %s, publishExternalAccessories.', this.host, accessoryName);
 		this.api.publishExternalAccessories(PLUGIN_NAME, [accessory]);
