@@ -171,7 +171,8 @@ class denonTvDevice {
 			const response = await axios.get(this.url + '/goform/Deviceinfo.xml');
 			this.log.debug('Device: %s %s, debug response: %s', this.host, this.name, response.data);
 			try {
-				const result = (response.status === 200) ? await parseStringPromise(response.data) : { 'Device_Info': { 'BrandCode': ['2'], 'ModelName': [this.modelName], 'MacAddress': [this.serialNumber], 'UpgradeVersion': [this.firmwareRevision], 'DeviceZones': ['Undefined'], 'CommApiVers': ['Undefined'] } };
+				const parseResponse = (response.status === 200) ? await parseStringPromise(response.data) : undefined;
+				const result = (parseResponse.Device_Info.BrandCode !== undefined) ? parseResponse : { 'Device_Info': { 'BrandCode': ['2'], 'ModelName': [this.modelName], 'MacAddress': [this.serialNumber], 'UpgradeVersion': [this.firmwareRevision], 'DeviceZones': ['Undefined'], 'CommApiVers': ['Undefined'] } };
 				const brandCode = result.Device_Info.BrandCode[0];
 				const manufacturer = ['Denon', 'Marantz', 'Manufacturer'][brandCode];
 				const modelName = result.Device_Info.ModelName[0];
@@ -283,7 +284,9 @@ class denonTvDevice {
 		this.log.debug('prepareInformationService');
 		try {
 			const response = await axios.get(this.url + '/goform/Deviceinfo.xml');
-			const result = (response.status === 200) ? await parseStringPromise(response.data) : { 'Device_Info': { 'BrandCode': ['2'], 'ModelName': [this.modelName], 'MacAddress': [this.serialNumber], 'UpgradeVersion': [this.firmwareRevision], 'DeviceZones': ['Undefined'], 'CommApiVers': ['Undefined'] } };
+			this.log.debug('Device: %s %s, debug response: %s', this.host, this.name, response.data);
+			const parseResponse = (response.status === 200) ? await parseStringPromise(response.data) : undefined;
+			const result = (parseResponse.Device_Info.BrandCode !== undefined) ? parseResponse : { 'Device_Info': { 'BrandCode': ['2'], 'ModelName': [this.modelName], 'MacAddress': [this.serialNumber], 'UpgradeVersion': [this.firmwareRevision], 'DeviceZones': ['Undefined'], 'CommApiVers': ['Undefined'] } };
 			const devInfo = JSON.stringify(result, null, 2);
 			const write = await fsPromises.writeFile(this.devInfoFile, devInfo);
 			this.log.debug('Device: %s %s, saved Device Info successful: %s', this.host, this.name, devInfo);
