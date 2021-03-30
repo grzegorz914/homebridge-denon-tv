@@ -241,30 +241,30 @@ class denonTvDevice {
 					this.televisionService
 						.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
 				}
-
-				const volume = (parseFloat(result.item.MasterVolume[0].value[0]) >= -79.5) ? parseInt(result.item.MasterVolume[0].value[0]) + 80 : 0;
-				const mute = powerState ? (result.item.Mute[0].value[0] === 'on') : true;
-				if (this.speakerService) {
-					this.speakerService
-						.updateCharacteristic(Characteristic.Volume, volume)
-						.updateCharacteristic(Characteristic.Mute, mute);
-					if (this.volumeService && this.volumeControl === 1) {
-						this.volumeService
-							.updateCharacteristic(Characteristic.Brightness, volume)
-							.updateCharacteristic(Characteristic.On, !mute);
-					}
-					if (this.volumeServiceFan && this.volumeControl === 2) {
-						this.volumeServiceFan
-							.updateCharacteristic(Characteristic.RotationSpeed, volume)
-							.updateCharacteristic(Characteristic.On, !mute);
-					}
-				}
 				this.currentInputReference = inputReference;
 				this.currentInputIdentifier = inputIdentifier;
 				this.currentInputName = inputName;
-				this.currentVolume = volume;
-				this.currentMuteState = mute;
 			}
+
+			const volume = (parseFloat(result.item.MasterVolume[0].value[0]) >= -79.5) ? parseInt(result.item.MasterVolume[0].value[0]) + 80 : 0;
+			const mute = powerState ? (result.item.Mute[0].value[0] === 'on') : true;
+			if (this.speakerService) {
+				this.speakerService
+					.updateCharacteristic(Characteristic.Volume, volume)
+					.updateCharacteristic(Characteristic.Mute, mute);
+				if (this.volumeService && this.volumeControl === 1) {
+					this.volumeService
+						.updateCharacteristic(Characteristic.Brightness, volume)
+						.updateCharacteristic(Characteristic.On, !mute);
+				}
+				if (this.volumeServiceFan && this.volumeControl === 2) {
+					this.volumeServiceFan
+						.updateCharacteristic(Characteristic.RotationSpeed, volume)
+						.updateCharacteristic(Characteristic.On, !mute);
+				}
+			}
+			this.currentVolume = volume;
+			this.currentMuteState = mute;
 
 			this.checkDeviceState = true;
 		} catch (error) {
