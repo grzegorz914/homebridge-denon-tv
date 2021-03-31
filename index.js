@@ -160,7 +160,7 @@ class denonTvDevice {
 			}
 		}.bind(this), this.refreshInterval * 1000);
 
-		//start prepare accessory
+		this.getDeviceInfo();
 		this.prepareAccessory();
 	}
 
@@ -204,7 +204,7 @@ class denonTvDevice {
 			this.checkDeviceInfo = false;
 			this.updateDeviceState();
 		} catch (error) {
-			this.log.error('Device: %s %s, Device Info error: %s, state: Offline, trying to reconnect', this.host, this.name, error);
+			this.log.error('Device: %s %s, get device info error: %s, device offline, trying to reconnect', this.host, this.name, error);
 			this.checkDeviceInfo = true;
 		};
 	}
@@ -233,18 +233,16 @@ class denonTvDevice {
 				this.currentPowerState = false;
 			}
 
-			if (this.currentPowerState) {
-				const inputReference = result.item.InputFuncSelect[0].value[0];
-				const inputIdentifier = (this.inputsReference.indexOf(inputReference) >= 0) ? this.inputsReference.indexOf(inputReference) : 0;
-				const inputName = this.inputsName[inputIdentifier];
-				if (this.televisionService) {
-					this.televisionService
-						.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
-				}
-				this.currentInputReference = inputReference;
-				this.currentInputIdentifier = inputIdentifier;
-				this.currentInputName = inputName;
+			const inputReference = result.item.InputFuncSelect[0].value[0];
+			const inputIdentifier = (this.inputsReference.indexOf(inputReference) >= 0) ? this.inputsReference.indexOf(inputReference) : 0;
+			const inputName = this.inputsName[inputIdentifier];
+			if (this.televisionService) {
+				this.televisionService
+					.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
 			}
+			this.currentInputReference = inputReference;
+			this.currentInputIdentifier = inputIdentifier;
+			this.currentInputName = inputName;
 
 			const volume = (parseFloat(result.item.MasterVolume[0].value[0]) >= -79.5) ? parseInt(result.item.MasterVolume[0].value[0]) + 80 : 0;
 			const mute = powerState ? (result.item.Mute[0].value[0] === 'on') : true;
@@ -268,7 +266,7 @@ class denonTvDevice {
 
 			this.checkDeviceState = true;
 		} catch (error) {
-			this.log.error('Device: %s %s %s, update Device state error: %s', this.host, this.name, this.zoneName, error);
+			this.log.error('Device: %s %s %s, update device state error: %s', this.host, this.name, this.zoneName, error);
 			this.checkDeviceState = false;
 			this.checkDeviceInfo = true;
 		};
@@ -294,7 +292,7 @@ class denonTvDevice {
 			this.log.debug('Device: %s %s, saved Device Info successful: %s', this.host, this.name, devInfo);
 
 			const brandCode = result.Device_Info.BrandCode[0];
-			const manufacturer = ['Denon', 'Marantz', 'Manufacturer'][brandCode];
+			const manufacturer = ['Denon', 'Marantz', this.manufacturer][brandCode];
 			const modelName = result.Device_Info.ModelName[0];
 			const serialNumber = result.Device_Info.MacAddress[0];
 			const firmwareRevision = result.Device_Info.UpgradeVersion[0];
@@ -310,7 +308,6 @@ class denonTvDevice {
 			accessory.addService(informationService);
 		} catch (error) {
 			this.log.error('Device: %s %s, prepareInformationService error: %s', this.host, accessoryName, error);
-			this.checkDeviceInfo = true;
 		};
 
 		//Prepare television service
@@ -350,8 +347,8 @@ class denonTvDevice {
 		this.televisionService.getCharacteristic(Characteristic.ActiveIdentifier)
 			.onGet(async () => {
 				const inputReference = this.currentInputReference;
+				const inputName = this.currentInputName;
 				const inputIdentifier = (this.inputsReference.indexOf(inputReference) >= 0) ? this.inputsReference.indexOf(inputReference) : 0;
-				const inputName = this.inputsName[inputIdentifier];
 				if (!this.disableLogInfo) {
 					this.log('Device: %s %s %s, get current Input successful: %s %s', this.host, accessoryName, this.zoneName, inputName, inputReference);
 				}
@@ -805,7 +802,6 @@ class denonTvDevice {
 			accessory.addService(this.buttonsService[i]);
 		}
 
-		this.checkDeviceInfo = true;
 		this.log.debug('Device: %s %s, publishExternalAccessories.', this.host, accessoryName);
 		this.api.publishExternalAccessories(PLUGIN_NAME, [accessory]);
 	}
