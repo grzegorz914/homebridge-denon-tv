@@ -172,6 +172,11 @@ class denonTvDevice {
 
 			const parseResponse = (response.status === 200) ? await parseStringPromise(response.data) : undefined;
 			const result = (parseResponse.Device_Info.BrandCode !== undefined) ? parseResponse : { 'Device_Info': { 'BrandCode': ['2'], 'ModelName': [this.modelName], 'MacAddress': [this.serialNumber], 'UpgradeVersion': [this.firmwareRevision], 'DeviceZones': ['Undefined'], 'CommApiVers': ['Undefined'] } };
+			const obj = (parseResponse.Device_Info.BrandCode !== undefined) ? { 'Device_Info': { 'BrandCode': result.Device_Info.BrandCode, 'ModelName': result.Device_Info.ModelName, 'MacAddress': result.Device_Info.MacAddress, 'UpgradeVersion': result.Device_Info.UpgradeVersion, 'DeviceZones': result.Device_Info.DeviceZones, 'CommApiVers': result.Device_Info.CommApiVers } } : result;
+			const devInfo = JSON.stringify(obj, null, 2);
+			const writeDevInfoFile = fsPromises.writeFile(this.devInfoFile, devInfo);
+			this.log.debug('Device: %s %s, saved Device Info successful: %s', this.host, this.name, devInfo);
+
 			const brandCode = result.Device_Info.BrandCode[0];
 			const manufacturer = ['Denon', 'Marantz', 'Manufacturer'][brandCode];
 			const modelName = result.Device_Info.ModelName[0];
@@ -283,19 +288,15 @@ class denonTvDevice {
 		//Prepare information service
 		this.log.debug('prepareInformationService');
 		try {
-			const response = await axios.get(this.url + '/goform/Deviceinfo.xml');
-			this.log.debug('Device: %s %s, debug response: %s', this.host, this.name, response.data);
-			const parseResponse = (response.status === 200) ? await parseStringPromise(response.data) : undefined;
-			const result = (parseResponse.Device_Info.BrandCode !== undefined) ? parseResponse : { 'Device_Info': { 'BrandCode': ['2'], 'ModelName': [this.modelName], 'MacAddress': [this.serialNumber], 'UpgradeVersion': [this.firmwareRevision], 'DeviceZones': ['Undefined'], 'CommApiVers': ['Undefined'] } };
-			const devInfo = JSON.stringify(result, null, 2);
-			const write = await fsPromises.writeFile(this.devInfoFile, devInfo);
-			this.log.debug('Device: %s %s, saved Device Info successful: %s', this.host, this.name, devInfo);
+			const readDevInfo = await fsPromises.readFile(this.devInfoFile);
+			const devInfo = (JSON.parse(readDevInfo).Device_Info.BrandCode[0] !== undefined) ? JSON.parse(readDevInfo) : { 'Device_Info': { 'BrandCode': ['2'], 'ModelName': [this.modelName], 'MacAddress': [this.serialNumber], 'UpgradeVersion': [this.firmwareRevision], 'DeviceZones': ['Undefined'], 'CommApiVers': ['Undefined'] } };
+			this.log.debug('Device: %s %s, read devInfo: %s', this.host, accessoryName, devInfo)
 
-			const brandCode = result.Device_Info.BrandCode[0];
+			const brandCode = devInfo.Device_Info.BrandCode[0];
 			const manufacturer = ['Denon', 'Marantz', this.manufacturer][brandCode];
-			const modelName = result.Device_Info.ModelName[0];
-			const serialNumber = result.Device_Info.MacAddress[0];
-			const firmwareRevision = result.Device_Info.UpgradeVersion[0];
+			const modelName = devInfo.Device_Info.ModelName[0];
+			const serialNumber = devInfo.Device_Info.MacAddress[0];
+			const firmwareRevision = devInfo.Device_Info.UpgradeVersion[0];
 
 			accessory.removeService(accessory.getService(Service.AccessoryInformation));
 			const informationService = new Service.AccessoryInformation();
