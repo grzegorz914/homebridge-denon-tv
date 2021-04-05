@@ -225,56 +225,49 @@ class denonTvDevice {
 
 			const powerState = (result.item.Power[0].value[0] === 'ON');
 			const inputReference = result.item.InputFuncSelect[0].value[0];
-			const inputIdentifier = (this.inputsReference.indexOf(inputReference) >= 0) ? this.inputsReference.indexOf(inputReference) : 0;
+			const inputIdentifier = this.setStartInput ? this.setStartInputIdentifier : (this.inputsReference.indexOf(inputReference) >= 0) ? this.inputsReference.indexOf(inputReference) : 0;
 			const inputName = this.inputsName[inputIdentifier];
 			const volume = (parseFloat(result.item.MasterVolume[0].value[0]) >= -79.5) ? parseInt(result.item.MasterVolume[0].value[0]) + 80 : 0;
 			const mute = powerState ? (result.item.Mute[0].value[0] === 'on') : true;
-
 
 			if (this.televisionService) {
 				if (powerState) {
 					this.televisionService
 						.updateCharacteristic(Characteristic.Active, true)
-						.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
-
+					this.currentPowerState = true;
 				}
 
 				if (!powerState) {
 					this.televisionService
 						.updateCharacteristic(Characteristic.Active, false);
+					this.currentPowerState = false;
 				}
 
-				if (this.setStartInput) {
-					this.televisionService
-						.setCharacteristic(Characteristic.ActiveIdentifier, this.setStartInputIdentifier);
-					if (this.setStartInputIdentifier === inputIdentifier) {
-						this.setStartInput = false;
-					}
-				}
+				this.televisionService.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
+				this.setStatrtInput = (this.setStatrtInput && this.setStartInputIdentifier === inputIdentifier) ? false : true;
+
+				this.currentInputName = inputName;
+				this.currentInputReference = inputReference;
+				this.currentInputIdentifier = inputIdentifier;
 			}
 
 			if (this.speakerService) {
 				this.speakerService
 					.updateCharacteristic(Characteristic.Volume, volume)
 					.updateCharacteristic(Characteristic.Mute, mute);
-				if (this.volumeService && this.volumeControl == 1) {
+				if (this.volumeService && this.volumeControl === 1) {
 					this.volumeService
 						.updateCharacteristic(Characteristic.Brightness, volume)
 						.updateCharacteristic(Characteristic.On, !mute);
 				}
-				if (this.volumeServiceFan && this.volumeControl == 2) {
+				if (this.volumeServiceFan && this.volumeControl === 2) {
 					this.volumeServiceFan
 						.updateCharacteristic(Characteristic.RotationSpeed, volume)
 						.updateCharacteristic(Characteristic.On, !mute);
 				}
+				this.currentVolume = volume;
+				this.currentMuteState = mute;
 			}
-
-			this.currentPowerState = powerState;
-			this.currentInputName = inputName;
-			this.currentInputReference = inputReference;
-			this.currentInputIdentifier = inputIdentifier;
-			this.currentVolume = volume;
-			this.currentMuteState = mute;
 		} catch (error) {
 			this.log.error('Device: %s %s %s, update device state error: %s', this.host, this.name, this.zoneName, error);
 			this.currentPowerState = false;
