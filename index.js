@@ -209,10 +209,8 @@ class denonTvDevice {
 			this.checkDeviceInfo = false;
 			this.checkDeviceState = true;
 		} catch (error) {
-			this.log.error('Device: %s %s, get device info error: %s, device offline, trying to reconnect', this.host, this.name, error);
-			this.currentPowerState = false;
+			this.log.debug('Device: %s %s, get device info error: %s, device offline, trying to reconnect', this.host, this.name, error);
 			this.checkDeviceInfo = true;
-			this.checkDeviceState = false;
 		};
 	}
 
@@ -269,10 +267,7 @@ class denonTvDevice {
 				this.currentMuteState = mute;
 			}
 		} catch (error) {
-			this.log.error('Device: %s %s %s, update device state error: %s', this.host, this.name, this.zoneName, error);
-			this.currentPowerState = false;
-			this.checkDeviceState = false;
-			this.checkDeviceInfo = true;
+			this.log.debug('Device: %s %s %s, update device state error: %s', this.host, this.name, this.zoneName, error);
 		};
 	}
 
@@ -306,7 +301,7 @@ class denonTvDevice {
 				.setCharacteristic(Characteristic.FirmwareRevision, firmwareRevision);
 			accessory.addService(informationService);
 		} catch (error) {
-			this.log.error('Device: %s %s, prepareInformationService error: %s', this.host, accessoryName, error);
+			this.log.debug('Device: %s %s, prepareInformationService error: %s', this.host, accessoryName, error);
 		};
 
 		//Prepare television service
