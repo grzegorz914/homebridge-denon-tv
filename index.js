@@ -225,7 +225,8 @@ class denonTvDevice {
 
 			const powerState = (result.item.Power[0].value[0] === 'ON');
 			const inputReference = result.item.InputFuncSelect[0].value[0];
-			const inputIdentifier = this.setStartInput ? this.setStartInputIdentifier : (this.inputsReference.indexOf(inputReference) >= 0) ? this.inputsReference.indexOf(inputReference) : 0;
+			const currentInputIdentifier = (this.inputsReference.indexOf(inputReference) >= 0) ? this.inputsReference.indexOf(inputReference) : 0;
+			const inputIdentifier = this.setStartInput ? this.setStartInputIdentifier : currentInputIdentifier;
 			const inputName = this.inputsName[inputIdentifier];
 			const volume = (parseFloat(result.item.MasterVolume[0].value[0]) >= -79.5) ? parseInt(result.item.MasterVolume[0].value[0]) + 80 : 0;
 			const mute = powerState ? (result.item.Mute[0].value[0] === 'on') : true;
@@ -243,8 +244,9 @@ class denonTvDevice {
 					this.currentPowerState = false;
 				}
 
-				this.televisionService.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
-				this.setStatrtInput = (this.setStatrtInput && this.setStartInputIdentifier === inputIdentifier) ? false : true;
+				const setUpdateCharacteristic = this.setStartInput ? this.televisionService.setCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier) :
+					this.televisionService.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
+				this.setStartInput = (currentInputIdentifier === inputIdentifier) ? false : true;
 
 				this.currentInputName = inputName;
 				this.currentInputReference = inputReference;
