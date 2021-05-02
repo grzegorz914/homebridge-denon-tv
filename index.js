@@ -246,7 +246,9 @@ class denonTvDevice {
 
 				const setUpdateCharacteristic = this.setStartInput ? this.televisionService.setCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier) :
 					this.televisionService.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
-				this.setStartInput = (currentInputIdentifier === inputIdentifier) ? false : true;
+				setTimeout(() => {
+					this.setStartInput = (currentInputIdentifier === inputIdentifier) ? false : true;
+				}, 1500);
 
 				this.currentInputName = inputName;
 				this.currentInputReference = inputReference;
@@ -362,7 +364,7 @@ class denonTvDevice {
 					if (!this.disableLogInfo) {
 						this.log('Device: %s %s %s, set new Input successful: %s %s', this.host, accessoryName, this.zoneName, inputName, inputReference);
 					}
-					this.setStartInputIdentifier = this.currentPowerState ? this.currentInputIdentifier : inputIdentifier;
+					this.setStartInputIdentifier = inputIdentifier;
 					this.setStartInput = this.currentPowerState ? false : true;
 				} catch (error) {
 					this.log.error('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, error);
