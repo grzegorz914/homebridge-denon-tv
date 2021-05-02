@@ -108,7 +108,6 @@ class denonTvDevice {
 		this.buttonsName = new Array();
 		this.checkDeviceInfo = false;
 		this.checkDeviceState = false;
-		this.startPrepareAccessory = true;
 		this.setStartInput = false;
 		this.currentPowerState = false;
 		this.currentMuteState = false;
@@ -362,7 +361,7 @@ class denonTvDevice {
 					if (!this.disableLogInfo) {
 						this.log('Device: %s %s %s, set new Input successful: %s %s', this.host, accessoryName, this.zoneName, inputName, inputReference);
 					}
-					this.setStartInputIdentifier = this.currentPowerState ? this.currentInputIdentifier : inputIdentifier;
+					this.setStartInputIdentifier = inputIdentifier;
 					this.setStartInput = this.currentPowerState ? false : true;
 				} catch (error) {
 					this.log.error('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, error);
@@ -666,7 +665,7 @@ class denonTvDevice {
 		this.log.debug('Device: %s %s, read savedTargetVisibility: %s', this.host, accessoryName, savedTargetVisibility);
 
 		//check possible inputs count
-		const inputsLength = (inputs.length > 96) ? 96 : inputs.length;
+		const inputsLength = (this.inputsLength > 96) ? 96 : this.inputsLength;
 		for (let i = 0; i < inputsLength; i++) {
 
 			//get input reference
@@ -752,10 +751,15 @@ class denonTvDevice {
 		const buttons = [this.buttonsMainZone, this.buttonsZone2, this.buttonsZone3][this.zoneControl];
 
 		//check possible buttons count
-		const buttonsLength = ((inputs.length + buttons.length) > 96) ? 96 - inputs.length : buttons.length;
+		const buttonsLength = ((this.inputsLength + this.buttonsLength) > 96) ? 96 - this.inputsLength : this.buttonsLength;
 		for (let i = 0; i < buttonsLength; i++) {
+
+			//get button reference
 			const buttonReference = buttons[i].reference;
+
+			//get button name
 			const buttonName = (buttons[i].name !== undefined) ? buttons[i].name : buttons[i].reference;
+
 			const buttonService = new Service.Switch(this.shortZoneName + ' ' + buttonName, 'buttonService' + i);
 			buttonService.getCharacteristic(Characteristic.On)
 				.onGet(async () => {
@@ -775,19 +779,19 @@ class denonTvDevice {
 							setTimeout(() => {
 								buttonService
 									.updateCharacteristic(Characteristic.On, false);
-							}, 50);
+							}, 250);
 						} catch (error) {
 							this.log.error('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, error);
 							setTimeout(() => {
 								buttonService
 									.updateCharacteristic(Characteristic.On, false);
-							}, 50);
+							}, 250);
 						};
 					} else {
 						setTimeout(() => {
 							buttonService
 								.updateCharacteristic(Characteristic.On, false);
-						}, 50);
+						}, 250);
 					}
 				});
 			this.buttonsReference.push(buttonReference);
