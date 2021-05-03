@@ -178,7 +178,7 @@
                         ]
                       },
                       {
-                        "title": "BLUE-RAY",
+                        "title": "BLU-RAY",
                         "enum": [
                           "BD"
                         ]
@@ -238,7 +238,7 @@
                         ]
                       },
                       {
-                        "title": "BLUETOTH",
+                        "title": "BLUETOOTH",
                         "enum": [
                           "BT"
                         ]
@@ -280,7 +280,7 @@
                         ]
                       },
                       {
-                        "title": "NETWORK",
+                        "title": "NETWORK/AIRPLAY",
                         "enum": [
                           "NET"
                         ]
@@ -971,7 +971,7 @@
                         ]
                       },
                       {
-                        "title": "INPUT BLUE-RAY",
+                        "title": "INPUT BLU-RAY",
                         "enum": [
                           "SIBD"
                         ]
@@ -1085,13 +1085,13 @@
                         ]
                       },
                       {
-                        "title": "INPUT NET",
+                        "title": "INPUT NETWORK/AIRPLAY",
                         "enum": [
                           "SINET"
                         ]
                       },
                       {
-                        "title": "INPUT BLUETOTH",
+                        "title": "INPUT BLUETOOTH",
                         "enum": [
                           "SIBT"
                         ]
@@ -1109,7 +1109,7 @@
                         ]
                       },
                       {
-                        "title": "INPUT iRADIO RECENT PLAY",
+                        "title": "INPUT IRADIO RECENT PLAY",
                         "enum": [
                           "SIIRP"
                         ]
@@ -1121,7 +1121,7 @@
                         ]
                       },
                       {
-                        "title": "INPUT SIRIUSXM (NA only)",
+                        "title": "INPUT SIRIUSXM (NA Only)",
                         "enum": [
                           "SISIRIUSXM"
                         ]
@@ -2905,7 +2905,7 @@
                         ]
                       },
                       {
-                        "title": "INPUT BLUE-RAY",
+                        "title": "INPUT BLU-RAY",
                         "enum": [
                           "Z2BD"
                         ]
@@ -3019,13 +3019,13 @@
                         ]
                       },
                       {
-                        "title": "INPUT NET",
+                        "title": "INPUT NETWORK/AIRPLAY",
                         "enum": [
                           "Z2NET"
                         ]
                       },
                       {
-                        "title": "INPUT BLUETOTH",
+                        "title": "INPUT BLUETOOTH",
                         "enum": [
                           "Z2BT"
                         ]
@@ -3055,7 +3055,7 @@
                         ]
                       },
                       {
-                        "title": "INPUT SIRIUSXM (NA only)",
+                        "title": "INPUT SIRIUSXM (NA Only)",
                         "enum": [
                           "Z2SIRIUSXM"
                         ]
@@ -3357,7 +3357,7 @@
                         ]
                       },
                       {
-                        "title": "INPUT BLUE-RAY",
+                        "title": "INPUT BLU-RAY",
                         "enum": [
                           "Z3BD"
                         ]
@@ -3471,13 +3471,13 @@
                         ]
                       },
                       {
-                        "title": "INPUT NET",
+                        "title": "INPUT NETWORK/AIRPLAY",
                         "enum": [
                           "Z3NET"
                         ]
                       },
                       {
-                        "title": "INPUT BLUETOTH",
+                        "title": "INPUT BLUETOOTH",
                         "enum": [
                           "Z3BT"
                         ]
@@ -3495,7 +3495,7 @@
                         ]
                       },
                       {
-                        "title": "INPUT iRADIO RECENT PLAY",
+                        "title": "INPUT IRADIO RECENT PLAY",
                         "enum": [
                           "Z3IRP"
                         ]
