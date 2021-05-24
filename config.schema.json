@@ -44,9 +44,16 @@
             "zoneControl": {
               "title": "Zone Control",
               "type": "integer",
-              "maximum": 3,
+              "maximum": 2,
+              "default": "null",
               "description": "Here select which Zone You want control.",
               "oneOf": [
+                {
+                  "title": "None",
+                  "enum": [
+                    "null"
+                  ]
+                },
                 {
                   "title": "Main Zone",
                   "enum": [
@@ -72,6 +79,7 @@
               "title": "Volume Control Mode",
               "type": "integer",
               "maximum": 2,
+              "default": 0,
               "description": "Here select what a volume control mode You want to use. If select *None* only hardware buttons in RC app can be used to control volume.",
               "oneOf": [
                 {
@@ -93,42 +101,60 @@
                   ]
                 }
               ],
-              "required": true
+              "required": true,
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].zoneControl !== 'null';"
+              }
             },
             "masterPower": {
               "title": "Master Power Control",
               "type": "boolean",
               "default": false,
               "required": false,
-              "description": "The power switch for that zone will turn the entire receiver `ON` or `OFF/STANDBY` rather than just the zone itself."
+              "description": "The power switch for that zone will turn the entire receiver `ON` or `OFF/STANDBY` rather than just the zone itself.",
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].zoneControl !== 'null';"
+              }
             },
             "masterVolume": {
               "title": "Master Volume Control",
               "type": "boolean",
               "default": false,
               "required": false,
-              "description": "The volume for that zone will set the entire receiver volume `UP` or `DOWN` rather than just the zone itself."
+              "description": "The volume for that zone will set the entire receiver volume `UP` or `DOWN` rather than just the zone itself.",
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].zoneControl !== 'null';"
+              }
             },
             "masterMute": {
               "title": "Master Mute Control",
               "type": "boolean",
               "default": false,
               "required": false,
-              "description": "The mute switch for that zone will muted the entire receiver `ON` or `OFF` rather than just the zone itself."
+              "description": "The mute switch for that zone will muted the entire receiver `ON` or `OFF` rather than just the zone itself.",
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].zoneControl !== 'null';"
+              }
             },
             "switchInfoMenu": {
               "title": "Switch Info/Menu",
               "type": "boolean",
               "default": false,
               "required": false,
-              "description": "This toggle behaviour for *I* button in RC app and *PowerModeSELECTion* in settings."
+              "description": "This toggle behaviour for *I* button in RC app and *PowerModeSELECTion* in settings.",
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].zoneControl !== 'null';"
+              }
             },
             "disableLogInfo": {
               "title": "Disable log info",
               "type": "boolean",
               "default": false,
               "required": false,
-              "description": "This disable log info, all values and state will not be displayed in Homebridge log console."
+              "description": "This disable log info, all values and state will not be displayed in Homebridge log console.",
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].zoneControl !== 'null';"
+              }
             },
             "inputs": {
               "title": "Inputs",
@@ -465,6 +491,9 @@
                     "required": true
                   }
                 }
+              },
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].zoneControl !== 'null';"
               }
             },
             "buttonsMainZone": {
@@ -3748,28 +3777,40 @@
               "type": "string",
               "placeholder": "Denon/Marantz",
               "description": "Set the manufacturer name.",
-              "required": false
+              "required": false,
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].zoneControl !== 'null';"
+              }
             },
             "modelName": {
               "name": "Model",
               "type": "string",
               "placeholder": "Model",
               "description": "Set the model name.",
-              "required": false
+              "required": false,
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].zoneControl !== 'null';"
+              }
             },
             "serialNumber": {
               "name": "Serial Number",
               "type": "string",
               "placeholder": "SerialNumber",
               "description": "Set the serial number.",
-              "required": false
+              "required": false,
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].zoneControl !== 'null';"
+              }
             },
             "firmwareRevision": {
               "name": "Firmware Revision",
               "type": "string",
               "placeholder": "Firmware Revision",
               "description": "Set the firmware revision.",
-              "required": false
+              "required": false,
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].zoneControl !== 'null';"
+              }
             }
           }
         }
