@@ -665,10 +665,10 @@ class denonTvDevice {
 		const savedTargetVisibility = ((fs.readFileSync(this.targetVisibilityInputsFile)).length > 0) ? JSON.parse(fs.readFileSync(this.targetVisibilityInputsFile)) : {};
 		this.log.debug('Device: %s %s, read savedTargetVisibility: %s', this.host, accessoryName, savedTargetVisibility);
 
-		//check available inputs and possible inputs count (max 96)
+		//check available inputs and possible inputs count (max 95)
 		const inputs = this.inputs;
 		const inputsCount = inputs.length;
-		const maxInputsCount = (inputsCount > 96) ? 96 : inputsCount;
+		const maxInputsCount = (inputsCount > 95) ? 95 : inputsCount;
 		for (let i = 0; i < maxInputsCount; i++) {
 
 			//get input reference
@@ -752,10 +752,10 @@ class denonTvDevice {
 		//Prepare inputs button services
 		this.log.debug('prepareInputsButtonService');
 
-		//check available buttons and possible buttons count (max 96 - inputsCount)
+		//check available buttons and possible buttons count (max 95 - inputsCount)
 		const buttons = [this.buttonsMainZone, this.buttonsZone2, this.buttonsZone3][this.zoneControl];
 		const buttonsCount = buttons.length;
-		const maxButtonsCount = ((inputsCount + buttonsCount) > 96) ? 96 - inputsCount : buttonsCount;
+		const maxButtonsCount = ((inputsCount + buttonsCount) > 95) ? 95 - inputsCount : buttonsCount;
 		for (let i = 0; i < maxButtonsCount; i++) {
 
 			//get button reference
