@@ -98,6 +98,10 @@ class denonTvDevice {
 		this.zoneNumber = ZONE_NUMBER[this.zoneControl];
 
 		//setup variables
+		this.checkDeviceInfo = true;
+		this.checkDeviceState = false;
+		this.startPrepareAccessory = true;
+
 		this.inputsService = new Array();
 		this.inputsReference = new Array();
 		this.inputsName = new Array();
@@ -106,8 +110,6 @@ class denonTvDevice {
 		this.buttonsService = new Array();
 		this.buttonsReference = new Array();
 		this.buttonsName = new Array();
-		this.checkDeviceInfo = false;
-		this.checkDeviceState = false;
 		this.setStartInput = false;
 		this.currentPowerState = false;
 		this.currentMuteState = false;
@@ -119,7 +121,6 @@ class denonTvDevice {
 		this.currentPlayPause = false;
 
 		this.prefDir = path.join(api.user.storagePath(), 'denonTv');
-		this.inputsFile = this.prefDir + '/' + 'inputs_' + this.host.split('.').join('');
 		this.inputsNamesFile = this.prefDir + '/' + 'inputsNames_' + this.host.split('.').join('');
 		this.targetVisibilityInputsFile = this.prefDir + '/' + 'targetVisibilityInputs_' + this.host.split('.').join('');
 		this.devInfoFile = this.prefDir + '/' + 'devInfo_' + this.host.split('.').join('');
@@ -132,10 +133,6 @@ class denonTvDevice {
 		//check if the directory exists, if not then create it
 		if (fs.existsSync(this.prefDir) === false) {
 			fsPromises.mkdir(this.prefDir);
-		}
-		//check if the files exists, if not then create it
-		if (fs.existsSync(this.inputsFile) === false) {
-			fsPromises.writeFile(this.inputsFile, '');
 		}
 		//check if the files exists, if not then create it
 		if (fs.existsSync(this.inputsNamesFile) === false) {
@@ -159,9 +156,6 @@ class denonTvDevice {
 				this.updateDeviceState();
 			}
 		}.bind(this), this.refreshInterval * 1000);
-
-		this.getDeviceInfo();
-		this.prepareAccessory();
 	}
 
 	async getDeviceInfo() {
@@ -207,9 +201,10 @@ class denonTvDevice {
 			this.log('----------------------------------');
 
 			this.checkDeviceInfo = false;
-			this.checkDeviceState = true;
+			const updateDeviceState = !this.checkDeviceState ? this.updateDeviceState() : false;
 		} catch (error) {
 			this.log.debug('Device: %s %s, get device info error: %s, device offline, trying to reconnect', this.host, this.name, error);
+			this.checkDeviceState = false;
 			this.checkDeviceInfo = true;
 		};
 	}
@@ -268,8 +263,16 @@ class denonTvDevice {
 				this.currentVolume = volume;
 				this.currentMuteState = mute;
 			}
+			this.checkDeviceState = true;
+
+			//start prepare accessory
+			if (this.startPrepareAccessory) {
+				this.prepareAccessory();
+			}
 		} catch (error) {
 			this.log.debug('Device: %s %s %s, update device state error: %s', this.host, this.name, this.zoneName, error);
+			this.checkDeviceState = false;
+			this.checkDeviceInfo = true;
 		};
 	}
 
@@ -752,7 +755,7 @@ class denonTvDevice {
 		//check available buttons and possible buttons count (max 96 - inputsCount)
 		const buttons = [this.buttonsMainZone, this.buttonsZone2, this.buttonsZone3][this.zoneControl];
 		const buttonsCount = buttons.length;
-		const maxButtonsCount = ((inputsCount + buttonsCount) >= 96) ? 0 : 96 - inputsCount;
+		const maxButtonsCount = ((inputsCount + buttonsCount) > 96) ? 96 - inputsCount : buttonsCount;
 		for (let i = 0; i < maxButtonsCount; i++) {
 
 			//get button reference
@@ -802,6 +805,7 @@ class denonTvDevice {
 			accessory.addService(this.buttonsService[i]);
 		}
 
+		this.startPrepareAccessory = false;
 		this.log.debug('Device: %s %s, publishExternalAccessories.', this.host, accessoryName);
 		this.api.publishExternalAccessories(PLUGIN_NAME, [accessory]);
 	}
