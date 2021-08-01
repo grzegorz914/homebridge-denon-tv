@@ -118,6 +118,7 @@ class denonTvDevice {
 		this.currentInputIdentifier = 0;
 		this.setStartInputIdentifier = 0;
 		this.currentPlayPause = false;
+		this.pictureMode = 0;
 
 		this.prefDir = path.join(api.user.storagePath(), 'denonTv');
 		this.inputsNamesFile = this.prefDir + '/' + 'inputsNames_' + this.host.split('.').join('');
@@ -485,6 +486,13 @@ class denonTvDevice {
 				};
 			});
 		this.televisionService.getCharacteristic(Characteristic.PictureMode)
+			.onGet(async () => {
+				const pictureMode = this.pictureMode;
+				if (!this.disableLogInfo) {
+					this.log('Device: %s %s %s, get current Picture mode: %s', this.host, accessoryName, pictureMode);
+				}
+				return pictureMode;
+			})
 			.onSet(async (command) => {
 				try {
 					switch (command) {
@@ -513,7 +521,6 @@ class denonTvDevice {
 							command = 'PVCTM';
 							break;
 					}
-					const response = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + command);
 					if (!this.disableLogInfo) {
 						this.log('Device: %s %s, setPictureMode successful, command: %s', this.host, accessoryName, command);
 					}
