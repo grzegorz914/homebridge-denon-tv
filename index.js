@@ -116,7 +116,6 @@ class denonTvDevice {
 		this.volume = 0;
 		this.muteState = false;
 		this.mediaState = false;
-		this.pictureMode = 0;
 
 		this.setStartInput = false;
 		this.setStartInputIdentifier = 0;
@@ -124,6 +123,12 @@ class denonTvDevice {
 		this.inputIdentifier = 0;
 		this.inputReference = '';
 		this.inputName = '';
+
+		this.brightness = 0;
+		this.backlight = 0;
+		this.contrast = 0;
+		this.color = 0;
+		this.pictureMode = 0;
 
 		this.prefDir = path.join(api.user.storagePath(), 'denonTv');
 		this.inputsNamesFile = this.prefDir + '/' + 'inputsNames_' + this.host.split('.').join('');
