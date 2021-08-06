@@ -84,6 +84,7 @@ class denonTvDevice {
 		this.buttonsMainZone = config.buttonsMainZone || [];
 		this.buttonsZone2 = config.buttonsZone2 || [];
 		this.buttonsZone3 = config.buttonsZone3 || [];
+		this.buttons = [this.buttonsMainZone, this.buttonsZone2, this.buttonsZone3][this.zoneControl];
 
 		//get Device info
 		this.manufacturer = config.manufacturer || 'Denon/Marantz';
@@ -242,8 +243,8 @@ class denonTvDevice {
 
 			const powerState = (result.item.Power[0].value[0] === 'ON');
 			const inputReference = result.item.InputFuncSelect[0].value[0];
-			const inputIdentifier = (this.inputsReference.indexOf(inputReference) >= 0) ? this.inputsReference.indexOf(inputReference) : 0;
-			const inputIdentifier = this.setStartInput ? this.setStartInputIdentifier : inputIdentifier;
+			const currentInputIdentifier = (this.inputsReference.indexOf(inputReference) >= 0) ? this.inputsReference.indexOf(inputReference) : 0;
+			const inputIdentifier = this.setStartInput ? this.setStartInputIdentifier : currentInputIdentifier;
 			const inputName = this.inputsName[inputIdentifier];
 			const volume = (parseFloat(result.item.MasterVolume[0].value[0]) >= -79.5) ? parseInt(result.item.MasterVolume[0].value[0]) + 80 : 0;
 			const mute = (result.item.Mute[0].value[0] === 'on');
@@ -788,13 +789,13 @@ class denonTvDevice {
 		this.log.debug('prepareInputsButtonService');
 
 		//check available buttons and possible buttons count (max 94 - inputsCount)
-		const buttons = [this.buttonsMainZone, this.buttonsZone2, this.buttonsZone3][this.zoneControl];
+		const buttons = this.buttons;
 		const buttonsCount = buttons.length;
-		const maxButtonsCount = ((inputsCount + buttonsCount) < 94) ? 94 - inputsCount : 0;
+		const maxButtonsCount = ((inputsCount + buttonsCount) < 94) ? buttonsCount : 94 - inputsCount;
 		for (let i = 0; i < maxButtonsCount; i++) {
 
 			//get button reference
-			const buttonReference = buttons[i].reference;
+			const buttonReference = (buttons[i].reference !== undefined) ? buttons[i].reference : 0;
 
 			//get button name
 			const buttonName = (buttons[i].name !== undefined) ? buttons[i].name : buttons[i].reference;

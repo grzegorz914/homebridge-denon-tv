@@ -45,15 +45,9 @@
               "title": "Zone Control",
               "type": "integer",
               "maximum": 2,
-              "default": -1,
+              "default": 0,
               "description": "Here select which Zone You want control.",
               "oneOf": [{
-                  "title": "None",
-                  "enum": [
-                    -1
-                  ]
-                },
-                {
                   "title": "Main Zone",
                   "enum": [
                     0
