@@ -47,8 +47,7 @@
               "maximum": 2,
               "default": -1,
               "description": "Here select which Zone You want control.",
-              "oneOf": [
-                {
+              "oneOf": [{
                   "title": "None",
                   "enum": [
                     -1
@@ -81,8 +80,7 @@
               "maximum": 2,
               "default": 0,
               "description": "Here select what a volume control mode You want to use. If select *None* only hardware buttons in RC app can be used to control volume.",
-              "oneOf": [
-                {
+              "oneOf": [{
                   "title": "None",
                   "enum": [
                     0
@@ -154,8 +152,7 @@
                     "title": "Input",
                     "type": "string",
                     "description": "Here select input.",
-                    "oneOf": [
-                      {
+                    "oneOf": [{
                         "title": "TV AUDIO",
                         "enum": [
                           "TV"
@@ -450,8 +447,7 @@
                     "title": "Mode",
                     "type": "string",
                     "description": "Here select input mode.",
-                    "oneOf": [
-                      {
+                    "oneOf": [{
                         "title": "INPUT",
                         "enum": [
                           "SI"
@@ -491,8 +487,7 @@
                     "title": "Function",
                     "type": "string",
                     "description": "Here select function.",
-                    "oneOf": [
-                      {
+                    "oneOf": [{
                         "title": "POWER ON ALL",
                         "enum": [
                           "PWON"
@@ -2872,8 +2867,7 @@
                     "title": "Function",
                     "type": "string",
                     "description": "Here select function.",
-                    "oneOf": [
-                      {
+                    "oneOf": [{
                         "title": "POWER ON",
                         "enum": [
                           "Z2ON"
@@ -3321,8 +3315,7 @@
                     "title": "Function",
                     "type": "string",
                     "description": "Here select function.",
-                    "oneOf": [
-                      {
+                    "oneOf": [{
                         "title": "POWER ON",
                         "enum": [
                           "Z3ON"
@@ -3775,141 +3768,131 @@
       }
     }
   },
-  "layout": [
-    {
-      "key": "devices",
-      "type": "tabarray",
-      "title": "{{ value.name || 'new device' }}",
-      "items": [
-        "devices[].name",
-        "devices[].host",
-        "devices[].port",
-        "devices[].zoneControl",
-        {
-          "key": "devices[]",
-          "type": "section",
-          "title": "Inputs",
-          "expandable": true,
-          "expanded": false,
+  "layout": [{
+    "key": "devices",
+    "type": "tabarray",
+    "title": "{{ value.name || 'new device' }}",
+    "items": [
+      "devices[].name",
+      "devices[].host",
+      "devices[].port",
+      "devices[].zoneControl",
+      {
+        "key": "devices[]",
+        "type": "section",
+        "title": "Inputs",
+        "expandable": true,
+        "expanded": false,
+        "items": [{
+          "key": "devices[].inputs",
+          "type": "array",
+          "orderable": false,
+          "buttonText": "Add input",
           "items": [
-            {
-              "key": "devices[].inputs",
-              "type": "array",
-              "orderable": false,
-              "buttonText": "Add input",
-              "items": [
-                "devices[].inputs[].name",
-                "devices[].inputs[].reference",
-                "devices[].inputs[].mode"
-              ]
-            }
-          ],
-          "condition": {
-            "functionBody": "return model.devices[arrayIndices].zoneControl >= 0;"
-          }
-        },
-        {
-          "key": "devices[]",
-          "type": "section",
-          "title": "Buttons",
-          "expandable": true,
-          "expanded": false,
-          "items": [
-            {
-              "key": "devices[].buttonsMainZone",
-              "type": "array",
-              "orderable": false,
-              "buttonText": "Add button",
-              "items": [
-                "devices[].buttonsMainZone[].name",
-                "devices[].buttonsMainZone[].reference"
-              ]
-            }
-          ],
-          "condition": {
-            "functionBody": "return model.devices[arrayIndices].zoneControl === 0;"
-          }
-        },
-        {
-          "key": "devices[]",
-          "type": "section",
-          "title": "Buttons",
-          "expandable": true,
-          "expanded": false,
-          "items": [
-            {
-              "key": "devices[].buttonsZone2",
-              "type": "array",
-              "orderable": false,
-              "buttonText": "Add button",
-              "items": [
-                "devices[].buttonsZone2[].name",
-                "devices[].buttonsZone2[].reference"
-              ]
-            }
-          ],
-          "condition": {
-            "functionBody": "return model.devices[arrayIndices].zoneControl === 1;"
-          }
-        },
-        {
-          "key": "devices[]",
-          "type": "section",
-          "title": "Buttons",
-          "expandable": true,
-          "expanded": false,
-          "items": [
-            {
-              "key": "devices[].buttonsZone3",
-              "type": "array",
-              "orderable": false,
-              "buttonText": "Add button",
-              "items": [
-                "devices[].buttonsZone3[].name",
-                "devices[].buttonsZone3[].reference"
-              ]
-            }
-          ],
-          "condition": {
-            "functionBody": "return model.devices[arrayIndices].zoneControl === 2;"
-          }
-        },
-        {
-          "key": "devices[]",
-          "type": "section",
-          "title": "Advanced Settings",
-          "expandable": true,
-          "expanded": false,
-          "items": [
-            "devices[].disableLogInfo",
-            "devices[].switchInfoMenu",
-            "devices[].masterPower",
-            "devices[].masterVolume",
-            "devices[].masterMute",
-            "devices[].refreshInterval",
-            "devices[].volumeControl"
-          ],
-          "condition": {
-            "functionBody": "return model.devices[arrayIndices].zoneControl >= 0;"
-          }
-        },
-        {
-          "key": "devices[]",
-          "type": "section",
-          "title": "Branding",
-          "expandable": true,
-          "expanded": false,
-          "items": [
-            "devices[].manufacturer",
-            "devices[].modelName",
-            "devices[].serialNumber",
-            "devices[].firmwareRevision"
-          ],
-          "condition": {
-            "functionBody": "return model.devices[arrayIndices].zoneControl >= 0;"
-          }
+            "devices[].inputs[].name",
+            "devices[].inputs[].reference",
+            "devices[].inputs[].mode"
+          ]
+        }],
+        "condition": {
+          "functionBody": "return model.devices[arrayIndices].zoneControl >= 0;"
         }
-      ]
-    }
-  ]
+      },
+      {
+        "key": "devices[]",
+        "type": "section",
+        "title": "Buttons",
+        "expandable": true,
+        "expanded": false,
+        "items": [{
+          "key": "devices[].buttonsMainZone",
+          "type": "array",
+          "orderable": false,
+          "buttonText": "Add button",
+          "items": [
+            "devices[].buttonsMainZone[].name",
+            "devices[].buttonsMainZone[].reference"
+          ]
+        }],
+        "condition": {
+          "functionBody": "return model.devices[arrayIndices].zoneControl === 0;"
+        }
+      },
+      {
+        "key": "devices[]",
+        "type": "section",
+        "title": "Buttons",
+        "expandable": true,
+        "expanded": false,
+        "items": [{
+          "key": "devices[].buttonsZone2",
+          "type": "array",
+          "orderable": false,
+          "buttonText": "Add button",
+          "items": [
+            "devices[].buttonsZone2[].name",
+            "devices[].buttonsZone2[].reference"
+          ]
+        }],
+        "condition": {
+          "functionBody": "return model.devices[arrayIndices].zoneControl === 1;"
+        }
+      },
+      {
+        "key": "devices[]",
+        "type": "section",
+        "title": "Buttons",
+        "expandable": true,
+        "expanded": false,
+        "items": [{
+          "key": "devices[].buttonsZone3",
+          "type": "array",
+          "orderable": false,
+          "buttonText": "Add button",
+          "items": [
+            "devices[].buttonsZone3[].name",
+            "devices[].buttonsZone3[].reference"
+          ]
+        }],
+        "condition": {
+          "functionBody": "return model.devices[arrayIndices].zoneControl === 2;"
+        }
+      },
+      {
+        "key": "devices[]",
+        "type": "section",
+        "title": "Advanced Settings",
+        "expandable": true,
+        "expanded": false,
+        "items": [
+          "devices[].disableLogInfo",
+          "devices[].switchInfoMenu",
+          "devices[].masterPower",
+          "devices[].masterVolume",
+          "devices[].masterMute",
+          "devices[].refreshInterval",
+          "devices[].volumeControl"
+        ],
+        "condition": {
+          "functionBody": "return model.devices[arrayIndices].zoneControl >= 0;"
+        }
+      },
+      {
+        "key": "devices[]",
+        "type": "section",
+        "title": "Branding",
+        "expandable": true,
+        "expanded": false,
+        "items": [
+          "devices[].manufacturer",
+          "devices[].modelName",
+          "devices[].serialNumber",
+          "devices[].firmwareRevision"
+        ],
+        "condition": {
+          "functionBody": "return model.devices[arrayIndices].zoneControl >= 0;"
+        }
+      }
+    ]
+  }]
 }

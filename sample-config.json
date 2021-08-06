@@ -14,101 +14,94 @@
         "comment": "In this section set the port for Homebridge accessories."
     },
     "accessories": [],
-    "platforms": [
-        {
-            "platform": "DenonTv",
-            "devices": [
+    "platforms": [{
+        "platform": "DenonTv",
+        "devices": [{
+            "name": "AV Receiver",
+            "host": "192.168.1.5",
+            "port": 8080,
+            "refreshInterval": 5,
+            "zoneControl": 0,
+            "volumeControl": 0,
+            "masterPower": false,
+            "masterVolume": false,
+            "masterMute": false,
+            "switchInfoMenu": false,
+            "disableLogInfo": false,
+            "inputs": [{
+                    "name": "Xbox One",
+                    "reference": "GAME",
+                    "mode": "SI"
+                },
                 {
-                    "name": "AV Receiver",
-                    "host": "192.168.1.5",
-                    "port": 8080,
-                    "refreshInterval": 5,
-                    "zoneControl": 0,
-                    "volumeControl": 0,
-                    "masterPower": false,
-                    "masterVolume": false,
-                    "masterMute": false,
-                    "switchInfoMenu": false,
-                    "disableLogInfo": false,
-                    "inputs": [
-                        {
-                            "name": "Xbox One",
-                            "reference": "GAME",
-                            "mode": "SI"
-                        },
-                        {
-                            "name": "Television",
-                            "reference": "TV",
-                            "mode": "SI"
-                        },
-                        {
-                            "name": "Sat Receiver",
-                            "reference": "SAT/CBL",
-                            "mode": "SI"
-                        },
-                        {
-                            "name": "CD",
-                            "reference": "CD",
-                            "mode": "SI"
-                        },
-                        {
-                            "name": "DVD",
-                            "reference": "DVD",
-                            "mode": "SI"
-                        },
-                        {
-                            "name": "Bluray",
-                            "reference": "BD",
-                            "mode": "SI"
-                        },
-                        {
-                            "name": "Tuner",
-                            "reference": "TUNER",
-                            "mode": "SI"
-                        },
-                        {
-                            "name": "Spotify",
-                            "reference": "SPOTIFY",
-                            "mode": "SI"
-                        },
-                        {
-                            "name": "Net",
-                            "reference": "NET",
-                            "mode": "SI"
-                        },
-                        {
-                            "name": "Media player",
-                            "reference": "MPLAY",
-                            "mode": "SI"
-                        },
-                        {
-                            "name": "USB IPOD",
-                            "reference": "USB/IPOD",
-                            "mode": "SI"
-                        },
-                        {
-                            "name": "AUX 1",
-                            "reference": "AUX1",
-                            "mode": "SI"
-                        },
-                        {
-                            "name": "AUX 2",
-                            "reference": "AUX2",
-                            "mode": "SI"
-                        }
-                    ],
-                    "buttonsMainZone": [
-                        {
-                            "name": "POWER ON",
-                            "reference": "ZMON"
-                        }
-                    ],
-                    "manufacturer": "Manufacturer",
-                    "modelName": "Model",
-                    "serialNumber": "Serial Number",
-                    "firmwareRevision": "Firmware Revision"
+                    "name": "Television",
+                    "reference": "TV",
+                    "mode": "SI"
+                },
+                {
+                    "name": "Sat Receiver",
+                    "reference": "SAT/CBL",
+                    "mode": "SI"
+                },
+                {
+                    "name": "CD",
+                    "reference": "CD",
+                    "mode": "SI"
+                },
+                {
+                    "name": "DVD",
+                    "reference": "DVD",
+                    "mode": "SI"
+                },
+                {
+                    "name": "Bluray",
+                    "reference": "BD",
+                    "mode": "SI"
+                },
+                {
+                    "name": "Tuner",
+                    "reference": "TUNER",
+                    "mode": "SI"
+                },
+                {
+                    "name": "Spotify",
+                    "reference": "SPOTIFY",
+                    "mode": "SI"
+                },
+                {
+                    "name": "Net",
+                    "reference": "NET",
+                    "mode": "SI"
+                },
+                {
+                    "name": "Media player",
+                    "reference": "MPLAY",
+                    "mode": "SI"
+                },
+                {
+                    "name": "USB IPOD",
+                    "reference": "USB/IPOD",
+                    "mode": "SI"
+                },
+                {
+                    "name": "AUX 1",
+                    "reference": "AUX1",
+                    "mode": "SI"
+                },
+                {
+                    "name": "AUX 2",
+                    "reference": "AUX2",
+                    "mode": "SI"
                 }
-            ]
-        }
-    ]
+            ],
+            "buttonsMainZone": [{
+                "name": "POWER ON",
+                "reference": "ZMON"
+            }],
+            "manufacturer": "Manufacturer",
+            "modelName": "Model",
+            "serialNumber": "Serial Number",
+            "firmwareRevision": "Firmware Revision"
+        }]
+    }]
 }
