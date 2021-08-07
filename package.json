@@ -39,7 +39,8 @@
     "homebridge-plugin",
     "HomeKit",
     "homebridge-denon-tv",
-    "DenonTv"
+    "Denon",
+    "Marantz"
   ],
   "contributors": [],
   "devDependencies": {},
