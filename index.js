@@ -836,7 +836,7 @@ class denonTvDevice {
 			//get button name
 			const buttonName = (buttons[i].name != undefined) ? buttons[i].name : buttons[i].reference;
 
-			const buttonService = new Service.Switch(accessoryName + buttonName, 'Button ' + i);
+			const buttonService = new Service.Switch(accessoryName + ' ' + buttonName, 'Button ' + i);
 			buttonService.getCharacteristic(Characteristic.On)
 				.onGet(async () => {
 					const state = false;
