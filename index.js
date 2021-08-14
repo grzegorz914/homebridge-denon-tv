@@ -753,10 +753,11 @@ class denonTvDevice {
 				})
 				.onSet(async (name) => {
 					try {
+						const nameIdentifier = (inputReference != undefined) ? inputReference : false;
 						let newName = savedInputsNames;
-						newName[inputReference] = name;
+						newName[nameIdentifier] = name;
 						const newCustomName = JSON.stringify(newName);
-						const writeNewCustomName = await fsPromises.writeFile(this.inputsNamesFile, newCustomName);
+						const writeNewCustomName = (nameIdentifier != false) ? await fsPromises.writeFile(this.inputsNamesFile, newCustomName) : false;
 						this.log.debug('Device: %s %s, saved new Input successful, savedInputsNames: %s', this.host, accessoryName, newCustomName);
 						if (!this.disableLogInfo) {
 							this.log('Device: %s %s, new Input name saved successful, name: %s reference: %s', this.host, accessoryName, name, inputReference);
@@ -797,10 +798,11 @@ class denonTvDevice {
 				})
 				.onSet(async (state) => {
 					try {
-						let newState = savedTargetVisibility;
-						newState[inputReference] = state;
+						const targetVisibilityIdentifier = (inputReference != undefined) ? inputReference : false;
+						let newState = savedInputsNames;
+						newState[targetVisibilityIdentifier] = state;
 						const newTargetVisibility = JSON.stringify(newState);
-						await fsPromises.writeFile(this.targetVisibilityInputsFile, newTargetVisibility);
+						const writeNewTargetVisibility = (targetVisibilityIdentifier != false) ? await fsPromises.writeFile(this.targetVisibilityInputsFile, newTargetVisibility) : false;
 						this.log.debug('Device: %s %s, Input: %s, saved target visibility state: %s', this.host, accessoryName, inputName, newTargetVisibility);
 						if (!this.disableLogInfo) {
 							this.log('Device: %s %s, Input: %s, saved target visibility state: %s', this.host, accessoryName, inputName, state ? 'HIDEN' : 'SHOWN');
