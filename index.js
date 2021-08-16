@@ -848,26 +848,17 @@ class denonTvDevice {
 					return state;
 				})
 				.onSet(async (state) => {
-					if (state && this.powerState) {
-						try {
-							const response = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + buttonReference);
-							if (!this.disableLogInfo) {
-								this.log('Device: %s %s, set new Input successful: %s %s', this.host, accessoryName, buttonName, buttonReference);
-							}
-							setTimeout(() => {
-								buttonService.updateCharacteristic(Characteristic.On, false);
-							}, 250);
-						} catch (error) {
-							this.log.error('Device: %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s.', this.host, accessoryName, error);
-							setTimeout(() => {
-								buttonService.updateCharacteristic(Characteristic.On, false);
-							}, 250);
-						};
-					} else {
-						setTimeout(() => {
-							buttonService.updateCharacteristic(Characteristic.On, false);
-						}, 250);
-					}
+					try {
+						const setInput = (state && this.powerState) ? await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + buttonReference) : false;
+						if (!this.disableLogInfo) {
+							this.log('Device: %s %s, set new Input successful: %s %s', this.host, accessoryName, buttonName, buttonReference);
+						}
+					} catch (error) {
+						this.log.error('Device: %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s.', this.host, accessoryName, error);
+					};
+					setTimeout(() => {
+						buttonService.updateCharacteristic(Characteristic.On, false);
+					}, 250);
 				});
 			this.buttonsReference.push(buttonReference);
 			this.buttonsName.push(buttonName);
