@@ -740,17 +740,14 @@ class denonTvDevice {
 			const inputService = new Service.InputSource(accessoryName, 'Input ' + i);
 			inputService
 				.setCharacteristic(Characteristic.Identifier, i)
-				.setCharacteristic(Characteristic.IsConfigured, isConfigured);
+				.setCharacteristic(Characteristic.ConfiguredName, inputName)
+				.setCharacteristic(Characteristic.IsConfigured, isConfigured)
+				.setCharacteristic(Characteristic.InputSourceType, inputType)
+				.setCharacteristic(Characteristic.CurrentVisibilityState, currentVisibility)
+				.setCharacteristic(Characteristic.TargetVisibilityState, targetVisibility);
 
 			inputService
 				.getCharacteristic(Characteristic.ConfiguredName)
-				.onGet(async () => {
-					const value = inputName;
-					if (!this.disableLogInfo) {
-						this.log('Device: %s %s, Input name: %s', this.host, accessoryName, value);
-					}
-					return value;
-				})
 				.onSet(async (name) => {
 					try {
 						const nameIdentifier = (inputReference != undefined) ? inputReference : false;
@@ -768,34 +765,7 @@ class denonTvDevice {
 				});
 
 			inputService
-				.getCharacteristic(Characteristic.InputSourceType)
-				.onGet(async () => {
-					const value = inputType;
-					if (!this.disableLogInfo) {
-						this.log('Device: %s %s, get Input Source Type successful, input: %s, state: %s', this.host, accessoryName, inputName, INPUT_SOURCE_TYPES[value]);
-					}
-					return value;
-				});
-
-			inputService
-				.getCharacteristic(Characteristic.CurrentVisibilityState)
-				.onGet(async () => {
-					const state = currentVisibility;
-					if (!this.disableLogInfo) {
-						this.log('Device: %s %s, Input: %s, get current visibility state: %s', this.host, accessoryName, inputName, state ? 'HIDEN' : 'SHOWN');
-					}
-					return state;
-				});
-
-			inputService
 				.getCharacteristic(Characteristic.TargetVisibilityState)
-				.onGet(async () => {
-					const state = targetVisibility;
-					if (!this.disableLogInfo) {
-						this.log('Device: %s %s, Input: %s, get target visibility state: %s', this.host, accessoryName, inputName, state ? 'HIDEN' : 'SHOWN');
-					}
-					return state;
-				})
 				.onSet(async (state) => {
 					try {
 						const targetVisibilityIdentifier = (inputReference != undefined) ? inputReference : false;
