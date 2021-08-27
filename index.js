@@ -360,11 +360,11 @@ class denonTvDevice {
 				try {
 					const state = this.powerState;
 					if (!this.disableLogInfo) {
-						this.log('Device: %s %s, get Power state successfull, state: %s', this.host, accessoryName, state ? 'ON' : 'OFF');
+						this.log('Device: %s %s %s, get Power state successfull, state: %s', this.host, accessoryName, this.zoneName, state ? 'ON' : 'OFF');
 					}
 					return state;
 				} catch (error) {
-					this.log.error('Device: %s %s, get Power state error: %s', this.host, accessoryName, error);
+					this.log.error('Device: %s %s %s, get Power state error: %s', this.host, accessoryName, this.zoneName, error);
 				};
 			})
 			.onSet(async (state) => {
@@ -375,7 +375,7 @@ class denonTvDevice {
 						const newState = [(state ? 'ZMON' : 'ZMOFF'), (state ? 'Z2ON' : 'Z2OFF'), (state ? 'Z3ON' : 'Z3OFF'), (state ? 'PWON' : 'PWSTANDBY')][zControl];
 						const response = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + newState);
 						if (!this.disableLogInfo) {
-							this.log('Device: %s %s %s, set Power state successful: %s', this.host, accessoryName, this.zoneName, newState);
+							this.log('Device: %s %s %s, set Power state successful, state: %s', this.host, accessoryName, this.zoneName, newState);
 						}
 					}
 				} catch (error) {
@@ -389,7 +389,7 @@ class denonTvDevice {
 				const inputReference = this.inputReference;
 				const inputIdentifier = this.inputIdentifier;
 				if (!this.disableLogInfo) {
-					this.log('Device: %s %s %s, get Input successful: %s %s', this.host, accessoryName, this.zoneName, inputName, inputReference);
+					this.log('Device: %s %s %s, get Input successful, name: %s, reference: %s', this.host, accessoryName, this.zoneName, inputName, inputReference);
 				}
 				return inputIdentifier;
 			})
@@ -401,7 +401,7 @@ class denonTvDevice {
 					const zone = [inputMode, 'Z2', 'Z3'][this.zoneControl];
 					const response = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + zone + inputReference);
 					if (!this.disableLogInfo) {
-						this.log('Device: %s %s %s, set Input successful: %s %s', this.host, accessoryName, this.zoneName, inputName, inputReference);
+						this.log('Device: %s %s %s, set Input successful, name: %s, reference: %s', this.host, accessoryName, this.zoneName, inputName, zone + inputReference);
 					}
 					this.setStartInputIdentifier = inputIdentifier;
 					this.setStartInput = this.powerState ? false : true;
@@ -626,7 +626,7 @@ class denonTvDevice {
 					}
 					const response = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + zone + volume);
 					if (!this.disableLogInfo) {
-						this.log('Device: %s %s %s, set new Volume level successful: %s dB', this.host, accessoryName, this.zoneName, volume - 80);
+						this.log('Device: %s %s %s, set new Volume level successful, volume: %s dB', this.host, accessoryName, this.zoneName, volume - 80);
 					}
 				} catch (error) {
 					this.log.error('Device: %s %s %s, can not set new Volume level. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, error);
@@ -647,7 +647,7 @@ class denonTvDevice {
 						const newState = [(state ? 'MUON' : 'MUOFF'), (state ? 'Z2MUON' : 'Z2MUOFF'), (state ? 'Z3MUON' : 'Z3MUOFF'), (state ? 'MUON' : 'MUOFF')][zControl];
 						const response = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + newState);
 						if (!this.disableLogInfo) {
-							this.log('Device: %s %s %s, set new Mute state successful: %s', this.host, accessoryName, this.zoneName, state ? 'ON' : 'OFF');
+							this.log('Device: %s %s %s, set new Mute state successful, state: %s', this.host, accessoryName, this.zoneName, state ? 'ON' : 'OFF');
 						}
 					} catch (error) {
 						this.log.error('Device: %s %s %s, can not set new Mute state. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, error);
@@ -707,10 +707,10 @@ class denonTvDevice {
 		this.log.debug('prepareInputsService');
 
 		const savedInputsNames = ((fs.readFileSync(this.inputsNamesFile)).length > 0) ? JSON.parse(fs.readFileSync(this.inputsNamesFile)) : {};
-		this.log.debug('Device: %s %s, read saved custom Inputs Names successful, names: %s', this.host, accessoryName, savedInputsNames)
+		this.log.debug('Device: %s %s %s, read saved custom Inputs Names successful, names: %s', this.host, accessoryName, this.zoneName, savedInputsNames)
 
 		const savedTargetVisibility = ((fs.readFileSync(this.targetVisibilityInputsFile)).length > 0) ? JSON.parse(fs.readFileSync(this.targetVisibilityInputsFile)) : {};
-		this.log.debug('Device: %s %s, read saved Target Visibility successful, states %s', this.host, accessoryName, savedTargetVisibility);
+		this.log.debug('Device: %s %s %s, read saved Target Visibility successful, states %s', this.host, accessoryName, this.zoneName, savedTargetVisibility);
 
 		//check available inputs and possible inputs count (max 95)
 		const inputs = this.inputs;
@@ -757,10 +757,10 @@ class denonTvDevice {
 						const writeNewCustomName = (nameIdentifier != false) ? await fsPromises.writeFile(this.inputsNamesFile, newCustomName) : false;
 						this.log.debug('Device: %s %s, saved new Input successful, savedInputsNames: %s', this.host, accessoryName, newCustomName);
 						if (!this.disableLogInfo) {
-							this.log('Device: %s %s, new Input name saved successful, name: %s reference: %s', this.host, accessoryName, name, inputReference);
+							this.log('Device: %s %s %s, new Input name saved successful, name: %s, reference: %s', this.host, accessoryName, this.zoneName, name, inputReference);
 						}
 					} catch (error) {
-						this.log.error('Device: %s %s, new Input name saved failed, error: %s', this.host, accessoryName, error);
+						this.log.error('Device: %s %s %s, new Input name saved failed, error: %s', this.host, accessoryName, this.zoneName, error);
 					}
 				});
 
@@ -775,11 +775,11 @@ class denonTvDevice {
 						const writeNewTargetVisibility = (targetVisibilityIdentifier != false) ? await fsPromises.writeFile(this.targetVisibilityInputsFile, newTargetVisibility) : false;
 						this.log.debug('Device: %s %s, Input: %s, saved target visibility state: %s', this.host, accessoryName, inputName, newTargetVisibility);
 						if (!this.disableLogInfo) {
-							this.log('Device: %s %s, Input: %s, saved target visibility state: %s', this.host, accessoryName, inputName, state ? 'HIDEN' : 'SHOWN');
+							this.log('Device: %s %s %s, new target visibility saved successful, name: %s, state: %s', this.host, accessoryName, this.zoneName, inputName, state ? 'HIDEN' : 'SHOWN');
 						}
 						inputService.setCharacteristic(Characteristic.CurrentVisibilityState, state);
 					} catch (error) {
-						this.log.error('Device: %s %s, Input: %s, saved target visibility state error: %s', this.host, accessoryName, error);
+						this.log.error('Device: %s %s %s, saved target visibility state error: %s', this.host, accessoryName, this.zoneName, error);
 					}
 				});
 
@@ -813,7 +813,7 @@ class denonTvDevice {
 				.onGet(async () => {
 					const state = false;
 					if (!this.disableLogInfo) {
-						this.log('Device: %s %s, get current state successful: %s', this.host, accessoryName, state);
+						this.log('Device: %s %s %s, get current state successful, state: %s', this.host, accessoryName, this.zoneName, state);
 					}
 					return state;
 				})
@@ -821,10 +821,10 @@ class denonTvDevice {
 					try {
 						const setInput = (state && this.powerState) ? await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + buttonReference) : false;
 						if (!this.disableLogInfo) {
-							this.log('Device: %s %s, set new Input successful: %s %s', this.host, accessoryName, buttonName, buttonReference);
+							this.log('Device: %s %s %s, set new Input successful, name: %s, reference: %s', this.host, accessoryName, this.zoneName, buttonName, buttonReference);
 						}
 					} catch (error) {
-						this.log.error('Device: %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s.', this.host, accessoryName, error);
+						this.log.error('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s.', this.host, accessoryName, this.zoneName, error);
 					};
 					setTimeout(() => {
 						buttonService.updateCharacteristic(Characteristic.On, false);
