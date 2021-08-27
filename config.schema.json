@@ -433,6 +433,36 @@
                         "enum": [
                           "QUICK5 MEMORY"
                         ]
+                      },
+                      {
+                        "title": "SMART SELECT 1",
+                        "enum": [
+                          "SMART1"
+                        ]
+                      },
+                      {
+                        "title": "SMART SELECT 2",
+                        "enum": [
+                          "SMART2"
+                        ]
+                      },
+                      {
+                        "title": "SMART SELECT 3",
+                        "enum": [
+                          "SMART3"
+                        ]
+                      },
+                      {
+                        "title": "SMART SELECT 4",
+                        "enum": [
+                          "SMART4"
+                        ]
+                      },
+                      {
+                        "title": "SMART SELECT 5",
+                        "enum": [
+                          "SMART5"
+                        ]
                       }
                     ],
                     "required": true
@@ -454,7 +484,7 @@
                         ]
                       },
                       {
-                        "title": "QUICK SELECT",
+                        "title": "QUICK SELECT / SMART SELECT",
                         "enum": [
                           "MS"
                         ]
@@ -1181,6 +1211,36 @@
                         "title": "QUICK MEMORY 5",
                         "enum": [
                           "MSQUICK5 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "SMART SELECT 1",
+                        "enum": [
+                          "MSSMART1"
+                        ]
+                      },
+                      {
+                        "title": "SMART SELECT 2",
+                        "enum": [
+                          "MSSMART2"
+                        ]
+                      },
+                      {
+                        "title": "SMART SELECT 3",
+                        "enum": [
+                          "MSSMART3"
+                        ]
+                      },
+                      {
+                        "title": "SMART SELECT 4",
+                        "enum": [
+                          "MSSMART4"
+                        ]
+                      },
+                      {
+                        "title": "SMART SELECT 5",
+                        "enum": [
+                          "MSSMART5"
                         ]
                       },
                       {
@@ -3056,79 +3116,109 @@
                       {
                         "title": "QUICK 1",
                         "enum": [
-                          "MSQUICK1"
+                          "Z2QUICK1"
                         ]
                       },
                       {
                         "title": "QUICK 2",
                         "enum": [
-                          "MSQUICK2"
+                          "Z2QUICK2"
                         ]
                       },
                       {
                         "title": "QUICK 3",
                         "enum": [
-                          "MSQUICK3"
+                          "Z2QUICK3"
                         ]
                       },
                       {
                         "title": "QUICK 4",
                         "enum": [
-                          "MSQUICK4"
+                          "Z2QUICK4"
                         ]
                       },
                       {
                         "title": "QUICK 5",
                         "enum": [
-                          "MSQUICK5"
+                          "Z2QUICK5"
                         ]
                       },
                       {
                         "title": "QUICK MEMORY 1",
                         "enum": [
-                          "MSQUICK1 MEMORY"
+                          "Z2QUICK1 MEMORY"
                         ]
                       },
                       {
                         "title": "QUICK MEMORY 2",
                         "enum": [
-                          "MSQUICK2 MEMORY"
+                          "Z2QUICK2 MEMORY"
                         ]
                       },
                       {
                         "title": "QUICK MEMORY 3",
                         "enum": [
-                          "MSQUICK3 MEMORY"
+                          "Z2QUICK3 MEMORY"
                         ]
                       },
                       {
                         "title": "QUICK MEMORY 4",
                         "enum": [
-                          "MSQUICK4 MEMORY"
+                          "Z2QUICK4 MEMORY"
                         ]
                       },
                       {
                         "title": "QUICK MEMORY 5",
                         "enum": [
-                          "MSQUICK5 MEMORY"
+                          "Z2QUICK5 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "SMART SELECT 1",
+                        "enum": [
+                          "Z2SMART1"
+                        ]
+                      },
+                      {
+                        "title": "SMART SELECT 2",
+                        "enum": [
+                          "Z2SMART2"
+                        ]
+                      },
+                      {
+                        "title": "SMART SELECT 3",
+                        "enum": [
+                          "Z2SMART3"
+                        ]
+                      },
+                      {
+                        "title": "SMART SELECT 4",
+                        "enum": [
+                          "Z2SMART4"
+                        ]
+                      },
+                      {
+                        "title": "SMART SELECT 5",
+                        "enum": [
+                          "Z2SMART5"
                         ]
                       },
                       {
                         "title": "FAVORITE 1",
                         "enum": [
-                          "ZMFAVORITE1"
+                          "Z2FAVORITE1"
                         ]
                       },
                       {
                         "title": "FAVORITE 2",
                         "enum": [
-                          "ZMFAVORITE2"
+                          "Z2FAVORITE2"
                         ]
                       },
                       {
                         "title": "FAVORITE 3",
                         "enum": [
-                          "ZMFAVORITE3"
+                          "Z2FAVORITE3"
                         ]
                       },
                       {
@@ -3504,79 +3594,109 @@
                       {
                         "title": "QUICK 1",
                         "enum": [
-                          "MSQUICK1"
+                          "Z3QUICK1"
                         ]
                       },
                       {
                         "title": "QUICK 2",
                         "enum": [
-                          "MSQUICK2"
+                          "Z3QUICK2"
                         ]
                       },
                       {
                         "title": "QUICK 3",
                         "enum": [
-                          "MSQUICK3"
+                          "Z3QUICK3"
                         ]
                       },
                       {
                         "title": "QUICK 4",
                         "enum": [
-                          "MSQUICK4"
+                          "Z3QUICK4"
                         ]
                       },
                       {
                         "title": "QUICK 5",
                         "enum": [
-                          "MSQUICK5"
+                          "Z3QUICK5"
                         ]
                       },
                       {
                         "title": "QUICK MEMORY 1",
                         "enum": [
-                          "MSQUICK1 MEMORY"
+                          "Z3QUICK1 MEMORY"
                         ]
                       },
                       {
                         "title": "QUICK MEMORY 2",
                         "enum": [
-                          "MSQUICK2 MEMORY"
+                          "Z3QUICK2 MEMORY"
                         ]
                       },
                       {
                         "title": "QUICK MEMORY 3",
                         "enum": [
-                          "MSQUICK3 MEMORY"
+                          "Z3QUICK3 MEMORY"
                         ]
                       },
                       {
                         "title": "QUICK MEMORY 4",
                         "enum": [
-                          "MSQUICK4 MEMORY"
+                          "Z3QUICK4 MEMORY"
                         ]
                       },
                       {
                         "title": "QUICK MEMORY 5",
                         "enum": [
-                          "MSQUICK5 MEMORY"
+                          "Z3QUICK5 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "SMART SELECT 1",
+                        "enum": [
+                          "Z3SMART1"
+                        ]
+                      },
+                      {
+                        "title": "SMART SELECT 2",
+                        "enum": [
+                          "Z3SMART2"
+                        ]
+                      },
+                      {
+                        "title": "SMART SELECT 3",
+                        "enum": [
+                          "Z3SMART3"
+                        ]
+                      },
+                      {
+                        "title": "SMART SELECT 4",
+                        "enum": [
+                          "Z3SMART4"
+                        ]
+                      },
+                      {
+                        "title": "SMART SELECT 5",
+                        "enum": [
+                          "Z3SMART5"
                         ]
                       },
                       {
                         "title": "FAVORITE 1",
                         "enum": [
-                          "ZMFAVORITE1"
+                          "Z3FAVORITE1"
                         ]
                       },
                       {
                         "title": "FAVORITE 2",
                         "enum": [
-                          "ZMFAVORITE2"
+                          "Z3FAVORITE2"
                         ]
                       },
                       {
                         "title": "FAVORITE 3",
                         "enum": [
-                          "ZMFAVORITE3"
+                          "Z3FAVORITE3"
                         ]
                       },
                       {
