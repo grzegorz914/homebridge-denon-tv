@@ -268,6 +268,11 @@ class denonTvDevice {
 			this.log('----------------------------------');
 
 			this.checkDeviceInfo = false;
+
+			//start prepare accessory
+			if (this.startPrepareAccessory) {
+				this.prepareAccessory();
+			}
 			const updateDeviceState = !this.checkDeviceState ? this.updateDeviceState() : false;
 		} catch (error) {
 			this.log.debug('Device: %s %s %s, get device info error: %s, device offline, trying to reconnect', this.host, this.name, this.zoneName, error);
@@ -334,11 +339,6 @@ class denonTvDevice {
 				this.muteState = muteState;
 			}
 			this.checkDeviceState = true;
-
-			//start prepare accessory
-			if (this.startPrepareAccessory) {
-				this.prepareAccessory();
-			}
 		} catch (error) {
 			this.log.debug('Device: %s %s %s, update device state error: %s', this.host, this.name, this.zoneName, error);
 			this.checkDeviceState = false;
