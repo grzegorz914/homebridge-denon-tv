@@ -142,6 +142,7 @@ class denonTvDevice {
 		//setup variables
 		this.checkDeviceInfo = true;
 		this.checkDeviceState = false;
+		this.startPrepareAccessory = true;
 
 		this.inputsService = new Array();
 		this.inputsReference = new Array();
@@ -364,6 +365,10 @@ class denonTvDevice {
 			}
 			this.checkDeviceState = true;
 
+			//start prepare accessory
+			if (this.startPrepareAccessory) {
+				this.prepareAccessory();
+			}
 		} catch (error) {
 			this.log.debug('Device: %s %s %s, update device state error: %s', this.host, this.name, this.zoneName, error);
 			this.checkDeviceState = false;
@@ -904,6 +909,7 @@ class denonTvDevice {
 			accessory.addService(this.buttonsService[i]);
 		}
 
+		this.startPrepareAccessory = false;
 		this.log.debug('Device: %s %s %s, publishExternalAccessories.', this.host, accessoryName, this.zoneName);
 		this.api.publishExternalAccessories(PLUGIN_NAME, [accessory]);
 	}
