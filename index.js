@@ -96,36 +96,22 @@ class denonTvDevice {
 		this.buttons = [this.buttonsMainZone, this.buttonsZone2, this.buttonsZone3][this.zoneControl];
 
 		//add configured inputs to the default inputs
-		const defaultInputsArr = new Array();
-		const defaultInputsCount = DEFAULT_INPUTS.length;
-		for (let i = 0; i < defaultInputsCount; i++) {
-			const name = DEFAULT_INPUTS[i].name;
-			const reference = DEFAULT_INPUTS[i].reference;
-			const type = DEFAULT_INPUTS[i].type;
-			const mode = DEFAULT_INPUTS[i].mode;
-			const obj = {
-				'name': name,
-				'reference': reference,
-				'type': type,
-				'mode': mode
-			};
-			defaultInputsArr.push(obj);
-		}
+		const inputsArr = new Array(DEFAULT_INPUTS[0]);
 		const inputsCount = this.inputs.length;
 		for (let j = 0; j < inputsCount; j++) {
 			const name = this.inputs[j].name;
 			const reference = this.inputs[j].reference;
 			const type = 'OTHER';
-			const mode = this.inputs[j].mode;
-			const obj1 = {
+			const mode = 0;
+			const inputsObj = {
 				'name': name,
 				'reference': reference,
 				'type': type,
 				'mode': mode
 			};
-			defaultInputsArr.push(obj1);
+			inputsArr.push(inputsObj);
 		}
-		this.inputs = defaultInputsArr;
+		this.inputs = inputsArr;
 
 		//get Device info
 		this.manufacturer = config.manufacturer || 'Denon/Marantz';
@@ -219,6 +205,16 @@ class denonTvDevice {
 			const response = await axios.get(this.url + '/goform/Deviceinfo.xml');
 			this.log.debug('Device: %s %s %s, debug response: %s', this.host, this.name, this.zoneName, response.data);
 
+			//save inputs to the file
+			try {
+				const inputsArr = this.iputs;
+				const obj = JSON.stringify(inputsArr, null, 2);
+				const writeInputs = fsPromises.writeFile(this.inputsFile, obj);
+				this.log.debug('Device: %s %s %s, save inputs succesful, inputs: %s', this.host, this.name, this.zoneName, obj);
+			} catch (error) {
+				this.log.error('Device: %s %s %s, save inputs error: %s', this.host, this.name, this.zoneName, error);
+			};
+
 			const parseResponse = (response.status == 200) ? await parseStringPromise(response.data) : undefined;
 			const result = (parseResponse.Device_Info.BrandCode != undefined) ? parseResponse : {
 				'Device_Info': {
@@ -243,30 +239,6 @@ class denonTvDevice {
 			const devInfo = JSON.stringify(obj, null, 2);
 			const writeDevInfo = fsPromises.writeFile(this.devInfoFile, devInfo);
 			this.log.debug('Device: %s %s %s, saved Device Info successful: %s', this.host, this.name, this.zoneName, devInfo);
-
-			//save inputs to the file
-			try {
-				const inputsArr = new Array();
-				const inputsCount = this.inputs.length;
-				for (let i = 0; i < inputsCount; i++) {
-					const name = this.inputs[i].name;
-					const reference = this.inputs[i].reference;
-					const type = this.inputs[i].type;
-					const mode = this.inputs[i].mode;
-					const inputsObj = {
-						'name': name,
-						'reference': reference,
-						'type': type,
-						'mode': mode
-					}
-					inputsArr.push(inputsObj);
-				}
-				const obj = JSON.stringify(inputsArr, null, 2);
-				const writeInputs = fsPromises.writeFile(this.inputsFile, obj);
-				this.log.debug('Device: %s %s %s, write inputs list: %s', this.host, this.name, this.zoneName, obj);
-			} catch (error) {
-				this.log.debug('Device: %s %s %s, write inputs error: %s', this.host, this.name, this.zoneName, error);
-			};
 
 			const brandCode = result.Device_Info.BrandCode[0];
 			const manufacturer = ['Denon', 'Marantz', 'Manufacturer'][brandCode];
