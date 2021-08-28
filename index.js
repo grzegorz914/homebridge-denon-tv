@@ -207,7 +207,7 @@ class denonTvDevice {
 
 			//save inputs to the file
 			try {
-				const inputsArr = this.iputs;
+				const inputsArr = this.inputs;
 				const obj = JSON.stringify(inputsArr, null, 2);
 				const writeInputs = fsPromises.writeFile(this.inputsFile, obj);
 				this.log.debug('Device: %s %s %s, save inputs succesful, inputs: %s', this.host, this.name, this.zoneName, obj);
