@@ -14,6 +14,13 @@ const ZONE_NUMBER = ['MainZone_MainZone', 'Zone2_Zone2', 'Zone3_Zone3'];
 
 const INPUT_SOURCE_TYPES = ['OTHER', 'HOME_SCREEN', 'TUNER', 'HDMI', 'COMPOSITE_VIDEO', 'S_VIDEO', 'COMPONENT_VIDEO', 'DVI', 'AIRPLAY', 'USB', 'APPLICATION'];
 
+const DEFAULT_INPUTS = [{
+	'name': 'Unconfigured input',
+	'reference': 'undefined',
+	'type': 'undefined',
+	'mode': 'undefined'
+}];
+
 let Accessory, Characteristic, Service, Categories, AccessoryUUID;
 
 module.exports = (api) => {
@@ -88,6 +95,38 @@ class denonTvDevice {
 		this.buttonsZone3 = config.buttonsZone3 || [];
 		this.buttons = [this.buttonsMainZone, this.buttonsZone2, this.buttonsZone3][this.zoneControl];
 
+		//add configured inputs to the default inputs
+		const defaultInputsArr = new Array();
+		const defaultInputsCount = DEFAULT_INPUTS.length;
+		for (let i = 0; i < defaultInputsCount; i++) {
+			const name = DEFAULT_INPUTS[i].name;
+			const reference = DEFAULT_INPUTS[i].reference;
+			const type = DEFAULT_INPUTS[i].type;
+			const mode = DEFAULT_INPUTS[i].mode;
+			const obj = {
+				'name': name,
+				'reference': reference,
+				'type': type,
+				'mode': mode
+			};
+			defaultInputsArr.push(obj);
+		}
+		const inputsCount = this.inputs.length;
+		for (let j = 0; j < inputsCount; j++) {
+			const name = this.inputs[j].name;
+			const reference = this.inputs[j].reference;
+			const type = 'OTHER';
+			const mode = this.inputs[j].mode;
+			const obj1 = {
+				'name': name,
+				'reference': reference,
+				'type': type,
+				'mode': mode
+			};
+			defaultInputsArr.push(obj1);
+		}
+		this.inputs = defaultInputsArr;
+
 		//get Device info
 		this.manufacturer = config.manufacturer || 'Denon/Marantz';
 		this.modelName = config.modelName || 'Model Name';
@@ -133,18 +172,23 @@ class denonTvDevice {
 		this.pictureMode = 0;
 
 		this.prefDir = path.join(api.user.storagePath(), 'denonTv');
-		this.inputsNamesFile = this.prefDir + '/' + 'inputsNames_' + this.host.split('.').join('');
-		this.targetVisibilityInputsFile = this.prefDir + '/' + 'targetVisibilityInputs_' + this.host.split('.').join('');
-		this.devInfoFile = this.prefDir + '/' + 'devInfo_' + this.host.split('.').join('');
+		this.devInfoFile = this.prefDir + '/' + 'devInfo_' + this.shortZoneName + this.host.split('.').join('');
+		this.inputsFile = this.prefDir + '/' + 'inputs_' + this.shortZoneName + this.host.split('.').join('');
+		this.inputsNamesFile = this.prefDir + '/' + 'inputsNames_' + this.shortZoneName + this.host.split('.').join('');
+		this.targetVisibilityInputsFile = this.prefDir + '/' + 'targetVisibilityInputs_' + this.shortZoneName + this.host.split('.').join('');
 		this.url = ('http://' + this.host + ':' + this.port);
 
-		//check if prefs directory ends with a /, if not then add it
-		if (this.prefDir.endsWith('/') == false) {
-			this.prefDir = this.prefDir + '/';
-		}
 		//check if the directory exists, if not then create it
 		if (fs.existsSync(this.prefDir) == false) {
 			fsPromises.mkdir(this.prefDir);
+		}
+		//check if the files exists, if not then create it
+		if (fs.existsSync(this.devInfoFile) == false) {
+			fsPromises.writeFile(this.devInfoFile, '');
+		}
+		//check if the files exists, if not then create it
+		if (fs.existsSync(this.inputsFile) == false) {
+			fsPromises.writeFile(this.inputsFile, '');
 		}
 		//check if the files exists, if not then create it
 		if (fs.existsSync(this.inputsNamesFile) == false) {
@@ -153,10 +197,6 @@ class denonTvDevice {
 		//check if the files exists, if not then create it
 		if (fs.existsSync(this.targetVisibilityInputsFile) == false) {
 			fsPromises.writeFile(this.targetVisibilityInputsFile, '');
-		}
-		//check if the files exists, if not then create it
-		if (fs.existsSync(this.devInfoFile) == false) {
-			fsPromises.writeFile(this.devInfoFile, '');
 		}
 
 		//Check device state
@@ -173,10 +213,10 @@ class denonTvDevice {
 	}
 
 	async getDeviceInfo() {
-		this.log.debug('Device: %s %s, requesting Device Info.', this.host, this.name);
+		this.log.debug('Device: %s %s %s, requesting Device Info.', this.host, this.name, this.zoneName);
 		try {
 			const response = await axios.get(this.url + '/goform/Deviceinfo.xml');
-			this.log.debug('Device: %s %s, debug response: %s', this.host, this.name, response.data);
+			this.log.debug('Device: %s %s %s, debug response: %s', this.host, this.name, this.zoneName, response.data);
 
 			const parseResponse = (response.status == 200) ? await parseStringPromise(response.data) : undefined;
 			const result = (parseResponse.Device_Info.BrandCode != undefined) ? parseResponse : {
@@ -201,7 +241,31 @@ class denonTvDevice {
 			} : result;
 			const devInfo = JSON.stringify(obj, null, 2);
 			const writeDevInfo = fsPromises.writeFile(this.devInfoFile, devInfo);
-			this.log.debug('Device: %s %s, saved Device Info successful: %s', this.host, this.name, devInfo);
+			this.log.debug('Device: %s %s %s, saved Device Info successful: %s', this.host, this.name, this.zoneName, devInfo);
+
+			//save inputs to the file
+			try {
+				const inputsArr = new Array();
+				const inputsCount = this.inputs.length;
+				for (let i = 0; i < inputsCount; i++) {
+					const name = this.inputs[i].name;
+					const reference = this.inputs[i].reference;
+					const type = this.inputs[i].type;
+					const mode = this.inputs[i].mode;
+					const inputsObj = {
+						'name': name,
+						'reference': reference,
+						'type': type,
+						'mode': mode
+					}
+					inputsArr.push(inputsObj);
+				}
+				const obj = JSON.stringify(inputsArr, null, 2);
+				const writeInputs = fsPromises.writeFile(this.inputsFile, obj);
+				this.log.debug('Device: %s %s %s, write inputs list: %s', this.host, this.name, this.zoneName, obj);
+			} catch (error) {
+				this.log.debug('Device: %s %s %s, write inputs error: %s', this.host, this.name, this.zoneName, error);
+			};
 
 			const brandCode = result.Device_Info.BrandCode[0];
 			const manufacturer = ['Denon', 'Marantz', 'Manufacturer'][brandCode];
@@ -235,14 +299,14 @@ class denonTvDevice {
 			this.checkDeviceInfo = false;
 			const updateDeviceState = !this.checkDeviceState ? this.updateDeviceState() : false;
 		} catch (error) {
-			this.log.debug('Device: %s %s, get device info error: %s, device offline, trying to reconnect', this.host, this.name, error);
+			this.log.debug('Device: %s %s %s, get device info error: %s, device offline, trying to reconnect', this.host, this.name, this.zoneName, error);
 			this.checkDeviceState = false;
 			this.checkDeviceInfo = true;
 		};
 	}
 
 	async updateDeviceState() {
-		this.log.debug('Device: %s %s, requesting Device state.', this.host, this.name);
+		this.log.debug('Device: %s %s %s, requesting Device state.', this.host, this.name, this.zoneName);
 		try {
 			const response = await axios.get(this.url + '/goform/form' + this.zoneNumber + 'XmlStatusLite.xml');
 			const result = await parseStringPromise(response.data);
@@ -329,7 +393,7 @@ class denonTvDevice {
 					'CommApiVers': ['Undefined']
 				}
 			};
-			this.log.debug('Device: %s %s, read devInfo: %s', this.host, accessoryName, devInfo)
+			this.log.debug('Device: %s %s %s, read devInfo: %s', this.host, accessoryName, this.zoneName, devInfo)
 
 			const brandCode = devInfo.Device_Info.BrandCode[0];
 			const manufacturer = (brandCode != undefined) ? ['Denon', 'Marantz', this.manufacturer][brandCode] : 'Undefined';
@@ -346,7 +410,7 @@ class denonTvDevice {
 				.setCharacteristic(Characteristic.FirmwareRevision, firmwareRevision);
 			accessory.addService(informationService);
 		} catch (error) {
-			this.log.debug('Device: %s %s, prepareInformationService error: %s', this.host, accessoryName, error);
+			this.log.debug('Device: %s %s %s, prepareInformationService error: %s', this.host, accessoryName, this.zoneName, error);
 		};
 
 		//Prepare television service
@@ -397,9 +461,9 @@ class denonTvDevice {
 				try {
 					const inputName = this.inputsName[inputIdentifier];
 					const inputMode = this.inputsMode[inputIdentifier];
-					const inputReference = (this.inputsReference[inputIdentifier] != undefined) ? this.inputsReference[inputIdentifier] : 0;
+					const inputReference = this.inputsReference[inputIdentifier];
 					const zone = [inputMode, 'Z2', 'Z3'][this.zoneControl];
-					const response = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + zone + inputReference);
+					const setInput = (inputReference != undefined) ? await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + zone + inputReference) : false;
 					if (!this.disableLogInfo) {
 						this.log('Device: %s %s %s, set Input successful, name: %s, reference: %s', this.host, accessoryName, this.zoneName, inputName, zone + inputReference);
 					}
@@ -501,10 +565,10 @@ class denonTvDevice {
 					}
 					const response = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + command);
 					if (!this.disableLogInfo) {
-						this.log('Device: %s %s, Remote Key successful, command: %s', this.host, accessoryName, command);
+						this.log('Device: %s %s %s, Remote Key successful, command: %s', this.host, accessoryName, this.zoneName, command);
 					}
 				} catch (error) {
-					this.log.error('Device: %s %s, can not Remote Key command. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, error);
+					this.log.error('Device: %s %s %s, can not Remote Key command. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, error);
 				};
 			});
 
@@ -521,7 +585,7 @@ class denonTvDevice {
 					}
 					const response = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + command);
 					if (!this.disableLogInfo) {
-						this.log('Device: %s %s, set Power Mode Selection successful, command: %s', this.host, accessoryName, command);
+						this.log('Device: %s %s %s, set Power Mode Selection successful, command: %s', this.host, accessoryName, this.zoneName, command);
 					}
 				} catch (error) {
 					this.log.error('Device: %s %s %s, can not set Power Mode Selection command. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, error);
@@ -532,7 +596,7 @@ class denonTvDevice {
 			.onGet(async () => {
 				const pictureMode = this.pictureMode;
 				if (!this.disableLogInfo) {
-					this.log('Device: %s %s %s, get current Picture mode: %s', this.host, accessoryName, pictureMode);
+					this.log('Device: %s %s %s, get current Picture mode: %s', this.host, accessoryName, this.zoneName, pictureMode);
 				}
 				return pictureMode;
 			})
@@ -565,7 +629,7 @@ class denonTvDevice {
 							break;
 					}
 					if (!this.disableLogInfo) {
-						this.log('Device: %s %s, set Picture Mode successful, command: %s', this.host, accessoryName, command);
+						this.log('Device: %s %s %s, set Picture Mode successful, command: %s', this.host, accessoryName, this.zoneName, command);
 					}
 				} catch (error) {
 					this.log.error('Device: %s %s %s, can not set Picture Mode command. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, error);
@@ -706,6 +770,9 @@ class denonTvDevice {
 		//Prepare inputs services
 		this.log.debug('prepareInputsService');
 
+		const savedInputs = ((fs.readFileSync(this.inputsFile)).length > 0) ? JSON.parse(fs.readFileSync(this.inputsFile)) : [];
+		this.log.debug('Device: %s %s %s, read saved Inputs successful, inpits: %s', this.host, accessoryName, this.zoneName, savedInputs)
+
 		const savedInputsNames = ((fs.readFileSync(this.inputsNamesFile)).length > 0) ? JSON.parse(fs.readFileSync(this.inputsNamesFile)) : {};
 		this.log.debug('Device: %s %s %s, read saved custom Inputs Names successful, names: %s', this.host, accessoryName, this.zoneName, savedInputsNames)
 
@@ -713,13 +780,13 @@ class denonTvDevice {
 		this.log.debug('Device: %s %s %s, read saved Target Visibility successful, states %s', this.host, accessoryName, this.zoneName, savedTargetVisibility);
 
 		//check available inputs and possible inputs count (max 95)
-		const inputs = this.inputs;
+		const inputs = (savedInputs.length > 0) ? savedInputs : this.inputs;
 		const inputsCount = inputs.length;
 		const maxInputsCount = (inputsCount < 94) ? inputsCount : 94;
 		for (let i = 0; i < maxInputsCount; i++) {
 
 			//get input reference
-			const inputReference = (inputs[i].reference != undefined) ? inputs[i].reference : '0';
+			const inputReference = (inputs[i].reference != undefined) ? inputs[i].reference : undefined;
 
 			//get input name		
 			const inputName = (savedInputsNames[inputReference] != undefined) ? savedInputsNames[inputReference] : inputs[i].name;
@@ -755,7 +822,7 @@ class denonTvDevice {
 						newName[nameIdentifier] = name;
 						const newCustomName = JSON.stringify(newName);
 						const writeNewCustomName = (nameIdentifier != false) ? await fsPromises.writeFile(this.inputsNamesFile, newCustomName) : false;
-						this.log.debug('Device: %s %s, saved new Input successful, savedInputsNames: %s', this.host, accessoryName, newCustomName);
+						this.log.debug('Device: %s %s %s, saved new Input successful, savedInputsNames: %s', this.host, accessoryName, this.zoneName, newCustomName);
 						if (!this.disableLogInfo) {
 							this.log('Device: %s %s %s, new Input name saved successful, name: %s, reference: %s', this.host, accessoryName, this.zoneName, name, inputReference);
 						}
@@ -773,7 +840,7 @@ class denonTvDevice {
 						newState[targetVisibilityIdentifier] = state;
 						const newTargetVisibility = JSON.stringify(newState);
 						const writeNewTargetVisibility = (targetVisibilityIdentifier != false) ? await fsPromises.writeFile(this.targetVisibilityInputsFile, newTargetVisibility) : false;
-						this.log.debug('Device: %s %s, Input: %s, saved target visibility state: %s', this.host, accessoryName, inputName, newTargetVisibility);
+						this.log.debug('Device: %s %s %s, Input: %s, saved target visibility state: %s', this.host, accessoryName, inputName, this.zoneName, newTargetVisibility);
 						if (!this.disableLogInfo) {
 							this.log('Device: %s %s %s, new target visibility saved successful, name: %s, state: %s', this.host, accessoryName, this.zoneName, inputName, state ? 'HIDEN' : 'SHOWN');
 						}
@@ -837,7 +904,7 @@ class denonTvDevice {
 			accessory.addService(this.buttonsService[i]);
 		}
 
-		this.log.debug('Device: %s %s, publishExternalAccessories.', this.host, accessoryName);
+		this.log.debug('Device: %s %s %s, publishExternalAccessories.', this.host, accessoryName, this.zoneName);
 		this.api.publishExternalAccessories(PLUGIN_NAME, [accessory]);
 	}
 };
