@@ -40,7 +40,6 @@ class denonTvPlatform {
 			return;
 		}
 		this.log = log;
-		this.config = config;
 		this.api = api;
 		this.devices = config.devices || [];
 		this.accessories = [];
@@ -49,11 +48,9 @@ class denonTvPlatform {
 			this.log.debug('didFinishLaunching');
 			for (let i = 0; i < this.devices.length; i++) {
 				const device = this.devices[i];
-				const deviceName = device.name;
-				if (!deviceName) {
-					this.log.warn('Device Name Missing')
+				if (!device.name) {
+					this.log.warn('Device Name Missing');
 				} else {
-					this.log.info('Adding new accessory:', deviceName);
 					new denonTvDevice(this.log, device, this.api);
 				}
 			}
@@ -75,7 +72,6 @@ class denonTvDevice {
 	constructor(log, config, api) {
 		this.log = log;
 		this.api = api;
-		this.config = config;
 
 		//device configuration
 		this.name = config.name;
@@ -102,7 +98,7 @@ class denonTvDevice {
 			const name = this.inputs[j].name;
 			const reference = this.inputs[j].reference;
 			const type = 'OTHER';
-			const mode = 0;
+			const mode = this.inputs[j].mode;
 			const inputsObj = {
 				'name': name,
 				'reference': reference,
@@ -169,19 +165,15 @@ class denonTvDevice {
 		if (fs.existsSync(this.prefDir) == false) {
 			fsPromises.mkdir(this.prefDir);
 		}
-		//check if the files exists, if not then create it
 		if (fs.existsSync(this.devInfoFile) == false) {
 			fsPromises.writeFile(this.devInfoFile, '');
 		}
-		//check if the files exists, if not then create it
 		if (fs.existsSync(this.inputsFile) == false) {
 			fsPromises.writeFile(this.inputsFile, '');
 		}
-		//check if the files exists, if not then create it
 		if (fs.existsSync(this.inputsNamesFile) == false) {
 			fsPromises.writeFile(this.inputsNamesFile, '');
 		}
-		//check if the files exists, if not then create it
 		if (fs.existsSync(this.targetVisibilityInputsFile) == false) {
 			fsPromises.writeFile(this.targetVisibilityInputsFile, '');
 		}
@@ -296,7 +288,6 @@ class denonTvDevice {
 			const currentInputIdentifier = (this.inputsReference.indexOf(inputReference) >= 0) ? this.inputsReference.indexOf(inputReference) : 0;
 			const inputIdentifier = this.setStartInput ? this.setStartInputIdentifier : currentInputIdentifier;
 			const inputName = this.inputsName[inputIdentifier];
-			const inputMode = this.inputsMode[inputIdentifier];
 
 			if (this.televisionService) {
 				if (powerState) {
@@ -318,7 +309,6 @@ class denonTvDevice {
 				this.inputReference = inputReference;
 				this.inputIdentifier = inputIdentifier;
 				this.inputName = inputName;
-				this.inputMode = inputMode;
 			}
 
 			if (this.speakerService) {
@@ -770,7 +760,7 @@ class denonTvDevice {
 			const inputType = (inputs[i].type != undefined) ? INPUT_SOURCE_TYPES.indexOf(inputs[i].type) : 3;
 
 			//get input mode
-			const inputMode = (inputs[i].mode != undefined) ? inputs[i].mode : 0;
+			const inputMode = (inputs[i].mode != undefined) ? inputs[i].mode : 'SI';
 
 			//get input configured
 			const isConfigured = 1;
