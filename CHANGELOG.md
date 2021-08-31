@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [3.11.0] - (31.08.2021)
+## Changes
+- inputs list updatd
+- code refactoring
+- many small changes and stability improvements
+
 ## [3.10.0] - (17.03.2021)
 ## Changes
 - reconfigured buttons services
