@@ -153,6 +153,12 @@
                         ]
                       },
                       {
+                        "title": "8K",
+                        "enum": [
+                          "8K"
+                        ]
+                      },
+                      {
                         "title": "CD",
                         "enum": [
                           "CD"
@@ -977,6 +983,12 @@
                         "title": "INPUT AUDIO TV",
                         "enum": [
                           "SITV"
+                        ]
+                      },
+                      {
+                        "title": "INPUT 8K",
+                        "enum": [
+                          "SI8K"
                         ]
                       },
                       {
@@ -2946,6 +2958,12 @@
                         ]
                       },
                       {
+                        "title": "INPUT 8K",
+                        "enum": [
+                          "Z28K"
+                        ]
+                      },
+                      {
                         "title": "INPUT CD",
                         "enum": [
                           "Z2CD"
@@ -3412,15 +3430,15 @@
                         ]
                       },
                       {
-                        "title": "INPUT CD",
-                        "enum": [
-                          "Z3CD"
-                        ]
-                      },
-                      {
                         "title": "INPUT SOURCE",
                         "enum": [
                           "Z3SOURCE"
+                        ]
+                      },
+                      {
+                        "title": "INPUT 8K",
+                        "enum": [
+                          "Z38K"
                         ]
                       },
                       {

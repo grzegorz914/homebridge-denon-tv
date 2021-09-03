@@ -71,6 +71,7 @@ class denonTvPlatform {
 class denonTvDevice {
 	constructor(log, config, api) {
 		this.log = log;
+		this.config = config;
 		this.api = api;
 
 		//device configuration
@@ -343,6 +344,7 @@ class denonTvDevice {
 		const accessoryUUID = AccessoryUUID.generate(accessoryName);
 		const accessoryCategory = Categories.AUDIO_RECEIVER;
 		const accessory = new Accessory(accessoryName, accessoryUUID, accessoryCategory);
+		accessory.context.device = this.config.device;
 
 		//Prepare information service
 		this.log.debug('prepareInformationService');
