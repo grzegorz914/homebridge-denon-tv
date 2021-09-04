@@ -93,20 +93,14 @@ class denonTvDevice {
 		this.buttons = [this.buttonsMainZone, this.buttonsZone2, this.buttonsZone3][this.zoneControl];
 
 		//add configured inputs to the default inputs
-		const inputsArr = new Array(DEFAULT_INPUTS[0]);
+		const inputsArr = new Array();
+		const defaultInputsCount = DEFAULT_INPUTS.length;
+		for (let i = 0; i < defaultInputsCount; i++) {
+			inputsArr.push(DEFAULT_INPUTS[i]);
+		}
 		const inputsCount = this.inputs.length;
 		for (let j = 0; j < inputsCount; j++) {
-			const name = this.inputs[j].name;
-			const reference = this.inputs[j].reference;
-			const type = 'OTHER';
-			const mode = this.inputs[j].mode;
-			const inputsObj = {
-				'name': name,
-				'reference': reference,
-				'type': type,
-				'mode': mode
-			};
-			inputsArr.push(inputsObj);
+			inputsArr.push(this.inputs[j]);
 		}
 		this.inputs = inputsArr;
 

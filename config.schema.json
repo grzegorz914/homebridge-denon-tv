@@ -267,6 +267,12 @@
                         ]
                       },
                       {
+                        "title": "INTERNET RADIO",
+                        "enum": [
+                          "INTERNET RADIO"
+                        ]
+                      },
+                      {
                         "title": "HD RADIO",
                         "enum": [
                           "HDRADIO"
@@ -1079,6 +1085,12 @@
                         "title": "INPUT HD RADIO",
                         "enum": [
                           "SIHDRADIO"
+                        ]
+                      },
+                      {
+                        "title": "INPUT INTERNET RADIO",
+                        "enum": [
+                          "SIINTERNET RADIO"
                         ]
                       },
                       {
@@ -3048,6 +3060,12 @@
                         ]
                       },
                       {
+                        "title": "INPUT INTERNET RADIO",
+                        "enum": [
+                          "Z2INTERNET RADIO"
+                        ]
+                      },
+                      {
                         "title": "INPUT AUX 1",
                         "enum": [
                           "Z2AUX1"
@@ -3523,6 +3541,12 @@
                         "title": "INPUT HD RADIO",
                         "enum": [
                           "Z3HDRADIO"
+                        ]
+                      },
+                      {
+                        "title": "INPUT INTERNET RADIO",
+                        "enum": [
+                          "Z3INTERNET RADIO"
                         ]
                       },
                       {

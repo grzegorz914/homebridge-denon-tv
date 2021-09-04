@@ -1,7 +1,7 @@
 {
   "displayName": "Denon TV",
   "name": "homebridge-denon-tv",
-  "version": "3.11.1",
+  "version": "3.11.2",
   "description": "Homebridge plugin (https://github.com/homebridge/homebridge) to control Denon/Marantz AV Receivers series X.",
   "license": "MIT",
   "author": "grzegorz914",
@@ -31,7 +31,7 @@
     "homebridge": ">=1.3.0"
   },
   "dependencies": {
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "xml2js": "^0.4.23"
   },
   "keywords": [
@@ -43,7 +43,6 @@
     "Marantz"
   ],
   "contributors": [],
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   }
