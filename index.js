@@ -75,22 +75,21 @@ class denonTvDevice {
 		this.api = api;
 
 		//device configuration
-		this.name = config.name;
-		this.host = config.host;
-		this.port = config.port;
+		this.name = config.name || 'AV Receiver';
+		this.host = config.host || '';
+		this.port = config.port || '';
 		this.refreshInterval = config.refreshInterval || 5;
-		this.zoneControl = config.zoneControl || 0;
-		this.masterPower = config.masterPower || false;
-		this.masterVolume = config.masterVolume || false;
-		this.masterMute = config.masterMute || false;
+		this.disableLogInfo = config.disableLogInfo || false;
 		this.volumeControl = config.volumeControl || 0;
-		this.switchInfoMenu = config.switchInfoMenu;
-		this.disableLogInfo = config.disableLogInfo;
+		this.switchInfoMenu = config.switchInfoMenu || false;
 		this.inputs = config.inputs || [];
 		this.buttonsMainZone = config.buttonsMainZone || [];
 		this.buttonsZone2 = config.buttonsZone2 || [];
 		this.buttonsZone3 = config.buttonsZone3 || [];
-		this.buttons = [this.buttonsMainZone, this.buttonsZone2, this.buttonsZone3][this.zoneControl];
+		this.zoneControl = config.zoneControl || 0;
+		this.masterPower = config.masterPower || false;
+		this.masterVolume = config.masterVolume || false;
+		this.masterMute = config.masterMute || false;
 
 		//add configured inputs to the default inputs
 		const inputsArr = new Array();
@@ -115,6 +114,7 @@ class denonTvDevice {
 		this.zoneName = ZONE_NAME[this.zoneControl];
 		this.shortZoneName = SHORT_ZONE_NAME[this.zoneControl];
 		this.zoneNumber = ZONE_NUMBER[this.zoneControl];
+		this.buttons = [this.buttonsMainZone, this.buttonsZone2, this.buttonsZone3][this.zoneControl];
 
 		//setup variables
 		this.checkDeviceInfo = true;
@@ -155,6 +155,7 @@ class denonTvDevice {
 		this.inputsNamesFile = this.prefDir + '/' + 'inputsNames_' + this.shortZoneName + this.host.split('.').join('');
 		this.targetVisibilityInputsFile = this.prefDir + '/' + 'targetVisibilityInputs_' + this.shortZoneName + this.host.split('.').join('');
 		this.url = ('http://' + this.host + ':' + this.port);
+		this.setUrl = this.url + '/goform/formiPhoneAppDirect.xml?';
 
 		//check if the directory exists, if not then create it
 		if (fs.existsSync(this.prefDir) == false) {
@@ -280,7 +281,7 @@ class denonTvDevice {
 			const volume = (parseFloat(result.item.MasterVolume[0].value[0]) >= -79.5) ? parseInt(result.item.MasterVolume[0].value[0]) + 80 : 0;
 			const muteState = powerState ? (result.item.Mute[0].value[0] == 'on') : true;
 
-			const currentInputIdentifier = (this.inputsReference.indexOf(inputReference) >= 0) ? this.inputsReference.indexOf(inputReference) : 0;
+			const currentInputIdentifier = (this.inputsReference.indexOf(inputReference) >= 0) ? this.inputsReference.indexOf(inputReference) : (inputReference == 'Internet Radio') ? this.inputsReference.indexOf('IRADIO') : 0;
 			const inputIdentifier = this.setStartInput ? this.setStartInputIdentifier : currentInputIdentifier;
 			const inputName = this.inputsName[inputIdentifier];
 
@@ -398,7 +399,7 @@ class denonTvDevice {
 						const zControl = this.masterPower ? 3 : this.zoneControl
 						this.log.debug('zControl is %s', zControl)
 						const newState = [(state ? 'ZMON' : 'ZMOFF'), (state ? 'Z2ON' : 'Z2OFF'), (state ? 'Z3ON' : 'Z3OFF'), (state ? 'PWON' : 'PWSTANDBY')][zControl];
-						const response = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + newState);
+						const response = await axios.get(this.setUrl + newState);
 						if (!this.disableLogInfo) {
 							this.log('Device: %s %s %s, set Power state successful, state: %s', this.host, accessoryName, this.zoneName, newState);
 						}
@@ -424,9 +425,10 @@ class denonTvDevice {
 					const inputMode = this.inputsMode[inputIdentifier];
 					const inputReference = this.inputsReference[inputIdentifier];
 					const zone = [inputMode, 'Z2', 'Z3'][this.zoneControl];
-					const setInput = (inputReference != undefined) ? await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + zone + inputReference) : false;
+					const inputRef = zone + inputReference;
+					const setInput = (inputReference != undefined) ? await axios.get(this.setUrl + inputRef) : false;
 					if (!this.disableLogInfo) {
-						this.log('Device: %s %s %s, set Input successful, name: %s, reference: %s', this.host, accessoryName, this.zoneName, inputName, zone + inputReference);
+						this.log('Device: %s %s %s, set Input successful, name: %s, reference: %s', this.host, accessoryName, this.zoneName, inputName, inputRef);
 					}
 					this.setStartInputIdentifier = inputIdentifier;
 					this.setStartInput = this.powerState ? false : true;
@@ -524,7 +526,7 @@ class denonTvDevice {
 								break;
 						}
 					}
-					const response = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + command);
+					const response = await axios.get(this.setUrl + command);
 					if (!this.disableLogInfo) {
 						this.log('Device: %s %s %s, Remote Key successful, command: %s', this.host, accessoryName, this.zoneName, command);
 					}
@@ -544,7 +546,7 @@ class denonTvDevice {
 							command = 'MNRTN';
 							break;
 					}
-					const response = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + command);
+					const response = await axios.get(this.setUrl + command);
 					if (!this.disableLogInfo) {
 						this.log('Device: %s %s %s, set Power Mode Selection successful, command: %s', this.host, accessoryName, this.zoneName, command);
 					}
@@ -557,7 +559,7 @@ class denonTvDevice {
 			.onGet(async () => {
 				const pictureMode = this.pictureMode;
 				if (!this.disableLogInfo) {
-					this.log('Device: %s %s %s, get current Picture mode: %s', this.host, accessoryName, this.zoneName, pictureMode);
+					this.log('Device: %s %s %s, get Picture mode: %s', this.host, accessoryName, this.zoneName, pictureMode);
 				}
 				return pictureMode;
 			})
@@ -618,7 +620,7 @@ class denonTvDevice {
 							command = 'DOWN';
 							break;
 					}
-					const response = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + zone + command);
+					const response = await axios.get(this.setUrl + zone + command);
 					if (!this.disableLogInfo) {
 						this.log('Device: %s %s %s, setVolumeSelector successful, command: %s', this.host, accessoryName, this.zoneName, command);
 					}
@@ -630,7 +632,7 @@ class denonTvDevice {
 			.onGet(async () => {
 				const volume = this.volume;
 				if (!this.disableLogInfo) {
-					this.log('Device: %s %s %s, get current Volume level successful: %s dB', this.host, accessoryName, this.zoneName, (volume - 80));
+					this.log('Device: %s %s %s, get Volume level successful: %s dB', this.host, accessoryName, this.zoneName, (volume - 80));
 				}
 				return volume;
 			})
@@ -649,7 +651,7 @@ class denonTvDevice {
 							volume = '0' + volume;
 						}
 					}
-					const response = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + zone + volume);
+					const response = await axios.get(this.setUrl + zone + volume);
 					if (!this.disableLogInfo) {
 						this.log('Device: %s %s %s, set new Volume level successful, volume: %s dB', this.host, accessoryName, this.zoneName, volume - 80);
 					}
@@ -661,7 +663,7 @@ class denonTvDevice {
 			.onGet(async () => {
 				const state = this.powerState ? this.muteState : true;
 				if (!this.disableLogInfo) {
-					this.log('Device: %s %s %s, get current Mute state successful: %s', this.host, accessoryName, this.zoneName, state ? 'ON' : 'OFF');
+					this.log('Device: %s %s %s, get Mute state successful: %s', this.host, accessoryName, this.zoneName, state ? 'ON' : 'OFF');
 				}
 				return state;
 			})
@@ -670,7 +672,7 @@ class denonTvDevice {
 					try {
 						const zControl = this.masterMute ? 3 : this.zoneControl
 						const newState = [(state ? 'MUON' : 'MUOFF'), (state ? 'Z2MUON' : 'Z2MUOFF'), (state ? 'Z3MUON' : 'Z3MUOFF'), (state ? 'MUON' : 'MUOFF')][zControl];
-						const response = await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + newState);
+						const response = await axios.get(this.setUrl + newState);
 						if (!this.disableLogInfo) {
 							this.log('Device: %s %s %s, set new Mute state successful, state: %s', this.host, accessoryName, this.zoneName, state ? 'ON' : 'OFF');
 						}
@@ -841,13 +843,13 @@ class denonTvDevice {
 				.onGet(async () => {
 					const state = false;
 					if (!this.disableLogInfo) {
-						this.log('Device: %s %s %s, get current state successful, state: %s', this.host, accessoryName, this.zoneName, state);
+						this.log('Device: %s %s %s, get Button state successful, state: %s', this.host, accessoryName, this.zoneName, state);
 					}
 					return state;
 				})
 				.onSet(async (state) => {
 					try {
-						const setInput = (state && this.powerState) ? await axios.get(this.url + '/goform/formiPhoneAppDirect.xml?' + buttonReference) : false;
+						const setInput = (state && this.powerState) ? await axios.get(this.setUrl + buttonReference) : false;
 						if (!this.disableLogInfo) {
 							this.log('Device: %s %s %s, set new Input successful, name: %s, reference: %s', this.host, accessoryName, this.zoneName, buttonName, buttonReference);
 						}

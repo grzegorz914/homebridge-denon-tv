@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [3.11.5] - (06.09.2021)
+## Changes
+- code cleanup
+- update config.schema
+- fixed wrong reference response of Internet Radio
+
 ## [3.11.3] - (05.09.2021)
 ## Changes
 - bump dependencies

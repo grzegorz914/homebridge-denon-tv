@@ -16,21 +16,20 @@
             "name": {
               "title": "Device Name",
               "type": "string",
-              "default": "AV Receiver",
+              "placeholder": "AV Receiver",
               "required": true
             },
             "host": {
               "title": "Address IP",
               "type": "string",
-              "default": "192.168.1.5",
+              "placeholder": "192.168.1.5",
               "required": true,
               "format": "hostname"
             },
             "port": {
               "title": "Port",
-              "type": "integer",
-              "default": 8080,
-              "maximum": 65535,
+              "type": "string",
+              "placeholder": "8080",
               "required": true
             },
             "refreshInterval": {
@@ -139,6 +138,7 @@
                   "name": {
                     "title": "Name",
                     "type": "string",
+                    "placeholder": "Input name",
                     "description": "Here set Your own name.",
                     "required": true
                   },
@@ -510,6 +510,7 @@
                   "name": {
                     "title": "Name",
                     "type": "string",
+                    "placeholder": "Button name",
                     "description": "Here set Your own name.",
                     "required": false
                   },
@@ -2932,6 +2933,7 @@
                   "name": {
                     "title": "Name",
                     "type": "string",
+                    "placeholder": "Button name",
                     "description": "Here set Your own name.",
                     "required": false
                   },
@@ -3422,6 +3424,7 @@
                   "name": {
                     "title": "Name",
                     "type": "string",
+                    "placeholder": "Button name",
                     "description": "Here set Your own name.",
                     "required": false
                   },
@@ -3876,7 +3879,7 @@
                       {
                         "title": "SLEEP OFF",
                         "enum": [
-                          " Z3SLPOFF"
+                          "Z3SLPOFF"
                         ]
                       }
                     ],
@@ -3943,10 +3946,7 @@
             "devices[].inputs[].reference",
             "devices[].inputs[].mode"
           ]
-        }],
-        "condition": {
-          "functionBody": "return model.devices[arrayIndices].zoneControl >= 0;"
-        }
+        }]
       },
       {
         "key": "devices[]",
@@ -4022,10 +4022,7 @@
           "devices[].masterMute",
           "devices[].refreshInterval",
           "devices[].volumeControl"
-        ],
-        "condition": {
-          "functionBody": "return model.devices[arrayIndices].zoneControl >= 0;"
-        }
+        ]
       },
       {
         "key": "devices[]",
@@ -4040,7 +4037,7 @@
           "devices[].firmwareRevision"
         ],
         "condition": {
-          "functionBody": "return model.devices[arrayIndices].zoneControl >= 0;"
+          "functionBody": "return model.devices[arrayIndices].zoneControl === 0;"
         }
       }
     ]
