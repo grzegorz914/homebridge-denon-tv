@@ -11,9 +11,7 @@ const PLATFORM_NAME = 'DenonTv';
 const ZONE_NAME = ['Main Zone', 'Zone 2', 'Zone 3'];
 const SHORT_ZONE_NAME = ['MZ', 'Z2', 'Z3'];
 const ZONE_NUMBER = ['MainZone_MainZone', 'Zone2_Zone2', 'Zone3_Zone3'];
-
 const INPUT_SOURCE_TYPES = ['OTHER', 'HOME_SCREEN', 'TUNER', 'HDMI', 'COMPOSITE_VIDEO', 'S_VIDEO', 'COMPONENT_VIDEO', 'DVI', 'AIRPLAY', 'USB', 'APPLICATION'];
-
 const DEFAULT_INPUTS = [{
 	'name': 'Unconfigured input',
 	'reference': 'undefined',
@@ -399,7 +397,7 @@ class denonTvDevice {
 						const zControl = this.masterPower ? 3 : this.zoneControl
 						this.log.debug('zControl is %s', zControl)
 						const newState = [(state ? 'ZMON' : 'ZMOFF'), (state ? 'Z2ON' : 'Z2OFF'), (state ? 'Z3ON' : 'Z3OFF'), (state ? 'PWON' : 'PWSTANDBY')][zControl];
-						const response = await axios.get(this.setUrl + newState);
+						const setPower = await axios.get(this.setUrl + newState);
 						if (!this.disableLogInfo) {
 							this.log('Device: %s %s %s, set Power state successful, state: %s', this.host, accessoryName, this.zoneName, newState);
 						}
