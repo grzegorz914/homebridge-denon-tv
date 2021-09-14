@@ -143,22 +143,23 @@ class denonTvDevice {
 
 		this.pictureMode = 0;
 
-		this.prefDir = path.join(api.user.storagePath(), 'denonTv');
-		this.devInfoFile = this.prefDir + '/' + 'devInfo_' + this.shortZoneName + this.host.split('.').join('');
-		this.inputsFile = this.prefDir + '/' + 'inputs_' + this.shortZoneName + this.host.split('.').join('');
-		this.inputsNamesFile = this.prefDir + '/' + 'inputsNames_' + this.shortZoneName + this.host.split('.').join('');
-		this.targetVisibilityInputsFile = this.prefDir + '/' + 'targetVisibilityInputs_' + this.shortZoneName + this.host.split('.').join('');
-		this.url = ('http://' + this.host + ':' + this.port);
+		const prefDir = path.join(api.user.storagePath(), 'denonTv');
+		const url = ('http://' + this.host + ':' + this.port);
+
+		this.devInfoFile = prefDir + '/' + 'devInfo_' + this.shortZoneName + this.host.split('.').join('');
+		this.inputsFile = prefDir + '/' + 'inputs_' + this.shortZoneName + this.host.split('.').join('');
+		this.inputsNamesFile = prefDir + '/' + 'inputsNames_' + this.shortZoneName + this.host.split('.').join('');
+		this.targetVisibilityInputsFile = prefDir + '/' + 'targetVisibilityInputs_' + this.shortZoneName + this.host.split('.').join('');
 
 		this.axiosInstance = axios.create({
 			method: 'GET',
-			baseURL: this.url,
+			baseURL: url,
 			timeout: 5000
 		});
 
 		//check if the directory exists, if not then create it
-		if (fs.existsSync(this.prefDir) == false) {
-			fsPromises.mkdir(this.prefDir);
+		if (fs.existsSync(prefDir) == false) {
+			fsPromises.mkdir(prefDir);
 		}
 		if (fs.existsSync(this.devInfoFile) == false) {
 			fsPromises.writeFile(this.devInfoFile, '');
