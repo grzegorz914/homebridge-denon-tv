@@ -284,7 +284,7 @@ class denonTvDevice {
 			const volume = (parseFloat(result.item.MasterVolume[0].value[0]) >= -79.5) ? parseInt(result.item.MasterVolume[0].value[0]) + 80 : 0;
 			const muteState = powerState ? (result.item.Mute[0].value[0] == 'on') : true;
 
-			const currentInputIdentifier = (this.inputsReference.indexOf(inputReference) >= 0) ? this.inputsReference.indexOf(inputReference) : (inputReference == 'Internet Radio') ? this.inputsReference.indexOf('IRADIO') : 0;
+			const currentInputIdentifier = (this.inputsReference.indexOf(inputReference) >= 0) ? this.inputsReference.indexOf(inputReference) : (inputReference == 'Internet Radio') ? this.inputsReference.indexOf('IRADIO') : (inputReference == 'AirPlay') ? this.inputsReference.indexOf('NET') : 0;
 			const inputIdentifier = this.setStartInput ? this.setStartInputIdentifier : currentInputIdentifier;
 			const inputName = this.inputsName[inputIdentifier];
 
