@@ -13,7 +13,7 @@ const SHORT_ZONE_NAME = ['MZ', 'Z2', 'Z3'];
 const ZONE_NUMBER = ['MainZone_MainZone', 'Zone2_Zone2', 'Zone3_Zone3'];
 const INPUT_SOURCE_TYPES = ['OTHER', 'HOME_SCREEN', 'TUNER', 'HDMI', 'COMPOSITE_VIDEO', 'S_VIDEO', 'COMPONENT_VIDEO', 'DVI', 'AIRPLAY', 'USB', 'APPLICATION'];
 const DEFAULT_INPUTS = [{
-	'name': 'Unconfigured input',
+	'name': 'Undefined',
 	'reference': 'undefined',
 	'type': 'undefined',
 	'mode': 'undefined'
@@ -141,10 +141,6 @@ class denonTvDevice {
 		this.inputReference = '';
 		this.inputName = '';
 
-		this.brightness = 0;
-		this.backlight = 0;
-		this.contrast = 0;
-		this.color = 0;
 		this.pictureMode = 0;
 
 		this.prefDir = path.join(api.user.storagePath(), 'denonTv');
@@ -244,7 +240,7 @@ class denonTvDevice {
 			this.log('-------- %s --------', this.name);
 			this.log('Manufacturer: %s', manufacturer);
 			this.log('Model: %s', modelName);
-			if (this.zoneControl >= 0) {
+			if (this.zoneControl == 0) {
 				this.log('Zones: %s', zones);
 				this.log('Firmware: %s', firmwareRevision);
 				this.log('Api version: %s', apiVersion);
@@ -280,11 +276,11 @@ class denonTvDevice {
 			this.log.debug('Device: %s %s, debug response: %s, result: %s', this.host, this.name, response.data, result);
 
 			const powerState = (result.item.Power[0].value[0] == 'ON');
-			const inputReference = result.item.InputFuncSelect[0].value[0];
+			const inputReference = (result.item.InputFuncSelect[0].value[0] == 'Internet Radio') ? 'IRADIO' : (result.item.InputFuncSelect[0].value[0] == 'AirPlay') ? 'NET' : result.item.InputFuncSelect[0].value[0];
 			const volume = (parseFloat(result.item.MasterVolume[0].value[0]) >= -79.5) ? parseInt(result.item.MasterVolume[0].value[0]) + 80 : 0;
 			const muteState = powerState ? (result.item.Mute[0].value[0] == 'on') : true;
 
-			const currentInputIdentifier = (this.inputsReference.indexOf(inputReference) >= 0) ? this.inputsReference.indexOf(inputReference) : (inputReference == 'Internet Radio') ? this.inputsReference.indexOf('IRADIO') : (inputReference == 'AirPlay') ? this.inputsReference.indexOf('NET') : 0;
+			const currentInputIdentifier = (this.inputsReference.indexOf(inputReference) >= 0) ? this.inputsReference.indexOf(inputReference) : 0;
 			const inputIdentifier = this.setStartInput ? this.setStartInputIdentifier : currentInputIdentifier;
 			const inputName = this.inputsName[inputIdentifier];
 
