@@ -3,11 +3,12 @@
 const path = require('path');
 const axios = require('axios');
 const fs = require('fs');
-const fsPromises = require('fs').promises;
+const fsPromises = fs.promises;
 const parseStringPromise = require('xml2js').parseStringPromise;
 
 const PLUGIN_NAME = 'homebridge-denon-tv';
 const PLATFORM_NAME = 'DenonTv';
+
 const ZONE_NAME = ['Main Zone', 'Zone 2', 'Zone 3'];
 const SHORT_ZONE_NAME = ['MZ', 'Z2', 'Z3'];
 const ZONE_NUMBER = ['MainZone_MainZone', 'Zone2_Zone2', 'Zone3_Zone3'];
@@ -19,14 +20,14 @@ const DEFAULT_INPUTS = [{
 	'mode': 'undefined'
 }];
 
-let Accessory, Characteristic, Service, Categories, AccessoryUUID;
+let Accessory, Characteristic, Service, Categories, UUID;
 
 module.exports = (api) => {
 	Accessory = api.platformAccessory;
 	Characteristic = api.hap.Characteristic;
 	Service = api.hap.Service;
 	Categories = api.hap.Categories;
-	AccessoryUUID = api.hap.uuid;
+	UUID = api.hap.uuid;
 	api.registerPlatform(PLUGIN_NAME, PLATFORM_NAME, denonTvPlatform, true);
 };
 
@@ -336,7 +337,7 @@ class denonTvDevice {
 	async prepareAccessory() {
 		this.log.debug('prepareAccessory');
 		const accessoryName = this.name;
-		const accessoryUUID = AccessoryUUID.generate(accessoryName);
+		const accessoryUUID = UUID.generate(accessoryName);
 		const accessoryCategory = Categories.AUDIO_RECEIVER;
 		const accessory = new Accessory(accessoryName, accessoryUUID, accessoryCategory);
 		accessory.context.device = this.config.device;
@@ -620,7 +621,7 @@ class denonTvDevice {
 							command = 'DOWN';
 							break;
 					}
-					const response = await this.axiosInstance('/goform/formiPhoneAppDirect.xml?' + zone + command);
+					const setVolume = await this.axiosInstance('/goform/formiPhoneAppDirect.xml?' + zone + command);
 					if (!this.disableLogInfo) {
 						this.log('Device: %s %s %s, setVolumeSelector successful, command: %s', this.host, accessoryName, this.zoneName, command);
 					}
@@ -651,7 +652,7 @@ class denonTvDevice {
 							volume = '0' + volume;
 						}
 					}
-					const response = await this.axiosInstance('/goform/formiPhoneAppDirect.xml?' + zone + volume);
+					const setVolume = await this.axiosInstance('/goform/formiPhoneAppDirect.xml?' + zone + volume);
 					if (!this.disableLogInfo) {
 						this.log('Device: %s %s %s, set new Volume level successful, volume: %s dB', this.host, accessoryName, this.zoneName, volume - 80);
 					}
@@ -672,7 +673,7 @@ class denonTvDevice {
 					try {
 						const zControl = this.masterMute ? 3 : this.zoneControl
 						const newState = [(state ? 'MUON' : 'MUOFF'), (state ? 'Z2MUON' : 'Z2MUOFF'), (state ? 'Z3MUON' : 'Z3MUOFF'), (state ? 'MUON' : 'MUOFF')][zControl];
-						const response = await this.axiosInstance('/goform/formiPhoneAppDirect.xml?' + newState);
+						const setMute = await this.axiosInstance('/goform/formiPhoneAppDirect.xml?' + newState);
 						if (!this.disableLogInfo) {
 							this.log('Device: %s %s %s, set new Mute state successful, state: %s', this.host, accessoryName, this.zoneName, state ? 'ON' : 'OFF');
 						}
@@ -849,7 +850,7 @@ class denonTvDevice {
 				})
 				.onSet(async (state) => {
 					try {
-						const setInput = (state && this.powerState) ? await this.axiosInstance('/goform/formiPhoneAppDirect.xml?' + buttonReference) : false;
+						const setFunction = (state && this.powerState) ? await this.axiosInstance('/goform/formiPhoneAppDirect.xml?' + buttonReference) : false;
 						if (!this.disableLogInfo) {
 							this.log('Device: %s %s %s, set new Input successful, name: %s, reference: %s', this.host, accessoryName, this.zoneName, buttonName, buttonReference);
 						}

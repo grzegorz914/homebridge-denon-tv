@@ -8,19 +8,19 @@
     "type": "object",
     "properties": {
       "devices": {
-        "title": "Devices",
         "type": "array",
         "items": {
+          "title": "Devices",
           "type": "object",
           "properties": {
             "name": {
-              "title": "Device Name",
+              "title": "Name",
               "type": "string",
               "placeholder": "AV Receiver",
               "required": true
             },
             "host": {
-              "title": "Address IP",
+              "title": "IP/Hostname",
               "type": "string",
               "placeholder": "192.168.1.5",
               "required": true,
@@ -3924,7 +3924,7 @@
   "layout": [{
     "key": "devices",
     "type": "tabarray",
-    "title": "{{ value.name || 'new device' }}",
+    "title": "{{ value.name || 'new device/zone' }}",
     "items": [
       "devices[].name",
       "devices[].host",
@@ -3938,9 +3938,11 @@
         "expanded": false,
         "items": [{
           "key": "devices[].inputs",
-          "type": "array",
+          "type": "tabarray",
+          "title": "{{ value.name || 'new input' }}",
+          "expandable": true,
+          "expanded": true,
           "orderable": false,
-          "buttonText": "Add input",
           "items": [
             "devices[].inputs[].name",
             "devices[].inputs[].reference",
@@ -3956,9 +3958,11 @@
         "expanded": false,
         "items": [{
           "key": "devices[].buttonsMainZone",
-          "type": "array",
+          "type": "tabarray",
+          "title": "{{ value.name || 'new button' }}",
+          "expandable": true,
+          "expanded": true,
           "orderable": false,
-          "buttonText": "Add button",
           "items": [
             "devices[].buttonsMainZone[].name",
             "devices[].buttonsMainZone[].reference"
