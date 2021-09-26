@@ -123,7 +123,8 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
 ```
 
 ## Multi zone control and settings
-To enable the ability to control each zone seperately then use the configuration below.
+ * To enable the ability to control each zone seperately then use the configuration below.
+ 
 | Key | Description |
 | --- | --- |
 | `name` | Here set the accessory *Name* to be displayed in *Homebridge/HomeKit*. |
@@ -147,7 +148,7 @@ To enable the ability to control each zone seperately then use the configuration
 | `buttonsZone3.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. | 
 | `buttonsZone3.reference` | Here choice function for additional control button for Zone 3. |
 
-After editing the conf.json or using homebridge-config-ui-x to configure this plugin then save the settings and restart Homebridge. If the configuration has multiple zones then each zone will show up as a separate Homekit Accessory that will need be be added to Home individually using the same PIN code that is used for Homebridge.
+After editing the config.json or using homebridge-config-ui-x to configure this plugin save the settings and restart Homebridge. If the configuration has multiple zones then each zone will show up as a separate Homekit Accessory. This will need be be added to the Home individually using the same PIN code that is used for Homebridge.
 
 ```json
 {
