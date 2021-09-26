@@ -21,7 +21,7 @@ This plugin is based upon the official documentation for communicating with and 
 | --- | --- | --- | --- |
 | [Homebridge](https://github.com/homebridge/homebridge) | [Homebridge Wiki](https://github.com/homebridge/homebridge/wiki) | HomeKit Bridge | Required |
 | [Homebridge Config UI X](https://github.com/oznu/homebridge-config-ui-x/wiki) | [Homebridge Config UI X Wiki](https://github.com/oznu/homebridge-config-ui-x/wiki) | Web User Interface | Recommended |
-| [Homebridge Denon TV](https://www.npmjs.com/package/homebridge-denon-tv) | `npm npm install -g homebridge-denon-tv` | Plug-In | Required |
+| [Homebridge Denon TV](https://www.npmjs.com/package/homebridge-denon-tv) | `npm install -g homebridge-denon-tv` | Plug-In | Required |
 
 ## Note
 * For homebridge-denon-tv versions 3.6.0 and above the minimum required version of Homebridge is 1.3.x.
@@ -30,15 +30,15 @@ This plugin is based upon the official documentation for communicating with and 
 * If used with Hoobs, there is a possible configuration incompatibilty.
 
 ## Features and How To Use Them
-1. Power the receiver ON/OFF using a short press of the created device tile in the HomeKit app.
-2. Remote Control and Media control is possible by using the Apple Remote in Control Center on iPhone/iPad (must be installed from the App store prior to iOS/iPadOS 14).
-3. Speaker control is possible after you go to Apple Remote in Control Center on iPhone/iPad `Speaker Service`.
-4. Legacy volume and mute control is possible throught the extra `lightbulb` (slider) or using Siri `Volume Service`.
-5. Inputs can be changed by performing a long press of the device tile in the HomeKit app and then selecting from the list. It is also possible to create separate tiles in the Inputs and Functions button.
-6. Surround Modes can be controlled from the Inputs List from a long press of the device tile or by creating separate tiles in the Inputs and Functions button.
-7. Digital Input Modes control from the inputs list or create separate tile in the Inputs and Functions button.
-8. Siri control, (Volume, Mute) if volume control enabled Slider or Fan.
-9. Multiple Zone control.
+* Power ON/OFF short press tile in HomeKit app.
+* RC/Media control is possible after you go to the RC app on iPhone/iPad.
+* Speaker control is possible after you go to RC app on iPhone/iPad `Speaker Service`.
+* Legacy volume and mute control is possible throught extra `lightbulb` (slider) or using Siri `Volume Service`.
+* Inputs can be changed after loong press tile in Home.app and select from the list or create separate tile in the Buttons section.
+* Surround Modes can be controlled from the Inputs List from a long press of the device tile or by creating separate tiles in the Inputs and Functions button.
+* Digital Input Modes control from the inputs list or create separate tile in the Inputs and Functions button.
+* Multiple Zone control.
+* Siri control.
 
 <p align="left">
   <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/homekit.png" width="480"></a> 
