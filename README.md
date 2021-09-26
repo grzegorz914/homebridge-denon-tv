@@ -71,7 +71,7 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
 | `inputs.mode` | Choose from available inputs mode. |
 | `buttonsMainZone.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. | 
 | `buttonsMainZone.reference` | Here choice function for additional control button for Main Zone. | 
-| `manufacturer`, `model`, `serialNumber`, `firmwareRevision` | Optional free-form informational data that will be displayed in the Home.app. |
+| `manufacturer`, `modelName`, `serialNumber`, `firmwareRevision` | Optional free-form informational data that will be displayed in the Home.app. |
 
 ```json
 {
