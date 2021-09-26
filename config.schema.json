@@ -23,8 +23,8 @@
               "title": "IP/Hostname",
               "type": "string",
               "placeholder": "192.168.1.5",
-              "required": true,
-              "format": "hostname"
+              "format": "hostname",
+              "required": true
             },
             "port": {
               "title": "Port",
@@ -98,36 +98,36 @@
               "title": "Master Power Control",
               "type": "boolean",
               "default": false,
-              "required": false,
-              "description": "The power switch for that zone will turn the entire receiver `ON` or `OFF/STANDBY` rather than just the zone itself."
+              "description": "The power switch for that zone will turn the entire receiver `ON` or `OFF/STANDBY` rather than just the zone itself.",
+              "required": false
             },
             "masterVolume": {
               "title": "Master Volume Control",
               "type": "boolean",
               "default": false,
-              "required": false,
-              "description": "The volume for that zone will set the entire receiver volume `UP` or `DOWN` rather than just the zone itself."
+              "description": "The volume for that zone will set the entire receiver volume `UP` or `DOWN` rather than just the zone itself.",
+              "required": false
             },
             "masterMute": {
               "title": "Master Mute Control",
               "type": "boolean",
               "default": false,
-              "required": false,
-              "description": "The mute switch for that zone will muted the entire receiver `ON` or `OFF` rather than just the zone itself."
+              "description": "The mute switch for that zone will muted the entire receiver `ON` or `OFF` rather than just the zone itself.",
+              "required": false
             },
             "switchInfoMenu": {
               "title": "Switch Info/Menu",
               "type": "boolean",
               "default": false,
-              "required": false,
-              "description": "This toggle behaviour for *I* button in RC app and *PowerModeSELECTion* in settings."
+              "description": "This toggle behaviour for *I* button in RC app and *PowerModeSELECTion* in settings.",
+              "required": false
             },
             "disableLogInfo": {
               "title": "Disable log info",
               "type": "boolean",
               "default": false,
-              "required": false,
-              "description": "This disable log info, all values and state will not be displayed in Homebridge log console."
+              "description": "This disable log info, all values and state will not be displayed in Homebridge log console.",
+              "required": false
             },
             "inputs": {
               "title": "Inputs",
