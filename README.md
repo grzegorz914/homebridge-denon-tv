@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/homebridge-denon-tv.png" height="280"></a>
+  <a href="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/homebridge-denon-tv.png" width="840"></a>
 </p>
 
 <span align="center">
@@ -17,21 +17,17 @@ This plugin is based upon the official documentation for communicating with and 
 </span>
 
 ## Package Requirements
-| Package Link | Required |
-| --- | --- |
-| [Homebridge](https://github.com/homebridge/homebridge) | Required | 
-| [Homebridge Config UI X](https://github.com/oznu/homebridge-config-ui-x) | Highly Recommended |
+| Package Link | Installation | Role | Required |
+| --- | --- | --- | --- |
+| [Homebridge](https://github.com/homebridge/homebridge) | [Homebridge Wiki](https://github.com/homebridge/homebridge/wiki) | HomeKit Bridge | Required |
+| [Homebridge Config UI X](https://github.com/oznu/homebridge-config-ui-x/wiki) | [Homebridge Config UI X Wiki](https://github.com/oznu/homebridge-config-ui-x/wiki) | Web User Interface | Recommended |
+| [Homebridge Denon TV](https://www.npmjs.com/package/homebridge-denon-tv) | `npm npm install -g homebridge-denon-tv` | Plug-In | Required |
 
 ## Note
-- For homebridge-denon-tv versions 3.6.0 and above the minimum required version of Homebridge is 1.3.x.
+* For homebridge-denon-tv versions 3.6.0 and above the minimum required version of Homebridge is 1.3.x.
 
 ## Know issues
-- If used with Hoobs, there is a possible configuration incompatibilty.
-
-## Installation Instructions
-1. Follow the step-by-step instructions at [Homebridge Wiki](https://github.com/homebridge/homebridge/wiki) for how to install Homebridge.
-2. Follow the step-by-step instructions at [Homebridge Config UI X](https://github.com/oznu/homebridge-config-ui-x/wiki) for how to install Homebridge Config UI X.
-3. Install homebridge-denon-tv using: `npm install -g homebridge-denon-tv` or search for `Denon TV` in Config UI X.
+* If used with Hoobs, there is a possible configuration incompatibilty.
 
 ## Features and How To Use Them
 1. Power the receiver ON/OFF using a short press of the created device tile in the HomeKit app.
@@ -45,40 +41,38 @@ This plugin is based upon the official documentation for communicating with and 
 9. Multiple Zone control.
 
 <p align="left">
-  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/homekit.png" height="300"></a> 
-  </p>
-  <p align="left">
-  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/inputs.png" height="300"></a>  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/RC.png" height="300"></a>  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/rc1.png" height="300"></a>
+  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/homekit.png" width="480"></a> 
+  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/inputs.png" width="115"></a>  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/RC.png" width="115"></a>  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/rc1.png" width="115"></a>
 </p>
 
 ## Configuration
+* [Please configure LG Connect Apps](https://www.lg.com/ca_en/support/product-help/CT20098005-1437129879355-others)
+Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-config-ui-x/wiki) plugin to configure this plugin (Highly Recommended). The sample configuration can be edited and used manually as an alternative. See the `sample-config.json` file in this repository for an example or copy the example below into your config.json file, making the apporpriate changes before saving it. Be sure to always make a backup copy of your config.json file before making any changes to it.
 
-To ease configuration, install and use the [Homebridge Config UI X](https://github.com/oznu/homebridge-config-ui-x) plugin (highly recomended). 
-
-Alternatively, Tthe sample configuration can be edited and used manually. See the `sample-config.json` file in this repository for an example or copy/paste the example below into your config.json file, making the apporpriate changes before saving it. Be sure to always make a backup copy of your config.json file before making any changes to it.
+<p align="left">
+  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/ustawienia.png" width="840"></a>
+</p>
 
 ## Configuration Values
 | Key | Description | 
 | --- | --- |
+| `name` | Here set the accessory *Name* to be displayed in *Homebridge/HomeKit*. |
+| `host` | Here set the *Hsostname or Address IP* of TV. |
 | `port` | This is the network port that this plugin will use to communicate with the receiver. If port `8080` is not working then try to use port `80` which some receivers use alternatively. Try the other port if the first one does not work |
-| `inputs` | Choose from available inputs the inputs that should be published to and appear in HomeKit app in the device tile as inputs list |
-| `buttonsMainZone` | here choice function for additional control button for Main Zone |
-| `refreshInterval` | Set the data refresh time in seconds, default is every 5 seconds |
 | `zoneControl` | Selects which zone will be controlled by this section (0 - Main Zone, 1 - Zone 2, 2 - Zone 3) or choice from the configurations GUI |
-| `masterPower` | If `true` then the power switch for that zone (typically you would only use this for the Main Zone) will turn the entire receiver `ON` or `OFF/STANDBY` rather than just the zone itself |
-| `masterVolume`| If `true` then the volume for that zone (typically you would only use this for the Main Zone) will set the entire receiver `UP` or `DOWN` rather than just the zone itself |
-| `masterMute`| If `true` then the mute switch for that zone (typically you would only use this for the Main Zone) will muted the entire receiver `ON` or `OFF` rather than just the zone itself |
-| `volumeControl`| Select what a additional volume control mode You want to use (None, Slider, Fan) |
-| `switchInfoMenu`| If `true` then the `I` button will toggle its behaviour in the Apple Remote in Control Center and `PowerModeSelection` in settings |
-| `disableLogInfo`| If `true` then disable log info, all values and state will not be displayed in Homebridge log console |
-| `manufacturer` | Optional free-form informational data that will be displayed in the Home.app if it is filled in |
-| `modelName` | Optional free-form informational data that will be displayed in the Home.app if it is filled in |
-| `serialNumber` | Optional free-form informational data that will be displayed in the Home.app if it is filled in |
-| `firmwareRevision` | Optional free-form informational data that will be displayed in the Home.app if it is filled in |
-
-<p align="left">
-  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/ustawienia.png" height="170"></a>
-</p>
+| `refreshInterval` | Set the data refresh time in seconds, default is every 5 seconds. |
+| `disableLogInfo` | If enabled, disable log info, all values and state will not be displayed in Homebridge log console. |
+| `volumeControl` | Here choice what a additional volume control mode You want to use (None, Slider, Fan). |
+| `switchInfoMenu` | If enabled, `I` button change its behaviour in RC app between Menu and INFO. |
+| `masterPower` | If enabled, then the power switch for that zone (typically you would only use this for the Main Zone) will turn the entire receiver `ON` or `OFF/STANDBY` rather than just the zone itself |
+| `masterVolume`| If enabled, then the volume for that zone (typically you would only use this for the Main Zone) will set the entire receiver `UP` or `DOWN` rather than just the zone itself |
+| `masterMute`| If enabled, then the mute switch for that zone (typically you would only use this for the Main Zone) will muted the entire receiver `ON` or `OFF` rather than just the zone itself |
+| `inputs.name` | Here set *Input Name* which You want expose to the *Homebridge/HomeKit*. |
+| `inputs.reference` | Choose from available inputs, the inputs that should be published to and appear in HomeKit app in the device tile as inputs list |
+| `inputs.mode` | Choose from available inputs mode. |
+| `buttonsMainZone.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. | 
+| `buttonsMainZone.reference` | Here choice function for additional control button for Main Zone. | 
+| `manufacturer`, `model`, `serialNumber`, `firmwareRevision` | Optional free-form informational data that will be displayed in the Home.app. |
 
 ## Main Zone Control and Settings
 ```json
@@ -133,16 +127,26 @@ Alternatively, Tthe sample configuration can be edited and used manually. See th
 To enable the ability to control each zone seperately then use the configuration below.
 | Key | Description |
 | --- | --- |
+| `name` | Here set the accessory *Name* to be displayed in *Homebridge/HomeKit*. |
+| `host` | Here set the *Hsostname or Address IP* of TV. |
+| `port` | This is the network port that this plugin will use to communicate with the receiver. If port `8080` is not working then try to use port `80` which some receivers use alternatively. Try the other port if the first one does not work |
 | `zoneControl` | Selects which zone will be controlled by this section (0 - Main Zone, 1 - Zone 2, 2 - Zone 3) or choice from the configurations GUI |
-| `masterPower` | If `true` then the power switch for that zone will turn the entire receiver `ON` or `OFF/STANDBY` rather than just the zone itself |
-| `masterVolume` | If `true` then the volume for that zone (typically you would only use this for the Main Zone) will set the entire receiver `UP` or `DOWN` rather than just the zone itself |
-| `masterMute` | If is `true` the mute switch for that zone (typically you would only use this for the Main Zone) will muted the entire receiver `ON` or `OFF` rather than just the zone itself |
-| `volumeControl` | If `true` then allow for separate volume control for each zone |
-| `switchInfoMenu` | will working for all zones seperat but have same end effect for each zone |
-| `inputs` | Choose from available inputs |
-| `buttonsMainZone` | Choose the function for additional control button |
-| `buttonsZone2` | Choose the function for additional control button for Zone 2 |
-| `buttonsZone3` | Choose the function for additional control button for Zone 3 |
+| `refreshInterval` | Set the data refresh time in seconds, default is every 5 seconds. |
+| `disableLogInfo` | If enabled, disable log info, all values and state will not be displayed in Homebridge log console. |
+| `volumeControl` | Here choice what a additional volume control mode You want to use (None, Slider, Fan). |
+| `switchInfoMenu` | If enabled, `I` button change its behaviour in RC app between Menu and INFO. |
+| `masterPower` | If enabled, then the power switch for that zone will turn the entire receiver `ON` or `OFF/STANDBY` rather than just the zone itself |
+| `masterVolume` | If enabled, then the volume for that zone (typically you would only use this for the Main Zone) will set the entire receiver `UP` or `DOWN` rather than just the zone itself |
+| `masterMute` | If is enabled, the mute switch for that zone (typically you would only use this for the Main Zone) will muted the entire receiver `ON` or `OFF` rather than just the zone itself |
+| `inputs.name` | Here set *Input Name* which You want expose to the *Homebridge/HomeKit*. |
+| `inputs.reference` | Choose from available inputs, the inputs that should be published to and appear in HomeKit app in the device tile as inputs list |
+| `inputs.mode` | Choose from available inputs mode. |
+| `buttonsMainZone.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. | 
+| `buttonsMainZone.reference` | Here choice function for additional control button for Main Zone. |
+| `buttonsZone2.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. | 
+| `buttonsZone2.reference` | Here choice function for additional control button for Zone 2. |
+| `buttonsZone3.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. | 
+| `buttonsZone3.reference` | Here choice function for additional control button for Zone 3. |
 
 After editing the conf.json or using homebridge-config-ui-x to configure this plugin then save the settings and restart Homebridge. If the configuration has multiple zones then each zone will show up as a separate Homekit Accessory that will need be be added to Home individually using the same PIN code that is used for Homebridge.
 
@@ -262,21 +266,22 @@ After editing the conf.json or using homebridge-config-ui-x to configure this pl
 
 ## Adding to HomeKit
 Each accessory needs to be manually paired. 
-1. Open the Home <img src='https://user-images.githubusercontent.com/3979615/78010622-4ea1d380-738e-11ea-8a17-e6a465eeec35.png' height='16.42px'> app on your device. 
-2. Tap the Home tab, then tap <img src='https://user-images.githubusercontent.com/3979615/78010869-9aed1380-738e-11ea-9644-9f46b3633026.png' height='16.42px'>. 
+1. Open the Home <img src='https://user-images.githubusercontent.com/3979615/78010622-4ea1d380-738e-11ea-8a17-e6a465eeec35.png' width='16.42px'> app on your device. 
+2. Tap the Home tab, then tap <img src='https://user-images.githubusercontent.com/3979615/78010869-9aed1380-738e-11ea-9644-9f46b3633026.png' width='16.42px'>. 
 3. Tap *Add Accessory*, and select *I Don't Have a Code or Cannot Scan*. 
 4. Select Your accessory. 
 5. Enter the Homebridge PIN, this can be found under the QR code in Homebridge UI or your Homebridge logs, alternatively you can select *Use Camera* and scan the QR code again.
 
 ## Limitations
-The HomeKit app has a limitation of a maximum number of 100 services per 1 accessory. If the number of services per accessory is over 100 then the Home app will stop responding. Items that are considered to be services in each accessory are when using this plugin are: 
-  1. Information service
-  2. Speaker service
-  3. Lightbulb service
-  4. Television service and inputs service 
-  5. 5-100, where every input = 1 service
- 
-At this time, if all services are enabled then the number of possible inputs to configure is 96.
+* Due to a HomeKit limitation, that maximum services for 1 accessory is 100. Acessories containing services above this value in the HomeKit app will not respond.
+* If all services are enabled possible inputs to use is 95. The services in this accessory are:
+  * Information service.
+  * Speaker service.
+  * Lightbulb service.
+  * Fan service
+  * Television service.
+  * Inputs service which may range from 6 to 100 as each input is 1 service.
+  * Buttons service which may range from 6 to 100 as each input is 1 service.
 
 ## What's new:
 https://github.com/grzegorz914/homebridge-denon-tv/blob/master/CHANGELOG.md
