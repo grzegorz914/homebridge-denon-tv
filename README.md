@@ -52,7 +52,7 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
   <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/ustawienia.png" width="840"></a>
 </p>
 
-## Configuration Values
+## Configuration Main Zone
 | Key | Description | 
 | --- | --- |
 | `name` | Here set the accessory *Name* to be displayed in *Homebridge/HomeKit*. |
@@ -73,7 +73,6 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
 | `buttonsMainZone.reference` | Here choice function for additional control button for Main Zone. | 
 | `manufacturer`, `model`, `serialNumber`, `firmwareRevision` | Optional free-form informational data that will be displayed in the Home.app. |
 
-## Main Zone Control and Settings
 ```json
 {
     "platform": "DenonTv",
@@ -122,7 +121,7 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
 }
 ```
 
-## Multi zone control and settings
+## Multi Zones
  To enable the ability control each zone seperately use the configuration below.
  After editing the config.json or using homebridge-config-ui-x to configure this plugin save the settings and restart Homebridge. If the configuration has multiple zones then each zone will show up as a separate Homekit Accessory. This will need be be added to the Home individually using the same PIN code that is used for Homebridge.
 
