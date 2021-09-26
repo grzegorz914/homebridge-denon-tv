@@ -281,8 +281,7 @@ Each accessory needs to be manually paired.
   * Inputs, which may range from 6 to 100 as each input is 1 service.
   * Buttons, which may range from 6 to 100 as each input is 1 service.
 
-## What's new:
-https://github.com/grzegorz914/homebridge-denon-tv/blob/master/CHANGELOG.md
+## [What's New](https://github.com/grzegorz914/homebridge-denon-tv/blob/master/CHANGELOG.md)
 
 ## Development
 Please feel free to create a Pull request and help in development. It will be highly appreciated.
