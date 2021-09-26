@@ -39,6 +39,7 @@ This plugin is based upon the official documentation for communicating with and 
 * Digital Input Modes can be controlled by creating separate tile in the Buttons section.
 * Multiple Zone control.
 * Siri can be used to control Power, Legacy Volume, Mute and switch Inputs and other Function with created Buttons.
+* Home automations and shortcuts can be used for all functions.
 
 <p align="left">
   <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/homekit.png" width="480"></a> 
