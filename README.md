@@ -53,7 +53,7 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
   <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/ustawienia.png" width="840"></a>
 </p>
 
-## Configuration Main Zone
+## Main Zone
 | Key | Description | 
 | --- | --- |
 | `name` | Here set the accessory *Name* to be displayed in *Homebridge/HomeKit*. |
