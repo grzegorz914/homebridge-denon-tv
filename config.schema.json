@@ -8,9 +8,9 @@
     "type": "object",
     "properties": {
       "devices": {
+        "title": "Devices",
         "type": "array",
         "items": {
-          "title": "Devices",
           "type": "object",
           "properties": {
             "name": {
@@ -3940,9 +3940,6 @@
           "key": "devices[].inputs",
           "type": "tabarray",
           "title": "{{ value.name || 'new input' }}",
-          "expandable": true,
-          "expanded": true,
-          "orderable": false,
           "items": [
             "devices[].inputs[].name",
             "devices[].inputs[].reference",
@@ -3958,11 +3955,8 @@
         "expanded": false,
         "items": [{
           "key": "devices[].buttonsMainZone",
-          "type": "tabarray",
-          "title": "{{ value.name || 'new button' }}",
-          "expandable": true,
-          "expanded": true,
-          "orderable": false,
+          "type": "array",
+          "buttonText": "Add button",
           "items": [
             "devices[].buttonsMainZone[].name",
             "devices[].buttonsMainZone[].reference"
@@ -3981,7 +3975,6 @@
         "items": [{
           "key": "devices[].buttonsZone2",
           "type": "array",
-          "orderable": false,
           "buttonText": "Add button",
           "items": [
             "devices[].buttonsZone2[].name",
@@ -4001,7 +3994,6 @@
         "items": [{
           "key": "devices[].buttonsZone3",
           "type": "array",
-          "orderable": false,
           "buttonText": "Add button",
           "items": [
             "devices[].buttonsZone3[].name",
