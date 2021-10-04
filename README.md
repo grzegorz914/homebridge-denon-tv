@@ -28,6 +28,7 @@ This plugin is based upon the official documentation for communicating with and 
 
 ## Know issues
 * If used with Hoobs, there is a possible configuration incompatibilty.
+* Right now if You use extra Surround Mode Accessory the current Surround Mode can be wrong displayed, will be fixed soon.
 
 ## Features and How To Use Them
 * Power ON/OFF short press tile in HomeKit app.
