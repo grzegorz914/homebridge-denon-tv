@@ -61,7 +61,7 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
 | `port` | This is the network port that this plugin will use to communicate with the receiver. If port `8080` is not working then try to use port `80` which some receivers use alternatively. Try the other port if the first one does not work | Required |
 | `zoneControl` | Selects which zone will be controlled by this section (`0` - Main Zone, `1` - Zone 2, `2` - Zone 3, `3` - Surround Mode) or choice from the configurations GUI | Required |
 | `refreshInterval` | Set the data refresh time in seconds, default is every 5 seconds. | Required |
-| `disableLogInfo` | If enabled, disable log info, all values and state will not be displayed in Homebridge log console. |
+| `disableLogInfo` | If enabled, disable log info, all values and state will not be displayed in Homebridge log console. | Required |
 | `volumeControl` | Here choice what a additional volume control mode You want to use (None, Slider, Fan). | Required |
 | `switchInfoMenu` | If enabled, `I` button change its behaviour in RC app between Menu and INFO. | Required |
 | `masterPower` | If enabled, then the power switch for that zone (typically you would only use this for the Main Zone) will turn the entire receiver `ON` or `OFF/STANDBY` rather than just the zone itself | Required |
@@ -70,11 +70,11 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
 | `inputs.name` | Here set *Input Name* which You want expose to the *Homebridge/HomeKit*. | Required |
 | `inputs.reference` | Choose from available inputs, the inputs that should be published to and appear in HomeKit app in the device tile as inputs list | Required |
 | `inputs.mode` | Choose from available inputs mode. | Required |
-| `buttonsMainZone.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. |  Optional |
+| `buttonsMainZone.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. | Optional |
 | `buttonsMainZone.reference` | Here choice function for additional control button for Main Zone. | Optional |
-| `buttonsZone2.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. |  Optional |
+| `buttonsZone2.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. | Optional |
 | `buttonsZone2.reference` | Here choice function for additional control button for Zone 2. | Optional |
-| `buttonsZone3.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. |  Optional |
+| `buttonsZone3.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. | Optional |
 | `buttonsZone3.reference` | Here choice function for additional control button for Zone 3. | Optional |
 | `surrounds.name` | Here set *Surround Name* which You want expose to the *Homebridge/HomeKit*. | Optional |
 | `surrounds.reference` | Choose from available *Surrounds Mode*, the surrounds that should be published to and appear in HomeKit app in the device tile as surrounds list | Optional |
