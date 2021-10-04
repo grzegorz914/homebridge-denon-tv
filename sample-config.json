@@ -17,91 +17,113 @@
     "platforms": [{
         "platform": "DenonTv",
         "devices": [{
-            "name": "AV Receiver",
-            "host": "192.168.1.5",
-            "port": 8080,
-            "refreshInterval": 5,
-            "zoneControl": 0,
-            "volumeControl": 0,
-            "masterPower": false,
-            "masterVolume": false,
-            "masterMute": false,
-            "switchInfoMenu": false,
-            "disableLogInfo": false,
-            "inputs": [{
-                    "name": "Xbox One",
-                    "reference": "GAME",
-                    "mode": "SI"
-                },
-                {
-                    "name": "Television",
-                    "reference": "TV",
-                    "mode": "SI"
-                },
-                {
-                    "name": "Sat Receiver",
-                    "reference": "SAT/CBL",
-                    "mode": "SI"
-                },
-                {
-                    "name": "CD",
-                    "reference": "CD",
-                    "mode": "SI"
-                },
-                {
-                    "name": "DVD",
-                    "reference": "DVD",
-                    "mode": "SI"
-                },
-                {
-                    "name": "Bluray",
-                    "reference": "BD",
-                    "mode": "SI"
-                },
-                {
-                    "name": "Tuner",
-                    "reference": "TUNER",
-                    "mode": "SI"
-                },
-                {
-                    "name": "Spotify",
-                    "reference": "SPOTIFY",
-                    "mode": "SI"
-                },
-                {
-                    "name": "Net",
-                    "reference": "NET",
-                    "mode": "SI"
-                },
-                {
-                    "name": "Media player",
-                    "reference": "MPLAY",
-                    "mode": "SI"
-                },
-                {
-                    "name": "USB IPOD",
-                    "reference": "USB/IPOD",
-                    "mode": "SI"
-                },
-                {
-                    "name": "AUX 1",
-                    "reference": "AUX1",
-                    "mode": "SI"
-                },
-                {
-                    "name": "AUX 2",
-                    "reference": "AUX2",
-                    "mode": "SI"
-                }
-            ],
-            "buttonsMainZone": [{
-                "name": "POWER ON",
-                "reference": "ZMON"
-            }],
-            "manufacturer": "Manufacturer",
-            "modelName": "Model",
-            "serialNumber": "Serial Number",
-            "firmwareRevision": "Firmware Revision"
-        }]
+                "name": "AV Main Zone",
+                "host": "192.168.1.5",
+                "port": 8080,
+                "refreshInterval": 5,
+                "zoneControl": 0,
+                "volumeControl": 0,
+                "masterPower": false,
+                "masterVolume": false,
+                "masterMute": false,
+                "switchInfoMenu": false,
+                "disableLogInfo": false,
+                "inputs": [{
+                        "name": "Xbox One",
+                        "reference": "GAME",
+                        "mode": "SI"
+                    },
+                    {
+                        "name": "Television",
+                        "reference": "TV",
+                        "mode": "SI"
+                    }
+                ],
+                "buttonsMainZone": [{
+                    "name": "POWER ON",
+                    "reference": "ZMON"
+                }],
+                "manufacturer": "Manufacturer",
+                "modelName": "Model",
+                "serialNumber": "Serial Number",
+                "firmwareRevision": "Firmware Revision"
+            },
+            {
+                "name": "AV Zone 1",
+                "host": "192.168.1.5",
+                "port": 8080,
+                "refreshInterval": 5,
+                "zoneControl": 1,
+                "volumeControl": 0,
+                "masterPower": false,
+                "masterVolume": false,
+                "masterMute": false,
+                "switchInfoMenu": false,
+                "disableLogInfo": false,
+                "inputs": [{
+                        "name": "Xbox One",
+                        "reference": "GAME",
+                        "mode": "SI"
+                    },
+                    {
+                        "name": "Television",
+                        "reference": "TV",
+                        "mode": "SI"
+                    }
+                ],
+                "buttonsZone2": [{
+                    "name": "POWER ON",
+                    "reference": "Z2ON"
+                }]
+            },
+            {
+                "name": "AV Zone 2",
+                "host": "192.168.1.5",
+                "port": 8080,
+                "zoneControl": 2,
+                "volumeControl": 0,
+                "masterPower": false,
+                "masterVolume": false,
+                "masterMute": false,
+                "switchInfoMenu": false,
+                "inputs": [{
+                        "name": "Xbox One",
+                        "reference": "GAME",
+                        "mode": "SI"
+                    },
+                    {
+                        "name": "Television",
+                        "reference": "TV",
+                        "mode": "SI"
+                    }
+                ],
+                "buttonsZone3": [{
+                    "name": "POWER ON",
+                    "reference": "Z3ON"
+                }]
+            },
+            {
+                "name": "AV Surround Mode",
+                "host": "192.168.1.5",
+                "port": 8080,
+                "refreshInterval": 5,
+                "zoneControl": 0,
+                "volumeControl": 0,
+                "masterPower": false,
+                "masterVolume": false,
+                "masterMute": false,
+                "switchInfoMenu": false,
+                "disableLogInfo": false,
+                "surrounds": [{
+                        "name": "MCH Stereo",
+                        "reference": "MCH STEREO"
+                    },
+                    {
+                        "name": "Stereo",
+                        "reference": "STEREO"
+                    }
+                ]
+            }
+        ]
     }]
 }

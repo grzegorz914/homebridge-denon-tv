@@ -41,7 +41,7 @@
               "required": true
             },
             "zoneControl": {
-              "title": "Zone Control",
+              "title": "Zone/Mode Control",
               "type": "integer",
               "maximum": 2,
               "default": 0,
@@ -62,6 +62,12 @@
                   "title": "Zone 3",
                   "enum": [
                     2
+                  ]
+                },
+                {
+                  "title": "Surrounds",
+                  "enum": [
+                    3
                   ]
                 }
               ],
@@ -99,35 +105,35 @@
               "type": "boolean",
               "default": false,
               "description": "The power switch for that zone will turn the entire receiver `ON` or `OFF/STANDBY` rather than just the zone itself.",
-              "required": false
+              "required": true
             },
             "masterVolume": {
               "title": "Master Volume Control",
               "type": "boolean",
               "default": false,
               "description": "The volume for that zone will set the entire receiver volume `UP` or `DOWN` rather than just the zone itself.",
-              "required": false
+              "required": true
             },
             "masterMute": {
               "title": "Master Mute Control",
               "type": "boolean",
               "default": false,
               "description": "The mute switch for that zone will muted the entire receiver `ON` or `OFF` rather than just the zone itself.",
-              "required": false
+              "required": true
             },
             "switchInfoMenu": {
               "title": "Switch Info/Menu",
               "type": "boolean",
               "default": false,
               "description": "This toggle behaviour for *I* button in RC app and *PowerModeSELECTion* in settings.",
-              "required": false
+              "required": true
             },
             "disableLogInfo": {
               "title": "Disable log info",
               "type": "boolean",
               "default": false,
               "description": "This disable log info, all values and state will not be displayed in Homebridge log console.",
-              "required": false
+              "required": true
             },
             "inputs": {
               "title": "Inputs",
@@ -3888,6 +3894,155 @@
                 }
               }
             },
+            "surrounds": {
+              "title": "Surrounds",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "title": "Name",
+                    "type": "string",
+                    "placeholder": "Surround name",
+                    "description": "Here set Your own name.",
+                    "required": true
+                  },
+                  "reference": {
+                    "title": "Surround",
+                    "type": "string",
+                    "description": "Here select surround mode.",
+                    "oneOf": [{
+                        "title": "MOVIE",
+                        "enum": [
+                          "MOVIE"
+                        ]
+                      },
+                      {
+                        "title": "MUSIC",
+                        "enum": [
+                          "MUSIC"
+                        ]
+                      },
+                      {
+                        "title": "GAME",
+                        "enum": [
+                          "GAME"
+                        ]
+                      },
+                      {
+                        "title": "DIRECT",
+                        "enum": [
+                          "DIRECT"
+                        ]
+                      },
+                      {
+                        "title": "PURE DIRECT",
+                        "enum": [
+                          "PURE DIRECT"
+                        ]
+                      },
+                      {
+                        "title": "STEREO",
+                        "enum": [
+                          "STEREO"
+                        ]
+                      },
+                      {
+                        "title": "AUTO",
+                        "enum": [
+                          "AUTO"
+                        ]
+                      },
+                      {
+                        "title": "DOLBY DIGITAL",
+                        "enum": [
+                          "DOLBY DIGITAL"
+                        ]
+                      },
+                      {
+                        "title": "DTS SURROUND",
+                        "enum": [
+                          "DTS SURROUND"
+                        ]
+                      },
+                      {
+                        "title": "AURO 3D",
+                        "enum": [
+                          "AURO3D"
+                        ]
+                      },
+                      {
+                        "title": "AURO 2D",
+                        "enum": [
+                          "AURO2DSURR"
+                        ]
+                      },
+                      {
+                        "title": "MCH STEREO",
+                        "enum": [
+                          "MCH STEREO"
+                        ]
+                      },
+                      {
+                        "title": "WIDE SCREEN",
+                        "enum": [
+                          "WIDE SCREEN"
+                        ]
+                      },
+                      {
+                        "title": "SUPER STADIUM",
+                        "enum": [
+                          "SUPER STADIUM"
+                        ]
+                      },
+                      {
+                        "title": "ROCK ARENA",
+                        "enum": [
+                          "ROCK ARENA"
+                        ]
+                      },
+                      {
+                        "title": "JAZZ CLUB",
+                        "enum": [
+                          "JAZZ CLUB"
+                        ]
+                      },
+                      {
+                        "title": "CLASSIC CONCERT",
+                        "enum": [
+                          "CLASSIC CONCERT"
+                        ]
+                      },
+                      {
+                        "title": "MONO MOVIE",
+                        "enum": [
+                          "MONO MOVIE"
+                        ]
+                      },
+                      {
+                        "title": "MATRIX",
+                        "enum": [
+                          "MATRIX"
+                        ]
+                      },
+                      {
+                        "title": "VIDEO GAME",
+                        "enum": [
+                          "VIDEO GAME"
+                        ]
+                      },
+                      {
+                        "title": "VIRTUAL",
+                        "enum": [
+                          "VIRTUAL"
+                        ]
+                      }
+                    ],
+                    "required": true
+                  }
+                }
+              }
+            },
             "manufacturer": {
               "name": "Manufacturer",
               "type": "string",
@@ -3945,7 +4100,10 @@
             "devices[].inputs[].reference",
             "devices[].inputs[].mode"
           ]
-        }]
+        }],
+        "condition": {
+          "functionBody": "return model.devices[arrayIndices].zoneControl <= 2;"
+        }
       },
       {
         "key": "devices[]",
@@ -3963,7 +4121,7 @@
           ]
         }],
         "condition": {
-          "functionBody": "return model.devices[arrayIndices].zoneControl === 0;"
+          "functionBody": "return model.devices[arrayIndices].zoneControl <= 2;"
         }
       },
       {
@@ -4002,6 +4160,25 @@
         }],
         "condition": {
           "functionBody": "return model.devices[arrayIndices].zoneControl === 2;"
+        }
+      },
+      {
+        "key": "devices[]",
+        "type": "section",
+        "title": "Surrounds",
+        "expandable": true,
+        "expanded": false,
+        "items": [{
+          "key": "devices[].surrounds",
+          "type": "tabarray",
+          "title": "{{ value.name || 'new surround' }}",
+          "items": [
+            "devices[].surrounds[].name",
+            "devices[].surrounds[].reference"
+          ]
+        }],
+        "condition": {
+          "functionBody": "return model.devices[arrayIndices].zoneControl === 3;"
         }
       },
       {

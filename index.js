@@ -9,9 +9,9 @@ const parseStringPromise = require('xml2js').parseStringPromise;
 const PLUGIN_NAME = 'homebridge-denon-tv';
 const PLATFORM_NAME = 'DenonTv';
 
-const ZONE_NAME = ['Main Zone', 'Zone 2', 'Zone 3'];
-const SHORT_ZONE_NAME = ['MZ', 'Z2', 'Z3'];
-const ZONE_NUMBER = ['MainZone_MainZone', 'Zone2_Zone2', 'Zone3_Zone3'];
+const ZONE_NAME = ['Main Zone', 'Zone 2', 'Zone 3', 'Surrounds Mode'];
+const SHORT_ZONE_NAME = ['MZ', 'Z2', 'Z3', 'SM'];
+const ZONE_NUMBER = ['MainZone_MainZone', 'Zone2_Zone2', 'Zone3_Zone3', 'MainZone_MainZone'];
 const INPUT_SOURCE_TYPES = ['OTHER', 'HOME_SCREEN', 'TUNER', 'HDMI', 'COMPOSITE_VIDEO', 'S_VIDEO', 'COMPONENT_VIDEO', 'DVI', 'AIRPLAY', 'USB', 'APPLICATION'];
 const DEFAULT_INPUTS = [{
 	'name': 'Undefined',
@@ -85,6 +85,7 @@ class denonTvDevice {
 		this.buttonsMainZone = config.buttonsMainZone || [];
 		this.buttonsZone2 = config.buttonsZone2 || [];
 		this.buttonsZone3 = config.buttonsZone3 || [];
+		this.surrounds = config.surrounds || [];
 		this.zoneControl = config.zoneControl || 0;
 		this.masterPower = config.masterPower || false;
 		this.masterVolume = config.masterVolume || false;
@@ -113,7 +114,7 @@ class denonTvDevice {
 		this.zoneName = ZONE_NAME[this.zoneControl];
 		this.shortZoneName = SHORT_ZONE_NAME[this.zoneControl];
 		this.zoneNumber = ZONE_NUMBER[this.zoneControl];
-		this.buttons = [this.buttonsMainZone, this.buttonsZone2, this.buttonsZone3][this.zoneControl];
+		this.buttons = [this.buttonsMainZone, this.buttonsZone2, this.buttonsZone3, this.buttonsMainZone][this.zoneControl];
 
 		//setup variables
 		this.checkDeviceInfo = true;
@@ -130,6 +131,10 @@ class denonTvDevice {
 		this.buttonsReference = new Array();
 		this.buttonsName = new Array();
 
+		this.surroundsService = new Array();
+		this.surroundsReference = new Array();
+		this.surroundsName = new Array();
+
 		this.powerState = false;
 		this.volume = 0;
 		this.muteState = false;
@@ -142,6 +147,10 @@ class denonTvDevice {
 		this.inputReference = '';
 		this.inputName = '';
 
+		this.surroundIdentifier = 0;
+		this.surroundReference = '';
+		this.surroundName = '';
+
 		this.pictureMode = 0;
 
 		const prefDir = path.join(api.user.storagePath(), 'denonTv');
@@ -150,7 +159,10 @@ class denonTvDevice {
 		this.devInfoFile = prefDir + '/' + 'devInfo_' + this.shortZoneName + this.host.split('.').join('');
 		this.inputsFile = prefDir + '/' + 'inputs_' + this.shortZoneName + this.host.split('.').join('');
 		this.inputsNamesFile = prefDir + '/' + 'inputsNames_' + this.shortZoneName + this.host.split('.').join('');
-		this.targetVisibilityInputsFile = prefDir + '/' + 'targetVisibilityInputs_' + this.shortZoneName + this.host.split('.').join('');
+		this.inputsTargetVisibilityFile = prefDir + '/' + 'inputsTargetVisibility_' + this.shortZoneName + this.host.split('.').join('');
+		this.surroundsFile = prefDir + '/' + 'surrounds_' + this.shortZoneName + this.host.split('.').join('');
+		this.surroundsNamesFile = prefDir + '/' + 'surroundsNames_' + this.shortZoneName + this.host.split('.').join('');
+		this.surroundsTargetVisibilityFile = prefDir + '/' + 'surroundsTargetVisibility_' + this.shortZoneName + this.host.split('.').join('');
 
 		this.axiosInstance = axios.create({
 			method: 'GET',
@@ -171,8 +183,17 @@ class denonTvDevice {
 		if (fs.existsSync(this.inputsNamesFile) == false) {
 			fsPromises.writeFile(this.inputsNamesFile, '');
 		}
-		if (fs.existsSync(this.targetVisibilityInputsFile) == false) {
-			fsPromises.writeFile(this.targetVisibilityInputsFile, '');
+		if (fs.existsSync(this.inputsTargetVisibilityFile) == false) {
+			fsPromises.writeFile(this.inputsTargetVisibilityFile, '');
+		}
+		if (fs.existsSync(this.surroundsFile) == false) {
+			fsPromises.writeFile(this.surroundsFile, '');
+		}
+		if (fs.existsSync(this.surroundsNamesFile) == false) {
+			fsPromises.writeFile(this.surroundsNamesFile, '');
+		}
+		if (fs.existsSync(this.surroundsTargetVisibilityFile) == false) {
+			fsPromises.writeFile(this.surroundsTargetVisibilityFile, '');
 		}
 
 		//Check device state
@@ -200,6 +221,16 @@ class denonTvDevice {
 				this.log.debug('Device: %s %s %s, save inputs succesful, inputs: %s', this.host, this.name, this.zoneName, obj);
 			} catch (error) {
 				this.log.error('Device: %s %s %s, save inputs error: %s', this.host, this.name, this.zoneName, error);
+			};
+
+			//save surrounds to the file
+			try {
+				const surroundsArr = this.surrounds;
+				const obj = JSON.stringify(surroundsArr, null, 2);
+				const writeSurrounds = fsPromises.writeFile(this.surroundsFile, obj);
+				this.log.debug('Device: %s %s %s, save surrounds succesful, inputs: %s', this.host, this.name, this.zoneName, obj);
+			} catch (error) {
+				this.log.error('Device: %s %s %s, save surrounds error: %s', this.host, this.name, this.zoneName, error);
 			};
 
 			const parseResponse = (response.status == 200) ? await parseStringPromise(response.data) : undefined;
@@ -244,15 +275,19 @@ class denonTvDevice {
 			this.log('Model: %s', modelName);
 			if (this.zoneControl == 0) {
 				this.log('Zones: %s', zones);
+				this.log('Control: Main Zone');
 				this.log('Firmware: %s', firmwareRevision);
 				this.log('Api version: %s', apiVersion);
 				this.log('Serialnr: %s', serialNumber);
 			}
 			if (this.zoneControl == 1) {
-				this.log('Zone: 2');
+				this.log('Control: Zone 2');
 			}
 			if (this.zoneControl == 2) {
-				this.log('Zone: 3');
+				this.log('Control: Zone 3');
+			}
+			if (this.zoneControl == 3) {
+				this.log('Control: Surround Mode');
 			}
 			this.log('----------------------------------');
 
@@ -286,6 +321,10 @@ class denonTvDevice {
 			const inputIdentifier = this.setStartInput ? this.setStartInputIdentifier : currentInputIdentifier;
 			const inputName = this.inputsName[inputIdentifier];
 
+			const surroundReference = this.surroundReference;
+			const surroundIdentifier = this.surroundIdentifier;
+			const surroundName = this.surroundName;
+
 			if (this.televisionService) {
 				if (powerState) {
 					this.televisionService
@@ -299,13 +338,23 @@ class denonTvDevice {
 					this.powerState = false;
 				}
 
-				const setUpdateCharacteristic = this.setStartInput ? this.televisionService.setCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier) :
-					this.televisionService.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
-				this.setStartInput = (inputIdentifier == inputIdentifier) ? false : true;
+				if (this.zoneControl <= 2) {
+					const setUpdateCharacteristic = this.setStartInput ? this.televisionService.setCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier) :
+						this.televisionService.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
+					this.setStartInput = (inputIdentifier == inputIdentifier) ? false : true;
+				}
+
+				if (this.zoneControl == 3) {
+					this.televisionService.updateCharacteristic(Characteristic.ActiveIdentifier, surroundIdentifier);
+				}
 
 				this.inputReference = inputReference;
 				this.inputIdentifier = inputIdentifier;
 				this.inputName = inputName;
+
+				this.surroundReference = surroundReference;
+				this.surroundIdentifier = surroundIdentifier;
+				this.surroundName = surroundName;
 			}
 
 			if (this.speakerService) {
@@ -397,9 +446,9 @@ class denonTvDevice {
 			.onSet(async (state) => {
 				try {
 					if (state != this.powerState) {
-						const zControl = this.masterPower ? 3 : this.zoneControl
+						const zControl = this.masterPower ? 4 : this.zoneControl
 						this.log.debug('zControl is %s', zControl)
-						const newState = [(state ? 'ZMON' : 'ZMOFF'), (state ? 'Z2ON' : 'Z2OFF'), (state ? 'Z3ON' : 'Z3OFF'), (state ? 'PWON' : 'PWSTANDBY')][zControl];
+						const newState = [(state ? 'ZMON' : 'ZMOFF'), (state ? 'Z2ON' : 'Z2OFF'), (state ? 'Z3ON' : 'Z3OFF'), (state ? 'ZMON' : 'ZMOFF'), (state ? 'PWON' : 'PWSTANDBY')][zControl];
 						const setPower = await this.axiosInstance('/goform/formiPhoneAppDirect.xml?' + newState);
 						if (!this.disableLogInfo) {
 							this.log('Device: %s %s %s, set Power state successful, state: %s', this.host, accessoryName, this.zoneName, newState);
@@ -412,29 +461,30 @@ class denonTvDevice {
 
 		this.televisionService.getCharacteristic(Characteristic.ActiveIdentifier)
 			.onGet(async () => {
-				const inputName = this.inputName;
-				const inputReference = this.inputReference;
-				const inputIdentifier = this.inputIdentifier;
+				const name = this.zoneControl <= 2 ? this.inputName : this.surroundName;
+				const reference = this.zoneControl <= 2 ? this.inputReference : this.surroundReference;
+				const identifier = this.zoneControl <= 2 ? this.inputIdentifier : this.surroundIdentifier;
 				if (!this.disableLogInfo) {
-					this.log('Device: %s %s %s, get Input successful, name: %s, reference: %s', this.host, accessoryName, this.zoneName, inputName, inputReference);
+					this.log('Device: %s %s %s, get %s successful, name: %s, reference: %s', this.host, accessoryName, this.zoneName, this.zoneControl <= 2 ? 'Input' : 'Surround Mode', name, reference);
 				}
-				return inputIdentifier;
+				return identifier;
 			})
-			.onSet(async (inputIdentifier) => {
+			.onSet(async (identifier) => {
 				try {
-					const inputName = this.inputsName[inputIdentifier];
-					const inputMode = this.inputsMode[inputIdentifier];
-					const inputReference = this.inputsReference[inputIdentifier];
-					const zone = [inputMode, 'Z2', 'Z3'][this.zoneControl];
-					const inputRef = zone + inputReference;
-					const setInput = (inputReference != undefined) ? await this.axiosInstance('/goform/formiPhoneAppDirect.xml?' + inputRef) : false;
+					const name = this.zoneControl <= 2 ? this.inputsName[identifier] : this.surroundsName[identifier];
+					const mode = this.zoneControl <= 2 ? this.inputsMode[identifier] : 0;
+					const reference = this.zoneControl <= 2 ? this.inputsReference[identifier] : this.surroundsReference[identifier];
+					const zone = [mode, 'Z2', 'Z3', 'MS'][this.zoneControl];
+					const inputRef = zone + reference;
+					const setInput = (reference != undefined) ? await this.axiosInstance('/goform/formiPhoneAppDirect.xml?' + inputRef) : false;
 					if (!this.disableLogInfo) {
-						this.log('Device: %s %s %s, set Input successful, name: %s, reference: %s', this.host, accessoryName, this.zoneName, inputName, inputRef);
+						this.log('Device: %s %s %s, set %s successful, name: %s, reference: %s', this.host, accessoryName, this.zoneName, this.zoneControl <= 2 ? 'Input' : 'Surround Mode', name, inputRef);
 					}
-					this.setStartInputIdentifier = inputIdentifier;
-					this.setStartInput = this.powerState ? false : true;
+					this.setStartInputIdentifier = this.zoneControl <= 2 ? identifier : false;
+					this.setStartInput = this.zoneControl <= 2 ? this.powerState ? false : true : false;
+					const updateIdentifier = this.zoneControl <= 2 ? false : this.surroundIdentifier = identifier;
 				} catch (error) {
-					this.log.error('Device: %s %s %s, can not set Input. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, error);
+					this.log.error('Device: %s %s %s, can not set %s. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, this.zoneControl <= 2 ? 'Input' : 'Surround Mode', error);
 				};
 			});
 
@@ -611,8 +661,8 @@ class denonTvDevice {
 		this.speakerService.getCharacteristic(Characteristic.VolumeSelector)
 			.onSet(async (command) => {
 				try {
-					const zControl = this.masterVolume ? 3 : this.zoneControl
-					const zone = ['MV', 'Z2', 'Z3', 'MV'][zControl];
+					const zControl = this.masterVolume ? 4 : this.zoneControl
+					const zone = ['MV', 'Z2', 'Z3', 'MV', 'MV'][zControl];
 					switch (command) {
 						case Characteristic.VolumeSelector.INCREMENT:
 							command = 'UP';
@@ -639,8 +689,8 @@ class denonTvDevice {
 			})
 			.onSet(async (volume) => {
 				try {
-					const zControl = this.masterVolume ? 3 : this.zoneControl
-					const zone = ['MV', 'Z2', 'Z3', 'MV'][zControl];
+					const zControl = this.masterVolume ? 4 : this.zoneControl
+					const zone = ['MV', 'Z2', 'Z3', 'MV', 'MV'][zControl];
 					if (volume == 0 || volume == 100) {
 						if (this.volume < 10) {
 							volume = '0' + this.volume;
@@ -671,8 +721,8 @@ class denonTvDevice {
 			.onSet(async (state) => {
 				if (state != this.muteState) {
 					try {
-						const zControl = this.masterMute ? 3 : this.zoneControl
-						const newState = [(state ? 'MUON' : 'MUOFF'), (state ? 'Z2MUON' : 'Z2MUOFF'), (state ? 'Z3MUON' : 'Z3MUOFF'), (state ? 'MUON' : 'MUOFF')][zControl];
+						const zControl = this.masterMute ? 4 : this.zoneControl
+						const newState = [(state ? 'MUON' : 'MUOFF'), (state ? 'Z2MUON' : 'Z2MUOFF'), (state ? 'Z3MUON' : 'Z3MUOFF'), (state ? 'MUON' : 'MUOFF'), (state ? 'MUON' : 'MUOFF')][zControl];
 						const setMute = await this.axiosInstance('/goform/formiPhoneAppDirect.xml?' + newState);
 						if (!this.disableLogInfo) {
 							this.log('Device: %s %s %s, set new Mute state successful, state: %s', this.host, accessoryName, this.zoneName, state ? 'ON' : 'OFF');
@@ -732,140 +782,232 @@ class denonTvDevice {
 		}
 
 		//Prepare inputs services
-		this.log.debug('prepareInputsService');
+		if (this.zoneControl <= 2) {
+			this.log.debug('prepareInputsService');
 
-		const savedInputs = ((fs.readFileSync(this.inputsFile)).length > 0) ? JSON.parse(fs.readFileSync(this.inputsFile)) : [];
-		this.log.debug('Device: %s %s %s, read saved Inputs successful, inpits: %s', this.host, accessoryName, this.zoneName, savedInputs)
+			const savedInputs = ((fs.readFileSync(this.inputsFile)).length > 0) ? JSON.parse(fs.readFileSync(this.inputsFile)) : [];
+			this.log.debug('Device: %s %s %s, read saved Inputs successful, inpits: %s', this.host, accessoryName, this.zoneName, savedInputs)
 
-		const savedInputsNames = ((fs.readFileSync(this.inputsNamesFile)).length > 0) ? JSON.parse(fs.readFileSync(this.inputsNamesFile)) : {};
-		this.log.debug('Device: %s %s %s, read saved custom Inputs Names successful, names: %s', this.host, accessoryName, this.zoneName, savedInputsNames)
+			const savedInputsNames = ((fs.readFileSync(this.inputsNamesFile)).length > 0) ? JSON.parse(fs.readFileSync(this.inputsNamesFile)) : {};
+			this.log.debug('Device: %s %s %s, read saved custom Inputs Names successful, names: %s', this.host, accessoryName, this.zoneName, savedInputsNames)
 
-		const savedTargetVisibility = ((fs.readFileSync(this.targetVisibilityInputsFile)).length > 0) ? JSON.parse(fs.readFileSync(this.targetVisibilityInputsFile)) : {};
-		this.log.debug('Device: %s %s %s, read saved Target Visibility successful, states %s', this.host, accessoryName, this.zoneName, savedTargetVisibility);
+			const savedInputsTargetVisibility = ((fs.readFileSync(this.inputsTargetVisibilityFile)).length > 0) ? JSON.parse(fs.readFileSync(this.inputsTargetVisibilityFile)) : {};
+			this.log.debug('Device: %s %s %s, read saved Inputs Target Visibility successful, states %s', this.host, accessoryName, this.zoneName, savedInputsTargetVisibility);
 
-		//check available inputs and possible inputs count (max 95)
-		const inputs = (savedInputs.length > 0) ? savedInputs : this.inputs;
-		const inputsCount = inputs.length;
-		const maxInputsCount = (inputsCount < 94) ? inputsCount : 94;
-		for (let i = 0; i < maxInputsCount; i++) {
+			//check available inputs and possible inputs count (max 95)
+			const inputs = (savedInputs.length > 0) ? savedInputs : this.inputs;
+			const inputsCount = inputs.length;
+			const maxInputsCount = (inputsCount < 94) ? inputsCount : 94;
+			for (let i = 0; i < maxInputsCount; i++) {
 
-			//get input reference
-			const inputReference = (inputs[i].reference != undefined) ? inputs[i].reference : undefined;
+				//get input reference
+				const inputReference = (inputs[i].reference != undefined) ? inputs[i].reference : undefined;
 
-			//get input name		
-			const inputName = (savedInputsNames[inputReference] != undefined) ? savedInputsNames[inputReference] : inputs[i].name;
+				//get input name		
+				const inputName = (savedInputsNames[inputReference] != undefined) ? savedInputsNames[inputReference] : inputs[i].name;
 
-			//get input type
-			const inputType = (inputs[i].type != undefined) ? INPUT_SOURCE_TYPES.indexOf(inputs[i].type) : 3;
+				//get input type
+				const inputType = (inputs[i].type != undefined) ? INPUT_SOURCE_TYPES.indexOf(inputs[i].type) : 3;
 
-			//get input mode
-			const inputMode = (inputs[i].mode != undefined) ? inputs[i].mode : 'SI';
+				//get input mode
+				const inputMode = (inputs[i].mode != undefined) ? inputs[i].mode : 'SI';
 
-			//get input configured
-			const isConfigured = 1;
+				//get input configured
+				const isConfigured = 1;
 
-			//get input visibility state
-			const currentVisibility = (savedTargetVisibility[inputReference] != undefined) ? savedTargetVisibility[inputReference] : 0;
-			const targetVisibility = currentVisibility;
+				//get input visibility state
+				const currentVisibility = (savedInputsTargetVisibility[inputReference] != undefined) ? savedInputsTargetVisibility[inputReference] : 0;
+				const targetVisibility = currentVisibility;
 
-			const inputService = new Service.InputSource(accessoryName, 'Input ' + i);
-			inputService
-				.setCharacteristic(Characteristic.Identifier, i)
-				.setCharacteristic(Characteristic.ConfiguredName, inputName)
-				.setCharacteristic(Characteristic.IsConfigured, isConfigured)
-				.setCharacteristic(Characteristic.InputSourceType, inputType)
-				.setCharacteristic(Characteristic.CurrentVisibilityState, currentVisibility)
-				.setCharacteristic(Characteristic.TargetVisibilityState, targetVisibility);
+				const inputService = new Service.InputSource(accessoryName, 'Input ' + i);
+				inputService
+					.setCharacteristic(Characteristic.Identifier, i)
+					.setCharacteristic(Characteristic.ConfiguredName, inputName)
+					.setCharacteristic(Characteristic.IsConfigured, isConfigured)
+					.setCharacteristic(Characteristic.InputSourceType, inputType)
+					.setCharacteristic(Characteristic.CurrentVisibilityState, currentVisibility)
+					.setCharacteristic(Characteristic.TargetVisibilityState, targetVisibility);
 
-			inputService
-				.getCharacteristic(Characteristic.ConfiguredName)
-				.onSet(async (name) => {
-					try {
-						const nameIdentifier = (inputReference != undefined) ? inputReference : false;
-						let newName = savedInputsNames;
-						newName[nameIdentifier] = name;
-						const newCustomName = JSON.stringify(newName);
-						const writeNewCustomName = (nameIdentifier != false) ? await fsPromises.writeFile(this.inputsNamesFile, newCustomName) : false;
-						this.log.debug('Device: %s %s %s, saved new Input successful, savedInputsNames: %s', this.host, accessoryName, this.zoneName, newCustomName);
-						if (!this.disableLogInfo) {
-							this.log('Device: %s %s %s, new Input name saved successful, name: %s, reference: %s', this.host, accessoryName, this.zoneName, name, inputReference);
+				inputService
+					.getCharacteristic(Characteristic.ConfiguredName)
+					.onSet(async (name) => {
+						try {
+							const nameIdentifier = (inputReference != undefined) ? inputReference : false;
+							let newName = savedInputsNames;
+							newName[nameIdentifier] = name;
+							const newCustomName = JSON.stringify(newName);
+							const writeNewCustomName = (nameIdentifier != false) ? await fsPromises.writeFile(this.inputsNamesFile, newCustomName) : false;
+							this.log.debug('Device: %s %s %s, saved new Input successful, savedInputsNames: %s', this.host, accessoryName, this.zoneName, newCustomName);
+							if (!this.disableLogInfo) {
+								this.log('Device: %s %s %s, new Input name saved successful, name: %s, reference: %s', this.host, accessoryName, this.zoneName, name, inputReference);
+							}
+						} catch (error) {
+							this.log.error('Device: %s %s %s, new Input name saved failed, error: %s', this.host, accessoryName, this.zoneName, error);
 						}
-					} catch (error) {
-						this.log.error('Device: %s %s %s, new Input name saved failed, error: %s', this.host, accessoryName, this.zoneName, error);
-					}
-				});
+					});
 
-			inputService
-				.getCharacteristic(Characteristic.TargetVisibilityState)
-				.onSet(async (state) => {
-					try {
-						const targetVisibilityIdentifier = (inputReference != undefined) ? inputReference : false;
-						let newState = savedTargetVisibility;
-						newState[targetVisibilityIdentifier] = state;
-						const newTargetVisibility = JSON.stringify(newState);
-						const writeNewTargetVisibility = (targetVisibilityIdentifier != false) ? await fsPromises.writeFile(this.targetVisibilityInputsFile, newTargetVisibility) : false;
-						this.log.debug('Device: %s %s %s, Input: %s, saved target visibility state: %s', this.host, accessoryName, inputName, this.zoneName, newTargetVisibility);
-						if (!this.disableLogInfo) {
-							this.log('Device: %s %s %s, new target visibility saved successful, name: %s, state: %s', this.host, accessoryName, this.zoneName, inputName, state ? 'HIDEN' : 'SHOWN');
+				inputService
+					.getCharacteristic(Characteristic.TargetVisibilityState)
+					.onSet(async (state) => {
+						try {
+							const targetVisibilityIdentifier = (inputReference != undefined) ? inputReference : false;
+							let newState = savedInputsTargetVisibility;
+							newState[targetVisibilityIdentifier] = state;
+							const newTargetVisibility = JSON.stringify(newState);
+							const writeNewTargetVisibility = (targetVisibilityIdentifier != false) ? await fsPromises.writeFile(this.inputsTargetVisibilityFile, newTargetVisibility) : false;
+							this.log.debug('Device: %s %s %s, Input: %s, saved target visibility state: %s', this.host, accessoryName, inputName, this.zoneName, newTargetVisibility);
+							if (!this.disableLogInfo) {
+								this.log('Device: %s %s %s, new target visibility saved successful, name: %s, state: %s', this.host, accessoryName, this.zoneName, inputName, state ? 'HIDEN' : 'SHOWN');
+							}
+							inputService.setCharacteristic(Characteristic.CurrentVisibilityState, state);
+						} catch (error) {
+							this.log.error('Device: %s %s %s, saved target visibility state error: %s', this.host, accessoryName, this.zoneName, error);
 						}
-						inputService.setCharacteristic(Characteristic.CurrentVisibilityState, state);
-					} catch (error) {
-						this.log.error('Device: %s %s %s, saved target visibility state error: %s', this.host, accessoryName, this.zoneName, error);
-					}
-				});
+					});
 
-			this.inputsReference.push(inputReference);
-			this.inputsName.push(inputName);
-			this.inputsType.push(inputType);
-			this.inputsMode.push(inputMode);
+				this.inputsReference.push(inputReference);
+				this.inputsName.push(inputName);
+				this.inputsType.push(inputType);
+				this.inputsMode.push(inputMode);
 
-			this.inputsService.push(inputService);
-			this.televisionService.addLinkedService(this.inputsService[i]);
-			accessory.addService(this.inputsService[i]);
+				this.inputsService.push(inputService);
+				this.televisionService.addLinkedService(this.inputsService[i]);
+				accessory.addService(this.inputsService[i]);
+			}
+
+			//Prepare button services
+			this.log.debug('prepareButtonsService');
+
+			//check available buttons and possible buttons count (max 94 - inputsCount)
+			const buttons = this.buttons;
+			const buttonsCount = buttons.length;
+			const maxButtonsCount = ((maxInputsCount + buttonsCount) < 94) ? buttonsCount : 94 - maxInputsCount;
+			for (let i = 0; i < maxButtonsCount; i++) {
+
+				//get button reference
+				const buttonReference = buttons[i].reference;
+
+				//get button name
+				const buttonName = (buttons[i].name != undefined) ? buttons[i].name : buttons[i].reference;
+
+				const buttonService = new Service.Switch(accessoryName + ' ' + buttonName, 'Button ' + i);
+				buttonService.getCharacteristic(Characteristic.On)
+					.onGet(async () => {
+						const state = false;
+						if (!this.disableLogInfo) {
+							this.log('Device: %s %s %s, get Button state successful, state: %s', this.host, accessoryName, this.zoneName, state);
+						}
+						return state;
+					})
+					.onSet(async (state) => {
+						try {
+							const setFunction = (state && this.powerState) ? await this.axiosInstance('/goform/formiPhoneAppDirect.xml?' + buttonReference) : false;
+							if (!this.disableLogInfo) {
+								this.log('Device: %s %s %s, set new Input successful, name: %s, reference: %s', this.host, accessoryName, this.zoneName, buttonName, buttonReference);
+							}
+						} catch (error) {
+							this.log.error('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s.', this.host, accessoryName, this.zoneName, error);
+						};
+						setTimeout(() => {
+							buttonService.updateCharacteristic(Characteristic.On, false);
+						}, 250);
+					});
+				this.buttonsReference.push(buttonReference);
+				this.buttonsName.push(buttonName);
+
+				this.buttonsService.push(buttonService)
+				accessory.addService(this.buttonsService[i]);
+			}
 		}
 
-		//Prepare inputs button services
-		this.log.debug('prepareInputsButtonService');
+		if (this.zoneControl == 3) {
+			//Prepare surround services
+			this.log.debug('prepareSurroundsService');
 
-		//check available buttons and possible buttons count (max 94 - inputsCount)
-		const buttons = this.buttons;
-		const buttonsCount = buttons.length;
-		const maxButtonsCount = ((inputsCount + buttonsCount) < 94) ? buttonsCount : 94 - inputsCount;
-		for (let i = 0; i < maxButtonsCount; i++) {
+			const savedSurrounds = ((fs.readFileSync(this.surroundsFile)).length > 0) ? JSON.parse(fs.readFileSync(this.surroundsFile)) : [];
+			this.log.debug('Device: %s %s %s, read saved Surrounds successful, inpits: %s', this.host, accessoryName, this.zoneName, savedSurrounds)
 
-			//get button reference
-			const buttonReference = buttons[i].reference;
+			const savedSurroundsNames = ((fs.readFileSync(this.surroundsNamesFile)).length > 0) ? JSON.parse(fs.readFileSync(this.surroundsNamesFile)) : {};
+			this.log.debug('Device: %s %s %s, read saved custom Surrounds Names successful, names: %s', this.host, accessoryName, this.zoneName, savedSurroundsNames)
 
-			//get button name
-			const buttonName = (buttons[i].name != undefined) ? buttons[i].name : buttons[i].reference;
+			const savedSurroundsTargetVisibility = ((fs.readFileSync(this.surroundsTargetVisibilityFile)).length > 0) ? JSON.parse(fs.readFileSync(this.surroundsTargetVisibilityFile)) : {};
+			this.log.debug('Device: %s %s %s, read saved Surrounds Target Visibility successful, states %s', this.host, accessoryName, this.zoneName, savedSurroundsTargetVisibility);
 
-			const buttonService = new Service.Switch(accessoryName + ' ' + buttonName, 'Button ' + i);
-			buttonService.getCharacteristic(Characteristic.On)
-				.onGet(async () => {
-					const state = false;
-					if (!this.disableLogInfo) {
-						this.log('Device: %s %s %s, get Button state successful, state: %s', this.host, accessoryName, this.zoneName, state);
-					}
-					return state;
-				})
-				.onSet(async (state) => {
-					try {
-						const setFunction = (state && this.powerState) ? await this.axiosInstance('/goform/formiPhoneAppDirect.xml?' + buttonReference) : false;
-						if (!this.disableLogInfo) {
-							this.log('Device: %s %s %s, set new Input successful, name: %s, reference: %s', this.host, accessoryName, this.zoneName, buttonName, buttonReference);
+			//check available surrounds and possible surrounds count (max 95)
+			const surrounds = (savedSurrounds.length > 0) ? savedSurrounds : this.surrounds;
+			const surroundsCount = surrounds.length;
+			const maxSurroundsCount = (surroundsCount < 94) ? surroundsCount : 94;
+			for (let i = 0; i < maxSurroundsCount; i++) {
+
+				//get surround reference
+				const surroundReference = (surrounds[i].reference != undefined) ? surrounds[i].reference : undefined;
+
+				//get surround name		
+				const surroundName = (savedSurroundsNames[surroundReference] != undefined) ? savedSurroundsNames[surroundReference] : surrounds[i].name;
+
+				//get input type
+				const surroundType = 0;
+
+				//get surround configured
+				const isConfigured = 1;
+
+				//get surround visibility state
+				const currentVisibility = (savedSurroundsTargetVisibility[surroundReference] != undefined) ? savedSurroundsTargetVisibility[surroundReference] : 0;
+				const targetVisibility = currentVisibility;
+
+				const surroundService = new Service.InputSource(accessoryName, 'Surround ' + i);
+				surroundService
+					.setCharacteristic(Characteristic.Identifier, i)
+					.setCharacteristic(Characteristic.ConfiguredName, surroundName)
+					.setCharacteristic(Characteristic.IsConfigured, isConfigured)
+					.setCharacteristic(Characteristic.InputSourceType, surroundType)
+					.setCharacteristic(Characteristic.CurrentVisibilityState, currentVisibility)
+					.setCharacteristic(Characteristic.TargetVisibilityState, targetVisibility);
+
+				surroundService
+					.getCharacteristic(Characteristic.ConfiguredName)
+					.onSet(async (name) => {
+						try {
+							const nameIdentifier = (surroundReference != undefined) ? surroundReference : false;
+							let newName = savedSurroundsNames;
+							newName[nameIdentifier] = name;
+							const newCustomName = JSON.stringify(newName);
+							const writeNewCustomName = (nameIdentifier != false) ? await fsPromises.writeFile(this.surroundsNamesFile, newCustomName) : false;
+							this.log.debug('Device: %s %s %s, saved new Input successful, savedSurroundsNames: %s', this.host, accessoryName, this.zoneName, newCustomName);
+							if (!this.disableLogInfo) {
+								this.log('Device: %s %s %s, new Input name saved successful, name: %s, reference: %s', this.host, accessoryName, this.zoneName, name, surroundReference);
+							}
+						} catch (error) {
+							this.log.error('Device: %s %s %s, new Input name saved failed, error: %s', this.host, accessoryName, this.zoneName, error);
 						}
-					} catch (error) {
-						this.log.error('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s.', this.host, accessoryName, this.zoneName, error);
-					};
-					setTimeout(() => {
-						buttonService.updateCharacteristic(Characteristic.On, false);
-					}, 250);
-				});
-			this.buttonsReference.push(buttonReference);
-			this.buttonsName.push(buttonName);
+					});
 
-			this.buttonsService.push(buttonService)
-			accessory.addService(this.buttonsService[i]);
+				surroundService
+					.getCharacteristic(Characteristic.TargetVisibilityState)
+					.onSet(async (state) => {
+						try {
+							const targetVisibilityIdentifier = (surroundReference != undefined) ? surroundReference : false;
+							let newState = savedSurroundsTargetVisibility;
+							newState[targetVisibilityIdentifier] = state;
+							const newTargetVisibility = JSON.stringify(newState);
+							const writeNewTargetVisibility = (targetVisibilityIdentifier != false) ? await fsPromises.writeFile(this.surroundsTargetVisibilityFile, newTargetVisibility) : false;
+							this.log.debug('Device: %s %s %s, Input: %s, saved target visibility state: %s', this.host, accessoryName, surroundName, this.zoneName, newTargetVisibility);
+							if (!this.disableLogInfo) {
+								this.log('Device: %s %s %s, new target visibility saved successful, name: %s, state: %s', this.host, accessoryName, this.zoneName, surroundName, state ? 'HIDEN' : 'SHOWN');
+							}
+							surroundService.setCharacteristic(Characteristic.CurrentVisibilityState, state);
+						} catch (error) {
+							this.log.error('Device: %s %s %s, saved target visibility state error: %s', this.host, accessoryName, this.zoneName, error);
+						}
+					});
+
+				this.surroundsReference.push(surroundReference);
+				this.surroundsName.push(surroundName);
+
+				this.surroundsService.push(surroundService);
+				this.televisionService.addLinkedService(this.surroundsService[i]);
+				accessory.addService(this.surroundsService[i]);
+			}
 		}
 
 		this.startPrepareAccessory = false;
