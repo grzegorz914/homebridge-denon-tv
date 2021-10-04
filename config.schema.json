@@ -4121,7 +4121,7 @@
           ]
         }],
         "condition": {
-          "functionBody": "return model.devices[arrayIndices].zoneControl <= 2;"
+          "functionBody": "return model.devices[arrayIndices].zoneControl === 0;"
         }
       },
       {
