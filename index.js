@@ -121,15 +121,10 @@ class denonTvDevice {
 		this.checkDeviceState = false;
 		this.startPrepareAccessory = true;
 
-		this.inputsService = new Array();
 		this.inputsReference = new Array();
 		this.inputsName = new Array();
 		this.inputsType = new Array();
 		this.inputsMode = new Array();
-
-		this.buttonsService = new Array();
-		this.buttonsReference = new Array();
-		this.buttonsName = new Array();
 
 		this.surroundsService = new Array();
 		this.surroundsReference = new Array();
@@ -870,9 +865,8 @@ class denonTvDevice {
 				this.inputsType.push(inputType);
 				this.inputsMode.push(inputMode);
 
-				this.inputsService.push(inputService);
-				this.televisionService.addLinkedService(this.inputsService[i]);
-				accessory.addService(this.inputsService[i]);
+				this.televisionService.addLinkedService(inputService);
+				accessory.addService(inputService);
 			}
 
 			//Prepare button services
@@ -912,11 +906,9 @@ class denonTvDevice {
 							buttonService.updateCharacteristic(Characteristic.On, false);
 						}, 250);
 					});
-				this.buttonsReference.push(buttonReference);
-				this.buttonsName.push(buttonName);
 
-				this.buttonsService.push(buttonService)
-				accessory.addService(this.buttonsService[i]);
+				this.televisionService.addLinkedService(buttonService);
+				accessory.addService(buttonService);
 			}
 		}
 
