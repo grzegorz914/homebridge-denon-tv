@@ -126,7 +126,6 @@ class denonTvDevice {
 		this.inputsType = new Array();
 		this.inputsMode = new Array();
 
-		this.surroundsService = new Array();
 		this.surroundsReference = new Array();
 		this.surroundsName = new Array();
 
@@ -996,8 +995,7 @@ class denonTvDevice {
 				this.surroundsReference.push(surroundReference);
 				this.surroundsName.push(surroundName);
 
-				this.surroundsService.push(surroundService);
-				this.televisionService.addLinkedService(this.surroundsService[i]);
+				this.televisionService.addLinkedService(surroundService);
 				accessory.addService(this.surroundsService[i]);
 			}
 		}
