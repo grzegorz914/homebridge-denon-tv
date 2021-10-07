@@ -673,6 +673,7 @@ class denonTvDevice {
 					this.log.error('Device: %s %s %s, can not setVolumeSelector command. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, error);
 				};
 			});
+
 		this.speakerService.getCharacteristic(Characteristic.Volume)
 			.onGet(async () => {
 				const volume = this.volume;
@@ -704,6 +705,7 @@ class denonTvDevice {
 					this.log.error('Device: %s %s %s, can not set new Volume level. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, error);
 				};
 			});
+
 		this.speakerService.getCharacteristic(Characteristic.Mute)
 			.onGet(async () => {
 				const state = this.powerState ? this.muteState : true;
@@ -727,7 +729,6 @@ class denonTvDevice {
 				}
 			});
 
-		this.televisionService.addLinkedService(this.speakerService);
 		accessory.addService(this.speakerService);
 
 		//Prepare volume service
@@ -751,8 +752,10 @@ class denonTvDevice {
 					.onSet(async (state) => {
 						this.speakerService.setCharacteristic(Characteristic.Mute, !state);
 					});
+
 				accessory.addService(this.volumeService);
 			}
+
 			if (this.volumeControl == 2) {
 				this.volumeServiceFan = new Service.Fan(accessoryName + ' Volume', 'Volume');
 				this.volumeServiceFan.getCharacteristic(Characteristic.RotationSpeed)
@@ -771,6 +774,7 @@ class denonTvDevice {
 					.onSet(async (state) => {
 						this.speakerService.setCharacteristic(Characteristic.Mute, !state);
 					});
+
 				accessory.addService(this.volumeServiceFan);
 			}
 		}
@@ -906,7 +910,6 @@ class denonTvDevice {
 						}, 250);
 					});
 
-				this.televisionService.addLinkedService(buttonService);
 				accessory.addService(buttonService);
 			}
 		}
@@ -996,7 +999,7 @@ class denonTvDevice {
 				this.surroundsName.push(surroundName);
 
 				this.televisionService.addLinkedService(surroundService);
-				accessory.addService(this.surroundsService[i]);
+				accessory.addService(surroundService);
 			}
 		}
 
