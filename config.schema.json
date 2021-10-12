@@ -28,8 +28,8 @@
             },
             "port": {
               "title": "Port",
-              "type": "string",
-              "placeholder": "8080",
+              "type": "integer",
+              "placeholder": 8080,
               "required": true
             },
             "refreshInterval": {
