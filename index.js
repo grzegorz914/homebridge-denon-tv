@@ -34,12 +34,6 @@ const AVR_API_URL = {
 const ZONE_NAME = ['Main Zone', 'Zone 2', 'Zone 3', 'Sound Mode'];
 const SHORT_ZONE_NAME = ['MZ', 'Z2', 'Z3', 'SM'];
 const INPUT_SOURCE_TYPES = ['OTHER', 'HOME_SCREEN', 'TUNER', 'HDMI', 'COMPOSITE_VIDEO', 'S_VIDEO', 'COMPONENT_VIDEO', 'DVI', 'AIRPLAY', 'USB', 'APPLICATION'];
-const DEFAULT_INPUTS = [{
-	'name': 'Undefined',
-	'reference': 'undefined',
-	'type': 'undefined',
-	'mode': 'undefined'
-}];
 
 let Accessory, Characteristic, Service, Categories, UUID;
 
@@ -111,18 +105,6 @@ class denonTvDevice {
 		this.masterPower = config.masterPower || false;
 		this.masterVolume = config.masterVolume || false;
 		this.masterMute = config.masterMute || false;
-
-		//add configured inputs to the default inputs
-		const inputsArr = new Array();
-		const defaultInputsCount = DEFAULT_INPUTS.length;
-		for (let i = 0; i < defaultInputsCount; i++) {
-			inputsArr.push(DEFAULT_INPUTS[i]);
-		}
-		const inputsCount = this.inputs.length;
-		for (let j = 0; j < inputsCount; j++) {
-			inputsArr.push(this.inputs[j]);
-		}
-		this.inputs = inputsArr;
 
 		//get Device info
 		this.manufacturer = config.manufacturer || 'Denon/Marantz';
@@ -294,13 +276,9 @@ class denonTvDevice {
 			this.firmwareRevision = firmwareRevision;
 			this.checkDeviceInfo = false;
 
-			//start prepare accessory
-			if (this.startPrepareAccessory) {
-				this.prepareAccessory();
-			}
 			const updateDeviceState = !this.checkDeviceState ? this.updateDeviceState() : false;
 		} catch (error) {
-			this.log.error('Device: %s %s %s, deviceInfo error: %s, device offline, trying to reconnect', this.host, this.name, this.zoneName, error);
+			this.log.debug('Device: %s %s %s, deviceInfo error: %s, device offline, trying to reconnect', this.host, this.name, this.zoneName, error);
 			this.checkDeviceState = false;
 			this.checkDeviceInfo = true;
 		};
@@ -308,17 +286,18 @@ class denonTvDevice {
 
 	async updateDeviceState() {
 		this.log.debug('Device: %s %s %s, requesting Device state.', this.host, this.name, this.zoneName);
+
 		try {
-			const response = await this.axiosInstance(this.zoneUrl);
-			const result = await parseStringPromise(response.data);
-			this.log.debug('Device: %s %s, debug response: %s, result: %s', this.host, this.name, response.data, result);
+			const deviceStateData = await this.axiosInstance(this.zoneUrl);
+			const parseDeviceStateData = await parseStringPromise(deviceStateData.data);
+			this.log.debug('Device: %s %s, debug deviceStateData: %s, parseDeviceStateData: %s', this.host, this.name, deviceStateData.data, parseDeviceStateData);
 
-			const powerState = (result.item.Power[0].value[0] == 'ON');
-			const inputReference = (this.zoneControl <= 2) ? (result.item.InputFuncSelect[0].value[0] == 'Internet Radio') ? 'IRADIO' : (result.item.InputFuncSelect[0].value[0] == 'AirPlay') ? 'NET' : result.item.InputFuncSelect[0].value[0] : this.inputReference;
-			const volume = (parseFloat(result.item.MasterVolume[0].value[0]) >= -79.5) ? parseInt(result.item.MasterVolume[0].value[0]) + 80 : 0;
-			const muteState = powerState ? (result.item.Mute[0].value[0] == 'on') : true;
+			const powerState = (parseDeviceStateData.item.Power[0].value[0] == 'ON');
+			const inputReference = (this.zoneControl <= 2) ? (parseDeviceStateData.item.InputFuncSelect[0].value[0] == 'Internet Radio') ? 'IRADIO' : (parseDeviceStateData.item.InputFuncSelect[0].value[0] == 'AirPlay') ? 'NET' : parseDeviceStateData.item.InputFuncSelect[0].value[0] : this.inputReference;
+			const volume = (parseFloat(parseDeviceStateData.item.MasterVolume[0].value[0]) >= -79.5) ? parseInt(parseDeviceStateData.item.MasterVolume[0].value[0]) + 80 : this.volume;
+			const muteState = powerState ? (parseDeviceStateData.item.Mute[0].value[0] == 'on') : true;
 
-			const currentInputIdentifier = (this.inputsReference.indexOf(inputReference) >= 0) ? this.inputsReference.indexOf(inputReference) : 0;
+			const currentInputIdentifier = (this.inputsReference.indexOf(inputReference) >= 0) ? this.inputsReference.indexOf(inputReference) : this.inputIdentifier;
 			const inputIdentifier = this.setStartInput ? this.setStartInputIdentifier : currentInputIdentifier;
 			const inputName = this.inputsName[inputIdentifier];
 
@@ -362,6 +341,11 @@ class denonTvDevice {
 				this.muteState = muteState;
 			}
 			this.checkDeviceState = true;
+
+			//start prepare accessory
+			if (this.startPrepareAccessory) {
+				this.prepareAccessory();
+			}
 		} catch (error) {
 			this.log.debug('Device: %s %s %s, update device state error: %s', this.host, this.name, this.zoneName, error);
 			this.checkDeviceState = false;
@@ -452,7 +436,6 @@ class denonTvDevice {
 					}
 					this.setStartInputIdentifier = identifier;
 					this.setStartInput = this.powerState ? false : true;
-					const updateIdentifier = (this.zoneControl === 3) ? this.inputIdentifier = identifier : false;
 				} catch (error) {
 					this.log.error('Device: %s %s %s, can not set %s. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, this.zoneControl <= 2 ? 'Input' : 'Sound Mode', error);
 				};
@@ -556,69 +539,72 @@ class denonTvDevice {
 				};
 			});
 
-		this.televisionService.getCharacteristic(Characteristic.PowerModeSelection)
-			.onSet(async (command) => {
-				try {
-					switch (command) {
-						case Characteristic.PowerModeSelection.SHOW:
-							command = this.switchInfoMenu ? 'MNOPT' : 'MNINF';
-							break;
-						case Characteristic.PowerModeSelection.HIDE:
-							command = 'MNRTN';
-							break;
-					}
-					const response = await this.axiosInstance(AVR_API_URL.iPhoneDirect + command);
-					if (!this.disableLogInfo) {
-						this.log('Device: %s %s %s, set Power Mode Selection successful, command: %s', this.host, accessoryName, this.zoneName, command);
-					}
-				} catch (error) {
-					this.log.error('Device: %s %s %s, can not set Power Mode Selection command. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, error);
-				};
-			});
+		if (this.zoneControl == 0) {
+			this.televisionService.getCharacteristic(Characteristic.PowerModeSelection)
+				.onSet(async (command) => {
+					try {
+						switch (command) {
+							case Characteristic.PowerModeSelection.SHOW:
+								command = this.switchInfoMenu ? 'MNOPT' : 'MNINF';
+								break;
+							case Characteristic.PowerModeSelection.HIDE:
+								command = 'MNRTN';
+								break;
+						}
+						const response = await this.axiosInstance(AVR_API_URL.iPhoneDirect + command);
+						if (!this.disableLogInfo) {
+							this.log('Device: %s %s %s, set Power Mode Selection successful, command: %s', this.host, accessoryName, this.zoneName, command);
+						}
+					} catch (error) {
+						this.log.error('Device: %s %s %s, can not set Power Mode Selection command. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, error);
+					};
+				});
 
-		this.televisionService.getCharacteristic(Characteristic.PictureMode)
-			.onGet(async () => {
-				const pictureMode = this.pictureMode;
-				if (!this.disableLogInfo) {
-					this.log('Device: %s %s %s, get Picture mode: %s', this.host, accessoryName, this.zoneName, pictureMode);
-				}
-				return pictureMode;
-			})
-			.onSet(async (command) => {
-				try {
-					switch (command) {
-						case Characteristic.PictureMode.OTHER:
-							command = 'PVMOV';
-							break;
-						case Characteristic.PictureMode.STANDARD:
-							command = 'PVSTD';
-							break;
-						case Characteristic.PictureMode.CALIBRATED:
-							command = 'PVDAY';
-							break;
-						case Characteristic.PictureMode.CALIBRATED_DARK:
-							command = 'PVNGT';
-							break;
-						case Characteristic.PictureMode.VIVID:
-							command = 'PVVVD';
-							break;
-						case Characteristic.PictureMode.GAME:
-							command = 'PVSTM';
-							break;
-						case Characteristic.PictureMode.COMPUTER:
-							command = 'PVSTM';
-							break;
-						case Characteristic.PictureMode.CUSTOM:
-							command = 'PVCTM';
-							break;
-					}
+			this.televisionService.getCharacteristic(Characteristic.PictureMode)
+				.onGet(async () => {
+					const pictureMode = this.pictureMode;
 					if (!this.disableLogInfo) {
-						this.log('Device: %s %s %s, set Picture Mode successful, command: %s', this.host, accessoryName, this.zoneName, command);
+						this.log('Device: %s %s %s, get Picture mode: %s', this.host, accessoryName, this.zoneName, pictureMode);
 					}
-				} catch (error) {
-					this.log.error('Device: %s %s %s, can not set Picture Mode command. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, error);
-				};
-			});
+					return pictureMode;
+				})
+				.onSet(async (command) => {
+					try {
+						switch (command) {
+							case Characteristic.PictureMode.OTHER:
+								command = 'PVMOV';
+								break;
+							case Characteristic.PictureMode.STANDARD:
+								command = 'PVSTD';
+								break;
+							case Characteristic.PictureMode.CALIBRATED:
+								command = 'PVDAY';
+								break;
+							case Characteristic.PictureMode.CALIBRATED_DARK:
+								command = 'PVNGT';
+								break;
+							case Characteristic.PictureMode.VIVID:
+								command = 'PVVVD';
+								break;
+							case Characteristic.PictureMode.GAME:
+								command = 'PVSTM';
+								break;
+							case Characteristic.PictureMode.COMPUTER:
+								command = 'PVSTM';
+								break;
+							case Characteristic.PictureMode.CUSTOM:
+								command = 'PVCTM';
+								break;
+						}
+						const response = await this.axiosInstance(AVR_API_URL.iPhoneDirect + command);
+						if (!this.disableLogInfo) {
+							this.log('Device: %s %s %s, set Picture Mode successful, command: %s', this.host, accessoryName, this.zoneName, command);
+						}
+					} catch (error) {
+						this.log.error('Device: %s %s %s, can not set Picture Mode command. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, error);
+					};
+				});
+		};
 
 		accessory.addService(this.televisionService);
 
@@ -694,8 +680,9 @@ class denonTvDevice {
 				if (state != this.muteState) {
 					try {
 						const zControl = this.masterMute ? 4 : this.zoneControl
-						const newState = [(state ? 'MUON' : 'MUOFF'), (state ? 'Z2MUON' : 'Z2MUOFF'), (state ? 'Z3MUON' : 'Z3MUOFF'), (state ? 'MUON' : 'MUOFF'), (state ? 'MUON' : 'MUOFF')][zControl];
-						const setMute = await this.axiosInstance(AVR_API_URL.iPhoneDirect + newState);
+						const zone = ['', 'Z2', 'Z3', '', ''][zControl];
+						const newState = state ? 'MUON' : 'MUOFF';
+						const setMute = await this.axiosInstance(AVR_API_URL.iPhoneDirect + zone + newState);
 						if (!this.disableLogInfo) {
 							this.log('Device: %s %s %s, set new Mute state successful, state: %s', this.host, accessoryName, this.zoneName, state ? 'ON' : 'OFF');
 						}
@@ -768,7 +755,7 @@ class denonTvDevice {
 		this.log.debug('Device: %s %s %s, read saved %s Target Visibility successful: %s', this.host, accessoryName, this.zoneName, this.zoneControl <= 2 ? 'Input' : 'Sound Mode', savedInputsTargetVisibility);
 
 		//check available inputs and possible inputs count (max 95)
-		const inputs = (this.zoneControl <= 2) ? (savedInputs.length > 0) ? savedInputs : this.inputs : (savedInputs.length > 0) ? savedInputs : this.soundModes;
+		const inputs = (savedInputs.length > 0) ? savedInputs : (this.zoneControl <= 2) ? this.inputs : this.soundModes;
 		const inputsCount = inputs.length;
 		const maxInputsCount = (inputsCount < 94) ? inputsCount : 94;
 		for (let i = 0; i < maxInputsCount; i++) {
