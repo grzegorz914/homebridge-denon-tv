@@ -400,7 +400,7 @@ class denonTvDevice {
 			.onSet(async (state) => {
 				try {
 					if (state != this.powerState) {
-						const zControl = this.masterPower ? 4 : this.zoneControl
+						const zControl = this.masterPower ? 4 : this.zoneControl;
 						this.log.debug('zControl is %s', zControl)
 						const newState = [(state ? 'ZMON' : 'ZMOFF'), (state ? 'Z2ON' : 'Z2OFF'), (state ? 'Z3ON' : 'Z3OFF'), (state ? 'ZMON' : 'ZMOFF'), (state ? 'PWON' : 'PWSTANDBY')][zControl];
 						const setPower = await this.axiosInstance(AVR_API_URL.iPhoneDirect + newState);
@@ -617,7 +617,7 @@ class denonTvDevice {
 		this.speakerService.getCharacteristic(Characteristic.VolumeSelector)
 			.onSet(async (command) => {
 				try {
-					const zControl = this.masterVolume ? 4 : this.zoneControl
+					const zControl = this.masterVolume ? 4 : this.zoneControl;
 					const zone = ['MV', 'Z2', 'Z3', 'MV', 'MV'][zControl];
 					switch (command) {
 						case Characteristic.VolumeSelector.INCREMENT:
@@ -646,7 +646,7 @@ class denonTvDevice {
 			})
 			.onSet(async (volume) => {
 				try {
-					const zControl = this.masterVolume ? 4 : this.zoneControl
+					const zControl = this.masterVolume ? 4 : this.zoneControl;
 					const zone = ['MV', 'Z2', 'Z3', 'MV', 'MV'][zControl];
 					if (volume == 0 || volume == 100) {
 						if (this.volume < 10) {
@@ -679,7 +679,7 @@ class denonTvDevice {
 			.onSet(async (state) => {
 				if (state != this.muteState) {
 					try {
-						const zControl = this.masterMute ? 4 : this.zoneControl
+						const zControl = this.masterMute ? 4 : this.zoneControl;
 						const zone = ['', 'Z2', 'Z3', '', ''][zControl];
 						const newState = state ? 'MUON' : 'MUOFF';
 						const setMute = await this.axiosInstance(AVR_API_URL.iPhoneDirect + zone + newState);
