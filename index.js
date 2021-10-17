@@ -436,7 +436,7 @@ class denonTvDevice {
 					const inputReference = this.inputsReference[inputIdentifier];
 					const zone = [inputMode, 'Z2', 'Z3', inputMode][this.zoneControl];
 					const inputRef = zone + inputReference;
-					const setInput = (reference != undefined) ? await this.axiosInstance(API_URL.iPhoneDirect + inputRef) : false;
+					const setInput = (inputReference != undefined) ? await this.axiosInstance(API_URL.iPhoneDirect + inputRef) : false;
 					if (!this.disableLogInfo) {
 						this.log('Device: %s %s %s, set %s successful, name: %s, reference: %s', this.host, accessoryName, this.zoneName, this.zoneControl <= 2 ? 'Input' : 'Sound Mode', inputName, inputRef);
 					}
@@ -826,7 +826,7 @@ class denonTvDevice {
 						const writeNewCustomName = (nameIdentifier != false) ? await fsPromises.writeFile(this.inputsNamesFile, newCustomName) : false;
 						this.log.debug('Device: %s %s %s, saved new Input successful, savedInputsNames: %s', this.host, accessoryName, this.zoneName, newCustomName);
 						if (!this.disableLogInfo) {
-							this.log('Device: %s %s %s, new %s name saved successful, Name: %s, reference: %s', this.host, accessoryName, this.zoneName, this.zoneControl <= 2 ? 'Input' : 'Sound Mode', name, inputReference);
+							this.log('Device: %s %s %s, new %s name saved successful, name: %s, reference: %s', this.host, accessoryName, this.zoneName, this.zoneControl <= 2 ? 'Input' : 'Sound Mode', name, inputReference);
 						}
 					} catch (error) {
 						this.log.error('Device: %s %s %s, new %s name saved failed, Error: %s', this.host, accessoryName, this.zoneName, this.zoneControl <= 2 ? 'Input' : 'Sound Mode', error);
