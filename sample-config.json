@@ -107,7 +107,7 @@
                 "host": "192.168.1.5",
                 "port": 8080,
                 "refreshInterval": 5,
-                "zoneControl": 0,
+                "zoneControl": 3,
                 "volumeControl": 0,
                 "masterPower": false,
                 "masterVolume": false,
