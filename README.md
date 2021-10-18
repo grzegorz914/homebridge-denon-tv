@@ -36,7 +36,7 @@ This plugin is based upon the official documentation for communicating with and 
 * Speaker control is possible after you go to RC app on iPhone/iPad `Speaker Service`.
 * Legacy Volume and Mute control is possible throught extra `lightbulb`/`fan` (slider).
 * Inputs can be changed after long press tile in Home.app and select Input from the list or create separate tile in the Buttons section.
-* Surround Modes can be changed after long press tile in Home.app and select Surround Mode from the list or create separate tile in the Buttons section.
+* Sound Modes can be changed after long press tile in Home.app and select Surround Mode from the list or create separate tile in the Buttons section.
 * Digital Input Modes can be controlled by creating separate tile in the Buttons section.
 * Multiple Zone control.
 * Siri can be used to control Power, Legacy Volume, Mute and switch Inputs and other Function with created Buttons.
@@ -187,7 +187,7 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
             "host": "192.168.1.5",
             "port": 8080,
             "refreshInterval": 5,
-            "zoneControl" : 0,
+            "zoneControl" : 3,
             "volumeControl": 0,
             "masterPower": false,
             "masterVolume": false,
