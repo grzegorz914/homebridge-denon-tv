@@ -224,7 +224,7 @@ class denonTvDevice {
 
 			const getDeviceInfo = this.getDeviceInfo();
 		} catch (error) {
-			this.log.error('Device: %s %s %s, get UPNP Device Info error: %s', this.host, this.name, this.zoneName, error);
+			this.log.debug('Device: %s %s %s, get UPNP Device Info error: %s', this.host, this.name, this.zoneName, error);
 			const getDeviceInfo = this.getDeviceInfo();
 		};
 	};
