@@ -36,10 +36,10 @@
   },
   "keywords": [
     "homebridge",
-    "HomeKit",
-    "Denon",
-    "Marantz",
-    "Heos"
+    "homekit",
+    "denon",
+    "marantz",
+    "heos"
   ],
   "contributors": [],
   "scripts": {
