@@ -387,7 +387,7 @@ class denonTvDevice {
 
 		//Prepare television service
 		this.log.debug('prepareTelevisionService');
-		this.televisionService = new Service.Television(accessoryName, 'Television');
+		this.televisionService = new Service.Television(`${accessoryName} Television`, 'Television');
 		this.televisionService.setCharacteristic(Characteristic.ConfiguredName, accessoryName);
 		this.televisionService.setCharacteristic(Characteristic.SleepDiscoveryMode, Characteristic.SleepDiscoveryMode.ALWAYS_DISCOVERABLE);
 
@@ -421,9 +421,9 @@ class denonTvDevice {
 
 		this.televisionService.getCharacteristic(Characteristic.ActiveIdentifier)
 			.onGet(async () => {
-				const inputName = this.inputName;
-				const inputReference = this.inputReference;
 				const inputIdentifier = this.inputIdentifier;
+				const inputName = this.inputsName[inputIdentifier];
+				const inputReference = this.inputsReference[inputIdentifier];
 				if (!this.disableLogInfo) {
 					this.log('Device: %s %s %s, get %s successful, name: %s, reference: %s', this.host, accessoryName, this.zoneName, this.zoneControl <= 2 ? 'Input' : 'Sound Mode', inputName, inputReference);
 				}
@@ -442,6 +442,7 @@ class denonTvDevice {
 					}
 					this.setStartInputIdentifier = inputIdentifier;
 					this.setStartInput = this.powerState ? false : true;
+					this.inputIdentifier = inputIdentifier;
 				} catch (error) {
 					this.log.error('Device: %s %s %s, can not set %s. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, this.zoneControl <= 2 ? 'Input' : 'Sound Mode', error);
 				};
@@ -636,7 +637,7 @@ class denonTvDevice {
 
 		//Prepare speaker service
 		this.log.debug('prepareSpeakerService');
-		this.speakerService = new Service.TelevisionSpeaker(accessoryName, 'Speaker');
+		this.speakerService = new Service.TelevisionSpeaker(`${accessoryName} Speaker`, 'Speaker');
 		this.speakerService
 			.setCharacteristic(Characteristic.Active, Characteristic.Active.ACTIVE)
 			.setCharacteristic(Characteristic.VolumeControlType, Characteristic.VolumeControlType.ABSOLUTE);
@@ -724,7 +725,7 @@ class denonTvDevice {
 		if (this.volumeControl >= 1) {
 			this.log.debug('prepareVolumeService');
 			if (this.volumeControl == 1) {
-				this.volumeService = new Service.Lightbulb(accessoryName + ' Volume', 'Volume');
+				this.volumeService = new Service.Lightbulb(`${accessoryName} Volume`, 'Volume');
 				this.volumeService.getCharacteristic(Characteristic.Brightness)
 					.onGet(async () => {
 						const volume = this.volume;
@@ -806,7 +807,7 @@ class denonTvDevice {
 			const targetVisibility = currentVisibility;
 
 			const service = this.zoneControl <= 2 ? 'Input' : 'Sound Mode';
-			const inputService = new Service.InputSource(accessoryName, service + i);
+			const inputService = new Service.InputSource(inputName, service + i);
 			inputService
 				.setCharacteristic(Characteristic.Identifier, i)
 				.setCharacteristic(Characteristic.ConfiguredName, inputName)
@@ -877,7 +878,7 @@ class denonTvDevice {
 				//get button name
 				const buttonName = (buttons[i].name != undefined) ? buttons[i].name : buttons[i].reference;
 
-				const buttonService = new Service.Switch(accessoryName + ' ' + buttonName, 'Button ' + i);
+				const buttonService = new Service.Switch(`${accessoryName} ${buttonName}`, `Button ${i}`);
 				buttonService.getCharacteristic(Characteristic.On)
 					.onGet(async () => {
 						const state = false;
