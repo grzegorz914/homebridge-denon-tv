@@ -147,12 +147,12 @@ class denonTvDevice {
 		this.brightness = 0;
 
 		const prefDir = path.join(api.user.storagePath(), 'denonTv');
-		this.devInfoFile = prefDir + '/' + 'devInfo_' + this.host.split('.').join('');
-		this.inputsFile = prefDir + '/' + 'inputs_' + this.sZoneName + this.host.split('.').join('');
-		this.inputsNamesFile = prefDir + '/' + 'inputsNames_' + this.sZoneName + this.host.split('.').join('');
-		this.inputsTargetVisibilityFile = prefDir + '/' + 'inputsTargetVisibility_' + this.sZoneName + this.host.split('.').join('');
+		this.devInfoFile = `${prefDir}/devInfo_${this.host.split('.').join('')}`;
+		this.inputsFile = `${prefDir}/inputs_${this.sZoneName}${this.host.split('.').join('')}`;
+		this.inputsNamesFile = `${prefDir}/inputsNames_${this.sZoneName}${this.host.split('.').join('')}`;
+		this.inputsTargetVisibilityFile = `${prefDir}/inputsTargetVisibility_${this.sZoneName}${this.host.split('.').join('')}`;
 
-		const url = ('http://' + this.host + ':' + this.port);
+		const url = (`http://${this.host}:${this.port}`);
 		this.axiosInstance = axios.create({
 			method: 'GET',
 			baseURL: url,
@@ -203,7 +203,7 @@ class denonTvDevice {
 		this.log.debug('Device: %s %s %s, requesting UPNP Device Info.', this.host, this.name, this.zoneName);
 
 		try {
-			const deviceInfoUpnp = await axios.get('http://' + this.host + API_URL.UPNP);
+			const deviceInfoUpnp = await axios.get(`http://${this.host}${API_URL.UPNP}`);
 			const parseDeviceInfoUpnp = await parseStringPromise(deviceInfoUpnp.data);
 			this.log.debug('Device: %s %s %s, debug parseDeviceInfoUpnp: %s', this.host, this.name, this.zoneName, parseDeviceInfoUpnp.root.device[0]);
 
@@ -556,7 +556,7 @@ class denonTvDevice {
 				})
 				.onSet(async (value) => {
 					try {
-						const brightness = 'PVBR ' + value;
+						const brightness = `PVBR ${value}`;
 						const setBrightness = await this.axiosInstance(API_URL.iPhoneDirect + brightness);
 						if (!this.disableLogInfo) {
 							this.log('Device: %s %s %s, set Brightness successful, brightness: %s', this.host, accessoryName, this.zoneName, value);
@@ -677,13 +677,13 @@ class denonTvDevice {
 					const zone = ['MV', 'Z2', 'Z3', 'MV', 'MV'][zControl];
 					if (volume == 0 || volume == 100) {
 						if (this.volume < 10) {
-							volume = '0' + this.volume;
+							volume = `0${this.volume}`;
 						} else {
 							volume = this.volume;
 						}
 					} else {
 						if (volume < 10) {
-							volume = '0' + volume;
+							volume = `0${volume}`;
 						}
 					}
 					const setVolume = await this.axiosInstance(API_URL.iPhoneDirect + zone + volume);
@@ -747,7 +747,7 @@ class denonTvDevice {
 			}
 
 			if (this.volumeControl == 2) {
-				this.volumeServiceFan = new Service.Fan(accessoryName + ' Volume', 'Volume');
+				this.volumeServiceFan = new Service.Fan(`${accessoryName} Volume`, 'Volume');
 				this.volumeServiceFan.getCharacteristic(Characteristic.RotationSpeed)
 					.onGet(async () => {
 						const volume = this.volume;
