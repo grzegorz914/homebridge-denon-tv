@@ -146,11 +146,11 @@ class denonTvDevice {
 		this.pictureMode = 0;
 		this.brightness = 0;
 
-		const prefDir = path.join(api.user.storagePath(), 'denonTv');
-		this.devInfoFile = `${prefDir}/devInfo_${this.host.split('.').join('')}`;
-		this.inputsFile = `${prefDir}/inputs_${this.sZoneName}${this.host.split('.').join('')}`;
-		this.inputsNamesFile = `${prefDir}/inputsNames_${this.sZoneName}${this.host.split('.').join('')}`;
-		this.inputsTargetVisibilityFile = `${prefDir}/inputsTargetVisibility_${this.sZoneName}${this.host.split('.').join('')}`;
+		this.prefDir = path.join(api.user.storagePath(), 'denonTv');
+		this.devInfoFile = `${this.prefDir}/devInfo_${this.host.split('.').join('')}`;
+		this.inputsFile = `${this.prefDir}/inputs_${this.sZoneName}${this.host.split('.').join('')}`;
+		this.inputsNamesFile = `${this.prefDir}/inputsNames_${this.sZoneName}${this.host.split('.').join('')}`;
+		this.inputsTargetVisibilityFile = `${this.prefDir}/inputsTargetVisibility_${this.sZoneName}${this.host.split('.').join('')}`;
 
 		const url = (`http://${this.host}:${this.port}`);
 		this.axiosInstance = axios.create({
@@ -159,45 +159,53 @@ class denonTvDevice {
 			timeout: 5000
 		});
 
-		//check if the directory exists, if not then create it
-		if (fs.existsSync(prefDir) == false) {
-			fsPromises.mkdir(prefDir);
-		}
-		if (this.zoneControl == 0) {
-			if (fs.existsSync(this.devInfoFile) == false) {
-				fsPromises.writeFile(this.devInfoFile, '');
-			}
-		}
-		if (fs.existsSync(this.inputsFile) == false) {
-			fsPromises.writeFile(this.inputsFile, '');
-		}
-		if (fs.existsSync(this.inputsNamesFile) == false) {
-			fsPromises.writeFile(this.inputsNamesFile, '');
-		}
-		if (fs.existsSync(this.inputsTargetVisibilityFile) == false) {
-			fsPromises.writeFile(this.inputsTargetVisibilityFile, '');
-		}
-
-		//save inputs to the file
-		try {
-			const inputs = (this.zoneControl <= 2) ? this.inputs : this.soundModes;
-			const obj = JSON.stringify(inputs, null, 2);
-			fsPromises.writeFile(this.inputsFile, obj);
-			this.log.debug('Device: %s %s %s, save %s succesful: %s', this.host, this.name, this.zoneName, this.zoneControl <= 2 ? 'Inputs' : 'Sound Modes', obj);
-		} catch (error) {
-			this.log.error('Device: %s %s %s, save %s error: %s', this.host, this.name, this.zoneName, this.zoneControl <= 2 ? 'Inputs' : 'Sound Modes', error);
-		};
-
 		//Check device state
 		setInterval(function () {
 			if (this.checkDeviceInfo) {
-				this.getDeviceInfoUpnp();
+				this.prepareDirectoryAndFiles();
 			}
 			if (!this.checkDeviceInfo && this.checkDeviceState) {
 				this.updateDeviceState();
 			}
 		}.bind(this), this.refreshInterval * 1000);
 	}
+
+	async prepareDirectoryAndFiles() {
+		this.log.debug('Device: %s %s %s, prepare directory and files.', this.host, this.name, this.zoneName);
+
+		try {
+			//check if the directory exists, if not then create it
+			if (fs.existsSync(this.prefDir) == false) {
+				await fsPromises.mkdir(this.prefDir);
+			}
+			if (this.zoneControl == 0) {
+				if (fs.existsSync(this.devInfoFile) == false) {
+					await fsPromises.writeFile(this.devInfoFile, '');
+				}
+			}
+			if (fs.existsSync(this.inputsFile) == false) {
+				await fsPromises.writeFile(this.inputsFile, '');
+			}
+			if (fs.existsSync(this.inputsNamesFile) == false) {
+				await fsPromises.writeFile(this.inputsNamesFile, '');
+			}
+			if (fs.existsSync(this.inputsTargetVisibilityFile) == false) {
+				await fsPromises.writeFile(this.inputsTargetVisibilityFile, '');
+			}
+
+			//save inputs to the file
+			const inputs = (this.zoneControl <= 2) ? this.inputs : this.soundModes;
+			const obj = JSON.stringify(inputs, null, 2);
+			const eriteInputs = await fsPromises.writeFile(this.inputsFile, obj);
+			this.log.debug('Device: %s %s %s, save %s succesful: %s', this.host, this.name, this.zoneName, this.zoneControl <= 2 ? 'Inputs' : 'Sound Modes', obj);
+
+			const getDeviceInfo = this.getDeviceInfo();
+		} catch (error) {
+			this.log.error('Device: %s %s %s, save %s error: %s', this.host, this.name, this.zoneName, this.zoneControl <= 2 ? 'Inputs' : 'Sound Modes', error);
+			this.checkDeviceState = false;
+			this.checkDeviceInfo = true;
+		};
+	};
 
 	async getDeviceInfoUpnp() {
 		this.log.debug('Device: %s %s %s, requesting UPNP Device Info.', this.host, this.name, this.zoneName);
@@ -218,7 +226,7 @@ class denonTvDevice {
 			const X_AudysseyPort = parseDeviceInfoUpnp.root.device[0]['DMH:X_AudysseyPort'][0];
 			const X_WebAPIPort = parseDeviceInfoUpnp.root.device[0]['DMH:X_WebAPIPort'][0];
 
-			this.manufacturer = manufacturer;
+			this.manufacturer = (manufacturer != undefined) ? manufacturer : this.manufacturer;
 			this.modelName = modelName;
 			this.WebAPIPort = X_WebAPIPort;
 
@@ -237,7 +245,7 @@ class denonTvDevice {
 			this.log.debug('Device: %s %s %s, debug deviceInfo: %s', this.host, this.name, this.zoneName, deviceInfo.data);
 
 			const parseDeviceInfo = await parseStringPromise(deviceInfo.data);
-			const manufacturer = this.manufacturer;
+			const manufacturer = (parseDeviceInfo.Device_Info.BrandCode[0] != undefined) ? ['Denon', 'Marantz'][parseDeviceInfo.Device_Info.BrandCode[0]] : this.manufacturer;
 			const modelName = parseDeviceInfo.Device_Info.ModelName[0] || this.modelName;
 			const serialNumber = parseDeviceInfo.Device_Info.MacAddress[0] || this.serialNumber;
 			const firmwareRevision = parseDeviceInfo.Device_Info.UpgradeVersion[0] || this.firmwareRevision;
@@ -245,7 +253,7 @@ class denonTvDevice {
 			const apiVersion = parseDeviceInfo.Device_Info.CommApiVers[0] || 'Unknown';
 
 			const devInfo = JSON.stringify(parseDeviceInfo.Device_Info, null, 2);
-			const writeDevInfo = (this.zoneControl == 0) ? fsPromises.writeFile(this.devInfoFile, devInfo) : false;
+			const writeDevInfo = (this.zoneControl == 0) ? await fsPromises.writeFile(this.devInfoFile, devInfo) : false;
 			this.log.debug('Device: %s %s %s, saved Device Info successful: %s', this.host, this.name, this.zoneName, devInfo);
 
 			if (!this.disableLogInfo) {
