@@ -43,8 +43,9 @@ This plugin is based upon the official documentation for communicating with and 
 * Home automations and shortcuts can be used for all functions.
 
 <p align="left">
-  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/homekit.png" width="480"></a> 
-  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/inputs.png" width="115"></a>  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/RC.png" width="115"></a>  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/rc1.png" width="115"></a>
+  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/homekit.png" width="382"></a> 
+  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/inputs.png" width="135"></a> <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/rc1.png" width="135"></a>
+  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/RC.png" width="135"></a>
 </p>
 
 ## Configuration
@@ -55,31 +56,31 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
 </p>
 
 ## Main Zone / Multi Zone / Surround Mode Control
-| Key | Description | Required |
-| --- | --- | --- |
-| `name` | Here set the accessory *Name* to be displayed in *Homebridge/HomeKit*. | Required |
-| `host` | Here set the *Hsostname or Address IP* of TV. | Required |
-| `port` | This is the network port that this plugin will use to communicate with the receiver. If port `8080` is not working then try to use port `80` which some receivers use alternatively. Try the other port if the first one does not work | Required |
-| `zoneControl` | Selects which zone will be controlled by this section (`0` - Main Zone, `1` - Zone 2, `2` - Zone 3, `3` - Surround Mode) or choice from the configurations GUI | Required |
-| `refreshInterval` | Set the data refresh time in seconds, default is every 5 seconds. | Required |
-| `disableLogInfo` | If enabled, disable log info, all values and state will not be displayed in Homebridge log console. | Required |
-| `volumeControl` | Here choice what a additional volume control mode You want to use (None, Slider, Fan). | Required |
-| `switchInfoMenu` | If enabled, `I` button change its behaviour in RC app between Menu and INFO. | Required |
-| `masterPower` | If enabled, then the power switch for that zone (typically you would only use this for the Main Zone) will turn the entire receiver `ON` or `OFF/STANDBY` rather than just the zone itself | Required |
-| `masterVolume`| If enabled, then the volume for that zone (typically you would only use this for the Main Zone) will set the entire receiver `UP` or `DOWN` rather than just the zone itself | Required |
-| `masterMute`| If enabled, then the mute switch for that zone (typically you would only use this for the Main Zone) will muted the entire receiver `ON` or `OFF` rather than just the zone itself | Required |
-| `inputs.name` | Here set *Input Name* which You want expose to the *Homebridge/HomeKit*. | Required |
-| `inputs.reference` | Choose from available inputs, the inputs that should be published to and appear in HomeKit app in the device tile as inputs list | Required |
-| `inputs.mode` | Choose from available inputs mode. | Required |
-| `buttonsMainZone.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. | Optional |
-| `buttonsMainZone.reference` | Here choice function for additional control button for Main Zone. | Optional |
-| `buttonsZone2.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. | Optional |
-| `buttonsZone2.reference` | Here choice function for additional control button for Zone 2. | Optional |
-| `buttonsZone3.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. | Optional |
-| `buttonsZone3.reference` | Here choice function for additional control button for Zone 3. | Optional |
-| `surrounds.name` | Here set *Surround Mode Name* which You want expose to the *Homebridge/HomeKit*. | Optional |
-| `surrounds.reference` | Here choice *Surround Mode*, the mode that should be published to and appear in HomeKit app in the extra tile as Surrounds List. | Optional |
-| `manufacturer`, `modelName`, `serialNumber`, `firmwareRevision` | Free-form informational data that will be displayed in the Home.app. | Optional |
+| Key | Description |
+| --- | --- |
+| `name` | Here set the accessory *Name* to be displayed in *Homebridge/HomeKit*. |
+| `host` | Here set the *Hsostname or Address IP* of TV. |
+| `port` | This is the network port that this plugin will use to communicate with the receiver. If port `8080` is not working then try to use port `80` which some receivers use alternatively. Try the other port if the first one does not work |
+| `zoneControl` | Selects which zone will be controlled by this section (`0` - Main Zone, `1` - Zone 2, `2` - Zone 3, `3` - Surround Mode) or choice from the configurations GUI |
+| `refreshInterval` | Set the data refresh time in seconds, default is every 5 seconds. |
+| `disableLogInfo` | If enabled, disable log info, all values and state will not be displayed in Homebridge log console. |
+| `volumeControl` | Here choice what a additional volume control mode You want to use (None, Slider, Fan). |
+| `switchInfoMenu` | If enabled, `I` button change its behaviour in RC app between Menu and INFO. |
+| `masterPower` | If enabled, then the power switch for that zone (typically you would only use this for the Main Zone) will turn the entire receiver `ON` or `OFF/STANDBY` rather than just the zone itself |
+| `masterVolume`| If enabled, then the volume for that zone (typically you would only use this for the Main Zone) will set the entire receiver `UP` or `DOWN` rather than just the zone itself |
+| `masterMute`| If enabled, then the mute switch for that zone (typically you would only use this for the Main Zone) will muted the entire receiver `ON` or `OFF` rather than just the zone itself |
+| `inputs.name` | Here set *Input Name* which You want expose to the *Homebridge/HomeKit*. |
+| `inputs.reference` | Choose from available inputs, the inputs that should be published to and appear in HomeKit app in the device tile as inputs list |
+| `inputs.mode` | Choose from available inputs mode. |
+| `buttonsMainZone.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. |
+| `buttonsMainZone.reference` | Here choice function for additional control button for Main Zone. |
+| `buttonsZone2.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. |
+| `buttonsZone2.reference` | Here choice function for additional control button for Zone 2. |
+| `buttonsZone3.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. |
+| `buttonsZone3.reference` | Here choice function for additional control button for Zone 3. |
+| `surrounds.name` | Here set *Surround Mode Name* which You want expose to the *Homebridge/HomeKit*. |
+| `surrounds.reference` | Here choice *Surround Mode*, the mode that should be published to and appear in HomeKit app in the extra tile as Surrounds List. |
+| `manufacturer`, `modelName`, `serialNumber`, `firmwareRevision` | Free-form informational data that will be displayed in the Home.app. |
 | `AV Surround Mode` | This extra Accessory will control all functions of Main Zone except (Inputs and Buttons). | Info |
 
 
@@ -212,11 +213,11 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
 ## Adding to HomeKit
 Each accessory needs to be manually paired. 
 1. Open the Home <img src='https://user-images.githubusercontent.com/3979615/78010622-4ea1d380-738e-11ea-8a17-e6a465eeec35.png' width='16.42px'> app on your device. 
-2. Tap the Home tab, then tap <img src='https://user-images.githubusercontent.com/3979615/78010869-9aed1380-738e-11ea-9644-9f46b3633026.png' width='16.42px'>. 
-3. Tap *Add Accessory*, and select *I Don't Have a Code or Cannot Scan*. 
+2. Tap the <img src='https://user-images.githubusercontent.com/3979615/78010869-9aed1380-738e-11ea-9644-9f46b3633026.png' width='16.42px'>. 
+3. Tap *Add Accessory*, and select *I Don't Have a Code or Cannot Scan* or *More Options*. 
 4. Select Your accessory. 
-5. Enter the Homebridge PIN, this can be found under the QR code in Homebridge UI or your Homebridge logs, alternatively you can select *Use Camera* and scan the QR code again.
-
+5. Enter the Homebridge PIN or scan the QR code, this can be found in Homebridge UI or Homebridge logs.
+6. Complete the accessory setup.
 ## Limitations
 * That maximum Services for 1 accessory is 100. If Services > 100, accessory stop responding.
 * The Services in this accessory are:
