@@ -1,7 +1,6 @@
 'use strict';
 
 const path = require('path');
-const axios = require('axios');
 const fs = require('fs');
 const fsPromises = fs.promises;
 const denon = require('./src/denon');
@@ -158,22 +157,14 @@ class denonTvDevice {
 			devInfoFile: this.devInfoFile
 		});
 
-		const url = (`http://${this.host}:${this.port}`);
-		this.axiosInstance = axios.create({
-			method: 'GET',
-			baseURL: url,
-			timeout: 5000
-		});
-
-
 		this.denon.on('error', (error) => {
-				this.log('Device: %s %s %s, error: %s', this.host, this.name, this.zoneName, error);
+				this.log('Device: %s %s %s, %s', this.host, this.name, this.zoneName, error);
 			})
 			.on('debug', (message) => {
 				const debug = this.enableDebugMode ? this.log('Device: %s %s %s, debug: %s', this.host, this.name, this.zoneName, message) : false;
 			})
 			.on('message', (message) => {
-				this.log('Device: %s %s %s, debug: %s', this.host, this.name, this.zoneName, message);
+				this.log('Device: %s %s %s, %s', this.host, this.name, this.zoneName, message);
 			})
 			.on('deviceInfoUpnp', (parseDeviceInfoUpnp) => {
 				const deviceType = parseDeviceInfoUpnp.root.device[0].deviceType[0];
@@ -305,7 +296,7 @@ class denonTvDevice {
 	};
 
 	//Prepare accessory
-	async prepareAccessory() {
+	prepareAccessory() {
 		this.log.debug('prepareAccessory');
 		const accessoryName = this.name;
 		const accessoryUUID = UUID.generate(accessoryName);
@@ -349,7 +340,7 @@ class denonTvDevice {
 				this.log.debug('zControl is %s', zControl)
 				const newState = [(state ? 'ZMON' : 'ZMOFF'), (state ? 'Z2ON' : 'Z2OFF'), (state ? 'Z3ON' : 'Z3OFF'), (state ? 'ZMON' : 'ZMOFF'), (state ? 'PWON' : 'PWSTANDBY')][zControl];
 				try {
-					const setPower = (state != this.powerState) ? await this.axiosInstance(API_URL.iPhoneDirect + newState) : false;
+					const setPower = (state != this.powerState) ? await this.denon.send(newState) : false;
 					if (!this.disableLogInfo) {
 						this.log('Device: %s %s %s, set Power state successful, state: %s', this.host, accessoryName, this.zoneName, newState);
 					}
@@ -375,7 +366,7 @@ class denonTvDevice {
 				const zone = [inputMode, 'Z2', 'Z3', inputMode][this.zoneControl];
 				const inputRef = zone + inputReference;
 				try {
-					const setInput = (this.powerState && inputReference != undefined) ? await this.axiosInstance(API_URL.iPhoneDirect + inputRef) : false;
+					const setInput = (this.powerState && inputReference != undefined) ? await this.denon.send(inputRef) : false;
 					if (!this.disableLogInfo) {
 						this.log('Device: %s %s %s, set %s successful, name: %s, reference: %s', this.host, accessoryName, this.zoneName, this.zoneControl <= 2 ? 'Input' : 'Sound Mode', inputName, inputRef);
 					}
@@ -477,7 +468,7 @@ class denonTvDevice {
 					}
 				}
 				try {
-					const setCommand = await this.axiosInstance(API_URL.iPhoneDirect + command);
+					const setCommand = await this.denon.send(command);
 					if (!this.disableLogInfo) {
 						this.log('Device: %s %s %s, Remote Key successful, command: %s', this.host, accessoryName, this.zoneName, command);
 					}
@@ -497,7 +488,7 @@ class denonTvDevice {
 				.onSet(async (value) => {
 					const brightness = `PVBR ${value}`;
 					try {
-						const setBrightness = await this.axiosInstance(API_URL.iPhoneDirect + brightness);
+						const setBrightness = await this.denon.send(brightness);
 						if (!this.disableLogInfo) {
 							this.log('Device: %s %s %s, set Brightness successful, brightness: %s', this.host, accessoryName, this.zoneName, value);
 						}
@@ -543,7 +534,7 @@ class denonTvDevice {
 							break;
 					}
 					try {
-						const setCommand = await this.axiosInstance(API_URL.iPhoneDirect + command);
+						const setCommand = await this.denon.send(command);
 						if (!this.disableLogInfo) {
 							this.log('Device: %s %s %s, set Picture Mode successful, command: %s', this.host, accessoryName, this.zoneName, command);
 						}
@@ -563,7 +554,7 @@ class denonTvDevice {
 							break;
 					}
 					try {
-						const setCommand = await this.axiosInstance(API_URL.iPhoneDirect + command);
+						const setCommand = await this.denon.send(command);
 						if (!this.disableLogInfo) {
 							this.log('Device: %s %s %s, set Power Mode Selection successful, command: %s', this.host, accessoryName, this.zoneName, command);
 						}
@@ -594,7 +585,7 @@ class denonTvDevice {
 						break;
 				}
 				try {
-					const setVolume = await this.axiosInstance(API_URL.iPhoneDirect + zone + command);
+					const setVolume = await this.denon.send(zone + command);
 					if (!this.disableLogInfo) {
 						this.log('Device: %s %s %s, setVolumeSelector successful, command: %s', this.host, accessoryName, this.zoneName, command);
 					}
@@ -626,7 +617,7 @@ class denonTvDevice {
 					}
 				}
 				try {
-					const setVolume = await this.axiosInstance(API_URL.iPhoneDirect + zone + volume);
+					const setVolume = await this.denon.send(zone + volume);
 					if (!this.disableLogInfo) {
 						this.log('Device: %s %s %s, set new Volume level successful, volume: %s dB', this.host, accessoryName, this.zoneName, volume - 80);
 					}
@@ -649,7 +640,7 @@ class denonTvDevice {
 					const zone = ['', 'Z2', 'Z3', '', ''][zControl];
 					const newState = state ? 'MUON' : 'MUOFF';
 					try {
-						const setMute = await this.axiosInstance(API_URL.iPhoneDirect + zone + newState);
+						const setMute = await this.denon.send(zone + newState);
 						if (!this.disableLogInfo) {
 							this.log('Device: %s %s %s, set new Mute state successful, state: %s', this.host, accessoryName, this.zoneName, state ? 'ON' : 'OFF');
 						}
@@ -829,7 +820,7 @@ class denonTvDevice {
 					})
 					.onSet(async (state) => {
 						try {
-							const setFunction = (state && this.powerState) ? await this.axiosInstance(API_URL.iPhoneDirect + buttonReference) : false;
+							const setFunction = (state && this.powerState) ? await this.denon.send(buttonReference) : false;
 							if (!this.disableLogInfo) {
 								this.log('Device: %s %s %s, set new Input successful, name: %s, reference: %s', this.host, accessoryName, this.zoneName, buttonName, buttonReference);
 							}

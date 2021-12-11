@@ -62,7 +62,7 @@ class DENON extends EventEmitter {
             this.emit('debug', `parseDeviceInfoUpnp: ${parseDeviceInfoUpnp.root.device[0]}`);
             this.emit('deviceInfoUpnp', parseDeviceInfoUpnp);
         } catch (error) {
-            this.emit('error', `device info upnp: ${error}`);
+            this.emit('error', `device info upnp error: ${error}`);
         };
     };
 
@@ -77,7 +77,7 @@ class DENON extends EventEmitter {
             this.checkDeviceInfo = false;
             this.updateDeviceState();
         } catch (error) {
-            this.emit('error', `device info: ${error}`);
+            this.emit('error', `device info error: ${error}`);
         };
     }
 
@@ -100,10 +100,23 @@ class DENON extends EventEmitter {
                     this.muteState = muteState;
                 };
             } catch (error) {
-                this.emit('error', `update device state: ${error}`);
+                this.emit('error', `update device state error: ${error}`);
                 this.checkDeviceInfo = true;
             };
         }, 750)
+    }
+
+    send(command) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const sendCommand = await this.axiosInstance(API_URL.iPhoneDirect + command);
+                this.emit('message', `send command: ${command}`);
+                resolve(true);
+            } catch (error) {
+                this.emit('error', `send command error: ${error}`);
+                reject(error);
+            };
+        });
     }
 
 };
