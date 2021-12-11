@@ -28,6 +28,7 @@
                 "masterMute": false,
                 "switchInfoMenu": false,
                 "disableLogInfo": false,
+                "enableDebugMode": false,
                 "inputs": [{
                         "name": "Xbox One",
                         "reference": "GAME",
@@ -60,6 +61,7 @@
                 "masterMute": false,
                 "switchInfoMenu": false,
                 "disableLogInfo": false,
+                "enableDebugMode": false,
                 "inputs": [{
                         "name": "Xbox One",
                         "reference": "GAME",
@@ -86,6 +88,8 @@
                 "masterVolume": false,
                 "masterMute": false,
                 "switchInfoMenu": false,
+                "disableLogInfo": false,
+                "enableDebugMode": false,
                 "inputs": [{
                         "name": "Xbox One",
                         "reference": "GAME",
@@ -114,6 +118,7 @@
                 "masterMute": false,
                 "switchInfoMenu": false,
                 "disableLogInfo": false,
+                "enableDebugMode": false,
                 "surrounds": [{
                         "name": "MCH Stereo",
                         "reference": "MCH STEREO"

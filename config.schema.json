@@ -32,14 +32,6 @@
               "placeholder": 8080,
               "required": true
             },
-            "refreshInterval": {
-              "title": "Refresh Interval (sec)",
-              "type": "integer",
-              "default": 5,
-              "minimum": 0,
-              "maximum": 60,
-              "required": true
-            },
             "zoneControl": {
               "title": "Zone/Mode Control",
               "type": "integer",
@@ -137,6 +129,13 @@
               "description": "This disable log info, all values and state will not be displayed in Homebridge log console.",
               "required": false
             },
+            "enableDebugMode": {
+							"title": "Enable Debug Mode",
+							"type": "boolean",
+							"default": false,
+							"description": "This enable debug mode.",
+							"required": false
+						},
             "inputs": {
               "type": "array",
               "items": {
@@ -4190,12 +4189,12 @@
         "expandable": true,
         "expanded": false,
         "items": [
+          "devices[].enableDebugMode",
           "devices[].disableLogInfo",
           "devices[].switchInfoMenu",
           "devices[].masterPower",
           "devices[].masterVolume",
           "devices[].masterMute",
-          "devices[].refreshInterval",
           "devices[].volumeControl"
         ]
       },

@@ -62,7 +62,7 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
 | `host` | Here set the *Hsostname or Address IP* of TV. |
 | `port` | This is the network port that this plugin will use to communicate with the receiver. If port `8080` is not working then try to use port `80` which some receivers use alternatively. Try the other port if the first one does not work |
 | `zoneControl` | Selects which zone will be controlled by this section (`0` - Main Zone, `1` - Zone 2, `2` - Zone 3, `3` - Surround Mode) or choice from the configurations GUI |
-| `refreshInterval` | Set the data refresh time in seconds, default is every 5 seconds. |
+| `enableDebugMode` | If enabled, deep log will be present in homebridge console. |
 | `disableLogInfo` | If enabled, disable log info, all values and state will not be displayed in Homebridge log console. |
 | `volumeControl` | Here choice what a additional volume control mode You want to use (None, Slider, Fan). |
 | `switchInfoMenu` | If enabled, `I` button change its behaviour in RC app between Menu and INFO. |
@@ -100,6 +100,7 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
             "masterMute": false,
             "switchInfoMenu": false,
             "disableLogInfo": false,
+            "enableDebugMode": false,
             "inputs": [
                 {
                     "name": "Xbox One",
@@ -135,6 +136,7 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
             "masterMute": false,
             "switchInfoMenu": false,
             "disableLogInfo": false,
+            "enableDebugMode": false,
             "inputs": [
                 {
                     "name": "Xbox One",
@@ -164,6 +166,8 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
             "masterVolume": false,
             "masterMute": false,
             "switchInfoMenu": false,
+            "disableLogInfo": false,
+            "enableDebugMode": false,
             "inputs": [
                 {
                     "name": "Xbox One",
@@ -195,6 +199,7 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
             "masterMute": false,
             "switchInfoMenu": false,
             "disableLogInfo": false,
+            "enableDebugMode": false,
             "surrounds": [
                 {
                     "name": "MCH Stereo",

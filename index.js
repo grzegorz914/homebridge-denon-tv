@@ -4,7 +4,7 @@ const path = require('path');
 const axios = require('axios');
 const fs = require('fs');
 const fsPromises = fs.promises;
-const parseStringPromise = require('xml2js').parseStringPromise;
+const denon = require('./src/denon');
 
 const PLUGIN_NAME = 'homebridge-denon-tv';
 const PLATFORM_NAME = 'DenonTv';
@@ -92,7 +92,6 @@ class denonTvDevice {
 		this.name = config.name || 'AV Receiver';
 		this.host = config.host || '';
 		this.port = config.port || '';
-		this.refreshInterval = config.refreshInterval || 5;
 		this.disableLogInfo = config.disableLogInfo || false;
 		this.volumeControl = config.volumeControl || 0;
 		this.switchInfoMenu = config.switchInfoMenu || false;
@@ -105,6 +104,7 @@ class denonTvDevice {
 		this.masterPower = config.masterPower || false;
 		this.masterVolume = config.masterVolume || false;
 		this.masterMute = config.masterMute || false;
+		this.enableDebugMode = config.enableDebugMode || false;
 
 		//get Device info
 		this.manufacturer = config.manufacturer || 'Denon/Marantz';
@@ -114,14 +114,11 @@ class denonTvDevice {
 		this.apiVersion = '';
 
 		//zones
-		this.apiUrl = [API_URL.MainZoneStatusLite, API_URL.Zone2StatusLite, API_URL.Zone3StatusLite, API_URL.SoundModeStatus][this.zoneControl];
 		this.zoneName = ZONE_NAME[this.zoneControl];
 		this.sZoneName = SHORT_ZONE_NAME[this.zoneControl];
 		this.buttons = [this.buttonsMainZone, this.buttonsZone2, this.buttonsZone3, this.buttonsMainZone][this.zoneControl];
 
 		//setup variables
-		this.checkDeviceInfo = true;
-		this.checkDeviceState = false;
 		this.startPrepareAccessory = true;
 
 		this.inputsReference = new Array();
@@ -152,6 +149,15 @@ class denonTvDevice {
 		this.inputsNamesFile = `${this.prefDir}/inputsNames_${this.sZoneName}${this.host.split('.').join('')}`;
 		this.inputsTargetVisibilityFile = `${this.prefDir}/inputsTargetVisibility_${this.sZoneName}${this.host.split('.').join('')}`;
 
+		this.prepareDirectoryAndFiles();
+
+		this.denon = new denon({
+			host: this.host,
+			port: this.port,
+			zoneControl: this.zoneControl,
+			devInfoFile: this.devInfoFile
+		});
+
 		const url = (`http://${this.host}:${this.port}`);
 		this.axiosInstance = axios.create({
 			method: 'GET',
@@ -159,15 +165,111 @@ class denonTvDevice {
 			timeout: 5000
 		});
 
-		//Check device state
-		setInterval(function () {
-			if (this.checkDeviceInfo) {
-				this.prepareDirectoryAndFiles();
-			}
-			if (!this.checkDeviceInfo && this.checkDeviceState) {
-				this.updateDeviceState();
-			}
-		}.bind(this), this.refreshInterval * 1000);
+
+		this.denon.on('error', (error) => {
+				this.log('Device: %s %s %s, error: %s', this.host, this.name, this.zoneName, error);
+			})
+			.on('debug', (message) => {
+				const debug = this.enableDebugMode ? this.log('Device: %s %s %s, debug: %s', this.host, this.name, this.zoneName, message) : false;
+			})
+			.on('message', (message) => {
+				this.log('Device: %s %s %s, debug: %s', this.host, this.name, this.zoneName, message);
+			})
+			.on('deviceInfoUpnp', (parseDeviceInfoUpnp) => {
+				const deviceType = parseDeviceInfoUpnp.root.device[0].deviceType[0];
+				const friendlyName = parseDeviceInfoUpnp.root.device[0].friendlyName[0];
+				const manufacturer = parseDeviceInfoUpnp.root.device[0].manufacturer[0];
+				const manufacturerURL = parseDeviceInfoUpnp.root.device[0].manufacturerURL[0];
+				const modelName = parseDeviceInfoUpnp.root.device[0].modelName[0];
+				const modelNumber = parseDeviceInfoUpnp.root.device[0].modelNumber[0];
+				const deviceUDN = parseDeviceInfoUpnp.root.device[0].UDN[0];
+				const X_Audyssey = parseDeviceInfoUpnp.root.device[0]['DMH:X_Audyssey'][0];
+				const X_AudysseyPort = parseDeviceInfoUpnp.root.device[0]['DMH:X_AudysseyPort'][0];
+				const X_WebAPIPort = parseDeviceInfoUpnp.root.device[0]['DMH:X_WebAPIPort'][0];
+
+				this.manufacturer = (manufacturer != undefined) ? manufacturer : this.manufacturer;
+				this.modelName = modelName;
+				this.WebAPIPort = X_WebAPIPort;
+			})
+			.on('deviceInfo', async (parseDeviceInfo) => {
+				const manufacturer = (parseDeviceInfo.Device_Info.BrandCode[0] != undefined) ? ['Denon', 'Marantz'][parseDeviceInfo.Device_Info.BrandCode[0]] : this.manufacturer;
+				const modelName = parseDeviceInfo.Device_Info.ModelName[0] || this.modelName;
+				const serialNumber = parseDeviceInfo.Device_Info.MacAddress[0] || this.serialNumber;
+				const firmwareRevision = parseDeviceInfo.Device_Info.UpgradeVersion[0] || this.firmwareRevision;
+				const zones = parseDeviceInfo.Device_Info.DeviceZones[0] || 'Unknown';
+				const apiVersion = parseDeviceInfo.Device_Info.CommApiVers[0] || 'Unknown';
+
+				this.log('-------- %s --------', this.name);
+				this.log('Manufacturer: %s', manufacturer);
+				this.log('Model: %s', modelName);
+				if (this.zoneControl == 0) {
+					this.log('Zones: %s', zones);
+					this.log('Control: Main Zone');
+					this.log('Firmware: %s', firmwareRevision);
+					this.log('Api version: %s', apiVersion);
+					this.log('Serialnr: %s', serialNumber);
+				}
+				if (this.zoneControl == 1) {
+					this.log('Control: Zone 2');
+				}
+				if (this.zoneControl == 2) {
+					this.log('Control: Zone 3');
+				}
+				if (this.zoneControl == 3) {
+					this.log('Control: Sound Modes');
+				}
+				this.log('----------------------------------');
+
+				this.manufacturer = manufacturer;
+				this.modelName = modelName;
+				this.serialNumber = serialNumber;
+				this.firmwareRevision = firmwareRevision;
+			})
+			.on('deviceState', (parseDeviceStateData) => {
+				const powerState = (parseDeviceStateData.item.Power[0].value[0] == 'ON');
+				const inputReference = (this.zoneControl <= 2) ? (parseDeviceStateData.item.InputFuncSelect[0].value[0] == 'Internet Radio') ? 'IRADIO' : (parseDeviceStateData.item.InputFuncSelect[0].value[0] == 'AirPlay') ? 'NET' : parseDeviceStateData.item.InputFuncSelect[0].value[0] : this.inputReference;
+				const volume = (parseFloat(parseDeviceStateData.item.MasterVolume[0].value[0]) >= -79.5) ? parseInt(parseDeviceStateData.item.MasterVolume[0].value[0]) + 80 : this.volume;
+				const muteState = powerState ? (parseDeviceStateData.item.Mute[0].value[0] == 'on') : true;
+
+				const currentInputIdentifier = (this.inputsReference.indexOf(inputReference) >= 0) ? this.inputsReference.indexOf(inputReference) : this.inputIdentifier;
+				const inputIdentifier = this.setStartInput ? this.setStartInputIdentifier : currentInputIdentifier;
+
+				if (this.televisionService) {
+					this.televisionService
+						.updateCharacteristic(Characteristic.Active, powerState)
+
+					const setUpdateCharacteristic = this.setStartInput ? this.televisionService.setCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier) :
+						this.televisionService.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
+					this.setStartInput = (currentInputIdentifier == inputIdentifier) ? false : true;
+				}
+				this.powerState = powerState;
+				this.inputReference = inputReference;
+				this.inputIdentifier = inputIdentifier;
+
+				if (this.speakerService) {
+					this.speakerService
+						.updateCharacteristic(Characteristic.Volume, volume)
+						.updateCharacteristic(Characteristic.Mute, muteState);
+					if (this.volumeService && this.volumeControl == 1) {
+						this.volumeService
+							.updateCharacteristic(Characteristic.Brightness, volume)
+							.updateCharacteristic(Characteristic.On, !muteState);
+					}
+					if (this.volumeServiceFan && this.volumeControl == 2) {
+						this.volumeServiceFan
+							.updateCharacteristic(Characteristic.RotationSpeed, volume)
+							.updateCharacteristic(Characteristic.On, !muteState);
+					}
+				}
+				this.volume = volume;
+				this.muteState = muteState;
+				this.checkDeviceState = true;
+
+				//start prepare accessory
+				if (this.startPrepareAccessory) {
+					this.prepareAccessory();
+				};
+			});
 	}
 
 	async prepareDirectoryAndFiles() {
@@ -198,160 +300,12 @@ class denonTvDevice {
 			const obj = JSON.stringify(inputs, null, 2);
 			const writeInputs = await fsPromises.writeFile(this.inputsFile, obj);
 			this.log.debug('Device: %s %s %s, save %s succesful: %s', this.host, this.name, this.zoneName, this.zoneControl <= 2 ? 'Inputs' : 'Sound Modes', obj);
-
-			const getDeviceInfo = this.getDeviceInfo();
 		} catch (error) {
 			this.log.error('Device: %s %s %s, save %s error: %s', this.host, this.name, this.zoneName, this.zoneControl <= 2 ? 'Inputs' : 'Sound Modes', error);
 			this.checkDeviceState = false;
 			this.checkDeviceInfo = true;
 		};
 	};
-
-	async getDeviceInfoUpnp() {
-		this.log.debug('Device: %s %s %s, requesting UPNP Device Info.', this.host, this.name, this.zoneName);
-
-		try {
-			const deviceInfoUpnp = await axios.get(`http://${this.host}${API_URL.UPNP}`);
-			const parseDeviceInfoUpnp = await parseStringPromise(deviceInfoUpnp.data);
-			this.log.debug('Device: %s %s %s, debug parseDeviceInfoUpnp: %s', this.host, this.name, this.zoneName, parseDeviceInfoUpnp.root.device[0]);
-
-			const deviceType = parseDeviceInfoUpnp.root.device[0].deviceType[0];
-			const friendlyName = parseDeviceInfoUpnp.root.device[0].friendlyName[0];
-			const manufacturer = parseDeviceInfoUpnp.root.device[0].manufacturer[0];
-			const manufacturerURL = parseDeviceInfoUpnp.root.device[0].manufacturerURL[0];
-			const modelName = parseDeviceInfoUpnp.root.device[0].modelName[0];
-			const modelNumber = parseDeviceInfoUpnp.root.device[0].modelNumber[0];
-			const deviceUDN = parseDeviceInfoUpnp.root.device[0].UDN[0];
-			const X_Audyssey = parseDeviceInfoUpnp.root.device[0]['DMH:X_Audyssey'][0];
-			const X_AudysseyPort = parseDeviceInfoUpnp.root.device[0]['DMH:X_AudysseyPort'][0];
-			const X_WebAPIPort = parseDeviceInfoUpnp.root.device[0]['DMH:X_WebAPIPort'][0];
-
-			this.manufacturer = (manufacturer != undefined) ? manufacturer : this.manufacturer;
-			this.modelName = modelName;
-			this.WebAPIPort = X_WebAPIPort;
-
-			const getDeviceInfo = this.getDeviceInfo();
-		} catch (error) {
-			this.log.debug('Device: %s %s %s, get UPNP Device Info error: %s', this.host, this.name, this.zoneName, error);
-			const getDeviceInfo = this.getDeviceInfo();
-		};
-	};
-
-	async getDeviceInfo() {
-		this.log.debug('Device: %s %s %s, requesting Device Info.', this.host, this.name, this.zoneName);
-
-		try {
-			const deviceInfo = await this.axiosInstance(API_URL.DeviceInfo);
-			this.log.debug('Device: %s %s %s, debug deviceInfo: %s', this.host, this.name, this.zoneName, deviceInfo.data);
-
-			const parseDeviceInfo = await parseStringPromise(deviceInfo.data);
-			const manufacturer = (parseDeviceInfo.Device_Info.BrandCode[0] != undefined) ? ['Denon', 'Marantz'][parseDeviceInfo.Device_Info.BrandCode[0]] : this.manufacturer;
-			const modelName = parseDeviceInfo.Device_Info.ModelName[0] || this.modelName;
-			const serialNumber = parseDeviceInfo.Device_Info.MacAddress[0] || this.serialNumber;
-			const firmwareRevision = parseDeviceInfo.Device_Info.UpgradeVersion[0] || this.firmwareRevision;
-			const zones = parseDeviceInfo.Device_Info.DeviceZones[0] || 'Unknown';
-			const apiVersion = parseDeviceInfo.Device_Info.CommApiVers[0] || 'Unknown';
-
-			const devInfo = JSON.stringify(parseDeviceInfo.Device_Info, null, 2);
-			const writeDevInfo = (this.zoneControl == 0) ? await fsPromises.writeFile(this.devInfoFile, devInfo) : false;
-			this.log.debug('Device: %s %s %s, saved Device Info successful: %s', this.host, this.name, this.zoneName, devInfo);
-
-			if (!this.disableLogInfo) {
-				this.log('Device: %s %s %s, state: Online.', this.host, this.name, this.zoneName);
-			}
-
-			this.log('-------- %s --------', this.name);
-			this.log('Manufacturer: %s', manufacturer);
-			this.log('Model: %s', modelName);
-			if (this.zoneControl == 0) {
-				this.log('Zones: %s', zones);
-				this.log('Control: Main Zone');
-				this.log('Firmware: %s', firmwareRevision);
-				this.log('Api version: %s', apiVersion);
-				this.log('Serialnr: %s', serialNumber);
-			}
-			if (this.zoneControl == 1) {
-				this.log('Control: Zone 2');
-			}
-			if (this.zoneControl == 2) {
-				this.log('Control: Zone 3');
-			}
-			if (this.zoneControl == 3) {
-				this.log('Control: Sound Modes');
-			}
-			this.log('----------------------------------');
-
-			this.manufacturer = manufacturer;
-			this.modelName = modelName;
-			this.serialNumber = serialNumber;
-			this.firmwareRevision = firmwareRevision;
-			this.checkDeviceInfo = false;
-
-			const updateDeviceState = !this.checkDeviceState ? this.updateDeviceState() : false;
-		} catch (error) {
-			this.log.debug('Device: %s %s %s, deviceInfo error: %s, device offline, trying to reconnect', this.host, this.name, this.zoneName, error);
-			this.checkDeviceState = false;
-			this.checkDeviceInfo = true;
-		};
-	}
-
-	async updateDeviceState() {
-		this.log.debug('Device: %s %s %s, requesting Device state.', this.host, this.name, this.zoneName);
-
-		try {
-			const deviceStateData = await this.axiosInstance(this.apiUrl);
-			const parseDeviceStateData = await parseStringPromise(deviceStateData.data);
-			this.log.debug('Device: %s %s, debug deviceStateData: %s, parseDeviceStateData: %s', this.host, this.name, deviceStateData.data, parseDeviceStateData);
-
-			const powerState = (parseDeviceStateData.item.Power[0].value[0] == 'ON');
-			const inputReference = (this.zoneControl <= 2) ? (parseDeviceStateData.item.InputFuncSelect[0].value[0] == 'Internet Radio') ? 'IRADIO' : (parseDeviceStateData.item.InputFuncSelect[0].value[0] == 'AirPlay') ? 'NET' : parseDeviceStateData.item.InputFuncSelect[0].value[0] : this.inputReference;
-			const volume = (parseFloat(parseDeviceStateData.item.MasterVolume[0].value[0]) >= -79.5) ? parseInt(parseDeviceStateData.item.MasterVolume[0].value[0]) + 80 : this.volume;
-			const muteState = powerState ? (parseDeviceStateData.item.Mute[0].value[0] == 'on') : true;
-
-			const currentInputIdentifier = (this.inputsReference.indexOf(inputReference) >= 0) ? this.inputsReference.indexOf(inputReference) : this.inputIdentifier;
-			const inputIdentifier = this.setStartInput ? this.setStartInputIdentifier : currentInputIdentifier;
-
-			if (this.televisionService) {
-				this.televisionService
-					.updateCharacteristic(Characteristic.Active, powerState)
-
-				const setUpdateCharacteristic = this.setStartInput ? this.televisionService.setCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier) :
-					this.televisionService.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
-				this.setStartInput = (currentInputIdentifier == inputIdentifier) ? false : true;
-			}
-			this.powerState = powerState;
-			this.inputReference = inputReference;
-			this.inputIdentifier = inputIdentifier;
-
-			if (this.speakerService) {
-				this.speakerService
-					.updateCharacteristic(Characteristic.Volume, volume)
-					.updateCharacteristic(Characteristic.Mute, muteState);
-				if (this.volumeService && this.volumeControl == 1) {
-					this.volumeService
-						.updateCharacteristic(Characteristic.Brightness, volume)
-						.updateCharacteristic(Characteristic.On, !muteState);
-				}
-				if (this.volumeServiceFan && this.volumeControl == 2) {
-					this.volumeServiceFan
-						.updateCharacteristic(Characteristic.RotationSpeed, volume)
-						.updateCharacteristic(Characteristic.On, !muteState);
-				}
-			}
-			this.volume = volume;
-			this.muteState = muteState;
-			this.checkDeviceState = true;
-
-			//start prepare accessory
-			if (this.startPrepareAccessory) {
-				this.prepareAccessory();
-			}
-		} catch (error) {
-			this.log.debug('Device: %s %s %s, update device state error: %s', this.host, this.name, this.zoneName, error);
-			this.checkDeviceState = false;
-			this.checkDeviceInfo = true;
-		};
-	}
 
 	//Prepare accessory
 	async prepareAccessory() {
@@ -437,105 +391,103 @@ class denonTvDevice {
 				};
 			});
 
-		if (this.zoneControl <= 2) {
-			this.televisionService.getCharacteristic(Characteristic.RemoteKey)
-				.onSet(async (command) => {
-					if (this.inputReference == 'SPOTIFY' || this.inputReference == 'BT' || this.inputReference == 'USB/IPOD' || this.inputReference == 'NET' || this.inputReference == 'MPLAY') {
-						switch (command) {
-							case Characteristic.RemoteKey.REWIND:
-								command = 'NS9E';
-								break;
-							case Characteristic.RemoteKey.FAST_FORWARD:
-								command = 'NS9D';
-								break;
-							case Characteristic.RemoteKey.NEXT_TRACK:
-								command = 'MN9D';
-								break;
-							case Characteristic.RemoteKey.PREVIOUS_TRACK:
-								command = 'MN9E';
-								break;
-							case Characteristic.RemoteKey.ARROW_UP:
-								command = 'NS90';
-								break;
-							case Characteristic.RemoteKey.ARROW_DOWN:
-								command = 'NS91';
-								break;
-							case Characteristic.RemoteKey.ARROW_LEFT:
-								command = 'NS92';
-								break;
-							case Characteristic.RemoteKey.ARROW_RIGHT:
-								command = 'NS93';
-								break;
-							case Characteristic.RemoteKey.SELECT:
-								command = 'NS94';
-								break;
-							case Characteristic.RemoteKey.BACK:
-								command = 'MNRTN';
-								break;
-							case Characteristic.RemoteKey.EXIT:
-								command = 'MNRTN';
-								break;
-							case Characteristic.RemoteKey.PLAY_PAUSE:
-								command = this.mediaState ? 'NS9B' : 'NS9A';
-								this.mediaState = !this.mediaState;
-								break;
-							case Characteristic.RemoteKey.INFORMATION:
-								command = this.switchInfoMenu ? 'MNINF' : 'MNOPT';
-								break;
-						}
-					} else {
-						switch (command) {
-							case Characteristic.RemoteKey.REWIND:
-								command = 'MN9E';
-								break;
-							case Characteristic.RemoteKey.FAST_FORWARD:
-								command = 'MN9D';
-								break;
-							case Characteristic.RemoteKey.NEXT_TRACK:
-								command = 'MN9F';
-								break;
-							case Characteristic.RemoteKey.PREVIOUS_TRACK:
-								command = 'MN9G';
-								break;
-							case Characteristic.RemoteKey.ARROW_UP:
-								command = 'MNCUP';
-								break;
-							case Characteristic.RemoteKey.ARROW_DOWN:
-								command = 'MNCDN';
-								break;
-							case Characteristic.RemoteKey.ARROW_LEFT:
-								command = 'MNCLT';
-								break;
-							case Characteristic.RemoteKey.ARROW_RIGHT:
-								command = 'MNCRT';
-								break;
-							case Characteristic.RemoteKey.SELECT:
-								command = 'MNENT';
-								break;
-							case Characteristic.RemoteKey.BACK:
-								command = 'MNRTN';
-								break;
-							case Characteristic.RemoteKey.EXIT:
-								command = 'MNRTN';
-								break;
-							case Characteristic.RemoteKey.PLAY_PAUSE:
-								command = 'NS94';
-								break;
-							case Characteristic.RemoteKey.INFORMATION:
-								command = this.switchInfoMenu ? 'MNINF' : 'MNOPT';
-								break;
-						}
+		this.televisionService.getCharacteristic(Characteristic.RemoteKey)
+			.onSet(async (command) => {
+				if (this.inputReference == 'SPOTIFY' || this.inputReference == 'BT' || this.inputReference == 'USB/IPOD' || this.inputReference == 'NET' || this.inputReference == 'MPLAY') {
+					switch (command) {
+						case Characteristic.RemoteKey.REWIND:
+							command = 'NS9E';
+							break;
+						case Characteristic.RemoteKey.FAST_FORWARD:
+							command = 'NS9D';
+							break;
+						case Characteristic.RemoteKey.NEXT_TRACK:
+							command = 'MN9D';
+							break;
+						case Characteristic.RemoteKey.PREVIOUS_TRACK:
+							command = 'MN9E';
+							break;
+						case Characteristic.RemoteKey.ARROW_UP:
+							command = 'NS90';
+							break;
+						case Characteristic.RemoteKey.ARROW_DOWN:
+							command = 'NS91';
+							break;
+						case Characteristic.RemoteKey.ARROW_LEFT:
+							command = 'NS92';
+							break;
+						case Characteristic.RemoteKey.ARROW_RIGHT:
+							command = 'NS93';
+							break;
+						case Characteristic.RemoteKey.SELECT:
+							command = 'NS94';
+							break;
+						case Characteristic.RemoteKey.BACK:
+							command = 'MNRTN';
+							break;
+						case Characteristic.RemoteKey.EXIT:
+							command = 'MNRTN';
+							break;
+						case Characteristic.RemoteKey.PLAY_PAUSE:
+							command = this.mediaState ? 'NS9B' : 'NS9A';
+							this.mediaState = !this.mediaState;
+							break;
+						case Characteristic.RemoteKey.INFORMATION:
+							command = this.switchInfoMenu ? 'MNINF' : 'MNOPT';
+							break;
 					}
-					try {
-						const setCommand = await this.axiosInstance(API_URL.iPhoneDirect + command);
-						if (!this.disableLogInfo) {
-							this.log('Device: %s %s %s, Remote Key successful, command: %s', this.host, accessoryName, this.zoneName, command);
-						}
-					} catch (error) {
-						this.log.error('Device: %s %s %s, can not Remote Key command. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, error);
-					};
-				});
-		}
+				} else {
+					switch (command) {
+						case Characteristic.RemoteKey.REWIND:
+							command = 'MN9E';
+							break;
+						case Characteristic.RemoteKey.FAST_FORWARD:
+							command = 'MN9D';
+							break;
+						case Characteristic.RemoteKey.NEXT_TRACK:
+							command = 'MN9F';
+							break;
+						case Characteristic.RemoteKey.PREVIOUS_TRACK:
+							command = 'MN9G';
+							break;
+						case Characteristic.RemoteKey.ARROW_UP:
+							command = 'MNCUP';
+							break;
+						case Characteristic.RemoteKey.ARROW_DOWN:
+							command = 'MNCDN';
+							break;
+						case Characteristic.RemoteKey.ARROW_LEFT:
+							command = 'MNCLT';
+							break;
+						case Characteristic.RemoteKey.ARROW_RIGHT:
+							command = 'MNCRT';
+							break;
+						case Characteristic.RemoteKey.SELECT:
+							command = 'MNENT';
+							break;
+						case Characteristic.RemoteKey.BACK:
+							command = 'MNRTN';
+							break;
+						case Characteristic.RemoteKey.EXIT:
+							command = 'MNRTN';
+							break;
+						case Characteristic.RemoteKey.PLAY_PAUSE:
+							command = 'NS94';
+							break;
+						case Characteristic.RemoteKey.INFORMATION:
+							command = this.switchInfoMenu ? 'MNINF' : 'MNOPT';
+							break;
+					}
+				}
+				try {
+					const setCommand = await this.axiosInstance(API_URL.iPhoneDirect + command);
+					if (!this.disableLogInfo) {
+						this.log('Device: %s %s %s, Remote Key successful, command: %s', this.host, accessoryName, this.zoneName, command);
+					}
+				} catch (error) {
+					this.log.error('Device: %s %s %s, can not Remote Key command. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, error);
+				};
+			});
 
 
 		//optional television characteristics
