@@ -191,7 +191,7 @@ class denonTvDevice {
 				this.modelName = modelName;
 				this.WebAPIPort = X_WebAPIPort;
 			})
-			.on('deviceInfo', async (parseDeviceInfo) => {
+			.on('deviceInfo', (parseDeviceInfo) => {
 				const manufacturer = (parseDeviceInfo.Device_Info.BrandCode[0] != undefined) ? ['Denon', 'Marantz'][parseDeviceInfo.Device_Info.BrandCode[0]] : this.manufacturer;
 				const modelName = parseDeviceInfo.Device_Info.ModelName[0] || this.modelName;
 				const serialNumber = parseDeviceInfo.Device_Info.MacAddress[0] || this.serialNumber;
@@ -224,6 +224,11 @@ class denonTvDevice {
 				this.modelName = modelName;
 				this.serialNumber = serialNumber;
 				this.firmwareRevision = firmwareRevision;
+
+				//start prepare accessory
+				if (this.startPrepareAccessory) {
+					this.prepareAccessory();
+				};
 			})
 			.on('deviceState', (parseDeviceStateData) => {
 				const powerState = (parseDeviceStateData.item.Power[0].value[0] == 'ON');
@@ -263,12 +268,6 @@ class denonTvDevice {
 				}
 				this.volume = volume;
 				this.muteState = muteState;
-				this.checkDeviceState = true;
-
-				//start prepare accessory
-				if (this.startPrepareAccessory) {
-					this.prepareAccessory();
-				};
 			});
 	}
 
@@ -302,8 +301,6 @@ class denonTvDevice {
 			this.log.debug('Device: %s %s %s, save %s succesful: %s', this.host, this.name, this.zoneName, this.zoneControl <= 2 ? 'Inputs' : 'Sound Modes', obj);
 		} catch (error) {
 			this.log.error('Device: %s %s %s, save %s error: %s', this.host, this.name, this.zoneName, this.zoneControl <= 2 ? 'Inputs' : 'Sound Modes', error);
-			this.checkDeviceState = false;
-			this.checkDeviceInfo = true;
 		};
 	};
 
