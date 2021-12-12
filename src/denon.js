@@ -42,17 +42,12 @@ class DENON extends EventEmitter {
         });
 
         this.checkDeviceInfo = true;
-        this.parseDeviceStateData = {};
-        this.powerState = false;
-        this.inputReference = '';
+        this.power = false;
+        this.reference = '';
         this.volume = 0;
-        this.muteState = false;
+        this.mute = false;
 
-        setInterval(() => {
-            if (this.checkDeviceInfo) {
-                this.getDeviceInfo();
-            }
-        }, 5000);
+        this.connect();
     };
 
     async getDeviceInfoUpnp() {
@@ -63,6 +58,10 @@ class DENON extends EventEmitter {
             this.emit('deviceInfoUpnp', parseDeviceInfoUpnp);
         } catch (error) {
             this.emit('error', `device info upnp error: ${error}`);
+            
+            setTimeout(() => {
+                this.connect();
+            }, 5000);
         };
     };
 
@@ -78,8 +77,12 @@ class DENON extends EventEmitter {
             this.updateDeviceState();
         } catch (error) {
             this.emit('error', `device info error: ${error}`);
+            
+            setTimeout(() => {
+                this.connect();
+            }, 5000);
         };
-    }
+    };
 
     updateDeviceState() {
         setInterval(async () => {
@@ -91,20 +94,19 @@ class DENON extends EventEmitter {
                 const inputReference = parseDeviceStateData.item.InputFuncSelect[0].value[0];
                 const volume = parseDeviceStateData.item.MasterVolume[0].value[0];
                 const muteState = (parseDeviceStateData.item.Mute[0].value[0] == 'on');
-                if (powerState != this.powerState || inputReference != this.inputReference || volume != this.volume || muteState != this.muteState) {
+                if (power != this.power || reference != this.reference || volume != this.volume || mute != this.mute) {
                     this.emit('debug', `parseDeviceStateData: ${deviceStateData.data}`);
                     this.emit('deviceState', parseDeviceStateData);
-                    this.powerState = powerState;
-                    this.inputReference = inputReference;
+                    this.power = power;
+                    this.reference = reference;
                     this.volume = volume;
-                    this.muteState = muteState;
+                    this.mute = mute;
                 };
             } catch (error) {
                 this.emit('error', `update device state error: ${error}`);
-                this.checkDeviceInfo = true;
             };
         }, 750)
-    }
+    };
 
     send(command) {
         return new Promise(async (resolve, reject) => {
@@ -117,7 +119,12 @@ class DENON extends EventEmitter {
                 reject(error);
             };
         });
-    }
-
+    };
+    
+    connect() {
+       if (this.checkDeviceInfo) {
+           this.getDeviceInfo();
+        };
+    };
 };
 module.exports = DENON;
