@@ -164,7 +164,7 @@ class denonTvDevice {
 				const debug = this.enableDebugMode ? this.log('Device: %s %s %s, debug: %s', this.host, this.name, this.zoneName, message) : false;
 			})
 			.on('message', (message) => {
-				this.log('Device: %s %s %s, %s', this.host, this.name, this.zoneName, message);
+				const logInfo = this.disablealogainfo ? false : this.log('Device: %s %s %s, %s', this.host, this.name, this.zoneName, message);
 			})
 			.on('deviceInfoUpnp', (parseDeviceInfoUpnp) => {
 				const deviceType = parseDeviceInfoUpnp.root.device[0].deviceType[0];
@@ -330,9 +330,7 @@ class denonTvDevice {
 		this.televisionService.getCharacteristic(Characteristic.Active)
 			.onGet(async () => {
 				const state = this.powerState;
-				if (!this.disableLogInfo) {
-					this.log('Device: %s %s %s, get Power state successfull, state: %s', this.host, accessoryName, this.zoneName, state ? 'ON' : 'OFF');
-				}
+			        const logInfo = this.disablealogainfo ? false : this.log('Device: %s %s %s, get Power state successfull, state: %s', this.host, accessoryName, this.zoneName, state ? 'ON' : 'OFF');
 				return state;
 			})
 			.onSet(async (state) => {
@@ -341,9 +339,7 @@ class denonTvDevice {
 				const newState = [(state ? 'ZMON' : 'ZMOFF'), (state ? 'Z2ON' : 'Z2OFF'), (state ? 'Z3ON' : 'Z3OFF'), (state ? 'ZMON' : 'ZMOFF'), (state ? 'PWON' : 'PWSTANDBY')][zControl];
 				try {
 					const setPower = (state != this.powerState) ? await this.denon.send(newState) : false;
-					if (!this.disableLogInfo) {
-						this.log('Device: %s %s %s, set Power state successful, state: %s', this.host, accessoryName, this.zoneName, newState);
-					}
+					const logInfo = this.disablealogainfo ? false : this.log('Device: %s %s %s, set Power state successful, state: %s', this.host, accessoryName, this.zoneName, newState);
 				} catch (error) {
 					this.log.error('Device: %s %s %s, can not set Power state. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, error);
 				};
@@ -354,9 +350,7 @@ class denonTvDevice {
 				const inputIdentifier = this.inputIdentifier;
 				const inputName = this.inputsName[inputIdentifier];
 				const inputReference = this.inputsReference[inputIdentifier];
-				if (!this.disableLogInfo) {
-					this.log('Device: %s %s %s, get %s successful, name: %s, reference: %s', this.host, accessoryName, this.zoneName, this.zoneControl <= 2 ? 'Input' : 'Sound Mode', inputName, inputReference);
-				}
+				const logInfo = this.disablealogainfo ? false : this.log('Device: %s %s %s, get %s successful, name: %s, reference: %s', this.host, accessoryName, this.zoneName, this.zoneControl <= 2 ? 'Input' : 'Sound Mode', inputName, inputReference);
 				return inputIdentifier;
 			})
 			.onSet(async (inputIdentifier) => {
@@ -367,9 +361,7 @@ class denonTvDevice {
 				const inputRef = zone + inputReference;
 				try {
 					const setInput = (this.powerState && inputReference != undefined) ? await this.denon.send(inputRef) : false;
-					if (!this.disableLogInfo) {
-						this.log('Device: %s %s %s, set %s successful, name: %s, reference: %s', this.host, accessoryName, this.zoneName, this.zoneControl <= 2 ? 'Input' : 'Sound Mode', inputName, inputRef);
-					}
+					const logInfo = this.disablealogainfo ? false : this.log('Device: %s %s %s, set %s successful, name: %s, reference: %s', this.host, accessoryName, this.zoneName, this.zoneControl <= 2 ? 'Input' : 'Sound Mode', inputName, inputRef);
 					this.setStartInputIdentifier = inputIdentifier;
 					this.setStartInput = this.powerState ? false : true;
 					this.inputIdentifier = inputIdentifier;
@@ -469,9 +461,7 @@ class denonTvDevice {
 				}
 				try {
 					const setCommand = await this.denon.send(command);
-					if (!this.disableLogInfo) {
-						this.log('Device: %s %s %s, Remote Key successful, command: %s', this.host, accessoryName, this.zoneName, command);
-					}
+					const logInfo = this.disablealogainfo ? false : this.log('Device: %s %s %s, Remote Key successful, command: %s', this.host, accessoryName, this.zoneName, command);
 				} catch (error) {
 					this.log.error('Device: %s %s %s, can not Remote Key command. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, error);
 				};
@@ -489,9 +479,7 @@ class denonTvDevice {
 					const brightness = `PVBR ${value}`;
 					try {
 						const setBrightness = await this.denon.send(brightness);
-						if (!this.disableLogInfo) {
-							this.log('Device: %s %s %s, set Brightness successful, brightness: %s', this.host, accessoryName, this.zoneName, value);
-						}
+						const logInfo = this.disablealogainfo ? false : this.log('Device: %s %s %s, set Brightness successful, brightness: %s', this.host, accessoryName, this.zoneName, value);
 						this.brightness = value;
 					} catch (error) {
 						this.log.error('Device: %s %s %s, can not set Brightness. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, error);
@@ -501,9 +489,7 @@ class denonTvDevice {
 			this.televisionService.getCharacteristic(Characteristic.PictureMode)
 				.onGet(async () => {
 					const pictureMode = this.pictureMode;
-					if (!this.disableLogInfo) {
-						this.log('Device: %s %s %s, get Picture mode: %s', this.host, accessoryName, this.zoneName, pictureMode);
-					}
+					const logInfo = this.disablealogainfo ? false : this.log('Device: %s %s %s, get Picture mode: %s', this.host, accessoryName, this.zoneName, pictureMode);
 					return pictureMode;
 				})
 				.onSet(async (command) => {
@@ -535,9 +521,7 @@ class denonTvDevice {
 					}
 					try {
 						const setCommand = await this.denon.send(command);
-						if (!this.disableLogInfo) {
-							this.log('Device: %s %s %s, set Picture Mode successful, command: %s', this.host, accessoryName, this.zoneName, command);
-						}
+						const logInfo = this.disablealogainfo ? false : this.log('Device: %s %s %s, set Picture Mode successful, command: %s', this.host, accessoryName, this.zoneName, command);
 					} catch (error) {
 						this.log.error('Device: %s %s %s, can not set Picture Mode command. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, error);
 					};
@@ -555,9 +539,7 @@ class denonTvDevice {
 					}
 					try {
 						const setCommand = await this.denon.send(command);
-						if (!this.disableLogInfo) {
-							this.log('Device: %s %s %s, set Power Mode Selection successful, command: %s', this.host, accessoryName, this.zoneName, command);
-						}
+						const logInfo = this.disablealogainfo ? false : this.log('Device: %s %s %s, set Power Mode Selection successful, command: %s', this.host, accessoryName, this.zoneName, command);
 					} catch (error) {
 						this.log.error('Device: %s %s %s, can not set Power Mode Selection command. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, error);
 					};
@@ -586,9 +568,7 @@ class denonTvDevice {
 				}
 				try {
 					const setVolume = await this.denon.send(zone + command);
-					if (!this.disableLogInfo) {
-						this.log('Device: %s %s %s, setVolumeSelector successful, command: %s', this.host, accessoryName, this.zoneName, command);
-					}
+					const logInfo = this.disablealogainfo ? false : this.log('Device: %s %s %s, setVolumeSelector successful, command: %s', this.host, accessoryName, this.zoneName, command);
 				} catch (error) {
 					this.log.error('Device: %s %s %s, can not setVolumeSelector command. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, error);
 				};
@@ -597,9 +577,7 @@ class denonTvDevice {
 		this.speakerService.getCharacteristic(Characteristic.Volume)
 			.onGet(async () => {
 				const volume = this.volume;
-				if (!this.disableLogInfo) {
-					this.log('Device: %s %s %s, get Volume level successful: %s dB', this.host, accessoryName, this.zoneName, (volume - 80));
-				}
+				const logInfo = this.disablealogainfo ? false : this.log('Device: %s %s %s, get Volume level successful: %s dB', this.host, accessoryName, this.zoneName, (volume - 80));
 				return volume;
 			})
 			.onSet(async (volume) => {
@@ -618,9 +596,7 @@ class denonTvDevice {
 				}
 				try {
 					const setVolume = await this.denon.send(zone + volume);
-					if (!this.disableLogInfo) {
-						this.log('Device: %s %s %s, set new Volume level successful, volume: %s dB', this.host, accessoryName, this.zoneName, volume - 80);
-					}
+					const logInfo = this.disablealogainfo ? false : this.log('Device: %s %s %s, set new Volume level successful, volume: %s dB', this.host, accessoryName, this.zoneName, volume - 80);
 				} catch (error) {
 					this.log.error('Device: %s %s %s, can not set new Volume level. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, error);
 				};
@@ -629,9 +605,7 @@ class denonTvDevice {
 		this.speakerService.getCharacteristic(Characteristic.Mute)
 			.onGet(async () => {
 				const state = this.powerState ? this.muteState : true;
-				if (!this.disableLogInfo) {
-					this.log('Device: %s %s %s, get Mute state successful: %s', this.host, accessoryName, this.zoneName, state ? 'ON' : 'OFF');
-				}
+				const logInfo = this.disablealogainfo ? false : this.log('Device: %s %s %s, get Mute state successful: %s', this.host, accessoryName, this.zoneName, state ? 'ON' : 'OFF');
 				return state;
 			})
 			.onSet(async (state) => {
@@ -641,9 +615,7 @@ class denonTvDevice {
 					const newState = state ? 'MUON' : 'MUOFF';
 					try {
 						const setMute = await this.denon.send(zone + newState);
-						if (!this.disableLogInfo) {
-							this.log('Device: %s %s %s, set new Mute state successful, state: %s', this.host, accessoryName, this.zoneName, state ? 'ON' : 'OFF');
-						}
+						const logInfo = this.disablealogainfo ? false : this.log('Device: %s %s %s, set new Mute state successful, state: %s', this.host, accessoryName, this.zoneName, state ? 'ON' : 'OFF');
 					} catch (error) {
 						this.log.error('Device: %s %s %s, can not set new Mute state. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, error);
 					};
@@ -757,9 +729,7 @@ class denonTvDevice {
 					try {
 						const writeNewCustomName = (nameIdentifier != false) ? await fsPromises.writeFile(this.inputsNamesFile, newCustomName) : false;
 						this.log.debug('Device: %s %s %s, saved new Input successful, savedInputsNames: %s', this.host, accessoryName, this.zoneName, newCustomName);
-						if (!this.disableLogInfo) {
-							this.log('Device: %s %s %s, new %s name saved successful, name: %s, reference: %s', this.host, accessoryName, this.zoneName, this.zoneControl <= 2 ? 'Input' : 'Sound Mode', name, inputReference);
-						}
+						const logInfo = this.disablealogainfo ? false : this.log('Device: %s %s %s, new %s name saved successful, name: %s, reference: %s', this.host, accessoryName, this.zoneName, this.zoneControl <= 2 ? 'Input' : 'Sound Mode', name, inputReference);
 					} catch (error) {
 						this.log.error('Device: %s %s %s, new %s name saved failed, Error: %s', this.host, accessoryName, this.zoneName, this.zoneControl <= 2 ? 'Input' : 'Sound Mode', error);
 					}
@@ -775,9 +745,7 @@ class denonTvDevice {
 					try {
 						const writeNewTargetVisibility = (targetVisibilityIdentifier != false) ? await fsPromises.writeFile(this.inputsTargetVisibilityFile, newTargetVisibility) : false;
 						this.log.debug('Device: %s %s %s, %s: %s, saved Target Visibility state: %s', this.host, accessoryName, this.zoneName, this.zoneControl <= 2 ? 'Input' : 'Sound Mode', inputName, newTargetVisibility);
-						if (!this.disableLogInfo) {
-							this.log('Device: %s %s %s, new %s Target Visibility saved successful, name: %s, state: %s', this.host, accessoryName, this.zoneName, this.zoneControl <= 2 ? 'Input' : 'Sound Mode', inputName, state ? 'HIDEN' : 'SHOWN');
-						}
+						const logInfo = this.disablealogainfo ? false : this.log('Device: %s %s %s, new %s Target Visibility saved successful, name: %s, state: %s', this.host, accessoryName, this.zoneName, this.zoneControl <= 2 ? 'Input' : 'Sound Mode', inputName, state ? 'HIDEN' : 'SHOWN');
 						inputService.setCharacteristic(Characteristic.CurrentVisibilityState, state);
 					} catch (error) {
 						this.log.error('Device: %s %s %s, saved %s Target Visibility state error: %s', this.host, accessoryName, this.zoneName, this.zoneControl <= 2 ? 'Input' : 'Sound Mode', error);
@@ -813,17 +781,13 @@ class denonTvDevice {
 				buttonService.getCharacteristic(Characteristic.On)
 					.onGet(async () => {
 						const state = false;
-						if (!this.disableLogInfo) {
-							this.log('Device: %s %s %s, get Button state successful, state: %s', this.host, accessoryName, this.zoneName, state);
-						}
+						const logInfo = this.disablealogainfo ? false : this.log('Device: %s %s %s, get Button state successful, state: %s', this.host, accessoryName, this.zoneName, state);
 						return state;
 					})
 					.onSet(async (state) => {
 						try {
 							const setFunction = (state && this.powerState) ? await this.denon.send(buttonReference) : false;
-							if (!this.disableLogInfo) {
-								this.log('Device: %s %s %s, set new Input successful, name: %s, reference: %s', this.host, accessoryName, this.zoneName, buttonName, buttonReference);
-							}
+							const logInfo = this.disablealogainfo ? false : this.log('Device: %s %s %s, set new Input successful, name: %s, reference: %s', this.host, accessoryName, this.zoneName, buttonName, buttonReference);
 						} catch (error) {
 							this.log.error('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s.', this.host, accessoryName, this.zoneName, error);
 						};
