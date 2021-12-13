@@ -88,7 +88,7 @@ class DENON extends EventEmitter {
 
     updateDeviceState() {
         this.checkStateOnFirstRun = true;
-        setInterval(async () => {
+        this.checkState = setInterval(async () => {
             try {
                 const deviceStateData = await this.axiosInstance(this.apiUrl);
                 const parseDeviceStateData = await parseStringPromise(deviceStateData.data);
@@ -107,8 +107,11 @@ class DENON extends EventEmitter {
                 };
             } catch (error) {
                 this.emit('error', `update device state error: ${error}`);
+                this.isConnected = false;
                 this.emit('deviceState', false, '', 0, true);
                 this.emit('disconnect', 'Disconnected.');
+                clearInterval(this.checkState);
+                this.connect();
             };
         }, 750)
     };
@@ -117,7 +120,7 @@ class DENON extends EventEmitter {
         return new Promise(async (resolve, reject) => {
             try {
                 const sendCommand = await this.axiosInstance(apiUrl);
-                this.emit('message', `send command: ${command}`);
+                this.emit('message', `send command: ${apiUrl}`);
                 resolve(true);
             } catch (error) {
                 this.emit('error', `send command error: ${error}`);
