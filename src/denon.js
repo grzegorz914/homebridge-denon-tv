@@ -33,19 +33,20 @@ class DENON extends EventEmitter {
         this.port = config.port;
         this.zoneControl = config.zoneControl;
         this.devInfoFile = config.devInfoFile;
+        this.apiUrl = [API_URL.MainZoneStatusLite, API_URL.Zone2StatusLite, API_URL.Zone3StatusLite, API_URL.SoundModeStatus][this.zoneControl];
 
         const url = (`http://${this.host}:${this.port}`);
         this.axiosInstance = axios.create({
             method: 'GET',
-            baseURL: url,
-            timeout: 5000
+            baseURL: url
         });
 
-        this.checkDeviceInfo = true;
+        this.isConnected = false;
         this.power = false;
         this.reference = '';
         this.volume = 0;
         this.mute = false;
+        this.checkStateOnFirstRun = false;
 
         this.connect();
     };
@@ -58,7 +59,7 @@ class DENON extends EventEmitter {
             this.emit('deviceInfoUpnp', parseDeviceInfoUpnp);
         } catch (error) {
             this.emit('error', `device info upnp error: ${error}`);
-            
+
             setTimeout(() => {
                 this.connect();
             }, 5000);
@@ -72,12 +73,13 @@ class DENON extends EventEmitter {
             const devInfo = JSON.stringify(parseDeviceInfo.Device_Info, null, 2);
             const writeDevInfo = (this.zoneControl == 0) ? await fsPromises.writeFile(this.devInfoFile, devInfo) : false;
             this.emit('debug', `parseDeviceInfo: ${deviceInfo.data}`);
+            this.emit('connect', 'Connected.');
             this.emit('deviceInfo', parseDeviceInfo);
-            this.checkDeviceInfo = false;
+            this.isConnected = true;
             this.updateDeviceState();
         } catch (error) {
             this.emit('error', `device info error: ${error}`);
-            
+
             setTimeout(() => {
                 this.connect();
             }, 5000);
@@ -85,33 +87,36 @@ class DENON extends EventEmitter {
     };
 
     updateDeviceState() {
+        this.checkStateOnFirstRun = true;
         setInterval(async () => {
             try {
-                const apiUrl = [API_URL.MainZoneStatusLite, API_URL.Zone2StatusLite, API_URL.Zone3StatusLite, API_URL.SoundModeStatus][this.zoneControl];
-                const deviceStateData = await this.axiosInstance(apiUrl);
+                const deviceStateData = await this.axiosInstance(this.apiUrl);
                 const parseDeviceStateData = await parseStringPromise(deviceStateData.data);
-                const powerState = (parseDeviceStateData.item.Power[0].value[0] == 'ON');
-                const inputReference = parseDeviceStateData.item.InputFuncSelect[0].value[0];
-                const volume = parseDeviceStateData.item.MasterVolume[0].value[0];
-                const muteState = (parseDeviceStateData.item.Mute[0].value[0] == 'on');
-                if (power != this.power || reference != this.reference || volume != this.volume || mute != this.mute) {
-                    this.emit('debug', `parseDeviceStateData: ${deviceStateData.data}`);
-                    this.emit('deviceState', parseDeviceStateData);
+                const power = (parseDeviceStateData.item.Power[0].value[0] == 'ON');
+                const reference = (this.zoneControl <= 2) ? (parseDeviceStateData.item.InputFuncSelect[0].value[0] == 'Internet Radio') ? 'IRADIO' : (parseDeviceStateData.item.InputFuncSelect[0].value[0] == 'AirPlay') ? 'NET' : parseDeviceStateData.item.InputFuncSelect[0].value[0] : this.reference;
+                const volume = (parseFloat(parseDeviceStateData.item.MasterVolume[0].value[0]) >= -79.5) ? parseInt(parseDeviceStateData.item.MasterVolume[0].value[0]) + 80 : this.volume;
+                const mute = power ? (parseDeviceStateData.item.Mute[0].value[0] == 'on') : true;
+                if (this.checkStateOnFirstRun == true || power != this.power || reference != this.reference || volume != this.volume || mute != this.mute) {
+                    this.emit('debug', `deviceStateData: ${deviceStateData.data}`);
+                    this.emit('deviceState', power, reference, volume, mute);
                     this.power = power;
                     this.reference = reference;
                     this.volume = volume;
                     this.mute = mute;
+                    this.checkStateOnFirstRun = false;
                 };
             } catch (error) {
                 this.emit('error', `update device state error: ${error}`);
+                this.emit('deviceState', false, '', 0, true);
+                this.emit('disconnect', 'Disconnected.');
             };
         }, 750)
     };
 
-    send(command) {
+    send(apiUrl) {
         return new Promise(async (resolve, reject) => {
             try {
-                const sendCommand = await this.axiosInstance(API_URL.iPhoneDirect + command);
+                const sendCommand = await this.axiosInstance(apiUrl);
                 this.emit('message', `send command: ${command}`);
                 resolve(true);
             } catch (error) {
@@ -120,10 +125,10 @@ class DENON extends EventEmitter {
             };
         });
     };
-    
+
     connect() {
-       if (this.checkDeviceInfo) {
-           this.getDeviceInfo();
+        if (!this.isConnected) {
+            this.getDeviceInfo();
         };
     };
 };

@@ -225,6 +225,8 @@ Each accessory needs to be manually paired.
 6. Complete the accessory setup.
 ## Limitations
 * That maximum Services for 1 accessory is 100. If Services > 100, accessory stop responding.
+* To solved this problem the plugin couts the number of Services and not allow add more as 100.
+* If You have configured more as 100 Services some inputs or button will not be available in the Home app.
 * The Services in this accessory are:
   * Information.
   * Speaker.
@@ -232,7 +234,7 @@ Each accessory needs to be manually paired.
   * Fan.
   * Television.
   * Inputs, which may range from 6 to 100 as each input is 1 service.
-  * Buttons, which may range from 6 to 100 as each input is 1 service.
+  * Buttons, which may range from 6 to 100 as each button is 1 service.
 
 ## [What's New](https://github.com/grzegorz914/homebridge-denon-tv/blob/master/CHANGELOG.md)
 
