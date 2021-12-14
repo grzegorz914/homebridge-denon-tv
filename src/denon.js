@@ -1,6 +1,6 @@
 const fs = require('fs');
 const fsPromises = fs.promises;
-const EventEmitter = require('events').EventEmitter;
+const EventEmitter = require('events');
 const axios = require('axios');
 const parseStringPromise = require('xml2js').parseStringPromise;
 

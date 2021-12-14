@@ -600,22 +600,20 @@ class denonTvDevice {
 
 		this.speakerService.getCharacteristic(Characteristic.Mute)
 			.onGet(async () => {
-				const state = this.powerState ? this.muteState : true;
+				const state = this.muteState;
 				const logInfo = this.disableLogInfo ? false : this.log('Device: %s %s %s, get Mute state successful: %s', this.host, accessoryName, this.zoneName, state ? 'ON' : 'OFF');
 				return state;
 			})
 			.onSet(async (state) => {
-				if (state != this.muteState) {
-					const zControl = this.masterMute ? 4 : this.zoneControl;
-					const zone = ['', 'Z2', 'Z3', '', ''][zControl];
-					const newState = state ? 'MUON' : 'MUOFF';
-					try {
-						const setMute = await this.denon.send(API_URL.iPhoneDirect + zone + newState);
-						const logInfo = this.disableLogInfo ? false : this.log('Device: %s %s %s, set new Mute state successful, state: %s', this.host, accessoryName, this.zoneName, state ? 'ON' : 'OFF');
-					} catch (error) {
-						this.log.error('Device: %s %s %s, can not set new Mute state. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, error);
-					};
-				}
+				const zControl = this.masterMute ? 4 : this.zoneControl;
+				const zone = ['', 'Z2', 'Z3', '', ''][zControl];
+				const newState = state ? 'MUON' : 'MUOFF';
+				try {
+					const toggleMute = (this.powerState && state != this.muteState) ? await this.denon.send(API_URL.iPhoneDirect + zone + newState) : false;
+					const logInfo = this.disableLogInfo ? false : this.log('Device: %s %s %s, set new Mute state successful, state: %s', this.host, accessoryName, this.zoneName, state ? 'ON' : 'OFF');
+				} catch (error) {
+					this.log.error('Device: %s %s %s, can not set new Mute state. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, error);
+				};
 			});
 
 		accessory.addService(this.speakerService);
@@ -635,7 +633,7 @@ class denonTvDevice {
 					});
 				this.volumeService.getCharacteristic(Characteristic.On)
 					.onGet(async () => {
-						const state = this.powerState ? !this.muteState : false;
+						const state = !this.muteState;
 						return state;
 					})
 					.onSet(async (state) => {
@@ -657,7 +655,7 @@ class denonTvDevice {
 					});
 				this.volumeServiceFan.getCharacteristic(Characteristic.On)
 					.onGet(async () => {
-						const state = this.powerState ? !this.muteState : false;
+						const state = !this.muteState;
 						return state;
 					})
 					.onSet(async (state) => {
