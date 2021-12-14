@@ -127,7 +127,7 @@ class denonTvDevice {
 
 		this.powerState = false;
 		this.volume = 0;
-		this.muteState = false;
+		this.muteState = true;
 		this.mediaState = false;
 
 		this.setStartInput = false;
