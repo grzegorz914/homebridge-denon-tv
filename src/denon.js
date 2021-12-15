@@ -38,7 +38,8 @@ class DENON extends EventEmitter {
         const url = (`http://${this.host}:${this.port}`);
         this.axiosInstance = axios.create({
             method: 'GET',
-            baseURL: url
+            baseURL: url,
+            timeout: 5000
         });
 
         this.isConnected = false;
@@ -48,7 +49,7 @@ class DENON extends EventEmitter {
         this.mute = false;
         this.checkStateOnFirstRun = false;
 
-        this.connect();
+        this.getDeviceInfo();
     };
 
     async getDeviceInfoUpnp() {
@@ -59,10 +60,8 @@ class DENON extends EventEmitter {
             this.emit('deviceInfoUpnp', parseDeviceInfoUpnp);
         } catch (error) {
             this.emit('error', `device info upnp error: ${error}`);
-
-            setTimeout(() => {
-                this.connect();
-            }, 5000);
+            this.isConnected = false;
+            this.reconnect();
         };
     };
 
@@ -79,10 +78,8 @@ class DENON extends EventEmitter {
             this.updateDeviceState();
         } catch (error) {
             this.emit('error', `device info error: ${error}`);
-
-            setTimeout(() => {
-                this.connect();
-            }, 5000);
+            this.isConnected = false;
+            this.reconnect();
         };
     };
 
@@ -108,10 +105,10 @@ class DENON extends EventEmitter {
             } catch (error) {
                 this.emit('error', `update device state error: ${error}`);
                 this.isConnected = false;
+
                 this.emit('deviceState', false, '', 0, true);
                 this.emit('disconnect', 'Disconnected.');
-                clearInterval(this.checkState);
-                this.connect();
+                this.reconnect();
             };
         }, 750)
     };
@@ -129,8 +126,9 @@ class DENON extends EventEmitter {
         });
     };
 
-    connect() {
+    reconnect() {
         if (!this.isConnected) {
+            clearInterval(this.checkState);
             this.getDeviceInfo();
         };
     };
