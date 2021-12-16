@@ -39,7 +39,7 @@ class DENON extends EventEmitter {
         this.axiosInstance = axios.create({
             method: 'GET',
             baseURL: url,
-            timeout: 5000
+            timeout: 750
         });
 
         this.isConnected = false;
@@ -47,7 +47,51 @@ class DENON extends EventEmitter {
         this.reference = '';
         this.volume = 0;
         this.mute = false;
+        this.checkState = false;
         this.checkStateOnFirstRun = false;
+
+        setInterval(() => {
+            const chackState = this.isConnected ? this.emit('checkState') : false;
+        }, 1000)
+
+        this.on('connect', (message) => {
+                this.isConnected = true;
+                this.emit('connected', 'Connected.');
+                this.emit('deviceInfo', message);
+            })
+            .on('checkState', async () => {
+                try {
+                    this.checkStateOnFirstRun = true;
+                    const deviceStateData = await this.axiosInstance(this.apiUrl);
+                    const parseDeviceStateData = await parseStringPromise(deviceStateData.data);
+                    const power = (parseDeviceStateData.item.Power[0].value[0] == 'ON');
+                    const reference = (this.zoneControl <= 2) ? (parseDeviceStateData.item.InputFuncSelect[0].value[0] == 'Internet Radio') ? 'IRADIO' : (parseDeviceStateData.item.InputFuncSelect[0].value[0] == 'AirPlay') ? 'NET' : parseDeviceStateData.item.InputFuncSelect[0].value[0] : this.reference;
+                    const volume = (parseFloat(parseDeviceStateData.item.MasterVolume[0].value[0]) >= -79.5) ? parseInt(parseDeviceStateData.item.MasterVolume[0].value[0]) + 80 : this.volume;
+                    const mute = power ? (parseDeviceStateData.item.Mute[0].value[0] == 'on') : true;
+                    if (this.checkStateOnFirstRun == true || power != this.power || reference != this.reference || volume != this.volume || mute != this.mute) {
+                        this.emit('debug', `deviceStateData: ${deviceStateData.data}`);
+                        this.emit('deviceState', power, reference, volume, mute);
+                        this.power = power;
+                        this.reference = reference;
+                        this.volume = volume;
+                        this.mute = mute;
+                        this.checkStateOnFirstRun = false;
+                    };
+                } catch (error) {
+                    this.emit('error', `update device state error: ${error}`);
+                    this.emit('disconnect');
+                };
+            })
+        this.on('disconnect', () => {
+            clearInterval(this.checkState);
+            this.emit('deviceState', false, '', 0, true);
+            this.emit('disconnected', 'Disconnected.');
+            this.isConnected = false;
+
+            setTimeout(() => {
+                this.getDeviceInfo();
+            }, 5000);
+        });
 
         this.getDeviceInfo();
     };
@@ -57,11 +101,10 @@ class DENON extends EventEmitter {
             const deviceInfoUpnp = await axios.get(`http://${this.host}${API_URL.UPNP}`);
             const parseDeviceInfoUpnp = await parseStringPromise(deviceInfoUpnp.data);
             this.emit('debug', `parseDeviceInfoUpnp: ${parseDeviceInfoUpnp.root.device[0]}`);
-            this.emit('deviceInfoUpnp', parseDeviceInfoUpnp);
+            this.emit('connect', parseDeviceInfoUpnp);
         } catch (error) {
             this.emit('error', `device info upnp error: ${error}`);
-            this.isConnected = false;
-            this.reconnect();
+            this.emit('disconnect');
         };
     };
 
@@ -72,45 +115,11 @@ class DENON extends EventEmitter {
             const devInfo = JSON.stringify(parseDeviceInfo.Device_Info, null, 2);
             const writeDevInfo = (this.zoneControl == 0) ? await fsPromises.writeFile(this.devInfoFile, devInfo) : false;
             this.emit('debug', `parseDeviceInfo: ${deviceInfo.data}`);
-            this.emit('connect', 'Connected.');
-            this.emit('deviceInfo', parseDeviceInfo);
-            this.isConnected = true;
-            this.updateDeviceState();
+            this.emit('connect', parseDeviceInfo);
         } catch (error) {
             this.emit('error', `device info error: ${error}`);
-            this.isConnected = false;
-            this.reconnect();
+            this.emit('disconnect');
         };
-    };
-
-    updateDeviceState() {
-        this.checkStateOnFirstRun = true;
-        this.checkState = setInterval(async () => {
-            try {
-                const deviceStateData = await this.axiosInstance(this.apiUrl);
-                const parseDeviceStateData = await parseStringPromise(deviceStateData.data);
-                const power = (parseDeviceStateData.item.Power[0].value[0] == 'ON');
-                const reference = (this.zoneControl <= 2) ? (parseDeviceStateData.item.InputFuncSelect[0].value[0] == 'Internet Radio') ? 'IRADIO' : (parseDeviceStateData.item.InputFuncSelect[0].value[0] == 'AirPlay') ? 'NET' : parseDeviceStateData.item.InputFuncSelect[0].value[0] : this.reference;
-                const volume = (parseFloat(parseDeviceStateData.item.MasterVolume[0].value[0]) >= -79.5) ? parseInt(parseDeviceStateData.item.MasterVolume[0].value[0]) + 80 : this.volume;
-                const mute = power ? (parseDeviceStateData.item.Mute[0].value[0] == 'on') : true;
-                if (this.checkStateOnFirstRun == true || power != this.power || reference != this.reference || volume != this.volume || mute != this.mute) {
-                    this.emit('debug', `deviceStateData: ${deviceStateData.data}`);
-                    this.emit('deviceState', power, reference, volume, mute);
-                    this.power = power;
-                    this.reference = reference;
-                    this.volume = volume;
-                    this.mute = mute;
-                    this.checkStateOnFirstRun = false;
-                };
-            } catch (error) {
-                this.emit('error', `update device state error: ${error}`);
-                this.isConnected = false;
-
-                this.emit('deviceState', false, '', 0, true);
-                this.emit('disconnect', 'Disconnected.');
-                this.reconnect();
-            };
-        }, 750)
     };
 
     send(apiUrl) {
@@ -126,9 +135,8 @@ class DENON extends EventEmitter {
         });
     };
 
-    reconnect() {
+    connect() {
         if (!this.isConnected) {
-            clearInterval(this.checkState);
             this.getDeviceInfo();
         };
     };

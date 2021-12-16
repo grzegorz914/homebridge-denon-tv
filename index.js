@@ -154,7 +154,7 @@ class denonTvDevice {
 			devInfoFile: this.devInfoFile
 		});
 
-		this.denon.on('connect', (message) => {
+		this.denon.on('connected', (message) => {
 				this.log('Device: %s %s %s, %s', this.host, this.name, this.zoneName, message);
 			})
 			.on('error', (error) => {
@@ -255,7 +255,7 @@ class denonTvDevice {
 				this.muteState = mute;
 				this.inputIdentifier = inputIdentifier;
 			})
-			.on('disconnect', (message) => {
+			.on('disconnected', (message) => {
 				this.log('Device: %s %s %s, %s', this.host, this.name, this.zoneName, message);
 			});
 	}
