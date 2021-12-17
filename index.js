@@ -129,9 +129,7 @@ class denonTvDevice {
 		this.volume = 0;
 		this.muteState = true;
 		this.mediaState = false;
-
 		this.setStartInput = false;
-		this.setStartInputIdentifier = 0;
 
 		this.inputIdentifier = 0;
 		this.inputMode = '';
@@ -223,8 +221,7 @@ class denonTvDevice {
 			})
 			.on('deviceState', (power, reference, volume, mute) => {
 				reference = (this.zoneControl <= 2) ? (reference == 'Internet Radio') ? 'IRADIO' : (reference == 'AirPlay') ? 'NET' : reference : -1;
-				const currentInputIdentifier = (this.inputsReference.indexOf(reference) >= 0) ? this.inputsReference.indexOf(reference) : this.inputIdentifier;
-				const inputIdentifier = this.setStartInput ? this.setStartInputIdentifier : currentInputIdentifier;
+				const inputIdentifier = (this.inputsReference.indexOf(reference) >= 0) ? this.inputsReference.indexOf(reference) : this.inputIdentifier;
 
 				if (this.televisionService) {
 					this.televisionService
@@ -232,7 +229,7 @@ class denonTvDevice {
 
 					const setUpdateCharacteristic = this.setStartInput ? this.televisionService.setCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier) :
 						this.televisionService.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
-					this.setStartInput = (currentInputIdentifier == inputIdentifier) ? false : true;
+					this.setStartInput = (this.inputIdentifier == inputIdentifier) ? false : true;
 				}
 
 				if (this.speakerService) {
@@ -361,9 +358,8 @@ class denonTvDevice {
 				try {
 					const setInput = (this.powerState && inputReference != undefined) ? await this.denon.send(API_URL.iPhoneDirect + inputRef) : false;
 					const logInfo = this.disableLogInfo ? false : this.log('Device: %s %s %s, set %s successful, name: %s, reference: %s', this.host, accessoryName, this.zoneName, this.zoneControl <= 2 ? 'Input' : 'Sound Mode', inputName, inputRef);
-					this.setStartInputIdentifier = inputIdentifier;
-					this.setStartInput = this.powerState ? false : true;
 					this.inputIdentifier = inputIdentifier;
+					this.setStartInput = this.powerState ? false : true;
 				} catch (error) {
 					this.log.error('Device: %s %s %s, can not set %s. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, this.zoneControl <= 2 ? 'Input' : 'Sound Mode', error);
 				};
