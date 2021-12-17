@@ -331,7 +331,6 @@ class denonTvDevice {
 			})
 			.onSet(async (state) => {
 				const zControl = this.masterPower ? 4 : this.zoneControl;
-				this.log.debug('zControl is %s', zControl)
 				const newState = [(state ? 'ZMON' : 'ZMOFF'), (state ? 'Z2ON' : 'Z2OFF'), (state ? 'Z3ON' : 'Z3OFF'), (state ? 'ZMON' : 'ZMOFF'), (state ? 'PWON' : 'PWSTANDBY')][zControl];
 				try {
 					const setPower = (state != this.powerState) ? await this.denon.send(API_URL.iPhoneDirect + newState) : false;
