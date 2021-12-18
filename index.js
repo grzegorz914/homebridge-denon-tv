@@ -219,8 +219,8 @@ class denonTvDevice {
 					this.prepareAccessory();
 				};
 			})
-			.on('deviceState', (power, reference, volume, mute) => {
-				reference = (this.zoneControl <= 2) ? (reference == 'Internet Radio') ? 'IRADIO' : (reference == 'AirPlay') ? 'NET' : reference : -1;
+			.on('stateChanged', (power, reference, volume, mute) => {
+				reference = (this.zoneControl <= 2) ? (reference == 'Internet Radio') ? 'IRADIO' : (reference == 'AirPlay') ? 'NET' : reference : 'Sound mode';
 				const inputIdentifier = (this.inputsReference.indexOf(reference) >= 0) ? this.inputsReference.indexOf(reference) : this.inputIdentifier;
 
 				if (this.televisionService) {
