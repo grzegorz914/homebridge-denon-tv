@@ -4,31 +4,10 @@ const path = require('path');
 const fs = require('fs');
 const fsPromises = fs.promises;
 const denon = require('./src/denon');
+const API_URL = require('./src/apiurl.json');
 
 const PLUGIN_NAME = 'homebridge-denon-tv';
 const PLATFORM_NAME = 'DenonTv';
-
-const API_URL = {
-	'UPNP': ':60006/upnp/desc/aios_device/aios_device.xml',
-	'DeviceInfo': '/goform/Deviceinfo.xml',
-	'MainZone': '/goform/formMainZone_MainZoneXml.xml',
-	'MainZoneStatus': '/goform/formMainZone_MainZoneXmlStatus.xml',
-	'MainZoneStatusLite': '/goform/formMainZone_MainZoneXmlStatusLite.xml',
-	'Zone2Status': '/goform/forZone2_Zone2XmlStatus.xml',
-	'Zone2StatusLite': '/goform/formZone2_Zone2XmlStatusLite.xml',
-	'Zone3Status': '/goform/forZone3_Zone3XmlStatus.xml',
-	'Zone3StatusLite': '/goform/formZone3_Zone3XmlStatusLite.xml',
-	'Zone4Status': '/goform/forZone4_Zone4XmlStatus.xml',
-	'Zone4StatusLite': '/goform/formZone4_Zone4XmlStatusLite.xml',
-	'SoundModeStatus': '/goform/formMainZone_MainZoneXmlStatusLite.xml',
-	'TunerStatus': '/goform/formTuner_TunerXml.xml',
-	'iPhoneDirect': '/goform/formiPhoneAppDirect.xml?',
-	'AppCommand': '/goform/AppCommand.xml',
-	'AppCommand300': '/goform/AppCommand0300.xml',
-	'NetAudioStatusS': '/goform/formNetAudio_StatusXml.xml',
-	'HdTunerStatus': '/goform/formTuner_HdXml.xml',
-	'NetAudioCommandPost': '/NetAudio/index.put.asp'
-}
 
 const ZONE_NAME = ['Main Zone', 'Zone 2', 'Zone 3', 'Sound Mode'];
 const SHORT_ZONE_NAME = ['MZ', 'Z2', 'Z3', 'SM'];
@@ -227,8 +206,13 @@ class denonTvDevice {
 					this.televisionService
 						.updateCharacteristic(Characteristic.Active, power)
 
-					const setUpdateCharacteristic = this.setStartInput ? this.televisionService.setCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier) :
+					if (this.setStartInput) {
+						setTimeout(() => {
+							this.televisionService.setCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier)
+						}, 1200);
+					} else {
 						this.televisionService.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
+					}
 					this.setStartInput = (this.inputIdentifier == inputIdentifier) ? false : true;
 				}
 

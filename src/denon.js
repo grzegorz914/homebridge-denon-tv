@@ -3,28 +3,7 @@ const fsPromises = fs.promises;
 const EventEmitter = require('events');
 const axios = require('axios');
 const parseStringPromise = require('xml2js').parseStringPromise;
-
-const API_URL = {
-    'UPNP': ':60006/upnp/desc/aios_device/aios_device.xml',
-    'DeviceInfo': '/goform/Deviceinfo.xml',
-    'MainZone': '/goform/formMainZone_MainZoneXml.xml',
-    'MainZoneStatus': '/goform/formMainZone_MainZoneXmlStatus.xml',
-    'MainZoneStatusLite': '/goform/formMainZone_MainZoneXmlStatusLite.xml',
-    'Zone2Status': '/goform/forZone2_Zone2XmlStatus.xml',
-    'Zone2StatusLite': '/goform/formZone2_Zone2XmlStatusLite.xml',
-    'Zone3Status': '/goform/forZone3_Zone3XmlStatus.xml',
-    'Zone3StatusLite': '/goform/formZone3_Zone3XmlStatusLite.xml',
-    'Zone4Status': '/goform/forZone4_Zone4XmlStatus.xml',
-    'Zone4StatusLite': '/goform/formZone4_Zone4XmlStatusLite.xml',
-    'SoundModeStatus': '/goform/formMainZone_MainZoneXmlStatusLite.xml',
-    'TunerStatus': '/goform/formTuner_TunerXml.xml',
-    'iPhoneDirect': '/goform/formiPhoneAppDirect.xml?',
-    'AppCommand': '/goform/AppCommand.xml',
-    'AppCommand300': '/goform/AppCommand0300.xml',
-    'NetAudioStatusS': '/goform/formNetAudio_StatusXml.xml',
-    'HdTunerStatus': '/goform/formTuner_HdXml.xml',
-    'NetAudioCommandPost': '/NetAudio/index.put.asp'
-}
+const API_URL = require('./apiurl.json');
 
 class DENON extends EventEmitter {
     constructor(config) {
@@ -55,12 +34,12 @@ class DENON extends EventEmitter {
 
         this.on('connect', (message) => {
                 this.isConnected = true;
+                this.checkStateOnFirstRun = true;
                 this.emit('connected', 'Connected.');
                 this.emit('deviceInfo', message);
             })
             .on('checkState', async () => {
                 try {
-                    this.checkStateOnFirstRun = true;
                     const deviceStateData = await this.axiosInstance(this.apiUrl);
                     const parseDeviceStateData = await parseStringPromise(deviceStateData.data);
                     const power = (parseDeviceStateData.item.Power[0].value[0] == 'ON');
@@ -81,15 +60,15 @@ class DENON extends EventEmitter {
                     this.emit('disconnect');
                 };
             })
-        this.on('disconnect', () => {
-            this.emit('stateChanged', false, this.reference, this.volume, true);
-            this.emit('disconnected', 'Disconnected.');
-            this.isConnected = false;
+            .on('disconnect', () => {
+                this.emit('stateChanged', false, this.reference, this.volume, true);
+                this.emit('disconnected', 'Disconnected.');
+                this.isConnected = false;
 
-            setTimeout(() => {
-                this.getDeviceInfo();
-            }, 7500);
-        });
+                setTimeout(() => {
+                    this.getDeviceInfo();
+                }, 7500);
+            });
 
         this.getDeviceInfo();
     };
