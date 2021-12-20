@@ -1,0 +1,15 @@
+{
+    "GetZoneName": "GetZoneName",
+    "GetAllZonePowerStatus": "GetAllZonePowerStatus",
+    "GetAllZoneSource": "GetAllZoneSource",
+    "GetAllZoneVolume": "GetAllZoneVolume",
+    "GetAllZoneMuteStatus": "GetAllZoneMuteStatus",
+    "GetPowerStatus": "GetPowerStatus",
+    "GetSourceStatus": "GetSourceStatus",
+    "GetVolumeLevel": "GetVolumeLevel",
+    "GetMuteStatus": "GetMuteStatus",
+    "GetSurroundModeStatus": "GetSurroundModeStatus",
+    "GetNetAudioStatus": "GetNetAudioStatus",
+    "GetRenameSource": "GetRenameSource",
+    "GetDeletedSource": "GetDeletedSource"
+}

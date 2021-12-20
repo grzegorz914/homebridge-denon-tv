@@ -4037,6 +4037,18 @@
                         "enum": [
                           "VIRTUAL"
                         ]
+                      },
+                      {
+                        "title": "LEFT",
+                        "enum": [
+                          "LEFT"
+                        ]
+                      },
+                      {
+                        "title": "RIGHT",
+                        "enum": [
+                          "RIGHT"
+                        ]
                       }
                     ],
                     "required": true

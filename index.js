@@ -107,6 +107,7 @@ class denonTvDevice {
 		this.powerState = false;
 		this.volume = 0;
 		this.muteState = true;
+		this.soundMode = '';
 		this.mediaState = false;
 		this.setStartInput = false;
 
@@ -198,8 +199,8 @@ class denonTvDevice {
 					this.prepareAccessory();
 				};
 			})
-			.on('stateChanged', (power, reference, volume, mute) => {
-				reference = (this.zoneControl <= 2) ? (reference == 'Internet Radio') ? 'IRADIO' : (reference == 'AirPlay') ? 'NET' : reference : 'Sound mode';
+			.on('stateChanged', (power, reference, volume, mute, soundMode) => {
+				reference = (reference == 'Internet Radio') ? 'IRADIO' : (reference == 'AirPlay') ? 'NET' : reference;
 				const inputIdentifier = (this.inputsReference.indexOf(reference) >= 0) ? this.inputsReference.indexOf(reference) : this.inputIdentifier;
 
 				if (this.televisionService) {
@@ -235,6 +236,7 @@ class denonTvDevice {
 				this.powerState = power;
 				this.volume = volume;
 				this.muteState = mute;
+				this.soundMode = soundMode;
 				this.inputIdentifier = inputIdentifier;
 			})
 			.on('disconnected', (message) => {
