@@ -3,7 +3,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-## [3.14.00] - (11.12.2021)
+## [3.15.00] - (22.12.2021)
+
+## Note - after update to 3.15.0 need remove the accessory frome Home app and add it agai.
+## Changes
+- remove branding fom config, not nedded anymore
+- code cleanup
+- config.schema update
+
+## [3.14.00] - (21.12.2021)
 ## Changes
 - added read sound mode from device
 - update config.schema

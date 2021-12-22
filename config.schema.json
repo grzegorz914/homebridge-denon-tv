@@ -130,12 +130,12 @@
               "required": false
             },
             "enableDebugMode": {
-							"title": "Enable Debug Mode",
-							"type": "boolean",
-							"default": false,
-							"description": "This enable debug mode.",
-							"required": false
-						},
+              "title": "Enable Debug Mode",
+              "type": "boolean",
+              "default": false,
+              "description": "This enable debug mode.",
+              "required": false
+            },
             "inputs": {
               "type": "array",
               "items": {
@@ -2698,6 +2698,42 @@
                         ]
                       },
                       {
+                        "title": "FORWARD",
+                        "enum": [
+                          "MN9D"
+                        ]
+                      },
+                      {
+                        "title": "FAST FORWARD",
+                        "enum": [
+                          "NS9D"
+                        ]
+                      },
+                      {
+                        "title": "REWIND",
+                        "enum": [
+                          "NS9E"
+                        ]
+                      },
+                      {
+                        "title": "FAST REWIND",
+                        "enum": [
+                          "MN9E"
+                        ]
+                      },
+                      {
+                        "title": "PLAY",
+                        "enum": [
+                          "NS9B"
+                        ]
+                      },
+                      {
+                        "title": "PAUSE",
+                        "enum": [
+                          "NS9A"
+                        ]
+                      },
+                      {
                         "title": "CHANNEL LEVEL ADJUST ON/OFF",
                         "enum": [
                           "MNCHL"
@@ -4055,34 +4091,6 @@
                   }
                 }
               }
-            },
-            "manufacturer": {
-              "name": "Manufacturer",
-              "type": "string",
-              "placeholder": "Denon/Marantz",
-              "description": "Set the manufacturer name.",
-              "required": false
-            },
-            "modelName": {
-              "name": "Model",
-              "type": "string",
-              "placeholder": "Model",
-              "description": "Set the model name.",
-              "required": false
-            },
-            "serialNumber": {
-              "name": "Serial Number",
-              "type": "string",
-              "placeholder": "SerialNumber",
-              "description": "Set the serial number.",
-              "required": false
-            },
-            "firmwareRevision": {
-              "name": "Firmware Revision",
-              "type": "string",
-              "placeholder": "Firmware Revision",
-              "description": "Set the firmware revision.",
-              "required": false
             }
           }
         }
@@ -4209,22 +4217,6 @@
           "devices[].masterMute",
           "devices[].volumeControl"
         ]
-      },
-      {
-        "key": "devices[]",
-        "type": "section",
-        "title": "Branding",
-        "expandable": true,
-        "expanded": false,
-        "items": [
-          "devices[].manufacturer",
-          "devices[].modelName",
-          "devices[].serialNumber",
-          "devices[].firmwareRevision"
-        ],
-        "condition": {
-          "functionBody": "return model.devices[arrayIndices].zoneControl === 0;"
-        }
       }
     ]
   }]

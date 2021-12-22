@@ -85,11 +85,10 @@ class denonTvDevice {
 		this.enableDebugMode = config.enableDebugMode || false;
 
 		//get Device info
-		this.manufacturer = config.manufacturer || 'Denon/Marantz';
-		this.modelName = config.modelName || 'Model Name';
-		this.serialNumber = config.serialNumber || 'Serial Number';
-		this.firmwareRevision = config.firmwareRevision || 'Firmware Revision';
-		this.apiVersion = '';
+		this.manufacturer = 'Denon/Marantz';
+		this.modelName = 'Model Name';
+		this.serialNumber = 'Serial Number';
+		this.firmwareRevision = 'Firmware Revision';
 
 		//zones
 		this.zoneName = ZONE_NAME[this.zoneControl];
@@ -110,9 +109,7 @@ class denonTvDevice {
 		this.soundMode = '';
 		this.mediaState = false;
 		this.setStartInput = false;
-
 		this.inputIdentifier = 0;
-		this.inputMode = '';
 
 		this.pictureMode = 0;
 		this.brightness = 0;
@@ -144,29 +141,7 @@ class denonTvDevice {
 			.on('message', (message) => {
 				const logInfo = this.disableLogInfo ? false : this.log('Device: %s %s %s, %s', this.host, this.name, this.zoneName, message);
 			})
-			.on('deviceInfoUpnp', (parseDeviceInfoUpnp) => {
-				const deviceType = parseDeviceInfoUpnp.root.device[0].deviceType[0];
-				const friendlyName = parseDeviceInfoUpnp.root.device[0].friendlyName[0];
-				const manufacturer = parseDeviceInfoUpnp.root.device[0].manufacturer[0];
-				const manufacturerURL = parseDeviceInfoUpnp.root.device[0].manufacturerURL[0];
-				const modelName = parseDeviceInfoUpnp.root.device[0].modelName[0];
-				const modelNumber = parseDeviceInfoUpnp.root.device[0].modelNumber[0];
-				const deviceUDN = parseDeviceInfoUpnp.root.device[0].UDN[0];
-				const X_Audyssey = parseDeviceInfoUpnp.root.device[0]['DMH:X_Audyssey'][0];
-				const X_AudysseyPort = parseDeviceInfoUpnp.root.device[0]['DMH:X_AudysseyPort'][0];
-				const X_WebAPIPort = parseDeviceInfoUpnp.root.device[0]['DMH:X_WebAPIPort'][0];
-
-				this.manufacturer = (manufacturer != undefined) ? manufacturer : this.manufacturer;
-				this.modelName = modelName;
-				this.WebAPIPort = X_WebAPIPort;
-			})
-			.on('deviceInfo', (parseDeviceInfo) => {
-				const manufacturer = (parseDeviceInfo.Device_Info.BrandCode[0] != undefined) ? ['Denon', 'Marantz'][parseDeviceInfo.Device_Info.BrandCode[0]] : this.manufacturer;
-				const modelName = parseDeviceInfo.Device_Info.ModelName[0] || this.modelName;
-				const serialNumber = parseDeviceInfo.Device_Info.MacAddress[0] || this.serialNumber;
-				const firmwareRevision = parseDeviceInfo.Device_Info.UpgradeVersion[0] || this.firmwareRevision;
-				const zones = parseDeviceInfo.Device_Info.DeviceZones[0] || 'Unknown';
-				const apiVersion = parseDeviceInfo.Device_Info.CommApiVers[0] || 'Unknown';
+			.on('deviceInfo', (manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion) => {
 
 				this.log('-------- %s --------', this.name);
 				this.log('Manufacturer: %s', manufacturer);
@@ -281,10 +256,9 @@ class denonTvDevice {
 	prepareAccessory() {
 		this.log.debug('prepareAccessory');
 		const accessoryName = this.name;
-		const accessoryUUID = UUID.generate(accessoryName);
+		const accessoryUUID = UUID.generate(this.serialNumber + this.zoneControl);
 		const accessoryCategory = Categories.AUDIO_RECEIVER;
 		const accessory = new Accessory(accessoryName, accessoryUUID, accessoryCategory);
-		accessory.context.device = this.config.device;
 
 		//Prepare information service
 		this.log.debug('prepareInformationService');
@@ -758,7 +732,6 @@ class denonTvDevice {
 				buttonService.getCharacteristic(Characteristic.On)
 					.onGet(async () => {
 						const state = false;
-						const logInfo = this.disableLogInfo ? false : this.log('Device: %s %s %s, get Button state successful, state: %s', this.host, accessoryName, this.zoneName, state);
 						return state;
 					})
 					.onSet(async (state) => {
@@ -770,7 +743,7 @@ class denonTvDevice {
 						};
 						setTimeout(() => {
 							buttonService.updateCharacteristic(Characteristic.On, false);
-						}, 250);
+						}, 150);
 					});
 
 				accessory.addService(buttonService);

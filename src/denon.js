@@ -44,11 +44,10 @@ class DENON extends EventEmitter {
             const chackState = this.isConnected ? this.emit('checkState') : false;
         }, 1750)
 
-        this.on('connect', (message) => {
+        this.on('connect', () => {
                 this.isConnected = true;
                 this.checkStateOnFirstRun = true;
                 this.emit('connected', 'Connected.');
-                this.emit('deviceInfo', message);
             })
             .on('checkState', async () => {
                 const zoneUrl = [API_URL.MainZoneStatusLite, API_URL.Zone2StatusLite, API_URL.Zone3StatusLite, API_URL.SoundModeStatus][this.zoneControl];
@@ -94,26 +93,22 @@ class DENON extends EventEmitter {
         this.getDeviceInfo();
     };
 
-    async getDeviceInfoUpnp() {
-        try {
-            const deviceInfoUpnp = await axios.get(`http://${this.host}${API_URL.UPNP}`);
-            const parseDeviceInfoUpnp = await parseStringPromise(deviceInfoUpnp.data);
-            this.emit('debug', `parseDeviceInfoUpnp: ${parseDeviceInfoUpnp.root.device[0]}`);
-            this.emit('connect', parseDeviceInfoUpnp);
-        } catch (error) {
-            this.emit('error', `device info upnp error: ${error}`);
-            this.emit('disconnect');
-        };
-    };
-
     async getDeviceInfo() {
         try {
             const deviceInfo = await this.axiosInstance(API_URL.DeviceInfo);
             const parseDeviceInfo = await parseStringPromise(deviceInfo.data);
+            const manufacturer = (parseDeviceInfo.Device_Info.BrandCode[0] != undefined) ? ['Denon', 'Marantz'][parseDeviceInfo.Device_Info.BrandCode[0]] : 'undefined';
+            const modelName = parseDeviceInfo.Device_Info.ModelName[0];
+            const serialNumber = parseDeviceInfo.Device_Info.MacAddress[0];
+            const firmwareRevision = parseDeviceInfo.Device_Info.UpgradeVersion[0];
+            const zones = parseDeviceInfo.Device_Info.DeviceZones[0];
+            const apiVersion = parseDeviceInfo.Device_Info.CommApiVers[0];
+
             const devInfo = JSON.stringify(parseDeviceInfo.Device_Info, null, 2);
             const writeDevInfo = (this.zoneControl == 0) ? await fsPromises.writeFile(this.devInfoFile, devInfo) : false;
-            this.emit('debug', `parseDeviceInfo: ${deviceInfo.data}`);
-            this.emit('connect', parseDeviceInfo);
+            this.emit('debug', `devInfo: ${devInfo}`);
+            this.emit('connect');
+            this.emit('deviceInfo', manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion);
         } catch (error) {
             this.emit('error', `device info error: ${error}`);
             this.emit('disconnect');

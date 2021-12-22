@@ -43,11 +43,7 @@
                 "buttonsMainZone": [{
                     "name": "POWER ON",
                     "reference": "ZMON"
-                }],
-                "manufacturer": "Manufacturer",
-                "modelName": "Model",
-                "serialNumber": "Serial Number",
-                "firmwareRevision": "Firmware Revision"
+                }]
             },
             {
                 "name": "AV Zone 1",

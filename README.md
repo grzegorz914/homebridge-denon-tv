@@ -80,7 +80,6 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
 | `buttonsZone3.reference` | Here choice function for additional control button for Zone 3. |
 | `surrounds.name` | Here set *Surround Mode Name* which You want expose to the *Homebridge/HomeKit*. |
 | `surrounds.reference` | Here choice *Surround Mode*, the mode that should be published to and appear in HomeKit app in the extra tile as Surrounds List. |
-| `manufacturer`, `modelName`, `serialNumber`, `firmwareRevision` | Free-form informational data that will be displayed in the Home.app. |
 | `AV Surround Mode` | This extra Accessory will control all functions of Main Zone except (Inputs and Buttons). | Info |
 
 
@@ -118,11 +117,7 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
                             "name": "POWER ON",
                             "reference": "ZMON"
                         }
-                    ],
-            "manufacturer": "Manufacturer",
-            "modelName": "Model",
-            "serialNumber": "Serial Number",
-            "firmwareRevision": "Firmware Revision"
+                    ]
         },
         {
             "name": "AV Zone 1",
