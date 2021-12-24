@@ -29,7 +29,7 @@ class DENON extends EventEmitter {
         this.axiosInstance = axios.create({
             method: 'GET',
             baseURL: this.baseUrl,
-            timeout: 1500
+            timeout: 2000
         });
 
         this.isConnected = false;
@@ -42,7 +42,7 @@ class DENON extends EventEmitter {
 
         setInterval(() => {
             const chackState = this.isConnected ? this.emit('checkState') : false;
-        }, 1750)
+        }, 2500)
 
         this.on('connect', () => {
                 this.isConnected = true;
@@ -81,7 +81,7 @@ class DENON extends EventEmitter {
                 };
             })
             .on('disconnect', () => {
-                this.emit('stateChanged', false, this.reference, this.volume, true, this.soundMode);
+                this.emit('stateChanged', this.power, this.reference, this.volume, true, this.soundMode);
                 this.emit('disconnected', 'Disconnected.');
                 this.isConnected = false;
 
