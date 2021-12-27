@@ -42,7 +42,8 @@
                 ],
                 "buttonsMainZone": [{
                     "name": "POWER ON",
-                    "reference": "ZMON"
+                    "reference": "ZMON",
+                    "displayType": 0
                 }]
             },
             {
@@ -71,7 +72,8 @@
                 ],
                 "buttonsZone2": [{
                     "name": "POWER ON",
-                    "reference": "Z2ON"
+                    "reference": "Z2ON",
+                    "displayType": 0
                 }]
             },
             {
@@ -99,7 +101,8 @@
                 ],
                 "buttonsZone3": [{
                     "name": "POWER ON",
-                    "reference": "Z3ON"
+                    "reference": "Z3ON",
+                    "displayType": 0
                 }]
             },
             {

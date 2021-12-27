@@ -74,10 +74,13 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
 | `inputs.mode` | Choose from available inputs mode. |
 | `buttonsMainZone.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. |
 | `buttonsMainZone.reference` | Here choice function for additional control button for Main Zone. |
+| `buttonsMainZone.displayType` | Here select display type in Home app, possible `Switch`, `Button` - selectable in Home app as Light, Fan, Outlet.|
 | `buttonsZone2.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. |
 | `buttonsZone2.reference` | Here choice function for additional control button for Zone 2. |
+| `buttonsZone2.displayType` | Here select display type in Home app, possible `Switch`, `Button` - selectable in Home app as Light, Fan, Outlet.|
 | `buttonsZone3.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. |
 | `buttonsZone3.reference` | Here choice function for additional control button for Zone 3. |
+| `buttonsZone3.displayType` | Here select display type in Home app, possible `Switch`, `Button` - selectable in Home app as Light, Fan, Outlet.|
 | `surrounds.name` | Here set *Surround Mode Name* which You want expose to the *Homebridge/HomeKit*. |
 | `surrounds.reference` | Here choice *Surround Mode*, the mode that should be published to and appear in HomeKit app in the extra tile as Surrounds List. |
 | `AV Surround Mode` | This extra Accessory will control all functions of Main Zone except (Inputs and Buttons). | Info |
@@ -115,7 +118,8 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
             "buttonsMainZone": [
                         {
                             "name": "POWER ON",
-                            "reference": "ZMON"
+                            "reference": "ZMON",
+						    "displayType": 0
                         }
                     ]
         },
@@ -147,7 +151,8 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
             "buttonsZone2": [
                         {
                             "name": "POWER ON",
-                            "reference": "Z2ON"
+                            "reference": "Z2ON",
+						    "displayType": 0
                         }
                     ]
         },
@@ -178,7 +183,8 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
             "buttonsZone3": [
                         {
                             "name": "POWER ON",
-                            "reference": "Z3ON"
+                            "reference": "Z3ON",
+						    "displayType": 0
                         }
                     ]
         },

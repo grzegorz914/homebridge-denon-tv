@@ -2963,7 +2963,26 @@
                       }
                     ],
                     "required": true
-                  }
+                  },
+									"displayType": {
+										"title": "Display Type",
+										"type": "integer",
+										"oneOf": [{
+												"title": "Button",
+												"enum": [
+													0
+												]
+											},
+											{
+												"title": "Switch",
+												"enum": [
+													1
+												]
+											}
+										],
+										"description": "Here select display type in Home app",
+										"required": true
+									}
                 }
               }
             },
@@ -3454,7 +3473,26 @@
                       }
                     ],
                     "required": true
-                  }
+                  },
+									"displayType": {
+										"title": "Display Type",
+										"type": "integer",
+										"oneOf": [{
+												"title": "Button",
+												"enum": [
+													0
+												]
+											},
+											{
+												"title": "Switch",
+												"enum": [
+													1
+												]
+											}
+										],
+										"description": "Here select display type in Home app",
+										"required": true
+									}
                 }
               }
             },
@@ -3927,7 +3965,26 @@
                       }
                     ],
                     "required": true
-                  }
+                  },
+									"displayType": {
+										"title": "Display Type",
+										"type": "integer",
+										"oneOf": [{
+												"title": "Button",
+												"enum": [
+													0
+												]
+											},
+											{
+												"title": "Switch",
+												"enum": [
+													1
+												]
+											}
+										],
+										"description": "Here select display type in Home app",
+										"required": true
+									}
                 }
               }
             },
@@ -4138,7 +4195,8 @@
           "title": "{{ value.name || 'new button' }}",
           "items": [
             "devices[].buttonsMainZone[].name",
-            "devices[].buttonsMainZone[].reference"
+            "devices[].buttonsMainZone[].reference",
+            "devices[].buttonsMainZone[].displayType"
           ]
         }],
         "condition": {
@@ -4157,7 +4215,8 @@
           "title": "{{ value.name || 'new button' }}",
           "items": [
             "devices[].buttonsZone2[].name",
-            "devices[].buttonsZone2[].reference"
+            "devices[].buttonsZone2[].reference",
+            "devices[].buttonsZone2[].displayType"
           ]
         }],
         "condition": {
@@ -4176,7 +4235,8 @@
           "title": "{{ value.name || 'new button' }}",
           "items": [
             "devices[].buttonsZone3[].name",
-            "devices[].buttonsZone3[].reference"
+            "devices[].buttonsZone3[].reference",
+            "devices[].buttonsZone3[].displayType"
           ]
         }],
         "condition": {
