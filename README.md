@@ -25,6 +25,7 @@ This plugin is based upon the official documentation for communicating with and 
 
 ## Note
 * For homebridge-denon-tv versions 3.6.0 and above the minimum required version of Homebridge is 1.3.x.
+* If update to 3.15.0 need remove the accessory frome Home app and add it again.
 
 ## Know issues
 * If used with Hoobs, there is a possible configuration incompatibilty.
