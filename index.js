@@ -140,7 +140,7 @@ class denonTvDevice {
 				fs.writeFileSync(this.inputsTargetVisibilityFile, '');
 			}
 		} catch (error) {
-			this.log.error('Device: %s %s %s, prepare directory or files error: %s', this.host, this.name, this.zoneName, this.zoneControl, error);
+			this.log.error('Device: %s %s %s, prepare directory or files error: %s', this.host, this.name, this.zoneName, error);
 		};
 
 		try {
