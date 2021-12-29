@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## Note - after update to 3.15.0 need remove the accessory frome Home app and add it again.
+
 ## [3.15.4] - (29.12.2021)
 ### Added
 - prevent load plugin if host or port not set
@@ -16,7 +19,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Selectable display type of buttons in Home app
 ## [3.15.00] - (22.12.2021)
 
-## Note - after update to 3.15.0 need remove the accessory frome Home app and add it agai.
 ## Changes
 - remove branding fom config, not nedded anymore
 - code cleanup
