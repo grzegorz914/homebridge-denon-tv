@@ -40,8 +40,8 @@ class denonTvPlatform {
 			this.log.debug('didFinishLaunching');
 			for (let i = 0; i < this.devices.length; i++) {
 				const device = this.devices[i];
-				if (!device.name) {
-					this.log.warn('Device Name Missing');
+				if (!device.name || !device.host || !device.port) {
+					this.log.warn('Device Name, Host or Port Missing');
 				} else {
 					new denonTvDevice(this.log, device, this.api);
 				}
@@ -68,8 +68,8 @@ class denonTvDevice {
 
 		//device configuration
 		this.name = config.name || 'AV Receiver';
-		this.host = config.host || '';
-		this.port = config.port || '';
+		this.host = config.host;
+		this.port = config.port;
 		this.disableLogInfo = config.disableLogInfo || false;
 		this.volumeControl = config.volumeControl || 0;
 		this.switchInfoMenu = config.switchInfoMenu || false;
@@ -120,7 +120,38 @@ class denonTvDevice {
 		this.inputsNamesFile = `${this.prefDir}/inputsNames_${this.sZoneName}${this.host.split('.').join('')}`;
 		this.inputsTargetVisibilityFile = `${this.prefDir}/inputsTargetVisibility_${this.sZoneName}${this.host.split('.').join('')}`;
 
-		this.prepareDirectoryAndFiles();
+		try {
+			//check if the directory exists, if not then create it
+			if (fs.existsSync(this.prefDir) == false) {
+				fs.mkdirSync(this.prefDir);
+			}
+			if (this.zoneControl == 0) {
+				if (fs.existsSync(this.devInfoFile) == false) {
+					fs.writeFileSync(this.devInfoFile, '');
+				}
+			}
+			if (fs.existsSync(this.inputsFile) == false) {
+				fs.writeFileSync(this.inputsFile, '');
+			}
+			if (fs.existsSync(this.inputsNamesFile) == false) {
+				fs.writeFileSync(this.inputsNamesFile, '');
+			}
+			if (fs.existsSync(this.inputsTargetVisibilityFile) == false) {
+				fs.writeFileSync(this.inputsTargetVisibilityFile, '');
+			}
+		} catch (error) {
+			this.log.error('Device: %s %s %s, prepare directory or files error: %s', this.host, this.name, this.zoneName, this.zoneControl, error);
+		};
+
+		try {
+			//save inputs to the file
+			const inputs = (this.zoneControl <= 2) ? this.inputs : this.soundModes;
+			const obj = JSON.stringify(inputs, null, 2);
+			fs.writeFileSync(this.inputsFile, obj);
+			const debug = this.enableDebugMode ? this.log('Device: %s %s %s, save %s succesful: %s', this.host, this.name, this.zoneName, this.zoneControl <= 2 ? 'Inputs' : 'Sound Modes', obj) : false;
+		} catch (error) {
+			this.log.error('Device: %s %s %s, save %s error: %s', this.host, this.name, this.zoneName, this.zoneControl <= 2 ? 'Inputs' : 'Sound Modes', error);
+		};
 
 		this.denon = new denon({
 			host: this.host,
@@ -218,39 +249,6 @@ class denonTvDevice {
 				this.log('Device: %s %s %s, %s', this.host, this.name, this.zoneName, message);
 			});
 	}
-
-	async prepareDirectoryAndFiles() {
-		const debug = this.enableDebugMode ? this.log('Device: %s %s %s, prepare directory and files.', this.host, this.name, this.zoneName) : false;
-
-		try {
-			//check if the directory exists, if not then create it
-			if (fs.existsSync(this.prefDir) == false) {
-				await fsPromises.mkdir(this.prefDir);
-			}
-			if (this.zoneControl == 0) {
-				if (fs.existsSync(this.devInfoFile) == false) {
-					await fsPromises.writeFile(this.devInfoFile, '');
-				}
-			}
-			if (fs.existsSync(this.inputsFile) == false) {
-				await fsPromises.writeFile(this.inputsFile, '');
-			}
-			if (fs.existsSync(this.inputsNamesFile) == false) {
-				await fsPromises.writeFile(this.inputsNamesFile, '');
-			}
-			if (fs.existsSync(this.inputsTargetVisibilityFile) == false) {
-				await fsPromises.writeFile(this.inputsTargetVisibilityFile, '');
-			}
-
-			//save inputs to the file
-			const inputs = (this.zoneControl <= 2) ? this.inputs : this.soundModes;
-			const obj = JSON.stringify(inputs, null, 2);
-			const writeInputs = await fsPromises.writeFile(this.inputsFile, obj);
-			const debug = this.enableDebugMode ? this.log('Device: %s %s %s, save %s succesful: %s', this.host, this.name, this.zoneName, this.zoneControl <= 2 ? 'Inputs' : 'Sound Modes', obj) : false;
-		} catch (error) {
-			this.log.error('Device: %s %s %s, save %s error: %s', this.host, this.name, this.zoneName, this.zoneControl <= 2 ? 'Inputs' : 'Sound Modes', error);
-		};
-	};
 
 	//Prepare accessory
 	prepareAccessory() {
