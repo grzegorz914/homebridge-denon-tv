@@ -76,14 +76,16 @@ class DENON extends EventEmitter {
                         this.checkStateOnFirstRun = false;
                     };
                 } catch (error) {
-                    this.emit('error', `device state error: ${error}`);
+                    this.emit('debug', `device state error: ${error}`);
                     this.emit('disconnect');
                 };
             })
             .on('disconnect', () => {
-                this.emit('stateChanged', this.power, this.reference, this.volume, true, this.soundMode);
-                this.emit('disconnected', 'Disconnected.');
-                this.isConnected = false;
+                if (this.isConnected) {
+                    this.emit('stateChanged', this.power, this.reference, this.volume, true, this.soundMode);
+                    this.emit('disconnected', 'Disconnected.');
+                    this.isConnected = false;
+                };
 
                 setTimeout(() => {
                     this.getDeviceInfo();
@@ -110,7 +112,7 @@ class DENON extends EventEmitter {
             this.emit('connect');
             this.emit('deviceInfo', manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion);
         } catch (error) {
-            this.emit('error', `device info error: ${error}`);
+            this.emit('debug', `device info error: ${error}`);
             this.emit('disconnect');
         };
     };

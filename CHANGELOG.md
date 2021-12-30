@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Note - after update to 3.15.0 need remove the accessory frome Home app and add it again.
 
+## [3.15.5] - (30.12.2021)
+### Changs
+- reduce logging if receiver for some reason lose the connection
+- moved info and state error to debug
+
 ## [3.15.4] - (29.12.2021)
 ### Added
 - prevent load plugin if host or port not set
