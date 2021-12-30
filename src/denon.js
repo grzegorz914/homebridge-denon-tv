@@ -32,13 +32,14 @@ class DENON extends EventEmitter {
             timeout: 2000
         });
 
+        this.firstStart = true;
+        this.checkStateOnFirstRun = false;
         this.isConnected = false;
         this.power = false;
         this.reference = '';
         this.volume = 0;
         this.mute = false;
         this.soundMode = '';
-        this.checkStateOnFirstRun = false;
 
         setInterval(() => {
             const chackState = this.isConnected ? this.emit('checkState') : false;
@@ -81,10 +82,11 @@ class DENON extends EventEmitter {
                 };
             })
             .on('disconnect', () => {
-                if (this.isConnected) {
+                if (this.isConnected || this.firstStart) {
                     this.emit('stateChanged', this.power, this.reference, this.volume, true, this.soundMode);
                     this.emit('disconnected', 'Disconnected.');
                     this.isConnected = false;
+                    this.initStart = false;
                 };
 
                 setTimeout(() => {

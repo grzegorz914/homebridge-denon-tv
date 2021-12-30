@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Note - after update to 3.15.0 need remove the accessory frome Home app and add it again.
 
+## [3.15.7] - (30.12.2021)
+### Changs
+- log AVR Disconnected if plugin restart and AVR not on network
+
 ## [3.15.5] - (30.12.2021)
 ### Changs
 - reduce logging if receiver for some reason lose the connection
