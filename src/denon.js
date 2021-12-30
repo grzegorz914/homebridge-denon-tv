@@ -86,7 +86,7 @@ class DENON extends EventEmitter {
                     this.emit('stateChanged', this.power, this.reference, this.volume, true, this.soundMode);
                     this.emit('disconnected', 'Disconnected.');
                     this.isConnected = false;
-                    this.initStart = false;
+                    this.firstStart = false;
                 };
 
                 setTimeout(() => {
