@@ -199,6 +199,11 @@ class denonTvDevice {
 				this.modelName = modelName;
 				this.serialNumber = serialNumber;
 				this.firmwareRevision = firmwareRevision;
+
+				//start prepare accessory
+				if (this.startPrepareAccessory) {
+					this.prepareAccessory();
+				};
 			})
 			.on('stateChanged', (power, reference, volume, mute, soundMode) => {
 				reference = (reference == 'Internet Radio') ? 'IRADIO' : (reference == 'AirPlay') ? 'NET' : reference;
@@ -207,14 +212,13 @@ class denonTvDevice {
 				if (this.televisionService) {
 					this.televisionService
 						.updateCharacteristic(Characteristic.Active, power)
+						.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
 
 					if (this.setStartInput) {
 						setTimeout(() => {
 							this.televisionService.setCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
 							this.setStartInput = false;
 						}, 1200);
-					} else {
-						this.televisionService.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
 					}
 				}
 
@@ -239,11 +243,6 @@ class denonTvDevice {
 				this.muteState = mute;
 				this.soundMode = soundMode;
 				this.inputIdentifier = inputIdentifier;
-
-				//start prepare accessory
-				if (this.startPrepareAccessory) {
-					this.prepareAccessory();
-				};
 			})
 			.on('disconnected', (message) => {
 				this.log('Device: %s %s %s, %s', this.host, this.name, this.zoneName, message);
