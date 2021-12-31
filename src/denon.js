@@ -66,15 +66,15 @@ class DENON extends EventEmitter {
                     const volume = (parseFloat(parseStateData.item.MasterVolume[0].value[0]) >= -79.5) ? parseInt(parseStateData.item.MasterVolume[0].value[0]) + 80 : this.volume;
                     const mute = power ? (parseStateData.item.Mute[0].value[0] == 'on') : true;
                     if (this.checkStateOnFirstRun == true || power != this.power || reference != this.reference || volume != this.volume || mute != this.mute || this.soundMode != soundMode) {
-                        this.emit('debug', `parseStateData: ${JSON.stringify(parseStateData, null, 2)}`);
-                        this.emit('debug', `parseSoundModeData: ${JSON.stringify(parseSoundModeData, null, 2)}`);
-                        this.emit('stateChanged', power, reference, volume, mute, soundMode);
                         this.power = power;
                         this.reference = reference;
                         this.volume = volume;
                         this.mute = mute;
                         this.soundMode = soundMode;
                         this.checkStateOnFirstRun = false;
+                        this.emit('debug', `parseStateData: ${JSON.stringify(parseStateData, null, 2)}`);
+                        this.emit('debug', `parseSoundModeData: ${JSON.stringify(parseSoundModeData, null, 2)}`);
+                        this.emit('stateChanged', this.isConnected, power, reference, volume, mute, soundMode);
                     };
                 } catch (error) {
                     this.emit('debug', `device state error: ${error}`);
@@ -83,10 +83,10 @@ class DENON extends EventEmitter {
             })
             .on('disconnect', () => {
                 if (this.isConnected || this.firstStart) {
-                    this.emit('stateChanged', this.power, this.reference, this.volume, true, this.soundMode);
-                    this.emit('disconnected', 'Disconnected.');
                     this.isConnected = false;
                     this.firstStart = false;
+                    this.emit('stateChanged', this.isConnected, this.power, this.reference, this.volume, true, this.soundMode);
+                    this.emit('disconnected', 'Disconnected.');
                 };
 
                 setTimeout(() => {
@@ -130,12 +130,6 @@ class DENON extends EventEmitter {
                 reject(error);
             };
         });
-    };
-
-    connect() {
-        if (!this.isConnected) {
-            this.getDeviceInfo();
-        };
     };
 };
 module.exports = DENON;

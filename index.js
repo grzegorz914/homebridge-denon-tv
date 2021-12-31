@@ -205,13 +205,15 @@ class denonTvDevice {
 					this.prepareAccessory();
 				};
 			})
-			.on('stateChanged', (power, reference, volume, mute, soundMode) => {
+			.on('stateChanged', (isConnected, power, reference, volume, mute, soundMode) => {
 				reference = (reference == 'Internet Radio') ? 'IRADIO' : (reference == 'AirPlay') ? 'NET' : reference;
+
+				const powerState = (isConnected == true && power == true);
 				const inputIdentifier = (this.inputsReference.indexOf(reference) >= 0) ? this.inputsReference.indexOf(reference) : this.inputIdentifier;
 
 				if (this.televisionService) {
 					this.televisionService
-						.updateCharacteristic(Characteristic.Active, power)
+						.updateCharacteristic(Characteristic.Active, powerState)
 						.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
 
 					if (this.setStartInput) {
