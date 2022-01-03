@@ -173,27 +173,28 @@ class denonTvDevice {
 				const logInfo = this.disableLogInfo ? false : this.log('Device: %s %s %s, %s', this.host, this.name, this.zoneName, message);
 			})
 			.on('deviceInfo', (manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion) => {
-
-				this.log('-------- %s --------', this.name);
-				this.log('Manufacturer: %s', manufacturer);
-				this.log('Model: %s', modelName);
-				if (this.zoneControl == 0) {
-					this.log('Zones: %s', zones);
-					this.log('Control: Main Zone');
-					this.log('Firmware: %s', firmwareRevision);
-					this.log('Api version: %s', apiVersion);
-					this.log('Serialnr: %s', serialNumber);
+				if(!this.disableLogInfo){
+					this.log('-------- %s --------', this.name);
+					this.log('Manufacturer: %s', manufacturer);
+					this.log('Model: %s', modelName);
+					if (this.zoneControl == 0) {
+						this.log('Zones: %s', zones);
+						this.log('Control: Main Zone');
+						this.log('Firmware: %s', firmwareRevision);
+						this.log('Api version: %s', apiVersion);
+						this.log('Serialnr: %s', serialNumber);
+					}
+					if (this.zoneControl == 1) {
+						this.log('Control: Zone 2');
+					}
+					if (this.zoneControl == 2) {
+						this.log('Control: Zone 3');
+					}
+					if (this.zoneControl == 3) {
+						this.log('Control: Sound Modes');
+					}
+					this.log('----------------------------------');
 				}
-				if (this.zoneControl == 1) {
-					this.log('Control: Zone 2');
-				}
-				if (this.zoneControl == 2) {
-					this.log('Control: Zone 3');
-				}
-				if (this.zoneControl == 3) {
-					this.log('Control: Sound Modes');
-				}
-				this.log('----------------------------------');
 
 				this.manufacturer = manufacturer;
 				this.modelName = modelName;
