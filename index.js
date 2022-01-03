@@ -70,7 +70,6 @@ class denonTvDevice {
 		this.name = config.name || 'AV Receiver';
 		this.host = config.host;
 		this.port = config.port;
-		this.disableLogInfo = config.disableLogInfo || false;
 		this.volumeControl = config.volumeControl || 0;
 		this.switchInfoMenu = config.switchInfoMenu || false;
 		this.inputs = config.inputs || [];
@@ -83,6 +82,8 @@ class denonTvDevice {
 		this.masterVolume = config.masterVolume || false;
 		this.masterMute = config.masterMute || false;
 		this.enableDebugMode = config.enableDebugMode || false;
+		this.disableLogInfo = config.disableLogInfo || false;
+		this.disableLogDeviceInfo = config.disableLogDeviceInfo || false;
 
 		//get Device info
 		this.manufacturer = 'Denon/Marantz';
@@ -173,7 +174,7 @@ class denonTvDevice {
 				const logInfo = this.disableLogInfo ? false : this.log('Device: %s %s %s, %s', this.host, this.name, this.zoneName, message);
 			})
 			.on('deviceInfo', (manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion) => {
-				if(!this.disableLogInfo){
+				if (!this.disableLogDeviceInfo) {
 					this.log('-------- %s --------', this.name);
 					this.log('Manufacturer: %s', manufacturer);
 					this.log('Model: %s', modelName);

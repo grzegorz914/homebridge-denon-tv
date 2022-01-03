@@ -126,7 +126,14 @@
               "title": "Disable log info",
               "type": "boolean",
               "default": false,
-              "description": "This disable log info, all values and state will not be displayed in Homebridge log console.",
+              "description": "This disable logging values and states on every it change.",
+              "required": false
+            },
+            "disableLogDeviceInfo": {
+              "title": "Disable log device info",
+              "type": "boolean",
+              "default": false,
+              "description": "This disable log device info by every connections device to the network.",
               "required": false
             },
             "enableDebugMode": {
@@ -2964,25 +2971,25 @@
                     ],
                     "required": true
                   },
-									"displayType": {
-										"title": "Display Type",
-										"type": "integer",
-										"oneOf": [{
-												"title": "Button",
-												"enum": [
-													0
-												]
-											},
-											{
-												"title": "Switch",
-												"enum": [
-													1
-												]
-											}
-										],
-										"description": "Here select display type in Home app",
-										"required": true
-									}
+                  "displayType": {
+                    "title": "Display Type",
+                    "type": "integer",
+                    "oneOf": [{
+                        "title": "Button",
+                        "enum": [
+                          0
+                        ]
+                      },
+                      {
+                        "title": "Switch",
+                        "enum": [
+                          1
+                        ]
+                      }
+                    ],
+                    "description": "Here select display type in Home app",
+                    "required": true
+                  }
                 }
               }
             },
@@ -3474,25 +3481,25 @@
                     ],
                     "required": true
                   },
-									"displayType": {
-										"title": "Display Type",
-										"type": "integer",
-										"oneOf": [{
-												"title": "Button",
-												"enum": [
-													0
-												]
-											},
-											{
-												"title": "Switch",
-												"enum": [
-													1
-												]
-											}
-										],
-										"description": "Here select display type in Home app",
-										"required": true
-									}
+                  "displayType": {
+                    "title": "Display Type",
+                    "type": "integer",
+                    "oneOf": [{
+                        "title": "Button",
+                        "enum": [
+                          0
+                        ]
+                      },
+                      {
+                        "title": "Switch",
+                        "enum": [
+                          1
+                        ]
+                      }
+                    ],
+                    "description": "Here select display type in Home app",
+                    "required": true
+                  }
                 }
               }
             },
@@ -3966,25 +3973,25 @@
                     ],
                     "required": true
                   },
-									"displayType": {
-										"title": "Display Type",
-										"type": "integer",
-										"oneOf": [{
-												"title": "Button",
-												"enum": [
-													0
-												]
-											},
-											{
-												"title": "Switch",
-												"enum": [
-													1
-												]
-											}
-										],
-										"description": "Here select display type in Home app",
-										"required": true
-									}
+                  "displayType": {
+                    "title": "Display Type",
+                    "type": "integer",
+                    "oneOf": [{
+                        "title": "Button",
+                        "enum": [
+                          0
+                        ]
+                      },
+                      {
+                        "title": "Switch",
+                        "enum": [
+                          1
+                        ]
+                      }
+                    ],
+                    "description": "Here select display type in Home app",
+                    "required": true
+                  }
                 }
               }
             },
@@ -4271,6 +4278,7 @@
         "items": [
           "devices[].enableDebugMode",
           "devices[].disableLogInfo",
+          "devices[].disableLogDeviceInfo",
           "devices[].switchInfoMenu",
           "devices[].masterPower",
           "devices[].masterVolume",

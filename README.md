@@ -64,6 +64,7 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
 | `zoneControl` | Selects which zone will be controlled by this section (`0` - Main Zone, `1` - Zone 2, `2` - Zone 3, `3` - Surround Mode) or choice from the configurations GUI |
 | `enableDebugMode` | If enabled, deep log will be present in homebridge console. |
 | `disableLogInfo` | If enabled, disable log info, all values and state will not be displayed in Homebridge log console. |
+| `disableLogDeviceInfo` | If enabled, add ability to disable log device info by every connections device to the network. |
 | `volumeControl` | Here choice what a additional volume control mode You want to use (None, Slider, Fan). |
 | `switchInfoMenu` | If enabled, `I` button change its behaviour in RC app between Menu and INFO. |
 | `masterPower` | If enabled, then the power switch for that zone (typically you would only use this for the Main Zone) will turn the entire receiver `ON` or `OFF/STANDBY` rather than just the zone itself |
@@ -102,6 +103,7 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
             "masterMute": false,
             "switchInfoMenu": false,
             "disableLogInfo": false,
+            "disableLogDeviceInfo": false,
             "enableDebugMode": false,
             "inputs": [
                 {
@@ -135,6 +137,7 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
             "masterMute": false,
             "switchInfoMenu": false,
             "disableLogInfo": false,
+            "disableLogDeviceInfo": false,
             "enableDebugMode": false,
             "inputs": [
                 {
@@ -167,6 +170,7 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
             "masterMute": false,
             "switchInfoMenu": false,
             "disableLogInfo": false,
+            "disableLogDeviceInfo": false,
             "enableDebugMode": false,
             "inputs": [
                 {
@@ -200,6 +204,7 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
             "masterMute": false,
             "switchInfoMenu": false,
             "disableLogInfo": false,
+            "disableLogDeviceInfo": false,
             "enableDebugMode": false,
             "surrounds": [
                 {
