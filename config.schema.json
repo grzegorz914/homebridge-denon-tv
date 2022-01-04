@@ -515,6 +515,167 @@
                 }
               }
             },
+            "surrounds": {
+              "type": "array",
+              "items": {
+                "title": "Surround",
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "title": "Name",
+                    "type": "string",
+                    "placeholder": "Surround name",
+                    "description": "Here set Your own name.",
+                    "required": true
+                  },
+                  "reference": {
+                    "title": "Surround",
+                    "type": "string",
+                    "description": "Here select surround mode.",
+                    "oneOf": [{
+                        "title": "MOVIE",
+                        "enum": [
+                          "MOVIE"
+                        ]
+                      },
+                      {
+                        "title": "MUSIC",
+                        "enum": [
+                          "MUSIC"
+                        ]
+                      },
+                      {
+                        "title": "GAME",
+                        "enum": [
+                          "GAME"
+                        ]
+                      },
+                      {
+                        "title": "DIRECT",
+                        "enum": [
+                          "DIRECT"
+                        ]
+                      },
+                      {
+                        "title": "PURE DIRECT",
+                        "enum": [
+                          "PURE DIRECT"
+                        ]
+                      },
+                      {
+                        "title": "STEREO",
+                        "enum": [
+                          "STEREO"
+                        ]
+                      },
+                      {
+                        "title": "AUTO",
+                        "enum": [
+                          "AUTO"
+                        ]
+                      },
+                      {
+                        "title": "DOLBY DIGITAL",
+                        "enum": [
+                          "DOLBY DIGITAL"
+                        ]
+                      },
+                      {
+                        "title": "DTS SURROUND",
+                        "enum": [
+                          "DTS SURROUND"
+                        ]
+                      },
+                      {
+                        "title": "AURO 3D",
+                        "enum": [
+                          "AURO3D"
+                        ]
+                      },
+                      {
+                        "title": "AURO 2D",
+                        "enum": [
+                          "AURO2DSURR"
+                        ]
+                      },
+                      {
+                        "title": "MCH STEREO",
+                        "enum": [
+                          "MCH STEREO"
+                        ]
+                      },
+                      {
+                        "title": "WIDE SCREEN",
+                        "enum": [
+                          "WIDE SCREEN"
+                        ]
+                      },
+                      {
+                        "title": "SUPER STADIUM",
+                        "enum": [
+                          "SUPER STADIUM"
+                        ]
+                      },
+                      {
+                        "title": "ROCK ARENA",
+                        "enum": [
+                          "ROCK ARENA"
+                        ]
+                      },
+                      {
+                        "title": "JAZZ CLUB",
+                        "enum": [
+                          "JAZZ CLUB"
+                        ]
+                      },
+                      {
+                        "title": "CLASSIC CONCERT",
+                        "enum": [
+                          "CLASSIC CONCERT"
+                        ]
+                      },
+                      {
+                        "title": "MONO MOVIE",
+                        "enum": [
+                          "MONO MOVIE"
+                        ]
+                      },
+                      {
+                        "title": "MATRIX",
+                        "enum": [
+                          "MATRIX"
+                        ]
+                      },
+                      {
+                        "title": "VIDEO GAME",
+                        "enum": [
+                          "VIDEO GAME"
+                        ]
+                      },
+                      {
+                        "title": "VIRTUAL",
+                        "enum": [
+                          "VIRTUAL"
+                        ]
+                      },
+                      {
+                        "title": "LEFT",
+                        "enum": [
+                          "LEFT"
+                        ]
+                      },
+                      {
+                        "title": "RIGHT",
+                        "enum": [
+                          "RIGHT"
+                        ]
+                      }
+                    ],
+                    "required": true
+                  }
+                }
+              }
+            },
             "buttonsMainZone": {
               "type": "array",
               "items": {
@@ -3994,167 +4155,6 @@
                   }
                 }
               }
-            },
-            "surrounds": {
-              "type": "array",
-              "items": {
-                "title": "Surround",
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "title": "Name",
-                    "type": "string",
-                    "placeholder": "Surround name",
-                    "description": "Here set Your own name.",
-                    "required": true
-                  },
-                  "reference": {
-                    "title": "Surround",
-                    "type": "string",
-                    "description": "Here select surround mode.",
-                    "oneOf": [{
-                        "title": "MOVIE",
-                        "enum": [
-                          "MOVIE"
-                        ]
-                      },
-                      {
-                        "title": "MUSIC",
-                        "enum": [
-                          "MUSIC"
-                        ]
-                      },
-                      {
-                        "title": "GAME",
-                        "enum": [
-                          "GAME"
-                        ]
-                      },
-                      {
-                        "title": "DIRECT",
-                        "enum": [
-                          "DIRECT"
-                        ]
-                      },
-                      {
-                        "title": "PURE DIRECT",
-                        "enum": [
-                          "PURE DIRECT"
-                        ]
-                      },
-                      {
-                        "title": "STEREO",
-                        "enum": [
-                          "STEREO"
-                        ]
-                      },
-                      {
-                        "title": "AUTO",
-                        "enum": [
-                          "AUTO"
-                        ]
-                      },
-                      {
-                        "title": "DOLBY DIGITAL",
-                        "enum": [
-                          "DOLBY DIGITAL"
-                        ]
-                      },
-                      {
-                        "title": "DTS SURROUND",
-                        "enum": [
-                          "DTS SURROUND"
-                        ]
-                      },
-                      {
-                        "title": "AURO 3D",
-                        "enum": [
-                          "AURO3D"
-                        ]
-                      },
-                      {
-                        "title": "AURO 2D",
-                        "enum": [
-                          "AURO2DSURR"
-                        ]
-                      },
-                      {
-                        "title": "MCH STEREO",
-                        "enum": [
-                          "MCH STEREO"
-                        ]
-                      },
-                      {
-                        "title": "WIDE SCREEN",
-                        "enum": [
-                          "WIDE SCREEN"
-                        ]
-                      },
-                      {
-                        "title": "SUPER STADIUM",
-                        "enum": [
-                          "SUPER STADIUM"
-                        ]
-                      },
-                      {
-                        "title": "ROCK ARENA",
-                        "enum": [
-                          "ROCK ARENA"
-                        ]
-                      },
-                      {
-                        "title": "JAZZ CLUB",
-                        "enum": [
-                          "JAZZ CLUB"
-                        ]
-                      },
-                      {
-                        "title": "CLASSIC CONCERT",
-                        "enum": [
-                          "CLASSIC CONCERT"
-                        ]
-                      },
-                      {
-                        "title": "MONO MOVIE",
-                        "enum": [
-                          "MONO MOVIE"
-                        ]
-                      },
-                      {
-                        "title": "MATRIX",
-                        "enum": [
-                          "MATRIX"
-                        ]
-                      },
-                      {
-                        "title": "VIDEO GAME",
-                        "enum": [
-                          "VIDEO GAME"
-                        ]
-                      },
-                      {
-                        "title": "VIRTUAL",
-                        "enum": [
-                          "VIRTUAL"
-                        ]
-                      },
-                      {
-                        "title": "LEFT",
-                        "enum": [
-                          "LEFT"
-                        ]
-                      },
-                      {
-                        "title": "RIGHT",
-                        "enum": [
-                          "RIGHT"
-                        ]
-                      }
-                    ],
-                    "required": true
-                  }
-                }
-              }
             }
           }
         }
@@ -4188,6 +4188,25 @@
         }],
         "condition": {
           "functionBody": "return model.devices[arrayIndices].zoneControl <= 2;"
+        }
+      },
+      {
+        "key": "devices[]",
+        "type": "section",
+        "title": "Surrounds",
+        "expandable": true,
+        "expanded": false,
+        "items": [{
+          "key": "devices[].surrounds",
+          "type": "tabarray",
+          "title": "{{ value.name || 'new surround' }}",
+          "items": [
+            "devices[].surrounds[].name",
+            "devices[].surrounds[].reference"
+          ]
+        }],
+        "condition": {
+          "functionBody": "return model.devices[arrayIndices].zoneControl === 3;"
         }
       },
       {
@@ -4248,25 +4267,6 @@
         }],
         "condition": {
           "functionBody": "return model.devices[arrayIndices].zoneControl === 2;"
-        }
-      },
-      {
-        "key": "devices[]",
-        "type": "section",
-        "title": "Surrounds",
-        "expandable": true,
-        "expanded": false,
-        "items": [{
-          "key": "devices[].surrounds",
-          "type": "tabarray",
-          "title": "{{ value.name || 'new surround' }}",
-          "items": [
-            "devices[].surrounds[].name",
-            "devices[].surrounds[].reference"
-          ]
-        }],
-        "condition": {
-          "functionBody": "return model.devices[arrayIndices].zoneControl === 3;"
         }
       },
       {
