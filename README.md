@@ -30,7 +30,7 @@ This plugin is based upon the official documentation for communicating with and 
 ## Know issues
 * If used with Hoobs, there is a possible configuration incompatibilty.
 
-## Troubleshoot
+## Troubleshooting
 * If for some reason the device will not be displayed in Home app try this procedure:
    * Go to `./homebridge/persist`.
    * Remove `AccessoryInfo.xxx` file which contain Your device data: `{"displayName":"AV Receiver"}`.
