@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changs
 - code cleanup
 
+### Fixed
+- services calculation count
+- start input automation or scene
+
 ## [3.15.10] - (03.01.2022)
 ### Added
 -  ability to disable log device info by every connections device to the network (Advanced Section)
