@@ -123,14 +123,14 @@
               "required": false
             },
             "disableLogInfo": {
-              "title": "Disable log info",
+              "title": "Disable Log Info",
               "type": "boolean",
               "default": false,
               "description": "This disable logging values and states on every it change.",
               "required": false
             },
             "disableLogDeviceInfo": {
-              "title": "Disable log device info",
+              "title": "Disable Log Device Info",
               "type": "boolean",
               "default": false,
               "description": "This disable log device info by every connections device to the network.",
@@ -541,7 +541,7 @@
                         ]
                       },
                       {
-                        "title": "Ocupancy Sensor",
+                        "title": "Occupancy Sensor",
                         "enum": [
                           3
                         ]
@@ -740,7 +740,7 @@
                         ]
                       },
                       {
-                        "title": "Ocupancy Sensor",
+                        "title": "Occupancy Sensor",
                         "enum": [
                           3
                         ]
