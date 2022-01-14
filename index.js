@@ -668,13 +668,13 @@ class denonTvDevice {
 			const inputType = (this.zoneControl <= 2) ? (inputs[i].type != undefined) ? INPUT_SOURCE_TYPES.indexOf(inputs[i].type) : 3 : 0;
 
 			//get input mode
-			const inputMode = (this.zoneControl <= 2) ? inputs[i].mode : 'MS';
+			const inputMode = (this.zoneControl <= 2) ? (inputs[i].mode != undefined) ? inputs[i].mode : 'SI' : 'MS';
 
 			//get input switch
-			const inputSwitch = inputs[i].switch;
+			const inputSwitch = (inputs[i].switch != undefined) ? inputs[i].switch : false;
 
 			//get input switch
-			const inputSwitchDisplayType = inputs[i].displayType;
+			const inputSwitchDisplayType = (inputs[i].displayType != undefined) ? inputs[i].displayType : 0;
 
 			//get input configured
 			const isConfigured = 1;

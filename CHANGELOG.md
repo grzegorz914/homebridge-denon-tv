@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Note - after update to 3.15.x need remove the accessory frome Home app and add it again.
 
+## [3.16.1] - (14.01.2022)
+### Fixed
+- possible crash if input/surround switch, mode, displayType are not defined 
+
 ## [3.16.0] - (14.01.2022)
 ### Added
 - ability to use inputs and surrounds mode with automations, shortcuts in HomeKit app [#131](https://github.com/grzegorz914/homebridge-denon-tv/issues/131)

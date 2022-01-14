@@ -515,9 +515,8 @@
                   "switch": {
                     "title": "Extra Input Tile",
                     "type": "boolean",
-                    "default": false,
                     "description": "If enabled, the input tile will be added to the HomeKit app and can be used with automation.",
-                    "required": false
+                    "required": true
                   },
                   "displayType": {
                     "title": "Extra Input Tile Type",
@@ -714,9 +713,8 @@
                   "switch": {
                     "title": "Extra Surround Tile",
                     "type": "boolean",
-                    "default": false,
                     "description": "If enabled, the surround mode tile will be added to the HomeKit app and can be used with automation.",
-                    "required": false
+                    "required": true
                   },
                   "displayType": {
                     "title": "Extra Surround Tile Type",
