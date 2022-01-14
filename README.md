@@ -27,9 +27,6 @@ This plugin is based upon the official documentation for communicating with and 
 * For homebridge-denon-tv versions 3.6.0 and above the minimum required version of Homebridge is 1.3.x.
 * If update to 3.15.0 need remove the accessory frome Home app and add it again.
 
-## Know issues
-* If used with Hoobs, there is a possible configuration incompatibilty.
-
 ## Troubleshooting
 * If for some reason the device is not displayed in HomeKit app try this procedure:
    * Go to `./homebridge/persist`.
@@ -42,7 +39,7 @@ This plugin is based upon the official documentation for communicating with and 
 * RC/Media control is possible after you go to the RC app on iPhone/iPad.
 * Speaker control is possible after you go to RC app on iPhone/iPad `Speaker Service`.
 * Legacy Volume and Mute control is possible throught extra `lightbulb`/`fan` (slider).
-* Inputs can be changed after long press tile in Home.app and select Input from the list or create separate tile in the Buttons section.
+* Inputs can be changed after long press tile in Home.app and select Input from the list and additionally create separate tile.
 * Sound Modes can be changed after long press tile in Home.app and select Surround Mode from the list or create separate tile in the Buttons section.
 * Digital Input Modes can be controlled by creating separate tile in the Buttons section.
 * Multiple Zone control.
