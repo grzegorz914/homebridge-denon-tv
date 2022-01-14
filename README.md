@@ -39,7 +39,7 @@ This plugin is based upon the official documentation for communicating with and 
 * RC/Media control is possible after you go to the RC app on iPhone/iPad.
 * Speaker control is possible after you go to RC app on iPhone/iPad `Speaker Service`.
 * Legacy Volume and Mute control is possible throught extra `lightbulb`/`fan` (slider).
-* Inputs can be changed after long press tile in Home.app and select Input from the list and additionally create separate tile.
+* Inputs can be changed using Inputs selector in Home.app and additionally can be create separate tile.
 * Sound Modes can be changed after long press tile in Home.app and select Surround Mode from the list or create separate tile in the Buttons section.
 * Digital Input Modes can be controlled by creating separate tile in the Buttons section.
 * Multiple Zone control.
