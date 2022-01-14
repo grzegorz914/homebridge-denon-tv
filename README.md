@@ -46,7 +46,7 @@ This plugin is based upon the official documentation for communicating with and 
 * Sound Modes can be changed after long press tile in Home.app and select Surround Mode from the list or create separate tile in the Buttons section.
 * Digital Input Modes can be controlled by creating separate tile in the Buttons section.
 * Multiple Zone control.
-* Siri can be used to control Power, Legacy Volume, Mute and switch Inputs and other Function with created Buttons.
+* Siri can be used to control Power, Legacy Volume, Mute and switch Inputs/Surround and other Function with created Buttons/Switches.
 * Home automations and shortcuts can be used for all functions.
 
 <p align="left">
@@ -80,6 +80,7 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
 | `inputs.name` | Here set *Input Name* which You want expose to the *Homebridge/HomeKit*. |
 | `inputs.reference` | Choose from available inputs, the inputs that should be published to and appear in HomeKit app in the device tile as inputs list |
 | `inputs.mode` | Choose from available inputs mode. |
+| `inputs.switch` | If enabled, the switch for that input will be expose to the *Homebridge/HomeKit* and can be used for HomeKit automations. |
 | `buttonsMainZone.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. |
 | `buttonsMainZone.reference` | Here choice function for additional control button for Main Zone. |
 | `buttonsMainZone.displayType` | Here select display type in Home app, possible `Switch`, `Button` - selectable in Home app as Light, Fan, Outlet.|
@@ -91,6 +92,7 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
 | `buttonsZone3.displayType` | Here select display type in Home app, possible `Switch`, `Button` - selectable in Home app as Light, Fan, Outlet.|
 | `surrounds.name` | Here set *Surround Mode Name* which You want expose to the *Homebridge/HomeKit*. |
 | `surrounds.reference` | Here choice *Surround Mode*, the mode that should be published to and appear in HomeKit app in the extra tile as Surrounds List. |
+| `surrounds.switch` | If enabled, the switch for that surround mode will be expose to the *Homebridge/HomeKit* and can be used for HomeKit automations. |
 | `AV Surround Mode` | This extra Accessory will control all functions of Main Zone except (Inputs and Buttons). | Info |
 
 
@@ -116,12 +118,14 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
                 {
                     "name": "Xbox One",
                     "reference": "GAME",
-                    "mode": "SI"
+                    "mode": "SI",
+                    "switch": false
                 },
                 {
                     "name": "Television",
                     "reference": "TV",
-                    "mode": "SI"
+                    "mode": "SI",
+                    "switch": false
                 }
             ],
             "buttonsMainZone": [
@@ -150,12 +154,14 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
                 {
                     "name": "Xbox One",
                     "reference": "GAME",
-                    "mode": "SI"
+                    "mode": "SI",
+                    "switch": false
                 },
                 {
                     "name": "Television",
                     "reference": "TV",
-                    "mode": "SI"
+                    "mode": "SI",
+                    "switch": false
                 }
             ],
             "buttonsZone2": [
@@ -183,12 +189,14 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
                 {
                     "name": "Xbox One",
                     "reference": "GAME",
-                    "mode": "SI"
+                    "mode": "SI",
+                    "switch": false
                 },
                 {
                     "name": "Television",
                     "reference": "TV",
-                    "mode": "SI"
+                    "mode": "SI",
+                    "switch": false
                 }
             ],
             "buttonsZone3": [
@@ -216,11 +224,13 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
             "surrounds": [
                 {
                     "name": "MCH Stereo",
-                    "reference": "MCH STEREO"
+                    "reference": "MCH STEREO",
+                    "switch": false
                 },
                 {
                     "name": "Stereo",
-                    "reference": "STEREO"
+                    "reference": "STEREO",
+                    "switch": false
                 }
             ]
         }

@@ -103,13 +103,17 @@ class denonTvDevice {
 		this.inputsName = new Array();
 		this.inputsType = new Array();
 		this.inputsMode = new Array();
+		this.inputsSwitchIndex = new Array();
 
 		this.powerState = false;
+		this.reference = '';
 		this.volume = 0;
 		this.muteState = true;
 		this.soundMode = '';
 		this.mediaState = false;
+
 		this.setStartInput = false;
+		this.startInputIdentifier = 0;
 		this.inputIdentifier = 0;
 
 		this.pictureMode = 0;
@@ -121,31 +125,27 @@ class denonTvDevice {
 		this.inputsNamesFile = `${this.prefDir}/inputsNames_${this.sZoneName}${this.host.split('.').join('')}`;
 		this.inputsTargetVisibilityFile = `${this.prefDir}/inputsTargetVisibility_${this.sZoneName}${this.host.split('.').join('')}`;
 
-		try {
-			//check if the directory exists, if not then create it
-			if (fs.existsSync(this.prefDir) == false) {
-				fs.mkdirSync(this.prefDir);
+		//check if the directory exists, if not then create it
+		if (fs.existsSync(this.prefDir) == false) {
+			fs.mkdirSync(this.prefDir);
+		}
+		if (this.zoneControl == 0) {
+			if (fs.existsSync(this.devInfoFile) == false) {
+				fs.writeFileSync(this.devInfoFile, '');
 			}
-			if (this.zoneControl == 0) {
-				if (fs.existsSync(this.devInfoFile) == false) {
-					fs.writeFileSync(this.devInfoFile, '');
-				}
-			}
-			if (fs.existsSync(this.inputsFile) == false) {
-				fs.writeFileSync(this.inputsFile, '');
-			}
-			if (fs.existsSync(this.inputsNamesFile) == false) {
-				fs.writeFileSync(this.inputsNamesFile, '');
-			}
-			if (fs.existsSync(this.inputsTargetVisibilityFile) == false) {
-				fs.writeFileSync(this.inputsTargetVisibilityFile, '');
-			}
-		} catch (error) {
-			this.log.error('Device: %s %s %s, prepare directory or files error: %s', this.host, this.name, this.zoneName, error);
-		};
+		}
+		if (fs.existsSync(this.inputsFile) == false) {
+			fs.writeFileSync(this.inputsFile, '');
+		}
+		if (fs.existsSync(this.inputsNamesFile) == false) {
+			fs.writeFileSync(this.inputsNamesFile, '');
+		}
+		if (fs.existsSync(this.inputsTargetVisibilityFile) == false) {
+			fs.writeFileSync(this.inputsTargetVisibilityFile, '');
+		}
 
+		//save inputs to the file
 		try {
-			//save inputs to the file
 			const inputs = (this.zoneControl <= 2) ? this.inputs : this.soundModes;
 			const obj = JSON.stringify(inputs, null, 2);
 			fs.writeFileSync(this.inputsFile, obj);
@@ -220,7 +220,7 @@ class denonTvDevice {
 
 					if (this.setStartInput) {
 						setTimeout(() => {
-							this.televisionService.setCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
+							this.televisionService.setCharacteristic(Characteristic.ActiveIdentifier, this.startInputIdentifier);
 							this.setStartInput = false;
 						}, 1200);
 					}
@@ -242,7 +242,18 @@ class denonTvDevice {
 					}
 				}
 
+				if (this.switchServices) {
+					const switchServicesCount = this.switchServices.length;
+					for (let i = 0; i < switchServicesCount; i++) {
+						const switchIndex = this.inputsSwitchIndex[i];
+						const switchState = (this.inputsReference[switchIndex] == reference);
+						this.switchServices[i]
+							.updateCharacteristic(Characteristic.On, switchState);
+					}
+				}
+
 				this.powerState = power;
+				this.reference = reference;
 				this.volume = volume;
 				this.muteState = mute;
 				this.soundMode = soundMode;
@@ -319,10 +330,11 @@ class denonTvDevice {
 					const setInput = (this.powerState && inputReference != undefined) ? await this.denon.send(API_URL.iPhoneDirect + inputRef) : false;
 					const logInfo = this.disableLogInfo ? false : this.log('Device: %s %s %s, set %s successful, name: %s, reference: %s', this.host, accessoryName, this.zoneName, this.zoneControl <= 2 ? 'Input' : 'Sound Mode', inputName, inputRef);
 					this.inputIdentifier = inputIdentifier;
-					this.setStartInput = this.powerState ? false : true;
 				} catch (error) {
 					this.log.error('Device: %s %s %s, can not set %s. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneName, this.zoneControl <= 2 ? 'Input' : 'Sound Mode', error);
 				};
+				this.setStartInput = !this.powerState;
+				this.startInputIdentifier = inputIdentifier;
 			});
 
 		this.televisionService.getCharacteristic(Characteristic.RemoteKey)
@@ -654,6 +666,9 @@ class denonTvDevice {
 			//get input mode
 			const inputMode = (this.zoneControl <= 2) ? inputs[i].mode : 'MS';
 
+			//get input switch
+			const inputSwitch = inputs[i].switch;
+
 			//get input configured
 			const isConfigured = 1;
 
@@ -708,9 +723,58 @@ class denonTvDevice {
 			this.inputsName.push(inputName);
 			this.inputsType.push(inputType);
 			this.inputsMode.push(inputMode);
+			const pushInputSwitchIndex = inputSwitch ? this.inputsSwitchIndex.push(i) : false;
 
 			this.televisionService.addLinkedService(inputService);
 			accessory.addService(inputService);
+		}
+
+		//switch services
+
+		//check available inputs and possible inputs count (max 95)
+		this.switchServices = new Array();
+		const inputsSwitchCount = this.inputsSwitchIndex.length;
+		const availableInputSwitchCount = 94 - maxInputsCount;
+		const maxInputsSwitchCount = (availableInputSwitchCount > 0) ? (availableInputSwitchCount > inputsSwitchCount) ? inputsSwitchCount : availableInputSwitchCount : 0;
+		for (let i = 0; i < maxInputsSwitchCount; i++) {
+
+			//get input switch index
+			const inputSwitchIndex = this.inputsSwitchIndex[i];
+
+			//get input switch reference
+			const inputSwitchReference = this.inputsReference[inputSwitchIndex];
+
+			//get input switch name		
+			const inputSwitchName = this.inputsName[inputSwitchIndex];
+
+			//get input switch mode
+			const inputSwitchMode = (this.zoneControl <= 2) ? this.inputsMode[inputSwitchIndex] : 'MS';
+
+			const switchService = new Service.Switch(`${accessoryName} ${inputSwitchName}`, `Switch ${i}`);
+			switchService.getCharacteristic(Characteristic.On)
+				.onGet(async () => {
+					const state = this.powerState ? (inputSwitchReference == this.reference) : false;
+					return state;
+				})
+				.onSet(async (state) => {
+					const zone = [inputSwitchMode, 'Z2', 'Z3', inputSwitchMode][this.zoneControl];
+					const inputSwitchRef = zone + inputSwitchReference;
+					try {
+						const setSwitchInput = (state && this.powerState) ? await this.denon.send(API_URL.iPhoneDirect + inputSwitchRef) : false;
+						const logInfo = this.disableLogInfo ? false : this.log('Device: %s %s %s, set new Input successful, name: %s, reference: %s', this.host, accessoryName, this.zoneName, inputSwitchName, inputSwitchReference);
+					} catch (error) {
+						this.log.error('Device: %s %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s.', this.host, accessoryName, this.zoneName, error);
+					};
+					if (!this.powerState) {
+						setTimeout(() => {
+							this.switchServices[i]
+								.updateCharacteristic(Characteristic.On, false);
+						}, 150);
+					}
+				});
+
+			this.switchServices.push(switchService);
+			accessory.addService(this.switchServices[i]);
 		}
 
 		//Prepare button service
@@ -720,7 +784,8 @@ class denonTvDevice {
 			//check available buttons and possible buttons count (max 94 - inputsCount)
 			const buttons = this.buttons;
 			const buttonsCount = buttons.length;
-			const maxButtonsCount = ((maxInputsCount + buttonsCount) < 94) ? buttonsCount : 94 - maxInputsCount;
+			const availableButtonsCount = (94 - (maxInputsCount + maxInputsSwitchCount));
+			const maxButtonsCount = (availableButtonsCount > 0) ? (availableButtonsCount > buttonsCount) ? buttonsCount : availableButtonsCount : 0;
 			for (let i = 0; i < maxButtonsCount; i++) {
 
 				//get button reference
