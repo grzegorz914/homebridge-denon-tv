@@ -246,7 +246,7 @@ class denonTvDevice {
 					const switchServicesCount = this.switchServices.length;
 					for (let i = 0; i < switchServicesCount; i++) {
 						const switchIndex = this.inputsSwitchIndex[i];
-						const switchState = (this.inputsReference[switchIndex] == reference);
+						const switchState = powerState ? (this.inputsReference[switchIndex] == reference) : false;
 						this.switchServices[i]
 							.updateCharacteristic(Characteristic.On, switchState);
 					}
