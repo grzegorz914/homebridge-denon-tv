@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.16.0] - (14.01.2022)
 ### Added
--  ability to use inputs and surrounds mode to automations in HomeKit app [#131](https://github.com/grzegorz914/homebridge-denon-tv/issues/131)
+-  ability to use inputs and surrounds mode with automations, shortcuts in HomeKit app [#131](https://github.com/grzegorz914/homebridge-denon-tv/issues/131)
 
 ### Changs
 - code cleanup
