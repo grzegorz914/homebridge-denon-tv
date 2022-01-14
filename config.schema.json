@@ -513,11 +513,42 @@
                     "required": true
                   },
                   "switch": {
-                    "title": "Switch",
+                    "title": "Extra Input Tile",
                     "type": "boolean",
                     "default": false,
-                    "description": "If enabled, the input switch will be added to the HomeKit app and can be used with automations.",
+                    "description": "If enabled, the input tile will be added to the HomeKit app and can be used with automation.",
                     "required": false
+                  },
+                  "displayType": {
+                    "title": "Extra Input Tile Type",
+                    "type": "integer",
+                    "oneOf": [{
+                        "title": "Button",
+                        "enum": [
+                          0
+                        ]
+                      },
+                      {
+                        "title": "Switch",
+                        "enum": [
+                          1
+                        ]
+                      },
+                      {
+                        "title": "Motion Sensor",
+                        "enum": [
+                          2
+                        ]
+                      },
+                      {
+                        "title": "Ocupancy Sensor",
+                        "enum": [
+                          3
+                        ]
+                      }
+                    ],
+                    "description": "Here select the tile control or display type in HomeKit app.",
+                    "required": true
                   }
                 }
               }
@@ -681,11 +712,42 @@
                     "required": true
                   },
                   "switch": {
-                    "title": "Switch",
+                    "title": "Extra Surround Tile",
                     "type": "boolean",
                     "default": false,
-                    "description": "If enabled, the input switch will be added to the HomeKit app and can be used with automations.",
+                    "description": "If enabled, the surround mode tile will be added to the HomeKit app and can be used with automation.",
                     "required": false
+                  },
+                  "displayType": {
+                    "title": "Extra Surround Tile Type",
+                    "type": "integer",
+                    "oneOf": [{
+                        "title": "Button",
+                        "enum": [
+                          0
+                        ]
+                      },
+                      {
+                        "title": "Switch",
+                        "enum": [
+                          1
+                        ]
+                      },
+                      {
+                        "title": "Motion Sensor",
+                        "enum": [
+                          2
+                        ]
+                      },
+                      {
+                        "title": "Ocupancy Sensor",
+                        "enum": [
+                          3
+                        ]
+                      }
+                    ],
+                    "description": "Here select tile control or display type in HomeKit app.",
+                    "required": true
                   }
                 }
               }
@@ -2844,7 +2906,7 @@
                         ]
                       }
                     ],
-                    "description": "Here select display type in Home app",
+                    "description": "Here select display type in HomeKit app.",
                     "required": true
                   }
                 }
@@ -3036,7 +3098,7 @@
                         ]
                       }
                     ],
-                    "description": "Here select display type in Home app",
+                    "description": "Here select display type in HomeKit app.",
                     "required": true
                   }
                 }
@@ -3216,7 +3278,7 @@
                         ]
                       }
                     ],
-                    "description": "Here select display type in Home app",
+                    "description": "Here select display type in HomeKit app.",
                     "required": true
                   }
                 }
@@ -3250,7 +3312,8 @@
             "devices[].inputs[].name",
             "devices[].inputs[].reference",
             "devices[].inputs[].mode",
-            "devices[].inputs[].switch"
+            "devices[].inputs[].switch",
+            "devices[].inputs[].displayType"
           ]
         }],
         "condition": {
@@ -3270,7 +3333,8 @@
           "items": [
             "devices[].surrounds[].name",
             "devices[].surrounds[].reference",
-            "devices[].surrounds[].switch"
+            "devices[].surrounds[].switch",
+            "devices[].surrounds[].displayType"
           ]
         }],
         "condition": {

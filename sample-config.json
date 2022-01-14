@@ -34,13 +34,15 @@
                         "name": "Xbox One",
                         "reference": "GAME",
                         "mode": "SI",
-                        "switch": false
+                        "switch": false,
+                        "displayType": 0
                     },
                     {
                         "name": "Television",
                         "reference": "TV",
                         "mode": "SI",
-                        "switch": false
+                        "switch": false,
+                        "displayType": 0
                     }
                 ],
                 "buttonsMainZone": [{
@@ -67,13 +69,15 @@
                         "name": "Xbox One",
                         "reference": "GAME",
                         "mode": "SI",
-                        "switch": false
+                        "switch": false,
+                        "displayType": 0
                     },
                     {
                         "name": "Television",
                         "reference": "TV",
                         "mode": "SI",
-                        "switch": false
+                        "switch": false,
+                        "displayType": 0
                     }
                 ],
                 "buttonsZone2": [{
@@ -99,13 +103,15 @@
                         "name": "Xbox One",
                         "reference": "GAME",
                         "mode": "SI",
-                        "switch": false
+                        "switch": false,
+                        "displayType": 0
                     },
                     {
                         "name": "Television",
                         "reference": "TV",
                         "mode": "SI",
-                        "switch": false
+                        "switch": false,
+                        "displayType": 0
                     }
                 ],
                 "buttonsZone3": [{
@@ -131,12 +137,14 @@
                 "surrounds": [{
                         "name": "MCH Stereo",
                         "reference": "MCH STEREO",
-                        "switch": false
+                        "switch": false,
+                        "displayType": 0
                     },
                     {
                         "name": "Stereo",
                         "reference": "STEREO",
-                        "switch": false
+                        "switch": false,
+                        "displayType": 0
                     }
                 ]
             }

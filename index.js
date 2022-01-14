@@ -103,7 +103,9 @@ class denonTvDevice {
 		this.inputsName = new Array();
 		this.inputsType = new Array();
 		this.inputsMode = new Array();
+
 		this.inputsSwitchIndex = new Array();
+		this.inputsSwitchDisplayType = new Array();
 
 		this.powerState = false;
 		this.reference = '';
@@ -245,10 +247,12 @@ class denonTvDevice {
 				if (this.switchServices) {
 					const switchServicesCount = this.switchServices.length;
 					for (let i = 0; i < switchServicesCount; i++) {
-						const switchIndex = this.inputsSwitchIndex[i];
-						const switchState = powerState ? (this.inputsReference[switchIndex] == reference) : false;
+						const index = this.inputsSwitchIndex[i];
+						const state = powerState ? (this.inputsReference[index] == reference) : false;
+						const displayType = this.inputsSwitchDisplayType[index];
+						const characteristicType = [Characteristic.On, Characteristic.On, Characteristic.MotionDetected, Characteristic.OccupancyDetected][displayType];
 						this.switchServices[i]
-							.updateCharacteristic(Characteristic.On, switchState);
+							.updateCharacteristic(characteristicType, state);
 					}
 				}
 
@@ -669,6 +673,9 @@ class denonTvDevice {
 			//get input switch
 			const inputSwitch = inputs[i].switch;
 
+			//get input switch
+			const inputSwitchDisplayType = inputs[i].displayType;
+
 			//get input configured
 			const isConfigured = 1;
 
@@ -723,6 +730,7 @@ class denonTvDevice {
 			this.inputsName.push(inputName);
 			this.inputsType.push(inputType);
 			this.inputsMode.push(inputMode);
+			this.inputsSwitchDisplayType.push(inputSwitchDisplayType);
 			const pushInputSwitchIndex = inputSwitch ? this.inputsSwitchIndex.push(i) : false;
 
 			this.televisionService.addLinkedService(inputService);
@@ -749,27 +757,35 @@ class denonTvDevice {
 			//get input switch mode
 			const inputSwitchMode = (this.zoneControl <= 2) ? this.inputsMode[inputSwitchIndex] : 'MS';
 
-			const switchService = new Service.Switch(`${this.sZoneName} ${inputSwitchName}`, `Switch ${i}`);
-			switchService.getCharacteristic(Characteristic.On)
+			//get input switch display type
+			const inputSwitchDisplayType = this.inputsSwitchDisplayType[inputSwitchIndex];
+
+
+			const serviceType = [Service.Outlet, Service.Switch, Service.MotionSensor, Service.OccupancySensor][inputSwitchDisplayType];
+			const characteristicType = [Characteristic.On, Characteristic.On, Characteristic.MotionDetected, Characteristic.OccupancyDetected][inputSwitchDisplayType];
+			const switchService = new serviceType(`${this.sZoneName} ${inputSwitchName}`, `Button ${i}`);
+			switchService.getCharacteristic(characteristicType)
 				.onGet(async () => {
 					const state = this.powerState ? (inputSwitchReference == this.reference) : false;
 					return state;
 				})
 				.onSet(async (state) => {
-					const zone = [inputSwitchMode, 'Z2', 'Z3', inputSwitchMode][this.zoneControl];
-					const inputSwitchRef = zone + inputSwitchReference;
-					try {
-						const setSwitchInput = (state && this.powerState) ? await this.denon.send(API_URL.iPhoneDirect + inputSwitchRef) : false;
-						const logInfo = this.disableLogInfo ? false : this.log('Device: %s %s, set new Input successful, name: %s, reference: %s', this.host, accessoryName, inputSwitchName, inputSwitchReference);
-					} catch (error) {
-						this.log.error('Device: %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s.', this.host, accessoryName, error);
+					if (inputSwitchDisplayType <= 1) {
+						const zone = [inputSwitchMode, 'Z2', 'Z3', inputSwitchMode][this.zoneControl];
+						const inputSwitchRef = zone + inputSwitchReference;
+						try {
+							const setSwitchInput = (state && this.powerState) ? await this.denon.send(API_URL.iPhoneDirect + inputSwitchRef) : false;
+							const logInfo = this.disableLogInfo ? false : this.log('Device: %s %s, set new Input successful, name: %s, reference: %s', this.host, accessoryName, inputSwitchName, inputSwitchReference);
+						} catch (error) {
+							this.log.error('Device: %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s.', this.host, accessoryName, error);
+						};
+						if (!this.powerState) {
+							setTimeout(() => {
+								this.switchServices[i]
+									.updateCharacteristic(Characteristic.On, false);
+							}, 150);
+						}
 					};
-					if (!this.powerState) {
-						setTimeout(() => {
-							this.switchServices[i]
-								.updateCharacteristic(Characteristic.On, false);
-						}, 150);
-					}
 				});
 
 			this.switchServices.push(switchService);
