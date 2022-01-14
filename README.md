@@ -35,6 +35,7 @@ This plugin is based upon the official documentation for communicating with and 
    * Restart Homebridge and try add it to the Home app again.
 
 ## Features and How To Use Them
+* Multi Zone control.
 * Power ON/OFF short press tile in HomeKit app.
 * RC/Media control is possible after you go to the RC app on iPhone/iPad.
 * Speaker control is possible after you go to RC app on iPhone/iPad `Speaker Service`.
@@ -42,7 +43,6 @@ This plugin is based upon the official documentation for communicating with and 
 * Inputs can be changed using Inputs selector in Home.app and additionally can be create separate tile.
 * Surrounds can be changed using Surrounds selector in Home.app and additionally can be create separate tile.
 * Digital Input Modes can be controlled by creating separate tile in the Buttons section.
-* Multiple Zone control.
 * Siri can be used to control Power, Legacy Volume, Mute and switch Inputs/Surround and other Function with created Buttons/Switches.
 * Home automations and shortcuts can be used for all functions.
 
