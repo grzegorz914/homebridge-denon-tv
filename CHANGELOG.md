@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changs
 - code cleanup
+- removed all inputs and favorites function from buttons, now available in input section
 
 ### Fixed
 - services calculation count
