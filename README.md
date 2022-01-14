@@ -40,11 +40,11 @@ This plugin is based upon the official documentation for communicating with and 
 * RC/Media control is possible after you go to the RC app on iPhone/iPad.
 * Speaker control is possible after you go to RC app on iPhone/iPad `Speaker Service`.
 * Legacy Volume and Mute control is possible throught extra `lightbulb`/`fan` (slider).
-* Inputs can be changed using Inputs selector in Home.app and additionally can be create separate tile.
-* Surrounds can be changed using Surrounds selector in Home.app and additionally can be create separate tile.
-* Digital Input Modes can be controlled by creating separate tile in the Buttons section.
-* Siri can be used for all functions, some time need to be created legacy buuton/switch.
-* Automations and shortcuts can be used for all functions some time need to be created legacy buuton/switch.
+* Inputs can be changed using Inputs selector in HomeKit.app and additionally can be create separate tile.
+* Surrounds can be changed using Surrounds selector in HomeKit.app and additionally can be create separate tile.
+* Digital Input Modes can be controlled by creating separate tile in the buttons section.
+* Siri can be used for all functions, some times need create legacy buttons/switches.
+* Automations and shortcuts can be used for all functions, some times need create legacy buttons/switches.
 
 <p align="left">
   <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/homekit.png" width="382"></a> 
