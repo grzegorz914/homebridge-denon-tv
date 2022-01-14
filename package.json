@@ -1,7 +1,7 @@
 {
   "displayName": "Denon TV",
   "name": "homebridge-denon-tv",
-  "version": "3.16.0-beta.14",
+  "version": "3.16.0",
   "description": "Homebridge plugin (https://github.com/homebridge/homebridge) to control Denon/Marantz AV Receivers.",
   "license": "MIT",
   "author": "grzegorz914",
