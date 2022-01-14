@@ -511,6 +511,44 @@
                       }
                     ],
                     "required": true
+                  },
+                  "switch": {
+                    "title": "Extra Input Tile",
+                    "type": "boolean",
+                    "default": false,
+                    "description": "If enabled, the input tile will be added to the HomeKit app and can be used with automation.",
+                    "required": false
+                  },
+                  "displayType": {
+                    "title": "Extra Input Tile Type",
+                    "type": "integer",
+                    "oneOf": [{
+                        "title": "Button",
+                        "enum": [
+                          0
+                        ]
+                      },
+                      {
+                        "title": "Switch",
+                        "enum": [
+                          1
+                        ]
+                      },
+                      {
+                        "title": "Motion Sensor",
+                        "enum": [
+                          2
+                        ]
+                      },
+                      {
+                        "title": "Ocupancy Sensor",
+                        "enum": [
+                          3
+                        ]
+                      }
+                    ],
+                    "description": "Here select the tile control or display type in HomeKit app.",
+                    "required": true
                   }
                 }
               }
@@ -671,6 +709,44 @@
                         ]
                       }
                     ],
+                    "required": true
+                  },
+                  "switch": {
+                    "title": "Extra Surround Tile",
+                    "type": "boolean",
+                    "default": false,
+                    "description": "If enabled, the surround mode tile will be added to the HomeKit app and can be used with automation.",
+                    "required": false
+                  },
+                  "displayType": {
+                    "title": "Extra Surround Tile Type",
+                    "type": "integer",
+                    "oneOf": [{
+                        "title": "Button",
+                        "enum": [
+                          0
+                        ]
+                      },
+                      {
+                        "title": "Switch",
+                        "enum": [
+                          1
+                        ]
+                      },
+                      {
+                        "title": "Motion Sensor",
+                        "enum": [
+                          2
+                        ]
+                      },
+                      {
+                        "title": "Ocupancy Sensor",
+                        "enum": [
+                          3
+                        ]
+                      }
+                    ],
+                    "description": "Here select tile control or display type in HomeKit app.",
                     "required": true
                   }
                 }
@@ -1153,324 +1229,6 @@
                         "title": "MUTE OFF",
                         "enum": [
                           "MUOFF"
-                        ]
-                      },
-                      {
-                        "title": "INPUT AUDIO TV",
-                        "enum": [
-                          "SITV"
-                        ]
-                      },
-                      {
-                        "title": "INPUT 8K",
-                        "enum": [
-                          "SI8K"
-                        ]
-                      },
-                      {
-                        "title": "INPUT PHONO",
-                        "enum": [
-                          "SIPHONO"
-                        ]
-                      },
-                      {
-                        "title": "INPUT CD",
-                        "enum": [
-                          "SICD"
-                        ]
-                      },
-                      {
-                        "title": "INPUT DVD",
-                        "enum": [
-                          "SIDVD"
-                        ]
-                      },
-                      {
-                        "title": "INPUT BLU-RAY",
-                        "enum": [
-                          "SIBD"
-                        ]
-                      },
-                      {
-                        "title": "INPUT SAT/CBL",
-                        "enum": [
-                          "SISAT/CBL"
-                        ]
-                      },
-                      {
-                        "title": "INPUT CBL/SAT",
-                        "enum": [
-                          "SICBL/SAT"
-                        ]
-                      },
-                      {
-                        "title": "INPUT SAT/CBL",
-                        "enum": [
-                          "SISAT/CBL"
-                        ]
-                      },
-                      {
-                        "title": "INPUT MPLAY",
-                        "enum": [
-                          "SIMPLAY"
-                        ]
-                      },
-                      {
-                        "title": "INPUT GAME",
-                        "enum": [
-                          "SIGAME"
-                        ]
-                      },
-                      {
-                        "title": "INPUT GAME 2",
-                        "enum": [
-                          "SIGAME2"
-                        ]
-                      },
-                      {
-                        "title": "INPUT ONLINE MIUSIC FAVORITES PLAY",
-                        "enum": [
-                          "SIFVP"
-                        ]
-                      },
-                      {
-                        "title": "INPUT USB/IPOD",
-                        "enum": [
-                          "SIUSB/IPOD"
-                        ]
-                      },
-                      {
-                        "title": "INPUT USB START PLAYBACK",
-                        "enum": [
-                          "SIUSB"
-                        ]
-                      },
-                      {
-                        "title": "INPUT TUNER",
-                        "enum": [
-                          "SITUNER"
-                        ]
-                      },
-                      {
-                        "title": "INPUT HD RADIO",
-                        "enum": [
-                          "SIHDRADIO"
-                        ]
-                      },
-                      {
-                        "title": "INPUT INTERNET RADIO",
-                        "enum": [
-                          "SIIRADIO"
-                        ]
-                      },
-                      {
-                        "title": "INPUT AUX 1",
-                        "enum": [
-                          "SIAUX1"
-                        ]
-                      },
-                      {
-                        "title": "INPUT AUX 2",
-                        "enum": [
-                          "SIAUX2"
-                        ]
-                      },
-                      {
-                        "title": "INPUT AUX 3",
-                        "enum": [
-                          "SIAUX3"
-                        ]
-                      },
-                      {
-                        "title": "INPUT AUX 4",
-                        "enum": [
-                          "SIAUX4"
-                        ]
-                      },
-                      {
-                        "title": "INPUT AUX 5",
-                        "enum": [
-                          "SIAUX5"
-                        ]
-                      },
-                      {
-                        "title": "INPUT AUX 6",
-                        "enum": [
-                          "SIAUX6"
-                        ]
-                      },
-                      {
-                        "title": "INPUT AUX 7",
-                        "enum": [
-                          "SIAUX7"
-                        ]
-                      },
-                      {
-                        "title": "INPUT NETWORK/AIRPLAY",
-                        "enum": [
-                          "SINET"
-                        ]
-                      },
-                      {
-                        "title": "INPUT BLUETOOTH",
-                        "enum": [
-                          "SIBT"
-                        ]
-                      },
-                      {
-                        "title": "INPUT SPOTIFY",
-                        "enum": [
-                          "SISPOTIFY"
-                        ]
-                      },
-                      {
-                        "title": "INPUT LAST FM",
-                        "enum": [
-                          "SILASTFM"
-                        ]
-                      },
-                      {
-                        "title": "INPUT IRADIO RECENT PLAY",
-                        "enum": [
-                          "SIIRP"
-                        ]
-                      },
-                      {
-                        "title": "INPUT PANDORA",
-                        "enum": [
-                          "SIPANDORA"
-                        ]
-                      },
-                      {
-                        "title": "INPUT SIRIUSXM (NA Only)",
-                        "enum": [
-                          "SISIRIUSXM"
-                        ]
-                      },
-                      {
-                        "title": "QUICK 1",
-                        "enum": [
-                          "MSQUICK1"
-                        ]
-                      },
-                      {
-                        "title": "QUICK 2",
-                        "enum": [
-                          "MSQUICK2"
-                        ]
-                      },
-                      {
-                        "title": "QUICK 3",
-                        "enum": [
-                          "MSQUICK3"
-                        ]
-                      },
-                      {
-                        "title": "QUICK 4",
-                        "enum": [
-                          "MSQUICK4"
-                        ]
-                      },
-                      {
-                        "title": "QUICK 5",
-                        "enum": [
-                          "MSQUICK5"
-                        ]
-                      },
-                      {
-                        "title": "QUICK MEMORY 1",
-                        "enum": [
-                          "MSQUICK1 MEMORY"
-                        ]
-                      },
-                      {
-                        "title": "QUICK MEMORY 2",
-                        "enum": [
-                          "MSQUICK2 MEMORY"
-                        ]
-                      },
-                      {
-                        "title": "QUICK MEMORY 3",
-                        "enum": [
-                          "MSQUICK3 MEMORY"
-                        ]
-                      },
-                      {
-                        "title": "QUICK MEMORY 4",
-                        "enum": [
-                          "MSQUICK4 MEMORY"
-                        ]
-                      },
-                      {
-                        "title": "QUICK MEMORY 5",
-                        "enum": [
-                          "MSQUICK5 MEMORY"
-                        ]
-                      },
-                      {
-                        "title": "SMART SELECT 1",
-                        "enum": [
-                          "MSSMART1"
-                        ]
-                      },
-                      {
-                        "title": "SMART SELECT 2",
-                        "enum": [
-                          "MSSMART2"
-                        ]
-                      },
-                      {
-                        "title": "SMART SELECT 3",
-                        "enum": [
-                          "MSSMART3"
-                        ]
-                      },
-                      {
-                        "title": "SMART SELECT 4",
-                        "enum": [
-                          "MSSMART4"
-                        ]
-                      },
-                      {
-                        "title": "SMART SELECT 5",
-                        "enum": [
-                          "MSSMART5"
-                        ]
-                      },
-                      {
-                        "title": "FAVORITE 1",
-                        "enum": [
-                          "ZMFAVORITE1"
-                        ]
-                      },
-                      {
-                        "title": "FAVORITE 2",
-                        "enum": [
-                          "ZMFAVORITE2"
-                        ]
-                      },
-                      {
-                        "title": "FAVORITE 3",
-                        "enum": [
-                          "ZMFAVORITE3"
-                        ]
-                      },
-                      {
-                        "title": "FAVORITE MEMORY 1",
-                        "enum": [
-                          "ZMFAVORITE1 MEMORY"
-                        ]
-                      },
-                      {
-                        "title": "FAVORITE MEMORY 2",
-                        "enum": [
-                          "ZMFAVORITE2 MEMORY"
-                        ]
-                      },
-                      {
-                        "title": "FAVORITE MEMORY 3",
-                        "enum": [
-                          "ZMFAVORITE3 MEMORY"
                         ]
                       },
                       {
@@ -3148,7 +2906,7 @@
                         ]
                       }
                     ],
-                    "description": "Here select display type in Home app",
+                    "description": "Here select display type in HomeKit app.",
                     "required": true
                   }
                 }
@@ -3181,324 +2939,6 @@
                         "title": "POWER OFF",
                         "enum": [
                           "Z2OFF"
-                        ]
-                      },
-                      {
-                        "title": "INPUT CD",
-                        "enum": [
-                          "Z2CD"
-                        ]
-                      },
-                      {
-                        "title": "INPUT SOURCE",
-                        "enum": [
-                          "Z2SOURCE"
-                        ]
-                      },
-                      {
-                        "title": "INPUT 8K",
-                        "enum": [
-                          "Z28K"
-                        ]
-                      },
-                      {
-                        "title": "INPUT CD",
-                        "enum": [
-                          "Z2CD"
-                        ]
-                      },
-                      {
-                        "title": "INPUT DVD",
-                        "enum": [
-                          "Z2DVD"
-                        ]
-                      },
-                      {
-                        "title": "INPUT BLU-RAY",
-                        "enum": [
-                          "Z2BD"
-                        ]
-                      },
-                      {
-                        "title": "INPUT AUDIO TV",
-                        "enum": [
-                          "Z2TV"
-                        ]
-                      },
-                      {
-                        "title": "INPUT SAT/CBL",
-                        "enum": [
-                          "Z2SAT/CBL"
-                        ]
-                      },
-                      {
-                        "title": "INPUT CBL/SAT",
-                        "enum": [
-                          "Z2CBL/SAT"
-                        ]
-                      },
-                      {
-                        "title": "INPUT MPLAY",
-                        "enum": [
-                          "Z2MPLAY"
-                        ]
-                      },
-                      {
-                        "title": "INPUT GAME",
-                        "enum": [
-                          "Z2GAME"
-                        ]
-                      },
-                      {
-                        "title": "INPUT GAME2",
-                        "enum": [
-                          "Z2GAME2"
-                        ]
-                      },
-                      {
-                        "title": "INPUT ONLINE MIUSIC FAVORITES PLAY",
-                        "enum": [
-                          "Z2FVP"
-                        ]
-                      },
-                      {
-                        "title": "INPUT USB/IPOD",
-                        "enum": [
-                          "Z2USB/IPOD"
-                        ]
-                      },
-                      {
-                        "title": "INPUT USB START PLAYBACK",
-                        "enum": [
-                          "Z2USB"
-                        ]
-                      },
-                      {
-                        "title": "INPUT TUNER",
-                        "enum": [
-                          "Z2TUNER"
-                        ]
-                      },
-                      {
-                        "title": "INPUT HD RADIO",
-                        "enum": [
-                          "Z2HDRADIO"
-                        ]
-                      },
-                      {
-                        "title": "INPUT INTERNET RADIO",
-                        "enum": [
-                          "Z2IRADIO"
-                        ]
-                      },
-                      {
-                        "title": "INPUT AUX 1",
-                        "enum": [
-                          "Z2AUX1"
-                        ]
-                      },
-                      {
-                        "title": "INPUT AUX 2",
-                        "enum": [
-                          "Z2AUX2"
-                        ]
-                      },
-                      {
-                        "title": "INPUT AUX 3",
-                        "enum": [
-                          "Z2AUX3"
-                        ]
-                      },
-                      {
-                        "title": "INPUT AUX 4",
-                        "enum": [
-                          "Z2AUX4"
-                        ]
-                      },
-                      {
-                        "title": "INPUT AUX 5",
-                        "enum": [
-                          "Z2AUX5"
-                        ]
-                      },
-                      {
-                        "title": "INPUT AUX 6",
-                        "enum": [
-                          "Z2AUX6"
-                        ]
-                      },
-                      {
-                        "title": "INPUT AUX 7",
-                        "enum": [
-                          "Z2AUX7"
-                        ]
-                      },
-                      {
-                        "title": "INPUT NETWORK/AIRPLAY",
-                        "enum": [
-                          "Z2NET"
-                        ]
-                      },
-                      {
-                        "title": "INPUT BLUETOOTH",
-                        "enum": [
-                          "Z2BT"
-                        ]
-                      },
-                      {
-                        "title": "INPUT SPOTIFY",
-                        "enum": [
-                          "Z2SPOTIFY"
-                        ]
-                      },
-                      {
-                        "title": "INPUT LAST FM",
-                        "enum": [
-                          "Z2LASTFM"
-                        ]
-                      },
-                      {
-                        "title": "INPUT iRADIO RECENT PLAY",
-                        "enum": [
-                          "Z2IRP"
-                        ]
-                      },
-                      {
-                        "title": "INPUT PANDORA",
-                        "enum": [
-                          "Z2PANDORA"
-                        ]
-                      },
-                      {
-                        "title": "INPUT SIRIUSXM (NA Only)",
-                        "enum": [
-                          "Z2SIRIUSXM"
-                        ]
-                      },
-                      {
-                        "title": "QUICK 1",
-                        "enum": [
-                          "Z2QUICK1"
-                        ]
-                      },
-                      {
-                        "title": "QUICK 2",
-                        "enum": [
-                          "Z2QUICK2"
-                        ]
-                      },
-                      {
-                        "title": "QUICK 3",
-                        "enum": [
-                          "Z2QUICK3"
-                        ]
-                      },
-                      {
-                        "title": "QUICK 4",
-                        "enum": [
-                          "Z2QUICK4"
-                        ]
-                      },
-                      {
-                        "title": "QUICK 5",
-                        "enum": [
-                          "Z2QUICK5"
-                        ]
-                      },
-                      {
-                        "title": "QUICK MEMORY 1",
-                        "enum": [
-                          "Z2QUICK1 MEMORY"
-                        ]
-                      },
-                      {
-                        "title": "QUICK MEMORY 2",
-                        "enum": [
-                          "Z2QUICK2 MEMORY"
-                        ]
-                      },
-                      {
-                        "title": "QUICK MEMORY 3",
-                        "enum": [
-                          "Z2QUICK3 MEMORY"
-                        ]
-                      },
-                      {
-                        "title": "QUICK MEMORY 4",
-                        "enum": [
-                          "Z2QUICK4 MEMORY"
-                        ]
-                      },
-                      {
-                        "title": "QUICK MEMORY 5",
-                        "enum": [
-                          "Z2QUICK5 MEMORY"
-                        ]
-                      },
-                      {
-                        "title": "SMART SELECT 1",
-                        "enum": [
-                          "Z2SMART1"
-                        ]
-                      },
-                      {
-                        "title": "SMART SELECT 2",
-                        "enum": [
-                          "Z2SMART2"
-                        ]
-                      },
-                      {
-                        "title": "SMART SELECT 3",
-                        "enum": [
-                          "Z2SMART3"
-                        ]
-                      },
-                      {
-                        "title": "SMART SELECT 4",
-                        "enum": [
-                          "Z2SMART4"
-                        ]
-                      },
-                      {
-                        "title": "SMART SELECT 5",
-                        "enum": [
-                          "Z2SMART5"
-                        ]
-                      },
-                      {
-                        "title": "FAVORITE 1",
-                        "enum": [
-                          "Z2FAVORITE1"
-                        ]
-                      },
-                      {
-                        "title": "FAVORITE 2",
-                        "enum": [
-                          "Z2FAVORITE2"
-                        ]
-                      },
-                      {
-                        "title": "FAVORITE 3",
-                        "enum": [
-                          "Z2FAVORITE3"
-                        ]
-                      },
-                      {
-                        "title": "FAVORITE MEMORY 1",
-                        "enum": [
-                          "Z2FAVORITE1 MEMORY"
-                        ]
-                      },
-                      {
-                        "title": "FAVORITE MEMORY 2",
-                        "enum": [
-                          "Z2FAVORITE2 MEMORY"
-                        ]
-                      },
-                      {
-                        "title": "FAVORITE MEMORY 3",
-                        "enum": [
-                          "Z2FAVORITE3 MEMORY"
                         ]
                       },
                       {
@@ -3658,7 +3098,7 @@
                         ]
                       }
                     ],
-                    "description": "Here select display type in Home app",
+                    "description": "Here select display type in HomeKit app.",
                     "required": true
                   }
                 }
@@ -3691,318 +3131,6 @@
                         "title": "POWER OFF",
                         "enum": [
                           "Z3OFF"
-                        ]
-                      },
-                      {
-                        "title": "INPUT SOURCE",
-                        "enum": [
-                          "Z3SOURCE"
-                        ]
-                      },
-                      {
-                        "title": "INPUT 8K",
-                        "enum": [
-                          "Z38K"
-                        ]
-                      },
-                      {
-                        "title": "INPUT CD",
-                        "enum": [
-                          "Z3CD"
-                        ]
-                      },
-                      {
-                        "title": "INPUT DVD",
-                        "enum": [
-                          "Z3DVD"
-                        ]
-                      },
-                      {
-                        "title": "INPUT BLU-RAY",
-                        "enum": [
-                          "Z3BD"
-                        ]
-                      },
-                      {
-                        "title": "INPUT AUDIO TV",
-                        "enum": [
-                          "Z3TV"
-                        ]
-                      },
-                      {
-                        "title": "INPUT SAT/CBL",
-                        "enum": [
-                          "Z3SAT/CBL"
-                        ]
-                      },
-                      {
-                        "title": "INPUT CBL/SAT",
-                        "enum": [
-                          "Z3CBL/SAT"
-                        ]
-                      },
-                      {
-                        "title": "INPUT MPLAY",
-                        "enum": [
-                          "Z3MPLAY"
-                        ]
-                      },
-                      {
-                        "title": "INPUT GAME",
-                        "enum": [
-                          "Z3GAME"
-                        ]
-                      },
-                      {
-                        "title": "INPUT GAME2",
-                        "enum": [
-                          "Z3GAME2"
-                        ]
-                      },
-                      {
-                        "title": "INPUT ONLINE MIUSIC FAVORITES PLAY",
-                        "enum": [
-                          "Z3FVP"
-                        ]
-                      },
-                      {
-                        "title": "INPUT USB/IPOD",
-                        "enum": [
-                          "Z3USB/IPOD"
-                        ]
-                      },
-                      {
-                        "title": "INPUT USB START PLAYBACK",
-                        "enum": [
-                          "Z3USB"
-                        ]
-                      },
-                      {
-                        "title": "INPUT TUNER",
-                        "enum": [
-                          "Z3TUNER"
-                        ]
-                      },
-                      {
-                        "title": "INPUT HD RADIO",
-                        "enum": [
-                          "Z3HDRADIO"
-                        ]
-                      },
-                      {
-                        "title": "INPUT INTERNET RADIO",
-                        "enum": [
-                          "Z3IRADIO"
-                        ]
-                      },
-                      {
-                        "title": "INPUT AUX 1",
-                        "enum": [
-                          "Z3AUX1"
-                        ]
-                      },
-                      {
-                        "title": "INPUT AUX 2",
-                        "enum": [
-                          "Z3AUX2"
-                        ]
-                      },
-                      {
-                        "title": "INPUT AUX 3",
-                        "enum": [
-                          "Z3AUX3"
-                        ]
-                      },
-                      {
-                        "title": "INPUT AUX 4",
-                        "enum": [
-                          "Z3AUX4"
-                        ]
-                      },
-                      {
-                        "title": "INPUT AUX 5",
-                        "enum": [
-                          "Z3AUX5"
-                        ]
-                      },
-                      {
-                        "title": "INPUT AUX 6",
-                        "enum": [
-                          "Z3AUX6"
-                        ]
-                      },
-                      {
-                        "title": "INPUT AUX 7",
-                        "enum": [
-                          "Z3AUX7"
-                        ]
-                      },
-                      {
-                        "title": "INPUT NETWORK/AIRPLAY",
-                        "enum": [
-                          "Z3NET"
-                        ]
-                      },
-                      {
-                        "title": "INPUT BLUETOOTH",
-                        "enum": [
-                          "Z3BT"
-                        ]
-                      },
-                      {
-                        "title": "INPUT SPOTIFY",
-                        "enum": [
-                          "Z3SPOTIFY"
-                        ]
-                      },
-                      {
-                        "title": "INPUT LAST FM",
-                        "enum": [
-                          "Z3LASTFM"
-                        ]
-                      },
-                      {
-                        "title": "INPUT IRADIO RECENT PLAY",
-                        "enum": [
-                          "Z3IRP"
-                        ]
-                      },
-                      {
-                        "title": "INPUT PANDORA",
-                        "enum": [
-                          "Z3PANDORA"
-                        ]
-                      },
-                      {
-                        "title": "INPUT SIRIUSXM (NA only)",
-                        "enum": [
-                          "Z3SIRIUSXM"
-                        ]
-                      },
-                      {
-                        "title": "QUICK 1",
-                        "enum": [
-                          "Z3QUICK1"
-                        ]
-                      },
-                      {
-                        "title": "QUICK 2",
-                        "enum": [
-                          "Z3QUICK2"
-                        ]
-                      },
-                      {
-                        "title": "QUICK 3",
-                        "enum": [
-                          "Z3QUICK3"
-                        ]
-                      },
-                      {
-                        "title": "QUICK 4",
-                        "enum": [
-                          "Z3QUICK4"
-                        ]
-                      },
-                      {
-                        "title": "QUICK 5",
-                        "enum": [
-                          "Z3QUICK5"
-                        ]
-                      },
-                      {
-                        "title": "QUICK MEMORY 1",
-                        "enum": [
-                          "Z3QUICK1 MEMORY"
-                        ]
-                      },
-                      {
-                        "title": "QUICK MEMORY 2",
-                        "enum": [
-                          "Z3QUICK2 MEMORY"
-                        ]
-                      },
-                      {
-                        "title": "QUICK MEMORY 3",
-                        "enum": [
-                          "Z3QUICK3 MEMORY"
-                        ]
-                      },
-                      {
-                        "title": "QUICK MEMORY 4",
-                        "enum": [
-                          "Z3QUICK4 MEMORY"
-                        ]
-                      },
-                      {
-                        "title": "QUICK MEMORY 5",
-                        "enum": [
-                          "Z3QUICK5 MEMORY"
-                        ]
-                      },
-                      {
-                        "title": "SMART SELECT 1",
-                        "enum": [
-                          "Z3SMART1"
-                        ]
-                      },
-                      {
-                        "title": "SMART SELECT 2",
-                        "enum": [
-                          "Z3SMART2"
-                        ]
-                      },
-                      {
-                        "title": "SMART SELECT 3",
-                        "enum": [
-                          "Z3SMART3"
-                        ]
-                      },
-                      {
-                        "title": "SMART SELECT 4",
-                        "enum": [
-                          "Z3SMART4"
-                        ]
-                      },
-                      {
-                        "title": "SMART SELECT 5",
-                        "enum": [
-                          "Z3SMART5"
-                        ]
-                      },
-                      {
-                        "title": "FAVORITE 1",
-                        "enum": [
-                          "Z3FAVORITE1"
-                        ]
-                      },
-                      {
-                        "title": "FAVORITE 2",
-                        "enum": [
-                          "Z3FAVORITE2"
-                        ]
-                      },
-                      {
-                        "title": "FAVORITE 3",
-                        "enum": [
-                          "Z3FAVORITE3"
-                        ]
-                      },
-                      {
-                        "title": "FAVORITE MEMORY 1",
-                        "enum": [
-                          "Z3FAVORITE1 MEMORY"
-                        ]
-                      },
-                      {
-                        "title": "FAVORITE MEMORY 2",
-                        "enum": [
-                          "Z3FAVORITE2 MEMORY"
-                        ]
-                      },
-                      {
-                        "title": "FAVORITE MEMORY 3",
-                        "enum": [
-                          "Z3FAVORITE3 MEMORY"
                         ]
                       },
                       {
@@ -4150,7 +3278,7 @@
                         ]
                       }
                     ],
-                    "description": "Here select display type in Home app",
+                    "description": "Here select display type in HomeKit app.",
                     "required": true
                   }
                 }
@@ -4183,7 +3311,9 @@
           "items": [
             "devices[].inputs[].name",
             "devices[].inputs[].reference",
-            "devices[].inputs[].mode"
+            "devices[].inputs[].mode",
+            "devices[].inputs[].switch",
+            "devices[].inputs[].displayType"
           ]
         }],
         "condition": {
@@ -4202,7 +3332,9 @@
           "title": "{{ value.name || 'new surround' }}",
           "items": [
             "devices[].surrounds[].name",
-            "devices[].surrounds[].reference"
+            "devices[].surrounds[].reference",
+            "devices[].surrounds[].switch",
+            "devices[].surrounds[].displayType"
           ]
         }],
         "condition": {

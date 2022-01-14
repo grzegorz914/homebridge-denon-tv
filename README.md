@@ -25,29 +25,26 @@ This plugin is based upon the official documentation for communicating with and 
 
 ## Note
 * For homebridge-denon-tv versions 3.6.0 and above the minimum required version of Homebridge is 1.3.x.
-* If update to 3.15.0 need remove the accessory frome Home app and add it again.
-
-## Know issues
-* If used with Hoobs, there is a possible configuration incompatibilty.
+* If update to 3.15.0 need remove the accessory frome HomeKit app and add it again.
 
 ## Troubleshooting
 * If for some reason the device is not displayed in HomeKit app try this procedure:
    * Go to `./homebridge/persist`.
    * Remove `AccessoryInfo.xxx` file which contain Your device data: `{"displayName":"AV Receiver"}`.
    * Next remove `IdentifierCashe.xxx` file with same name as `AccessoryInfo.xxx`.
-   * Restart Homebridge and try add it to the Home app again.
+   * Restart Homebridge and try add it to the HomeKit app again.
 
 ## Features and How To Use Them
+* Multi Zone control.
 * Power ON/OFF short press tile in HomeKit app.
 * RC/Media control is possible after you go to the RC app on iPhone/iPad.
 * Speaker control is possible after you go to RC app on iPhone/iPad `Speaker Service`.
 * Legacy Volume and Mute control is possible throught extra `lightbulb`/`fan` (slider).
-* Inputs can be changed after long press tile in Home.app and select Input from the list or create separate tile in the Buttons section.
-* Sound Modes can be changed after long press tile in Home.app and select Surround Mode from the list or create separate tile in the Buttons section.
-* Digital Input Modes can be controlled by creating separate tile in the Buttons section.
-* Multiple Zone control.
-* Siri can be used to control Power, Legacy Volume, Mute and switch Inputs and other Function with created Buttons.
-* Home automations and shortcuts can be used for all functions.
+* Inputs can be changed using Inputs selector in HomeKit.app, additionally can create separate tile.
+* Surrounds can be changed using Surrounds selector in HomeKit.app, additionally can create separate tile.
+* Digital Input Modes can be controlled by creating separate tile in the buttons section.
+* Siri can be used for all functions, some times need create legacy buttons/switches/sensors.
+* Automations and shortcuts can be used for all functions, some times need create legacy buttons/switches/sensors.
 
 <p align="left">
   <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/homekit.png" width="382"></a> 
@@ -80,18 +77,23 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
 | `inputs.name` | Here set *Input Name* which You want expose to the *Homebridge/HomeKit*. |
 | `inputs.reference` | Choose from available inputs, the inputs that should be published to and appear in HomeKit app in the device tile as inputs list |
 | `inputs.mode` | Choose from available inputs mode. |
+| `inputs.switch` | If enabled, the tile for that input will be expose to the *Homebridge/HomeKit* and can be used for HomeKit automation. |
+| `inputs.displayType` | Here select display type in HomeKit app, possible `Switch`, `Button`, `Motion Sensor`, `Ocupancy Sensor`.|
 | `buttonsMainZone.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. |
 | `buttonsMainZone.reference` | Here choice function for additional control button for Main Zone. |
-| `buttonsMainZone.displayType` | Here select display type in Home app, possible `Switch`, `Button` - selectable in Home app as Light, Fan, Outlet.|
+| `buttonsMainZone.displayType` | Here select display type in HomeKit app, possible `Switch`, `Button`.|
 | `buttonsZone2.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. |
 | `buttonsZone2.reference` | Here choice function for additional control button for Zone 2. |
-| `buttonsZone2.displayType` | Here select display type in Home app, possible `Switch`, `Button` - selectable in Home app as Light, Fan, Outlet.|
+| `buttonsZone2.displayType` | Here select display type in HomeKit app, possible `Switch`, `Button`.|
 | `buttonsZone3.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. |
 | `buttonsZone3.reference` | Here choice function for additional control button for Zone 3. |
-| `buttonsZone3.displayType` | Here select display type in Home app, possible `Switch`, `Button` - selectable in Home app as Light, Fan, Outlet.|
+| `buttonsZone3.displayType` | Here select display type in HomeKit app, possible `Switch`, `Button`.|
 | `surrounds.name` | Here set *Surround Mode Name* which You want expose to the *Homebridge/HomeKit*. |
 | `surrounds.reference` | Here choice *Surround Mode*, the mode that should be published to and appear in HomeKit app in the extra tile as Surrounds List. |
-| `AV Surround Mode` | This extra Accessory will control all functions of Main Zone except (Inputs and Buttons). | Info |
+| `surrounds.switch` | If enabled, the tile for that surround mode will be expose to the *Homebridge/HomeKit* and can be used for HomeKit automation. |
+| `surrounds.displayType` | Here select display type in HomeKit app, possible `Switch`, `Button`, `Motion Sensor`, `Ocupancy Sensor`.|
+| `AV Surround Mode` | This extra Accessory will control all functions of Main Zone except (Inputs and Buttons). |
+| `Display Type` | `Switch`, `Button` - selectable in Home app as Light, Fan, Outlet, `Motion Sensor` and `Ocupancy Sensor` - for HomeKit automation. |
 
 
 ```json
@@ -116,21 +118,25 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
                 {
                     "name": "Xbox One",
                     "reference": "GAME",
-                    "mode": "SI"
+                    "mode": "SI",
+                    "switch": false,
+					"displayType": 0
                 },
                 {
                     "name": "Television",
                     "reference": "TV",
-                    "mode": "SI"
+                    "mode": "SI",
+                    "switch": false,
+					"displayType": 0
                 }
             ],
             "buttonsMainZone": [
-                        {
-                            "name": "POWER ON",
-                            "reference": "ZMON",
-						    "displayType": 0
-                        }
-                    ]
+                {
+                    "name": "POWER ON",
+                    "reference": "ZMON",
+					"displayType": 0
+                }
+            ]
         },
         {
             "name": "AV Zone 1",
@@ -150,21 +156,25 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
                 {
                     "name": "Xbox One",
                     "reference": "GAME",
-                    "mode": "SI"
+                    "mode": "SI",
+                    "switch": false,
+					"displayType": 0
                 },
                 {
                     "name": "Television",
                     "reference": "TV",
-                    "mode": "SI"
+                    "mode": "SI",
+                    "switch": false,
+					"displayType": 0
                 }
             ],
             "buttonsZone2": [
-                        {
-                            "name": "POWER ON",
-                            "reference": "Z2ON",
-						    "displayType": 0
-                        }
-                    ]
+                {
+                    "name": "POWER ON",
+                    "reference": "Z2ON",
+					"displayType": 0
+                }
+            ]
         },
         {
             "name": "AV Zone 2",
@@ -183,21 +193,25 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
                 {
                     "name": "Xbox One",
                     "reference": "GAME",
-                    "mode": "SI"
+                    "mode": "SI",
+                    "switch": false,
+					"displayType": 0
                 },
                 {
                     "name": "Television",
                     "reference": "TV",
-                    "mode": "SI"
+                    "mode": "SI",
+                    "switch": false,
+					"displayType": 0
                 }
             ],
             "buttonsZone3": [
-                        {
-                            "name": "POWER ON",
-                            "reference": "Z3ON",
-						    "displayType": 0
-                        }
-                    ]
+                {
+                    "name": "POWER ON",
+                    "reference": "Z3ON",
+					"displayType": 0
+                }
+            ]
         },
         {
             "name": "AV Surround Mode",
@@ -216,11 +230,15 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
             "surrounds": [
                 {
                     "name": "MCH Stereo",
-                    "reference": "MCH STEREO"
+                    "reference": "MCH STEREO",
+                    "switch": false,
+					"displayType": 0
                 },
                 {
                     "name": "Stereo",
-                    "reference": "STEREO"
+                    "reference": "STEREO",
+                    "switch": false,
+					"displayType": 0
                 }
             ]
         }
@@ -239,7 +257,7 @@ Each accessory needs to be manually paired.
 ## Limitations
 * That maximum Services for 1 accessory is 100. If Services > 100, accessory stop responding.
 * To solve this problem the plugin counts the number of Services and not allow add more as 100.
-* If You have configured more as 100 Services some inputs or buttons will not be available in the Home app.
+* If You have configured more as 100 Services some inputs or buttons will not be available in the HomeKit app.
 * The Services in this accessory are:
   * Information.
   * Speaker.

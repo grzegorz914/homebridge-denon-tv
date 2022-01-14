@@ -33,12 +33,16 @@
                 "inputs": [{
                         "name": "Xbox One",
                         "reference": "GAME",
-                        "mode": "SI"
+                        "mode": "SI",
+                        "switch": false,
+                        "displayType": 0
                     },
                     {
                         "name": "Television",
                         "reference": "TV",
-                        "mode": "SI"
+                        "mode": "SI",
+                        "switch": false,
+                        "displayType": 0
                     }
                 ],
                 "buttonsMainZone": [{
@@ -64,12 +68,16 @@
                 "inputs": [{
                         "name": "Xbox One",
                         "reference": "GAME",
-                        "mode": "SI"
+                        "mode": "SI",
+                        "switch": false,
+                        "displayType": 0
                     },
                     {
                         "name": "Television",
                         "reference": "TV",
-                        "mode": "SI"
+                        "mode": "SI",
+                        "switch": false,
+                        "displayType": 0
                     }
                 ],
                 "buttonsZone2": [{
@@ -94,12 +102,16 @@
                 "inputs": [{
                         "name": "Xbox One",
                         "reference": "GAME",
-                        "mode": "SI"
+                        "mode": "SI",
+                        "switch": false,
+                        "displayType": 0
                     },
                     {
                         "name": "Television",
                         "reference": "TV",
-                        "mode": "SI"
+                        "mode": "SI",
+                        "switch": false,
+                        "displayType": 0
                     }
                 ],
                 "buttonsZone3": [{
@@ -124,11 +136,15 @@
                 "enableDebugMode": false,
                 "surrounds": [{
                         "name": "MCH Stereo",
-                        "reference": "MCH STEREO"
+                        "reference": "MCH STEREO",
+                        "switch": false,
+                        "displayType": 0
                     },
                     {
                         "name": "Stereo",
-                        "reference": "STEREO"
+                        "reference": "STEREO",
+                        "switch": false,
+                        "displayType": 0
                     }
                 ]
             }
