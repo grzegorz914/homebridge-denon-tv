@@ -43,8 +43,8 @@ This plugin is based upon the official documentation for communicating with and 
 * Inputs can be changed using Inputs selector in HomeKit.app, additionally can create separate tile.
 * Surrounds can be changed using Surrounds selector in HomeKit.app, additionally can create separate tile.
 * Digital Input Modes can be controlled by creating separate tile in the buttons section.
-* Siri can be used for all functions, some times need create legacy buttons/switches.
-* Automations and shortcuts can be used for all functions, some times need create legacy buttons/switches.
+* Siri can be used for all functions, some times need create legacy buttons/switches/sensors.
+* Automations and shortcuts can be used for all functions, some times need create legacy buttons/switches/sensors.
 
 <p align="left">
   <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/homekit.png" width="382"></a> 
@@ -77,7 +77,7 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
 | `inputs.name` | Here set *Input Name* which You want expose to the *Homebridge/HomeKit*. |
 | `inputs.reference` | Choose from available inputs, the inputs that should be published to and appear in HomeKit app in the device tile as inputs list |
 | `inputs.mode` | Choose from available inputs mode. |
-| `inputs.switch` | If enabled, the tile for that input will be expose to the *Homebridge/HomeKit* and can be used for HomeKit automations. |
+| `inputs.switch` | If enabled, the tile for that input will be expose to the *Homebridge/HomeKit* and can be used for HomeKit automation. |
 | `inputs.displayType` | Here select display type in HomeKit app, possible `Switch`, `Button`, `Motion Sensor`, `Ocupancy Sensor`.|
 | `buttonsMainZone.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. |
 | `buttonsMainZone.reference` | Here choice function for additional control button for Main Zone. |
@@ -90,10 +90,10 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
 | `buttonsZone3.displayType` | Here select display type in HomeKit app, possible `Switch`, `Button`.|
 | `surrounds.name` | Here set *Surround Mode Name* which You want expose to the *Homebridge/HomeKit*. |
 | `surrounds.reference` | Here choice *Surround Mode*, the mode that should be published to and appear in HomeKit app in the extra tile as Surrounds List. |
-| `surrounds.switch` | If enabled, the tile for that surround mode will be expose to the *Homebridge/HomeKit* and can be used for HomeKit automations. |
+| `surrounds.switch` | If enabled, the tile for that surround mode will be expose to the *Homebridge/HomeKit* and can be used for HomeKit automation. |
 | `surrounds.displayType` | Here select display type in HomeKit app, possible `Switch`, `Button`, `Motion Sensor`, `Ocupancy Sensor`.|
 | `AV Surround Mode` | This extra Accessory will control all functions of Main Zone except (Inputs and Buttons). |
-| `Display Type` | `Switch`, `Button` - selectable in Home app as Light, Fan, Outlet, `Motion Sensor` and `Ocupancy Sensor` - for HomeKit to automation. |
+| `Display Type` | `Switch`, `Button` - selectable in Home app as Light, Fan, Outlet, `Motion Sensor` and `Ocupancy Sensor` - for HomeKit automation. |
 
 
 ```json
