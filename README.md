@@ -40,8 +40,8 @@ This plugin is based upon the official documentation for communicating with and 
 * RC/Media control is possible after you go to the RC app on iPhone/iPad.
 * Speaker control is possible after you go to RC app on iPhone/iPad `Speaker Service`.
 * Legacy Volume and Mute control is possible throught extra `lightbulb`/`fan` (slider).
-* Inputs can be changed using Inputs selector in HomeKit.app and additionally can be create separate tile.
-* Surrounds can be changed using Surrounds selector in HomeKit.app and additionally can be create separate tile.
+* Inputs can be changed using Inputs selector in HomeKit.app, additionally can be create separate tile.
+* Surrounds can be changed using Surrounds selector in HomeKit.app, additionally can be create separate tile.
 * Digital Input Modes can be controlled by creating separate tile in the buttons section.
 * Siri can be used for all functions, some times need create legacy buttons/switches.
 * Automations and shortcuts can be used for all functions, some times need create legacy buttons/switches.
