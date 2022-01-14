@@ -13,10 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changs
 - code cleanup
 - removed all inputs and favorites function from buttons, now available in input section
+- update config.schema
 
 ### Fixed
 - services calculation count
-- start input automation or scene
+- start input automation or scenes [#129](https://github.com/grzegorz914/homebridge-denon-tv/issues/129)
 
 ## [3.15.10] - (03.01.2022)
 ### Added
