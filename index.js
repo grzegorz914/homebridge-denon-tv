@@ -648,7 +648,7 @@ class denonTvDevice {
 		const savedInputsTargetVisibility = ((fs.readFileSync(this.inputsTargetVisibilityFile)).length > 0) ? JSON.parse(fs.readFileSync(this.inputsTargetVisibilityFile)) : {};
 		const debug2 = this.enableDebugMode ? this.log('Device: %s %s %s, read saved %s Target Visibility successful: %s', this.host, accessoryName, this.zoneName, this.zoneControl <= 2 ? 'Input' : 'Sound Mode', savedInputsTargetVisibility) : false;
 
-		//check available inputs and possible inputs count (max 95)
+		//check available inputs and possible count (max 94)
 		const inputs = (savedInputs.length > 0) ? savedInputs : (this.zoneControl <= 2) ? this.inputs : this.soundModes;
 		const inputsCount = inputs.length;
 		const maxInputsCount = (inputsCount < 94) ? inputsCount : 94;
@@ -729,9 +729,8 @@ class denonTvDevice {
 			accessory.addService(inputService);
 		}
 
-		//switch services
-
-		//check available inputs and possible inputs count (max 95)
+		//Prepare inputs switch service
+		//check available switch inputs and possible count (max 94)
 		this.switchServices = new Array();
 		const inputsSwitchCount = this.inputsSwitchIndex.length;
 		const availableInputSwitchCount = 94 - maxInputsCount;
@@ -781,7 +780,7 @@ class denonTvDevice {
 		if (this.zoneControl <= 2) {
 			this.log.debug('prepareButtonsService');
 
-			//check available buttons and possible buttons count (max 94 - inputsCount)
+			//check available buttons and possible count (max 94)
 			const buttons = this.buttons;
 			const buttonsCount = buttons.length;
 			const availableButtonsCount = (94 - (maxInputsCount + maxInputsSwitchCount));
