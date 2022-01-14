@@ -78,7 +78,7 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
 | `inputs.reference` | Choose from available inputs, the inputs that should be published to and appear in HomeKit app in the device tile as inputs list |
 | `inputs.mode` | Choose from available inputs mode. |
 | `inputs.switch` | If enabled, the tile for that input will be expose to the *Homebridge/HomeKit* and can be used for HomeKit automation. |
-| `inputs.displayType` | Here select display type in HomeKit app, possible `Switch`, `Button`, `Motion Sensor`, `Ocupancy Sensor`.|
+| `inputs.displayType` | Here select display type in HomeKit app, possible `Switch`, `Button`, `Motion Sensor`, `Occupancy Sensor`.|
 | `buttonsMainZone.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. |
 | `buttonsMainZone.reference` | Here choice function for additional control button for Main Zone. |
 | `buttonsMainZone.displayType` | Here select display type in HomeKit app, possible `Switch`, `Button`.|
@@ -91,9 +91,9 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
 | `surrounds.name` | Here set *Surround Mode Name* which You want expose to the *Homebridge/HomeKit*. |
 | `surrounds.reference` | Here choice *Surround Mode*, the mode that should be published to and appear in HomeKit app in the extra tile as Surrounds List. |
 | `surrounds.switch` | If enabled, the tile for that surround mode will be expose to the *Homebridge/HomeKit* and can be used for HomeKit automation. |
-| `surrounds.displayType` | Here select display type in HomeKit app, possible `Switch`, `Button`, `Motion Sensor`, `Ocupancy Sensor`.|
+| `surrounds.displayType` | Here select display type in HomeKit app, possible `Switch`, `Button`, `Motion Sensor`, `Occupancy Sensor`.|
 | `AV Surround Mode` | This extra Accessory will control all functions of Main Zone except (Inputs and Buttons). |
-| `Display Type` | `Switch`, `Button` - selectable in Home app as Light, Fan, Outlet, `Motion Sensor` and `Ocupancy Sensor` - for HomeKit automation. |
+| `Display Type` | `Switch`, `Button` - selectable in Home app as Light, Fan, Outlet, `Motion Sensor` and `Occupancy Sensor` - for HomeKit automation. |
 
 
 ```json
