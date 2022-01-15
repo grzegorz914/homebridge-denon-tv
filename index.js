@@ -741,8 +741,8 @@ class denonTvDevice {
 		//check available switch inputs and possible count (max 94)
 		this.switchServices = new Array();
 		const inputsSwitchCount = this.inputsSwitchIndex.length;
-		const availableInputSwitchCount = 94 - maxInputsCount;
-		const maxInputsSwitchCount = (availableInputSwitchCount > 0) ? (availableInputSwitchCount > inputsSwitchCount) ? inputsSwitchCount : availableInputSwitchCount : 0;
+		const availableInputsSwitchCount = 94 - maxInputsCount;
+		const maxInputsSwitchCount = (availableInputsSwitchCount > 0) ? (availableInputsSwitchCount > inputsSwitchCount) ? inputsSwitchCount : availableInputsSwitchCount : 0;
 		for (let i = 0; i < maxInputsSwitchCount; i++) {
 
 			//get input switch index
@@ -763,7 +763,7 @@ class denonTvDevice {
 
 			const serviceType = [Service.Outlet, Service.Switch, Service.MotionSensor, Service.OccupancySensor][inputSwitchDisplayType];
 			const characteristicType = [Characteristic.On, Characteristic.On, Characteristic.MotionDetected, Characteristic.OccupancyDetected][inputSwitchDisplayType];
-			const switchService = new serviceType(`${this.sZoneName} ${inputSwitchName}`, `Button ${i}`);
+			const switchService = new serviceType(`${this.sZoneName} ${inputSwitchName}`, `Sensor ${i}`);
 			switchService.getCharacteristic(characteristicType)
 				.onGet(async () => {
 					const state = this.powerState ? (inputSwitchReference == this.reference) : false;
