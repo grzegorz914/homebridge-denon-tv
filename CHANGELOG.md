@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Note - after update to 3.15.x need remove the accessory frome Home app and add it again.
 
+## [3.16.4] - (20.01.2022)
+### Changes
+- prevent create inputs switch services if count <= 0
+
 ## [3.16.3] - (18.01.2022)
 ### Changes
 - update dependencies
