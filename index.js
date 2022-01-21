@@ -133,17 +133,17 @@ class denonTvDevice {
 		}
 		if (this.zoneControl == 0) {
 			if (fs.existsSync(this.devInfoFile) == false) {
-				fs.writeFileSync(this.devInfoFile, {});
+				fs.writeFileSync(this.devInfoFile, '');
 			}
 		}
 		if (fs.existsSync(this.inputsFile) == false) {
-			fs.writeFileSync(this.inputsFile, []);
+			fs.writeFileSync(this.inputsFile, '');
 		}
 		if (fs.existsSync(this.inputsNamesFile) == false) {
-			fs.writeFileSync(this.inputsNamesFile, {});
+			fs.writeFileSync(this.inputsNamesFile, '');
 		}
 		if (fs.existsSync(this.inputsTargetVisibilityFile) == false) {
-			fs.writeFileSync(this.inputsTargetVisibilityFile, {});
+			fs.writeFileSync(this.inputsTargetVisibilityFile, '');
 		}
 
 		//save inputs to the file
