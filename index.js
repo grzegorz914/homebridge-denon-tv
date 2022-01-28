@@ -104,8 +104,8 @@ class denonTvDevice {
 		this.inputsType = new Array();
 		this.inputsMode = new Array();
 
-		this.inputsSwitchIndex = new Array();
-		this.inputsSwitchDisplayType = new Array();
+		this.switchsIndex = new Array();
+		this.switchsDisplayType = new Array();
 
 		this.powerState = false;
 		this.reference = '';
@@ -133,7 +133,14 @@ class denonTvDevice {
 		}
 		if (this.zoneControl == 0) {
 			if (fs.existsSync(this.devInfoFile) == false) {
-				fs.writeFileSync(this.devInfoFile, '');
+				const obj = {
+					'manufacturer': this.manufacturer,
+					'modelName': this.modelName,
+					'serialNumber': this.serialNumber,
+					'firmwareRevision': this.firmwareRevision
+				};
+				const devInfo = JSON.stringify(obj, null, 2);
+				fs.writeFileSync(this.devInfoFile, devInfo);
 			}
 		}
 		if (fs.existsSync(this.inputsFile) == false) {
@@ -212,7 +219,7 @@ class denonTvDevice {
 			.on('stateChanged', (isConnected, power, reference, volume, mute, soundMode) => {
 				reference = (reference == 'Internet Radio') ? 'IRADIO' : (reference == 'AirPlay') ? 'NET' : reference;
 
-				const powerState = (isConnected == true && power == true);
+				const powerState = (isConnected && power);
 				const inputIdentifier = (this.inputsReference.indexOf(reference) >= 0) ? this.inputsReference.indexOf(reference) : this.inputIdentifier;
 
 				if (this.televisionService) {
@@ -247,9 +254,9 @@ class denonTvDevice {
 				if (this.switchServices) {
 					const switchServicesCount = this.switchServices.length;
 					for (let i = 0; i < switchServicesCount; i++) {
-						const index = this.inputsSwitchIndex[i];
+						const index = this.switchsIndex[i];
 						const state = powerState ? (this.inputsReference[index] == reference) : false;
-						const displayType = this.inputsSwitchDisplayType[index];
+						const displayType = this.switchsDisplayType[index];
 						const characteristicType = [Characteristic.On, Characteristic.On, Characteristic.MotionDetected, Characteristic.OccupancyDetected][displayType];
 						this.switchServices[i]
 							.updateCharacteristic(characteristicType, state);
@@ -268,7 +275,7 @@ class denonTvDevice {
 			});
 	}
 
-	//Prepare accessory
+	//prepare accessory
 	prepareAccessory() {
 		this.log.debug('prepareAccessory');
 		const accessoryName = this.name;
@@ -276,7 +283,7 @@ class denonTvDevice {
 		const accessoryCategory = Categories.AUDIO_RECEIVER;
 		const accessory = new Accessory(accessoryName, accessoryUUID, accessoryCategory);
 
-		//Prepare information service
+		//prepare information service
 		this.log.debug('prepareInformationService');
 
 		const manufacturer = this.manufacturer;
@@ -293,7 +300,7 @@ class denonTvDevice {
 			.setCharacteristic(Characteristic.FirmwareRevision, firmwareRevision);
 		accessory.addService(informationService);
 
-		//Prepare television service
+		//prepare television service
 		this.log.debug('prepareTelevisionService');
 		this.televisionService = new Service.Television(`${accessoryName} Television`, 'Television');
 		this.televisionService.setCharacteristic(Characteristic.ConfiguredName, accessoryName);
@@ -518,7 +525,7 @@ class denonTvDevice {
 
 		accessory.addService(this.televisionService);
 
-		//Prepare speaker service
+		//prepare speaker service
 		this.log.debug('prepareSpeakerService');
 		this.speakerService = new Service.TelevisionSpeaker(`${accessoryName} Speaker`, 'Speaker');
 		this.speakerService
@@ -592,7 +599,7 @@ class denonTvDevice {
 
 		accessory.addService(this.speakerService);
 
-		//Prepare volume service
+		//prepare volume service
 		if (this.volumeControl >= 1) {
 			this.log.debug('prepareVolumeService');
 			if (this.volumeControl == 1) {
@@ -640,7 +647,7 @@ class denonTvDevice {
 			}
 		}
 
-		//Prepare input service
+		//prepare input service
 		this.log.debug('prepareInputsService');
 
 		const savedInputs = ((fs.readFileSync(this.inputsFile)).length > 0) ? JSON.parse(fs.readFileSync(this.inputsFile)) : [];
@@ -730,37 +737,37 @@ class denonTvDevice {
 			this.inputsName.push(inputName);
 			this.inputsType.push(inputType);
 			this.inputsMode.push(inputMode);
-			this.inputsSwitchDisplayType.push(inputSwitchDisplayType);
-			const pushInputSwitchIndex = inputSwitch ? this.inputsSwitchIndex.push(i) : false;
+			this.switchsDisplayType.push(inputSwitchDisplayType);
+			const pushSwitchIndex = inputSwitch ? this.switchsIndex.push(i) : false;
 
 			this.televisionService.addLinkedService(inputService);
 			accessory.addService(inputService);
 		}
 
-		//Prepare inputs switch service
+		//prepare inputs switch service
 		//check available switch inputs and possible count (max 94)
-		const inputsSwitchCount = this.inputsSwitchIndex.length;
-		const availableInputsSwitchCount = 94 - maxInputsCount;
-		const maxInputsSwitchCount = (availableInputsSwitchCount > 0) ? (availableInputsSwitchCount > inputsSwitchCount) ? inputsSwitchCount : availableInputsSwitchCount : 0;
-		if (maxInputsSwitchCount > 0) {
-			this.log.debug('prepareInputsSwitchService');
+		const switchsCount = this.switchsIndex.length;
+		const availableSwitchsCount = 94 - maxInputsCount;
+		const maxSwitchsCount = (availableSwitchsCount > 0) ? (availableSwitchsCount > switchsCount) ? switchsCount : availableSwitchsCount : 0;
+		if (maxSwitchsCount > 0) {
+			this.log.debug('prepareSwitchsService');
 			this.switchServices = new Array();
-			for (let i = 0; i < maxInputsSwitchCount; i++) {
+			for (let i = 0; i < maxSwitchsCount; i++) {
 
-				//get input switch index
-				const inputSwitchIndex = this.inputsSwitchIndex[i];
+				//get switch index
+				const inputSwitchIndex = this.switchsIndex[i];
 
-				//get input switch reference
+				//get switch reference
 				const inputSwitchReference = this.inputsReference[inputSwitchIndex];
 
-				//get input switch name		
+				//get switch name		
 				const inputSwitchName = this.inputsName[inputSwitchIndex];
 
-				//get input switch mode
+				//get switch mode
 				const inputSwitchMode = (this.zoneControl <= 2) ? this.inputsMode[inputSwitchIndex] : 'MS';
 
-				//get input switch display type
-				const inputSwitchDisplayType = this.inputsSwitchDisplayType[inputSwitchIndex];
+				//get switch display type
+				const inputSwitchDisplayType = this.switchsDisplayType[inputSwitchIndex];
 
 
 				const serviceType = [Service.Outlet, Service.Switch, Service.MotionSensor, Service.OccupancySensor][inputSwitchDisplayType];
@@ -796,11 +803,11 @@ class denonTvDevice {
 		}
 
 		if (this.zoneControl <= 2) {
-			//Prepare button service
+			//prepare button service
 			//check available buttons and possible count (max 94)
 			const buttons = this.buttons;
 			const buttonsCount = buttons.length;
-			const availableButtonsCount = (94 - (maxInputsCount + maxInputsSwitchCount));
+			const availableButtonsCount = (94 - (maxInputsCount + maxSwitchsCount));
 			const maxButtonsCount = (availableButtonsCount > 0) ? (availableButtonsCount > buttonsCount) ? buttonsCount : availableButtonsCount : 0;
 			if (maxButtonsCount > 0) {
 				this.log.debug('prepareButtonsService');
