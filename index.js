@@ -651,7 +651,7 @@ class denonTvDevice {
 		this.log.debug('prepareInputsService');
 
 		const savedInputs = ((fs.readFileSync(this.inputsFile)).length > 0) ? JSON.parse(fs.readFileSync(this.inputsFile)) : [];
-		const debug = this.enableDebugMode ? this.log('Device: %s %s, read saved %s successful: %s', this.host, accessoryName, this.zoneControl <= 2 ? 'Input' : 'Sound Mode', savedInputs) : false;
+		const debug = this.enableDebugMode ? this.log('Device: %s %s, read saved %s successful: %s', this.host, accessoryName, this.zoneControl <= 2 ? 'Input' : 'Sound Mode', JSON.stringify(savedInputs, null, 2)) : false;
 
 		const savedInputsNames = ((fs.readFileSync(this.inputsNamesFile)).length > 0) ? JSON.parse(fs.readFileSync(this.inputsNamesFile)) : {};
 		const debug1 = this.enableDebugMode ? this.log('Device: %s %s, read saved custom %s Names successful: %s', this.host, accessoryName, this.zoneControl <= 2 ? 'Input' : 'Sound Mode', savedInputsNames) : false;
