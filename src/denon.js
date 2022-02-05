@@ -77,7 +77,7 @@ class DENON extends EventEmitter {
                         this.emit('stateChanged', this.isConnected, power, reference, volume, mute, soundMode);
                     };
                 } catch (error) {
-                    this.emit('debug', `Device state error: ${error}, trying to reconnect.`);
+                    this.emit('error', `Device state error: ${error}`);
                     this.emit('disconnect');
                 };
             })
@@ -87,13 +87,13 @@ class DENON extends EventEmitter {
                     this.isConnected = false;
                     this.firstStart = false;
                     this.emit('stateChanged', this.isConnected, this.power, this.reference, this.volume, true, this.soundMode);
-                    this.emit('Disconnected', 'Disconnected.');
+                    this.emit('Disconnected', 'Disconnected, trying to reconnect.');
 
                     setTimeout(async () => {
                         try {
                             await this.reconnect();
                         } catch (error) {
-                            this.emit('debug', `Reconnect error: ${error}`);
+                            this.emit('error', `Reconnect error: ${error}`);
                         };
                     }, 7500);
                 };
@@ -106,8 +106,7 @@ class DENON extends EventEmitter {
         try {
             await this.getDeviceInfo();
         } catch (error) {
-            this.emit('debug', `Connect error: ${error}, trying to reconnect.`);
-            this.emit('disconnect');
+            this.emit('error', `Connect error: ${error}`);
         };
     };
 
@@ -130,9 +129,11 @@ class DENON extends EventEmitter {
                 this.emit('deviceInfo', manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion);
                 resolve(true);
             } catch (error) {
-                this.emit('debug', `Get device info error: ${error}`);
-                this.emit('disconnect');
+                this.emit('error', `Get device info error: ${error}`);
                 reject(error);
+                        
+                //disconnect
+                this.emit('disconnect');
             };
         });
     };
@@ -144,7 +145,7 @@ class DENON extends EventEmitter {
                 this.emit('message', `Send command: ${apiUrl}`);
                 resolve(true);
             } catch (error) {
-                this.emit('error', `send command error: ${error}`);
+                this.emit('error', `Send command error: ${error}`);
                 reject(error);
             };
         });
@@ -156,7 +157,7 @@ class DENON extends EventEmitter {
                 await this.getDeviceInfo();
                 resolve(true);
             } catch (error) {
-                this.emit('debug', `Reconnect error: ${error}`);
+                this.emit('error', `Reconnect error: ${error}`);
                 reject(error);
             };
         });
