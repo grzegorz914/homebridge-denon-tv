@@ -654,10 +654,10 @@ class denonTvDevice {
 		const debug = this.enableDebugMode ? this.log('Device: %s %s, read saved %s successful: %s', this.host, accessoryName, this.zoneControl <= 2 ? 'Input' : 'Sound Mode', JSON.stringify(savedInputs, null, 2)) : false;
 
 		const savedInputsNames = ((fs.readFileSync(this.inputsNamesFile)).length > 0) ? JSON.parse(fs.readFileSync(this.inputsNamesFile)) : {};
-		const debug1 = this.enableDebugMode ? this.log('Device: %s %s, read saved custom %s Names successful: %s', this.host, accessoryName, this.zoneControl <= 2 ? 'Input' : 'Sound Mode', savedInputsNames) : false;
+		const debug1 = this.enableDebugMode ? this.log('Device: %s %s, read saved custom %s Names successful: %s', this.host, accessoryName, this.zoneControl <= 2 ? 'Input' : 'Sound Mode', JSON.stringify(savedInputsNames, null, 2)) : false;
 
 		const savedInputsTargetVisibility = ((fs.readFileSync(this.inputsTargetVisibilityFile)).length > 0) ? JSON.parse(fs.readFileSync(this.inputsTargetVisibilityFile)) : {};
-		const debug2 = this.enableDebugMode ? this.log('Device: %s %s, read saved %s Target Visibility successful: %s', this.host, accessoryName, this.zoneControl <= 2 ? 'Input' : 'Sound Mode', savedInputsTargetVisibility) : false;
+		const debug2 = this.enableDebugMode ? this.log('Device: %s %s, read saved %s Target Visibility successful: %s', this.host, accessoryName, this.zoneControl <= 2 ? 'Input' : 'Sound Mode', JSON.stringify(savedInputsTargetVisibility, null, 2)) : false;
 
 		//check available inputs and possible count (max 94)
 		const inputs = (savedInputs.length > 0) ? savedInputs : (this.zoneControl <= 2) ? this.inputs : this.soundModes;
@@ -706,7 +706,7 @@ class denonTvDevice {
 					const nameIdentifier = (inputReference != undefined) ? inputReference : false;
 					let newName = savedInputsNames;
 					newName[nameIdentifier] = name;
-					const newCustomName = JSON.stringify(newName);
+					const newCustomName = JSON.stringify(newName, null, 2);
 					try {
 						const writeNewCustomName = (nameIdentifier != false) ? await fsPromises.writeFile(this.inputsNamesFile, newCustomName) : false;
 						const debug = this.enableDebugMode ? this.log('Device: %s %s, saved new Input successful, savedInputsNames: %s', this.host, accessoryName, newCustomName) : false;
@@ -722,7 +722,7 @@ class denonTvDevice {
 					const targetVisibilityIdentifier = (inputReference != undefined) ? inputReference : false;
 					let newState = savedInputsTargetVisibility;
 					newState[targetVisibilityIdentifier] = state;
-					const newTargetVisibility = JSON.stringify(newState);
+					const newTargetVisibility = JSON.stringify(newState, null, 2);
 					try {
 						const writeNewTargetVisibility = (targetVisibilityIdentifier != false) ? await fsPromises.writeFile(this.inputsTargetVisibilityFile, newTargetVisibility) : false;
 						const debug = this.enableDebugMode ? this.log('Device: %s %s, %s: %s, saved Target Visibility state: %s', this.host, accessoryName, this.zoneControl <= 2 ? 'Input' : 'Sound Mode', inputName, newTargetVisibility) : false;
