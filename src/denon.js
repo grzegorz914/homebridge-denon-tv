@@ -32,9 +32,9 @@ class DENON extends EventEmitter {
             timeout: 2000
         });
 
+        this.isConnected = false;
         this.firstStart = true;
         this.checkStateOnFirstRun = false;
-        this.isConnected = false;
         this.power = false;
         this.reference = '';
         this.volume = 0;
@@ -93,7 +93,7 @@ class DENON extends EventEmitter {
                         try {
                             await this.reconnect();
                         } catch (error) {
-                            this.emit('error', `Reconnect error: ${error}`);
+                            this.emit('debug', `Reconnect error: ${error}`);
                         };
                     }, 7500);
                 };
@@ -123,15 +123,16 @@ class DENON extends EventEmitter {
                 const apiVersion = parseDeviceInfo.Device_Info.CommApiVers[0];
 
                 const devInfo = JSON.stringify(parseDeviceInfo.Device_Info, null, 2);
-                const writeDevInfo = (this.zoneControl == 0) ? await fsPromises.writeFile(this.devInfoFile, devInfo) : false;
                 this.emit('debug', `Get device info: ${devInfo}`);
+                const writeDevInfo = (this.zoneControl == 0) ? await fsPromises.writeFile(this.devInfoFile, devInfo) : false;
+
                 this.emit('connect');
                 this.emit('deviceInfo', manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion);
                 resolve(true);
             } catch (error) {
-                this.emit('error', `Get device info error: ${error}`);
+                this.emit('debug', `Get device info error: ${error}`);
                 reject(error);
-                        
+
                 //disconnect
                 this.emit('disconnect');
             };
@@ -157,7 +158,7 @@ class DENON extends EventEmitter {
                 await this.getDeviceInfo();
                 resolve(true);
             } catch (error) {
-                this.emit('error', `Reconnect error: ${error}`);
+                this.emit('debug', `Reconnect device error: ${error}`);
                 reject(error);
             };
         });
