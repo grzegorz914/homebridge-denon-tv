@@ -113,9 +113,6 @@ class denonTvDevice {
 		this.muteState = true;
 		this.soundMode = '';
 		this.mediaState = false;
-
-		this.setStartInput = false;
-		this.startInputIdentifier = 0;
 		this.inputIdentifier = 0;
 
 		this.pictureMode = 0;
@@ -216,23 +213,14 @@ class denonTvDevice {
 					this.prepareAccessory();
 				};
 			})
-			.on('stateChanged', (isConnected, power, reference, volume, mute, soundMode) => {
+			.on('stateChanged', (power, reference, volume, mute, soundMode) => {
 				reference = (reference == 'Internet Radio') ? 'IRADIO' : (reference == 'AirPlay') ? 'NET' : reference;
-
-				const powerState = (isConnected && power);
 				const inputIdentifier = (this.inputsReference.indexOf(reference) >= 0) ? this.inputsReference.indexOf(reference) : this.inputIdentifier;
 
 				if (this.televisionService) {
 					this.televisionService
-						.updateCharacteristic(Characteristic.Active, powerState)
+						.updateCharacteristic(Characteristic.Active, power)
 						.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
-
-					if (this.setStartInput) {
-						setTimeout(() => {
-							this.televisionService.setCharacteristic(Characteristic.ActiveIdentifier, this.startInputIdentifier);
-							this.setStartInput = false;
-						}, 1200);
-					}
 				}
 
 				if (this.speakerService) {
@@ -255,7 +243,7 @@ class denonTvDevice {
 					const switchServicesCount = this.switchServices.length;
 					for (let i = 0; i < switchServicesCount; i++) {
 						const index = this.switchsIndex[i];
-						const state = powerState ? (this.inputsReference[index] == reference) : false;
+						const state = power ? (this.inputsReference[index] == reference) : false;
 						const displayType = this.switchsDisplayType[index];
 						const characteristicType = [Characteristic.On, Characteristic.On, Characteristic.MotionDetected, Characteristic.OccupancyDetected][displayType];
 						this.switchServices[i]
@@ -309,7 +297,7 @@ class denonTvDevice {
 		this.televisionService.getCharacteristic(Characteristic.Active)
 			.onGet(async () => {
 				const state = this.powerState;
-				const logInfo = this.disableLogInfo ? false : this.log('Device: %s %s, get Power state successfull, state: %s', this.host, accessoryName, state ? 'ON' : 'OFF');
+				const logInfo = this.disableLogInfo ? false : this.log('Device: %s %s, get Power state successful: %s', this.host, accessoryName, state ? 'ON' : 'OFF');
 				return state;
 			})
 			.onSet(async (state) => {
@@ -338,14 +326,12 @@ class denonTvDevice {
 				const zone = [inputMode, 'Z2', 'Z3', inputMode][this.zoneControl];
 				const inputRef = zone + inputReference;
 				try {
-					const setInput = (this.powerState && inputReference != undefined) ? await this.denon.send(API_URL.iPhoneDirect + inputRef) : false;
+					const setInput = (inputReference != undefined) ? await this.denon.send(API_URL.iPhoneDirect + inputRef) : false;
 					const logInfo = this.disableLogInfo ? false : this.log('Device: %s %s, set %s successful, name: %s, reference: %s', this.host, accessoryName, this.zoneControl <= 2 ? 'Input' : 'Sound Mode', inputName, inputRef);
 					this.inputIdentifier = inputIdentifier;
 				} catch (error) {
 					this.log.error('Device: %s %s, can not set %s. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneControl <= 2 ? 'Input' : 'Sound Mode', error);
 				};
-				this.setStartInput = !this.powerState;
-				this.startInputIdentifier = inputIdentifier;
 			});
 
 		this.televisionService.getCharacteristic(Characteristic.RemoteKey)

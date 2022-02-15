@@ -29,11 +29,10 @@ class DENON extends EventEmitter {
         this.axiosInstance = axios.create({
             method: 'GET',
             baseURL: this.baseUrl,
-            timeout: 2000
+            timeout: 2750
         });
 
-        this.isConnected = false;
-        this.firstStart = true;
+        this.firstStart = false;
         this.checkStateOnFirstRun = false;
         this.power = false;
         this.reference = '';
@@ -42,17 +41,39 @@ class DENON extends EventEmitter {
         this.soundMode = '';
 
         this.on('connect', () => {
-                this.isConnected = true;
+                this.firstStart = true;
                 this.checkStateOnFirstRun = true;
                 this.emit('connected', 'Connected.');
 
                 this.chackState = setInterval(() => {
                     this.emit('checkState');
-                }, 2500)
+                }, 3000)
+            })
+            .on('checkDeviceInfo', async () => {
+                try {
+                    const deviceInfo = await this.axiosInstance(API_URL.DeviceInfo);
+                    const parseDeviceInfo = await parseStringPromise(deviceInfo.data);
+                    const manufacturer = (parseDeviceInfo.Device_Info.BrandCode[0] != undefined) ? ['Denon', 'Marantz'][parseDeviceInfo.Device_Info.BrandCode[0]] : 'undefined';
+                    const modelName = parseDeviceInfo.Device_Info.ModelName[0];
+                    const serialNumber = parseDeviceInfo.Device_Info.MacAddress[0];
+                    const firmwareRevision = parseDeviceInfo.Device_Info.UpgradeVersion[0];
+                    const zones = parseDeviceInfo.Device_Info.DeviceZones[0];
+                    const apiVersion = parseDeviceInfo.Device_Info.CommApiVers[0];
+
+                    const devInfo = JSON.stringify(parseDeviceInfo.Device_Info, null, 2);
+                    this.emit('debug', `Get device info: ${devInfo}`);
+                    const writeDevInfo = (this.zoneControl == 0) ? await fsPromises.writeFile(this.devInfoFile, devInfo) : false;
+
+                    this.emit('connect');
+                    this.emit('deviceInfo', manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion);
+                } catch (error) {
+                    this.emit('debug', `Device info error: ${error}`);
+                    this.emit('disconnect');
+                };
             })
             .on('checkState', async () => {
-                const zoneUrl = [API_URL.MainZoneStatusLite, API_URL.Zone2StatusLite, API_URL.Zone3StatusLite, API_URL.SoundModeStatus][this.zoneControl];
                 try {
+                    const zoneUrl = [API_URL.MainZoneStatusLite, API_URL.Zone2StatusLite, API_URL.Zone3StatusLite, API_URL.SoundModeStatus][this.zoneControl];
                     const stateData = await this.axiosInstance(zoneUrl);
                     const parseStateData = await parseStringPromise(stateData.data);
 
@@ -74,67 +95,29 @@ class DENON extends EventEmitter {
                         this.checkStateOnFirstRun = false;
                         this.emit('debug', `Parse state data: ${JSON.stringify(parseStateData, null, 2)}`);
                         this.emit('debug', `Parse sound mode data: ${JSON.stringify(parseSoundModeData, null, 2)}`);
-                        this.emit('stateChanged', this.isConnected, power, reference, volume, mute, soundMode);
+                        this.emit('stateChanged', power, reference, volume, mute, soundMode);
                     };
                 } catch (error) {
-                    this.emit('error', `Device state error: ${error}`);
+                    this.emit('debug', `Device state error: ${error}`);
                     this.emit('disconnect');
                 };
             })
             .on('disconnect', () => {
-                if (this.isConnected || this.firstStart) {
-                    clearInterval(this.chackState);
-                    this.isConnected = false;
+                clearInterval(this.chackState);
+                this.isConnected = false;
+                this.emit('stateChanged', false, this.reference, this.volume, true, this.soundMode);
+
+                if (this.firstStart) {
                     this.firstStart = false;
-                    this.emit('stateChanged', this.isConnected, this.power, this.reference, this.volume, true, this.soundMode);
                     this.emit('Disconnected', 'Disconnected, trying to reconnect.');
                 };
 
-                setTimeout(async () => {
-                    try {
-                        await this.reconnect();
-                    } catch (error) {
-                        this.emit('debug', `Reconnect error: ${error}`);
-                    };
+                setTimeout(() => {
+                    this.emit('checkDeviceInfo');
                 }, 7500);
             });
 
-        this.connect();
-    };
-
-    async connect() {
-        try {
-            await this.getDeviceInfo();
-        } catch (error) {
-            this.emit('error', `Connect error: ${error}`);
-        };
-    };
-
-    getDeviceInfo() {
-        return new Promise(async (resolve, reject) => {
-            try {
-                const deviceInfo = await this.axiosInstance(API_URL.DeviceInfo);
-                const parseDeviceInfo = await parseStringPromise(deviceInfo.data);
-                const manufacturer = (parseDeviceInfo.Device_Info.BrandCode[0] != undefined) ? ['Denon', 'Marantz'][parseDeviceInfo.Device_Info.BrandCode[0]] : 'undefined';
-                const modelName = parseDeviceInfo.Device_Info.ModelName[0];
-                const serialNumber = parseDeviceInfo.Device_Info.MacAddress[0];
-                const firmwareRevision = parseDeviceInfo.Device_Info.UpgradeVersion[0];
-                const zones = parseDeviceInfo.Device_Info.DeviceZones[0];
-                const apiVersion = parseDeviceInfo.Device_Info.CommApiVers[0];
-
-                const devInfo = JSON.stringify(parseDeviceInfo.Device_Info, null, 2);
-                this.emit('debug', `Get device info: ${devInfo}`);
-                const writeDevInfo = (this.zoneControl == 0) ? await fsPromises.writeFile(this.devInfoFile, devInfo) : false;
-
-                this.emit('connect');
-                this.emit('deviceInfo', manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion);
-                resolve(true);
-            } catch (error) {
-                this.emit('debug', `Get device info error: ${error}`);
-                this.emit('disconnect');
-                reject(error);
-            };
-        });
+        this.emit('checkDeviceInfo');
     };
 
     send(apiUrl) {
@@ -145,18 +128,6 @@ class DENON extends EventEmitter {
                 resolve(true);
             } catch (error) {
                 this.emit('error', `Send command error: ${error}`);
-                reject(error);
-            };
-        });
-    };
-
-    reconnect() {
-        return new Promise(async (resolve, reject) => {
-            try {
-                await this.getDeviceInfo();
-                resolve(true);
-            } catch (error) {
-                this.emit('debug', `Reconnect device error: ${error}`);
                 reject(error);
             };
         });
