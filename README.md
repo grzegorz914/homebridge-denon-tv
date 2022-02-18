@@ -92,7 +92,6 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
 | `surrounds.reference` | Here choice *Surround Mode*, the mode that should be published to and appear in HomeKit app in the extra tile as Surrounds List. |
 | `surrounds.switch` | If enabled, the tile for that surround mode will be expose to the *Homebridge/HomeKit* and can be used for HomeKit automation. |
 | `surrounds.displayType` | Here select display type in HomeKit app, possible `Button`, `Switch`, `Motion Sensor`, `Occupancy Sensor`.|
-| `AV Surround Mode` | This extra Accessory will control all functions of Main Zone except (Inputs and Buttons). |
 | `enableMqtt` | If enabled, MQTT Broker will start automatically and publish all awailable PV installation data. |
 | `mqttHost` | Here set the *IP Address* or *Hostname* for MQTT Broker.) |
 | `mqttPort` | Here set the *Port* for MQTT Broker, default 1883.) |
@@ -100,6 +99,7 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
 | `mqttAuth` | If enabled, MQTT Broker will use authorization credentials. |
 | `mqttUser` | Here set the MQTT Broker user. |
 | `mqttPasswd` | Here set the MQTT Broker password. |
+| `AV Surround Mode` | This extra Accessory will control all functions of Main Zone except (Inputs and Buttons). |
 
 
 ```json
