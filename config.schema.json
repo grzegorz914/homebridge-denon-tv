@@ -483,6 +483,12 @@
                         "enum": [
                           "SMART5"
                         ]
+                      },
+                      {
+                        "title": "SOURCE (ONLY ZONE 2/3)",
+                        "enum": [
+                          "SOURCE"
+                        ]
                       }
                     ],
                     "required": true
