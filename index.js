@@ -180,7 +180,6 @@ class denonTvDevice {
 			passwd: this.mqttPasswd
 		});
 
-		//denon client
 		this.mqttClient.on('connected', (message) => {
 				this.log('Device: %s %s, %s', this.host, this.name, message);
 			})
@@ -197,6 +196,7 @@ class denonTvDevice {
 				this.log('Device: %s %s, %s', this.host, this.name, message);
 			});
 
+		//denon client
 		this.denon = new denon({
 			host: this.host,
 			port: this.port,
