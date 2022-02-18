@@ -28,7 +28,8 @@ class DENON extends EventEmitter {
         this.baseUrl = (`http://${this.host}:${this.port}`);
         this.axiosInstance = axios.create({
             method: 'GET',
-            baseURL: this.baseUrl
+            baseURL: this.baseUrl,
+            timeout: 3000
         });
 
         this.firstStart = false;
@@ -46,7 +47,7 @@ class DENON extends EventEmitter {
 
                 this.chackState = setInterval(() => {
                     this.emit('checkState');
-                }, 3000)
+                }, 3250)
             })
             .on('checkDeviceInfo', async () => {
                 try {
