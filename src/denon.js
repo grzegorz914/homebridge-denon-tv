@@ -28,8 +28,7 @@ class DENON extends EventEmitter {
         this.baseUrl = (`http://${this.host}:${this.port}`);
         this.axiosInstance = axios.create({
             method: 'GET',
-            baseURL: this.baseUrl,
-            timeout: 2750
+            baseURL: this.baseUrl
         });
 
         this.firstStart = false;
@@ -66,6 +65,7 @@ class DENON extends EventEmitter {
 
                     this.emit('connect');
                     this.emit('deviceInfo', manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion);
+                    this.emit('mqtt', 'Info', devInfo);
                 } catch (error) {
                     this.emit('debug', `Device info error: ${error}`);
                     this.emit('disconnect');
@@ -97,6 +97,11 @@ class DENON extends EventEmitter {
                         this.emit('debug', `Parse sound mode data: ${JSON.stringify(parseSoundModeData, null, 2)}`);
                         this.emit('stateChanged', power, reference, volume, mute, soundMode);
                     };
+                    this.emit('mqtt', 'State', JSON.stringify(parseStateData.item, null, 2));
+                    const surroundMode = {
+                        'surround': mode
+                    }
+                    this.emit('mqtt', 'Sound Mode', JSON.stringify(surroundMode, null, 2));
                 } catch (error) {
                     this.emit('debug', `Device state error: ${error}`);
                     this.emit('disconnect');

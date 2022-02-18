@@ -4,6 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const fsPromises = fs.promises;
 const denon = require('./src/denon');
+const mqttClient = require('./src/mqtt.js');
 const API_URL = require('./src/apiurl.json');
 
 const PLUGIN_NAME = 'homebridge-denon-tv';
@@ -72,18 +73,25 @@ class denonTvDevice {
 		this.port = config.port;
 		this.volumeControl = config.volumeControl || 0;
 		this.switchInfoMenu = config.switchInfoMenu || false;
+		this.masterPower = config.masterPower || false;
+		this.masterVolume = config.masterVolume || false;
+		this.masterMute = config.masterMute || false;
+		this.disableLogInfo = config.disableLogInfo || false;
+		this.disableLogDeviceInfo = config.disableLogDeviceInfo || false;
+		this.enableDebugMode = config.enableDebugMode || false;
+		this.enableMqtt = config.enableMqtt || false;
+		this.mqttHost = config.mqttHost;
+		this.mqttPort = config.mqttPort || 1883;
+		this.mqttPrefix = config.mqttPrefix;
+		this.mqttAuth = config.mqttAuth || false;
+		this.mqttUser = config.mqttUser;
+		this.mqttPasswd = config.mqttPasswd;
 		this.inputs = config.inputs || [];
 		this.buttonsMainZone = config.buttonsMainZone || [];
 		this.buttonsZone2 = config.buttonsZone2 || [];
 		this.buttonsZone3 = config.buttonsZone3 || [];
 		this.soundModes = config.surrounds || [];
 		this.zoneControl = config.zoneControl || 0;
-		this.masterPower = config.masterPower || false;
-		this.masterVolume = config.masterVolume || false;
-		this.masterMute = config.masterMute || false;
-		this.enableDebugMode = config.enableDebugMode || false;
-		this.disableLogInfo = config.disableLogInfo || false;
-		this.disableLogDeviceInfo = config.disableLogDeviceInfo || false;
 
 		//get Device info
 		this.manufacturer = 'Denon/Marantz';
@@ -159,6 +167,35 @@ class denonTvDevice {
 		} catch (error) {
 			this.log.error('Device: %s %s, save %s error: %s', this.host, this.name, this.zoneControl <= 2 ? 'Inputs' : 'Sound Modes', error);
 		};
+
+		//mqtt client
+		this.mqttClient = new mqttClient({
+			enabled: this.enableMqtt,
+			host: this.mqttHost,
+			port: this.mqttPort,
+			prefix: this.mqttPrefix,
+			topic: this.name,
+			auth: this.mqttAuth,
+			user: this.mqttUser,
+			passwd: this.mqttPasswd
+		});
+
+		//denon client
+		this.mqttClient.on('connected', (message) => {
+				this.log('Device: %s %s, %s', this.host, this.name, message);
+			})
+			.on('error', (error) => {
+				this.log('Device: %s %s, %s', this.host, this.name, error);
+			})
+			.on('debug', (message) => {
+				const debug = this.enableDebugMode ? this.log('Device: %s %s, debug: %s', this.host, this.name, message) : false;
+			})
+			.on('message', (message) => {
+				const logInfo = this.disableLogInfo ? false : this.log('Device: %s %s, %s', this.host, this.name, message);
+			})
+			.on('disconnected', (message) => {
+				this.log('Device: %s %s, %s', this.host, this.name, message);
+			});
 
 		this.denon = new denon({
 			host: this.host,
@@ -257,6 +294,9 @@ class denonTvDevice {
 				this.muteState = mute;
 				this.soundMode = soundMode;
 				this.inputIdentifier = inputIdentifier;
+			})
+			.on('mqtt', (topic, message) => {
+				this.mqttClient.send(topic, message);
 			})
 			.on('disconnected', (message) => {
 				this.log('Device: %s %s, %s', this.host, this.name, message);

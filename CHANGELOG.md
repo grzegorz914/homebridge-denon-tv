@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Note - after update to 3.15.x need remove the accessory frome Home app and add it again.
 
+## [3.17.0] - (18.02.2022)
+## Added
+- MQTT Client, publish all device data
+
+## Changes
+- update dependencies
+- code refactor
+
 ## [3.16.11] - (15.02.2022)
 ### Changes
 - fix [#133](https://github.com/grzegorz914/homebridge-denon-tv/issues/133)

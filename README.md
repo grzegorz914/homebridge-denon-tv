@@ -45,6 +45,7 @@ This plugin is based upon the official documentation for communicating with and 
 * Digital Input Modes can be controlled by creating separate tile in the buttons section.
 * Siri can be used for all functions, some times need create legacy buttons/switches/sensors.
 * Automations can be used for all functions, some times need create legacy buttons/switches/sensors.
+* MQTT Client publisch all available data from device.
 
 <p align="left">
   <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/master/graphics/homekit.png" width="382"></a> 
@@ -92,6 +93,13 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
 | `surrounds.switch` | If enabled, the tile for that surround mode will be expose to the *Homebridge/HomeKit* and can be used for HomeKit automation. |
 | `surrounds.displayType` | Here select display type in HomeKit app, possible `Button`, `Switch`, `Motion Sensor`, `Occupancy Sensor`.|
 | `AV Surround Mode` | This extra Accessory will control all functions of Main Zone except (Inputs and Buttons). |
+| `enableMqtt` | If enabled, MQTT Broker will start automatically and publish all awailable PV installation data. |
+| `mqttHost` | Here set the *IP Address* or *Hostname* for MQTT Broker.) |
+| `mqttPort` | Here set the *Port* for MQTT Broker, default 1883.) |
+| `mqttPrefix` | Here set the *Prefix* for *Topic* or leave empty.) |
+| `mqttAuth` | If enabled, MQTT Broker will use authorization credentials. |
+| `mqttUser` | Here set the MQTT Broker user. |
+| `mqttPasswd` | Here set the MQTT Broker password. |
 
 
 ```json
