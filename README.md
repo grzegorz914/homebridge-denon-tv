@@ -141,7 +141,14 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
                     "reference": "ZMON",
 					"displayType": 0
                 }
-            ]
+            ],
+            "enableMqtt": false,
+            "mqttHost": "192.168.1.33",
+            "mqttPort": 1883,
+            "mqttPrefix": "home/denon",
+            "mqttAuth": false,
+            "mqttUser": "user",
+            "mqttPass": "password"
         },
         {
             "name": "AV Zone 1",
@@ -178,7 +185,14 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
                     "reference": "Z2ON",
 					"displayType": 0
                 }
-            ]
+            ],
+            "enableMqtt": false,
+            "mqttHost": "192.168.1.33",
+            "mqttPort": 1883,
+            "mqttPrefix": "home/denon",
+            "mqttAuth": false,
+            "mqttUser": "user",
+            "mqttPass": "password"
         },
         {
             "name": "AV Zone 2",
@@ -215,7 +229,14 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
                     "reference": "Z3ON",
 					"displayType": 0
                 }
-            ]
+            ],
+            "enableMqtt": false,
+            "mqttHost": "192.168.1.33",
+            "mqttPort": 1883,
+            "mqttPrefix": "home/denon",
+            "mqttAuth": false,
+            "mqttUser": "user",
+            "mqttPass": "password"
         },
         {
             "name": "AV Surround Mode",
@@ -243,7 +264,14 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
                     "switch": false,
 					"displayType": 0
                 }
-            ]
+            ],
+            "enableMqtt": false,
+            "mqttHost": "192.168.1.33",
+            "mqttPort": 1883,
+            "mqttPrefix": "home/denon",
+            "mqttAuth": false,
+            "mqttUser": "user",
+            "mqttPass": "password"
         }
     ]
 }
