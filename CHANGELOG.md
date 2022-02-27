@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Note - after update to 3.15.x need remove the accessory frome Home app and add it again.
 
+## [3.17.4] - (27.02.2022)
+## Changes
+- increase timeout to 10sec, fixed [#133](https://github.com/grzegorz914/homebridge-denon-tv/issues/133)
 ## [3.17.3] - (27.02.2022)
 
 ## Added
