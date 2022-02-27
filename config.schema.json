@@ -92,7 +92,7 @@
                   ]
                 }
               ],
-              "required": false
+              "required": true
             },
             "masterPower": {
               "title": "Master Power Control",
@@ -132,7 +132,7 @@
                 }
               ],
               "description": "Here select the function of info button in RC.",
-              "required": false
+              "required": true
             },
             "disableLogInfo": {
               "title": "Disable Log Info",
