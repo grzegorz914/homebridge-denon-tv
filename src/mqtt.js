@@ -13,6 +13,7 @@ class MQTTCLIENT extends EventEmitter {
         this.mqttAuth = config.auth;
         this.mqttUser = config.user;
         this.mqttPasswd = config.passwd;
+        this.mqttDebug = config.debug;
         this.isConnected = false;
 
         const run = this.mqttEnabled ? this.connect() : false;
@@ -28,7 +29,7 @@ class MQTTCLIENT extends EventEmitter {
             this.mqttClient = await MQTT.connectAsync(url, options);
 
             this.isConnected = true;
-            this.emit('connected', 'MQTT Connected');
+            this.emit('connected', 'MQTT Connected.');
         } catch (error) {
             this.isConnected = false;
             this.emit('error', error);
@@ -43,7 +44,7 @@ class MQTTCLIENT extends EventEmitter {
         try {
             const fullTopic = `${this.mqttPrefix}/${this.mqttTopic}/${topic}`;
             await this.mqttClient.publish(fullTopic, message);
-            this.emit('debug', `MQTT publish: ${fullTopic}: ${message}`);
+            const emitDebug = this.mqttDebug ? this.emit('debug', `MQTT publish: ${fullTopic}: ${message}`) : false;
         } catch (error) {
             await this.mqttClient.end();
             this.isConnected = false;

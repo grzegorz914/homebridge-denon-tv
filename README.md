@@ -69,11 +69,11 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
 | `enableDebugMode` | If enabled, deep log will be present in homebridge console. |
 | `disableLogInfo` | If enabled, disable log info, all values and state will not be displayed in Homebridge log console. |
 | `disableLogDeviceInfo` | If enabled, add ability to disable log device info by every connections device to the network. |
-| `volumeControl` | Here choice what a additional volume control mode You want to use (None, Slider, Fan). |
-| `switchInfoMenu` | If enabled, `I` button change its behaviour in RC app between Menu and INFO. |
 | `masterPower` | If enabled, then the power switch for that zone (typically you would only use this for the Main Zone) will turn the entire receiver `ON` or `OFF/STANDBY` rather than just the zone itself |
 | `masterVolume`| If enabled, then the volume for that zone (typically you would only use this for the Main Zone) will set the entire receiver `UP` or `DOWN` rather than just the zone itself |
 | `masterMute`| If enabled, then the mute switch for that zone (typically you would only use this for the Main Zone) will muted the entire receiver `ON` or `OFF` rather than just the zone itself |
+| `volumeControl` | Here choice what a additional volume control mode You want to use (None, Slider, Fan). |
+| `infoButtonCommand` | Here select the function of `I` button in RC app. |
 | `inputs.name` | Here set *Input Name* which You want expose to the *Homebridge/HomeKit*. |
 | `inputs.reference` | Choose from available inputs, the inputs that should be published to and appear in HomeKit app in the device tile as inputs list |
 | `inputs.mode` | Choose from available inputs mode. |
@@ -99,6 +99,7 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
 | `mqttAuth` | If enabled, MQTT Broker will use authorization credentials. |
 | `mqttUser` | Here set the MQTT Broker user. |
 | `mqttPasswd` | Here set the MQTT Broker password. |
+| `mqttDebug` | If enabled, deep log will be present in homebridge console for MQTT. |
 | `AV Surround Mode` | This extra Accessory will control all functions of Main Zone except (Inputs and Buttons). |
 
 
@@ -115,7 +116,7 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
             "masterPower": false,
             "masterVolume": false,
             "masterMute": false,
-            "switchInfoMenu": false,
+            "infoButtonCommand": "MNINF",
             "disableLogInfo": false,
             "disableLogDeviceInfo": false,
             "enableDebugMode": false,
@@ -148,7 +149,8 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
             "mqttPrefix": "home/denon",
             "mqttAuth": false,
             "mqttUser": "user",
-            "mqttPass": "password"
+            "mqttPass": "password",
+            "mqttDebug": false
         },
         {
             "name": "AV Zone 1",
@@ -159,7 +161,7 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
             "masterPower": false,
             "masterVolume": false,
             "masterMute": false,
-            "switchInfoMenu": false,
+            "infoButtonCommand": "MNINF",
             "disableLogInfo": false,
             "disableLogDeviceInfo": false,
             "enableDebugMode": false,
@@ -192,7 +194,8 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
             "mqttPrefix": "home/denon",
             "mqttAuth": false,
             "mqttUser": "user",
-            "mqttPass": "password"
+            "mqttPass": "password",
+            "mqttDebug": false
         },
         {
             "name": "AV Zone 2",
@@ -203,7 +206,7 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
             "masterPower": false,
             "masterVolume": false,
             "masterMute": false,
-            "switchInfoMenu": false,
+            "infoButtonCommand": "MNINF",
             "disableLogInfo": false,
             "disableLogDeviceInfo": false,
             "enableDebugMode": false,
@@ -236,7 +239,8 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
             "mqttPrefix": "home/denon",
             "mqttAuth": false,
             "mqttUser": "user",
-            "mqttPass": "password"
+            "mqttPass": "password",
+            "mqttDebug": false
         },
         {
             "name": "AV Surround Mode",
@@ -247,7 +251,7 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
             "masterPower": false,
             "masterVolume": false,
             "masterMute": false,
-            "switchInfoMenu": false,
+            "infoButtonCommand": "MNINF",
             "disableLogInfo": false,
             "disableLogDeviceInfo": false,
             "enableDebugMode": false,
@@ -271,7 +275,8 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
             "mqttPrefix": "home/denon",
             "mqttAuth": false,
             "mqttUser": "user",
-            "mqttPass": "password"
+            "mqttPass": "password",
+            "mqttDebug": false
         }
     ]
 }

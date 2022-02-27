@@ -92,7 +92,7 @@
                   ]
                 }
               ],
-              "required": true
+              "required": false
             },
             "masterPower": {
               "title": "Master Power Control",
@@ -115,11 +115,23 @@
               "description": "The mute switch for that zone will muted the entire receiver *ON* or *OFF* rather than just the zone itself.",
               "required": false
             },
-            "switchInfoMenu": {
-              "title": "Switch Info/Menu",
-              "type": "boolean",
-              "default": false,
-              "description": "This toggle behaviour for *I* button in RC app and *Power Mode Selection* in settings.",
+            "infoButtonCommand": {
+              "title": "Info Button",
+              "type": "string",
+              "oneOf": [{
+                  "title": "OPTION",
+                  "enum": [
+                    "MNOPT"
+                  ]
+                },
+                {
+                  "title": "INFO",
+                  "enum": [
+                    "MNINF"
+                  ]
+                }
+              ],
+              "description": "Here select the function of info button in RC.",
               "required": false
             },
             "disableLogInfo": {
@@ -137,7 +149,7 @@
               "required": false
             },
             "enableDebugMode": {
-              "title": "Enable Debug Mode",
+              "title": "Debug",
               "type": "boolean",
               "default": false,
               "description": "This enable debug mode.",
@@ -3339,7 +3351,7 @@
             "mqttUser": {
               "title": "User",
               "type": "string",
-              "placeholder": "user",
+              "placeholder": "username",
               "required": false,
               "description": "Here set the user of MQTT Broker.",
               "condition": {
@@ -3354,6 +3366,16 @@
               "description": "Here set the password of MQTT Broker.",
               "condition": {
                 "functionBody": "return model.devices[arrayIndices].enableMqtt === true && model.devices[arrayIndices].mqttAuth === true;"
+              }
+            },
+            "mqttDebug": {
+              "title": "Debug",
+              "type": "boolean",
+              "default": false,
+              "required": false,
+              "description": "This enable debug mode for MQTT.",
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].enableMqtt === true;"
               }
             }
           }
@@ -3486,7 +3508,8 @@
           "devices[].mqttPrefix",
           "devices[].mqttAuth",
           "devices[].mqttUser",
-          "devices[].mqttPasswd"
+          "devices[].mqttPasswd",
+          "devices[].mqttDebug"
         ]
       },
       {
@@ -3499,10 +3522,10 @@
           "devices[].enableDebugMode",
           "devices[].disableLogInfo",
           "devices[].disableLogDeviceInfo",
-          "devices[].switchInfoMenu",
           "devices[].masterPower",
           "devices[].masterVolume",
           "devices[].masterMute",
+          "devices[].infoButtonCommand",
           "devices[].volumeControl"
         ]
       }

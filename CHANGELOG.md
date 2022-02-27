@@ -6,6 +6,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Note - after update to 3.15.x need remove the accessory frome Home app and add it again.
 
+## [3.17.3] - (27.02.2022)
+
+## Added
+- possibility to set custom command for Info button in RC
+- MQTT Debug
+## Changes
+- refactor check state and connect process
+
+## [3.17.2] - (18.02.2022)
+
+## Changes
+- fix #136
+
 ## [3.17.0] - (18.02.2022)
 ## Added
 - MQTT Client, publish all device data

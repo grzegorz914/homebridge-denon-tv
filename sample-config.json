@@ -25,7 +25,7 @@
                 "masterPower": false,
                 "masterVolume": false,
                 "masterMute": false,
-                "switchInfoMenu": false,
+                "infoButtonCommand": "MNINF",
                 "disableLogInfo": false,
                 "disableLogDeviceInfo": false,
                 "enableDebugMode": false,
@@ -55,7 +55,8 @@
                 "mqttPrefix": "home/envoy",
                 "mqttAuth": false,
                 "mqttUser": "user",
-                "mqttPass": "password"
+                "mqttPass": "password",
+                "mqttDebug": false
             },
             {
                 "name": "AV Zone 1",
@@ -66,7 +67,7 @@
                 "masterPower": false,
                 "masterVolume": false,
                 "masterMute": false,
-                "switchInfoMenu": false,
+                "infoButtonCommand": "MNINF",
                 "disableLogInfo": false,
                 "disableLogDeviceInfo": false,
                 "enableDebugMode": false,
@@ -96,7 +97,8 @@
                 "mqttPrefix": "home/denon",
                 "mqttAuth": false,
                 "mqttUser": "user",
-                "mqttPass": "password"
+                "mqttPass": "password",
+                "mqttDebug": false
             },
             {
                 "name": "AV Zone 2",
@@ -107,7 +109,7 @@
                 "masterPower": false,
                 "masterVolume": false,
                 "masterMute": false,
-                "switchInfoMenu": false,
+                "infoButtonCommand": "MNINF",
                 "disableLogInfo": false,
                 "disableLogDeviceInfo": false,
                 "enableDebugMode": false,
@@ -137,7 +139,8 @@
                 "mqttPrefix": "home/denon",
                 "mqttAuth": false,
                 "mqttUser": "user",
-                "mqttPass": "password"
+                "mqttPass": "password",
+                "mqttDebug": false
             },
             {
                 "name": "AV Surround Mode",
@@ -148,7 +151,7 @@
                 "masterPower": false,
                 "masterVolume": false,
                 "masterMute": false,
-                "switchInfoMenu": false,
+                "infoButtonCommand": "MNINF",
                 "disableLogInfo": false,
                 "disableLogDeviceInfo": false,
                 "enableDebugMode": false,
@@ -171,7 +174,8 @@
                 "mqttPrefix": "home/denon",
                 "mqttAuth": false,
                 "mqttUser": "user",
-                "mqttPass": "password"
+                "mqttPass": "password",
+                "mqttDebug": false
             }
         ]
     }]

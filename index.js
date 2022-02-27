@@ -72,13 +72,19 @@ class denonTvDevice {
 		this.host = config.host;
 		this.port = config.port;
 		this.volumeControl = config.volumeControl || 0;
-		this.switchInfoMenu = config.switchInfoMenu || false;
+		this.infoButtonCommand = config.infoButtonCommand || 'MNINF';
 		this.masterPower = config.masterPower || false;
 		this.masterVolume = config.masterVolume || false;
 		this.masterMute = config.masterMute || false;
 		this.disableLogInfo = config.disableLogInfo || false;
 		this.disableLogDeviceInfo = config.disableLogDeviceInfo || false;
 		this.enableDebugMode = config.enableDebugMode || false;
+		this.inputs = config.inputs || [];
+		this.buttonsMainZone = config.buttonsMainZone || [];
+		this.buttonsZone2 = config.buttonsZone2 || [];
+		this.buttonsZone3 = config.buttonsZone3 || [];
+		this.soundModes = config.surrounds || [];
+		this.zoneControl = config.zoneControl || 0;
 		this.enableMqtt = config.enableMqtt || false;
 		this.mqttHost = config.mqttHost;
 		this.mqttPort = config.mqttPort || 1883;
@@ -86,12 +92,7 @@ class denonTvDevice {
 		this.mqttAuth = config.mqttAuth || false;
 		this.mqttUser = config.mqttUser;
 		this.mqttPasswd = config.mqttPasswd;
-		this.inputs = config.inputs || [];
-		this.buttonsMainZone = config.buttonsMainZone || [];
-		this.buttonsZone2 = config.buttonsZone2 || [];
-		this.buttonsZone3 = config.buttonsZone3 || [];
-		this.soundModes = config.surrounds || [];
-		this.zoneControl = config.zoneControl || 0;
+		this.mqttDebug = config.mqttDebug || false;
 
 		//get Device info
 		this.manufacturer = 'Denon/Marantz';
@@ -177,7 +178,8 @@ class denonTvDevice {
 			topic: this.name,
 			auth: this.mqttAuth,
 			user: this.mqttUser,
-			passwd: this.mqttPasswd
+			passwd: this.mqttPasswd,
+			debug: this.mqttDebug
 		});
 
 		this.mqttClient.on('connected', (message) => {
@@ -187,10 +189,10 @@ class denonTvDevice {
 				this.log('Device: %s %s, %s', this.host, this.name, error);
 			})
 			.on('debug', (message) => {
-				const debug = this.enableDebugMode ? this.log('Device: %s %s, debug: %s', this.host, this.name, message) : false;
+				this.log('Device: %s %s, debug: %s', this.host, this.name, message);
 			})
 			.on('message', (message) => {
-				const logInfo = this.disableLogInfo ? false : this.log('Device: %s %s, %s', this.host, this.name, message);
+				this.log('Device: %s %s, %s', this.host, this.name, message);
 			})
 			.on('disconnected', (message) => {
 				this.log('Device: %s %s, %s', this.host, this.name, message);
@@ -416,7 +418,7 @@ class denonTvDevice {
 							this.mediaState = !this.mediaState;
 							break;
 						case Characteristic.RemoteKey.INFORMATION:
-							command = this.switchInfoMenu ? 'MNINF' : 'MNOPT';
+							command = this.infoButtonCommand;
 							break;
 					}
 				} else {
@@ -458,7 +460,7 @@ class denonTvDevice {
 							command = 'NS94';
 							break;
 						case Characteristic.RemoteKey.INFORMATION:
-							command = this.switchInfoMenu ? 'MNINF' : 'MNOPT';
+							command = this.infoButtonCommand;
 							break;
 					}
 				}
@@ -534,7 +536,7 @@ class denonTvDevice {
 				.onSet(async (command) => {
 					switch (command) {
 						case Characteristic.PowerModeSelection.SHOW:
-							command = this.switchInfoMenu ? 'MNOPT' : 'MNINF';
+							command = this.infoButtonCommand ? 'MNOPT' : 'MNINF';
 							break;
 						case Characteristic.PowerModeSelection.HIDE:
 							command = 'MNRTN';
