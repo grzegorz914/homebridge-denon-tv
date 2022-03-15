@@ -537,7 +537,7 @@ class denonTvDevice {
 				.onSet(async (command) => {
 					switch (command) {
 						case Characteristic.PowerModeSelection.SHOW:
-							command = this.infoButtonCommand ? 'MNOPT' : 'MNINF';
+							command = 'MNOPT';
 							break;
 						case Characteristic.PowerModeSelection.HIDE:
 							command = 'MNRTN';
