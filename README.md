@@ -72,7 +72,7 @@ Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-conf
 | `masterPower` | If enabled, then the power switch for that zone (typically you would only use this for the Main Zone) will turn the entire receiver `ON` or `OFF/STANDBY` rather than just the zone itself |
 | `masterVolume`| If enabled, then the volume for that zone (typically you would only use this for the Main Zone) will set the entire receiver `UP` or `DOWN` rather than just the zone itself |
 | `masterMute`| If enabled, then the mute switch for that zone (typically you would only use this for the Main Zone) will muted the entire receiver `ON` or `OFF` rather than just the zone itself |
-| `volumeControl` | Here choice what a additional volume control mode You want to use (None, Slider, Fan). |
+| `volumeControl` | Here choice what a additional volume control mode You want to use (None, Lightbulb, Fan). |
 | `infoButtonCommand` | Here select the function of `I` button in RC app. |
 | `inputs.name` | Here set *Input Name* which You want expose to the *Homebridge/HomeKit*. |
 | `inputs.reference` | Choose from available inputs, the inputs that should be published to and appear in HomeKit app in the device tile as inputs list |
