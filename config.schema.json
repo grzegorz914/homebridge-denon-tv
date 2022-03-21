@@ -80,7 +80,7 @@
                   ]
                 },
                 {
-                  "title": "Slider",
+                  "title": "Lightbulb",
                   "enum": [
                     1
                   ]
@@ -119,6 +119,12 @@
               "title": "Info Button",
               "type": "string",
               "oneOf": [{
+                  "title": "MENU",
+                  "enum": [
+                    "MNMEN ON"
+                  ]
+                },
+                {
                   "title": "OPTION",
                   "enum": [
                     "MNOPT"
