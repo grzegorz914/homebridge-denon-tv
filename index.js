@@ -293,7 +293,7 @@ class denonTvDevice {
 				this.inputIdentifier = inputIdentifier;
 
 				//start prepare accessory
-				if (this.startPrepareAccessory && this.serialNumber !== undefined) {
+				if (this.startPrepareAccessory) {
 					this.prepareAccessory();
 				};
 			})

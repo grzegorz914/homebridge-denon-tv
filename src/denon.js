@@ -64,16 +64,21 @@ class DENON extends EventEmitter {
                     const zones = parseDeviceInfo.Device_Info.DeviceZones[0];
                     const apiVersion = parseDeviceInfo.Device_Info.CommApiVers[0];
 
-                    const devInfo = JSON.stringify(parseDeviceInfo.Device_Info, null, 2);
-                    this.emit('debug', `Get device info: ${devInfo}`);
-                    const writeDevInfo = (this.zoneControl == 0) ? await fsPromises.writeFile(this.devInfoFile, devInfo) : false;
+                    if (serialNumber !== null && serialNumber !== undefined) {
+                        const devInfo = JSON.stringify(parseDeviceInfo.Device_Info, null, 2);
+                        this.emit('debug', `Get device info: ${devInfo}`);
+                        const writeDevInfo = (this.zoneControl == 0) ? await fsPromises.writeFile(this.devInfoFile, devInfo) : false;
 
-                    this.emit('connect');
-                    this.emit('deviceInfo', manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion);
-                    this.emit('mqtt', 'Info', devInfo);
+                        this.emit('connect');
+                        this.emit('deviceInfo', manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion);
+                        this.emit('mqtt', 'Info', devInfo);
+                    } else {
+                        this.emit('debug', `Device serial number unknown: ${serialNumber}`);
+                        this.checkDeviceInfo();
+                    }
                 } catch (error) {
                     this.emit('debug', `Device info error: ${error}`);
-                    this.emit('disconnect');
+                    this.checkDeviceInfo();
                 };
             })
             .on('checkState', async () => {
@@ -123,9 +128,7 @@ class DENON extends EventEmitter {
                     this.emit('Disconnected', 'Disconnected, trying to reconnect.');
                 };
 
-                setTimeout(() => {
-                    this.emit('checkDeviceInfo');
-                }, 7500);
+                this.checkDeviceInfo();
             });
 
         this.emit('checkDeviceInfo');
@@ -135,6 +138,12 @@ class DENON extends EventEmitter {
         setTimeout(() => {
             this.emit('checkState');
         }, 1500)
+    };
+
+    checkDeviceInfo() {
+        setTimeout(() => {
+            this.emit('checkDeviceInfo');
+        }, 7500);
     };
 
     send(apiUrl) {
