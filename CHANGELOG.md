@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Note - after update to 3.15.x need remove the accessory frome Home app and add it again.
 
+## [3.17.7] - (23.04.2022)
+## Changes
+- prepare accessory process to prevent create accessory with wrong UUID
+- in config.schema.json MQTT section
+
 ## [3.17.6] - (21.03.2022)
 ## Changes
 - added PR [#140](https://github.com/grzegorz914/homebridge-denon-tv/pull/140)

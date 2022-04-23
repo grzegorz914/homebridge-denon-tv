@@ -246,11 +246,6 @@ class denonTvDevice {
 				this.modelName = modelName;
 				this.serialNumber = serialNumber;
 				this.firmwareRevision = firmwareRevision;
-
-				//start prepare accessory
-				if (this.startPrepareAccessory) {
-					this.prepareAccessory();
-				};
 			})
 			.on('stateChanged', (power, reference, volume, mute, soundMode) => {
 				reference = (reference == 'Internet Radio') ? 'IRADIO' : (reference == 'AirPlay') ? 'NET' : reference;
@@ -296,6 +291,11 @@ class denonTvDevice {
 				this.muteState = mute;
 				this.soundMode = soundMode;
 				this.inputIdentifier = inputIdentifier;
+
+				//start prepare accessory
+				if (this.startPrepareAccessory && this.serialNumber !== undefined) {
+					this.prepareAccessory();
+				};
 			})
 			.on('mqtt', (topic, message) => {
 				this.mqttClient.send(topic, message);
