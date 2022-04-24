@@ -39,16 +39,17 @@ class DENON extends EventEmitter {
             timeout: 10000
         });
 
-        this.firstStart = false;
+        this.firstDisconnect = false;
         this.checkStateOnFirstRun = false;
         this.power = false;
         this.reference = '';
         this.volume = 0;
         this.mute = false;
         this.soundMode = '';
+        this.devInfo = '';
 
         this.on('connect', () => {
-                this.firstStart = true;
+                this.firstDisconnect = true;
                 this.checkStateOnFirstRun = true;
                 this.emit('connected', 'Connected.');
                 this.checkState();
@@ -71,7 +72,7 @@ class DENON extends EventEmitter {
 
                         this.emit('connect');
                         this.emit('deviceInfo', manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion);
-                        this.emit('mqtt', 'Info', devInfo);
+                        this.devfInfo = devInfo;
                     } else {
                         this.emit('debug', `Device serial number unknown: ${serialNumber}`);
                         this.checkDeviceInfo();
@@ -108,6 +109,7 @@ class DENON extends EventEmitter {
                         this.checkStateOnFirstRun = false;
                         this.emit('stateChanged', power, reference, volume, mute, soundMode);
                     };
+                    this.emit('mqtt', 'Info', this.devInfo);
                     this.emit('mqtt', 'State', JSON.stringify(parseStateData.item, null, 2));
                     const surroundMode = {
                         'surround': mode
@@ -116,18 +118,16 @@ class DENON extends EventEmitter {
                     this.checkState();
                 } catch (error) {
                     this.emit('error', `Device state error: ${error}`);
-                    this.emit('disconnect');
+                    const firstRun = this.checkStateOnFirstRun ? this.checkDeviceInfo() : this.emit('disconnect');
                 };
             })
             .on('disconnect', () => {
-                this.isConnected = false;
-                this.emit('stateChanged', false, this.reference, this.volume, true, this.soundMode);
-
-                if (this.firstStart) {
-                    this.firstStart = false;
-                    this.emit('Disconnected', 'Disconnected, trying to reconnect.');
+                if (this.firstDisconnect) {
+                    this.firstDisconnect = false;
+                    this.emit('disconnected', 'Disconnected, trying to reconnect.');
                 };
 
+                this.emit('stateChanged', false, this.name, this.eventName, this.reference, this.volume, true);
                 this.checkDeviceInfo();
             });
 

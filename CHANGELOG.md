@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Note - after update to 3.15.x need remove the accessory frome Home app and add it again.
 
+## [3.17.9] - (24.04.2022)
+## Changes
+- fixed MQTT info report
+
 ## [3.17.7] - (23.04.2022)
 ## Changes
 - prepare accessory process to prevent create accessory with wrong UUID
