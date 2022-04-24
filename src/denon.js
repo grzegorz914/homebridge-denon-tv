@@ -69,10 +69,10 @@ class DENON extends EventEmitter {
                         const devInfo = JSON.stringify(parseDeviceInfo.Device_Info, null, 2);
                         this.emit('debug', `Get device info: ${devInfo}`);
                         const writeDevInfo = (this.zoneControl == 0) ? await fsPromises.writeFile(this.devInfoFile, devInfo) : false;
+                        this.devInfo = devInfo;
 
                         this.emit('connect');
                         this.emit('deviceInfo', manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion);
-                        this.devfInfo = devInfo;
                     } else {
                         this.emit('debug', `Device serial number unknown: ${serialNumber}`);
                         this.checkDeviceInfo();
