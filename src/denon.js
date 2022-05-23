@@ -23,8 +23,11 @@ class DENON extends EventEmitter {
         super();
         this.host = config.host;
         this.port = config.port;
+        this.infoLog = config.infoLog;
+        this.debugLog = config.debugLog;
         this.zoneControl = config.zoneControl;
         this.devInfoFile = config.devInfoFile;
+        this.mqttEnabled = config.enableMqtt;
 
         const baseUrl = (`http://${this.host}:${this.port}`);
         this.axiosInstance = axios.create({
@@ -39,17 +42,17 @@ class DENON extends EventEmitter {
             timeout: 10000
         });
 
-        this.firstDisconnect = false;
+        this.firstRun = false;
         this.checkStateOnFirstRun = false;
         this.power = false;
         this.reference = '';
         this.volume = 0;
-        this.mute = false;
+        this.mute = true;
         this.soundMode = '';
         this.devInfo = '';
 
         this.on('connect', () => {
-                this.firstDisconnect = true;
+                this.firstRun = true;
                 this.checkStateOnFirstRun = true;
                 this.emit('connected', 'Connected.');
                 this.checkState();
@@ -58,7 +61,15 @@ class DENON extends EventEmitter {
                 try {
                     const deviceInfo = await this.axiosInstance(API_URL.DeviceInfo);
                     const parseDeviceInfo = await parseStringPromise(deviceInfo.data);
-                    const manufacturer = (parseDeviceInfo.Device_Info.BrandCode[0] != undefined) ? ['Denon', 'Marantz'][parseDeviceInfo.Device_Info.BrandCode[0]] : 'undefined';
+                    const devInfo = JSON.stringify(parseDeviceInfo.Device_Info, null, 2);
+                    const debug = this.debugLog ? this.emit('debug', `Parse device info data: ${devInfo}`) : false;
+                    const writeDevInfo = (this.zoneControl == 0) ? await fsPromises.writeFile(this.devInfoFile, devInfo) : false;
+                    this.devInfo = devInfo;
+
+                    let manufacturer = 'Denon/Marantz';
+                    if (typeof parseDeviceInfo.Device_Info.BrandCode[0] !== 'undefined') {
+                        manufacturer = ['Denon', 'Marantz'][parseDeviceInfo.Device_Info.BrandCode[0]];
+                    };
                     const modelName = parseDeviceInfo.Device_Info.ModelName[0];
                     const serialNumber = parseDeviceInfo.Device_Info.MacAddress[0];
                     const firmwareRevision = parseDeviceInfo.Device_Info.UpgradeVersion[0];
@@ -66,41 +77,35 @@ class DENON extends EventEmitter {
                     const apiVersion = parseDeviceInfo.Device_Info.CommApiVers[0];
 
                     if (serialNumber !== null && serialNumber !== undefined) {
-                        const devInfo = JSON.stringify(parseDeviceInfo.Device_Info, null, 2);
-                        this.emit('debug', `Get device info: ${devInfo}`);
-                        const writeDevInfo = (this.zoneControl == 0) ? await fsPromises.writeFile(this.devInfoFile, devInfo) : false;
-                        this.devInfo = devInfo;
-
                         this.emit('connect');
                         this.emit('deviceInfo', manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion);
                     } else {
-                        this.emit('debug', `Device serial number unknown: ${serialNumber}`);
+                        const debug1 = this.debugLog ? this.emit('debug', `Device serial number unknown: ${serialNumber}`) : false;
                         this.checkDeviceInfo();
                     }
                 } catch (error) {
-                    this.emit('debug', `Device info error: ${error}`);
+                    this.emit('error', `Device info error: ${error}`)
                     this.checkDeviceInfo();
                 };
             })
             .on('checkState', async () => {
                 try {
                     const zoneUrl = [API_URL.MainZoneStatusLite, API_URL.Zone2StatusLite, API_URL.Zone3StatusLite, API_URL.SoundModeStatus][this.zoneControl];
-                    const stateData = await this.axiosInstance(zoneUrl);
-                    this.emit('debug', `State data: ${stateData}`);
-                    const parseStateData = await parseStringPromise(stateData.data);
+                    const deviceState = await this.axiosInstance(zoneUrl);
+                    const parseDeviceState = await parseStringPromise(deviceState.data);
+                    const debug = this.debugLog ? this.emit('debug', `State data: ${JSON.stringify(parseDeviceState, null, 2)}`) : false;
 
                     const checkSoundMode = (this.zoneControl == 0 || this.zoneControl == 3)
-                    const soundModeData = checkSoundMode ? await this.axiosInstancePost(API_URL.AppCommand, configXml) : false;
-                    this.emit('debug', `Sound mode data: ${soundModeData}`);
-                    const parseSoundModeData = checkSoundMode ? await parseStringPromise(soundModeData.data) : false;
-                    const mode = checkSoundMode ? (parseSoundModeData.rx.cmd[0].surround[0]).replace(/[^a-zA-Z0-9]/g, '') : false;
-                    const soundMode = checkSoundMode ? SOUND_MODE[mode.toUpperCase()] : this.soundMode;
+                    const deviceSoundMode = checkSoundMode ? await this.axiosInstancePost(API_URL.AppCommand, configXml) : false;
+                    const parseDeviceSoundMode = checkSoundMode ? await parseStringPromise(deviceSoundMode.data) : false;
+                    const debug1 = this.debugLog ? this.emit('debug', `Sound mode data: ${JSON.stringify(parseDeviceSoundMode, null, 2)}`) : false;
+                    const soundMode = checkSoundMode ? SOUND_MODE[(parseDeviceSoundMode.rx.cmd[0].surround[0]).replace(/[^a-zA-Z0-9]/g, '').toUpperCase()] : this.soundMode;
 
-                    const power = (parseStateData.item.Power[0].value[0] == 'ON');
-                    const reference = (this.zoneControl == 3) ? soundMode : (parseStateData.item.InputFuncSelect[0].value[0] == 'Internet Radio') ? 'IRADIO' : (parseStateData.item.InputFuncSelect[0].value[0] == 'AirPlay') ? 'NET' : parseStateData.item.InputFuncSelect[0].value[0];
-                    const volume = (parseFloat(parseStateData.item.MasterVolume[0].value[0]) >= -79.5) ? parseInt(parseStateData.item.MasterVolume[0].value[0]) + 80 : this.volume;
-                    const mute = power ? (parseStateData.item.Mute[0].value[0] == 'on') : true;
-                    if (this.checkStateOnFirstRun == true || power != this.power || reference != this.reference || volume != this.volume || mute != this.mute || this.soundMode != soundMode) {
+                    const power = (parseDeviceState.item.Power[0].value[0] == 'ON');
+                    const reference = (this.zoneControl == 3) ? soundMode : (parseDeviceState.item.InputFuncSelect[0].value[0] == 'Internet Radio') ? 'IRADIO' : (parseDeviceState.item.InputFuncSelect[0].value[0] == 'AirPlay') ? 'NET' : parseDeviceState.item.InputFuncSelect[0].value[0];
+                    const volume = (parseFloat(parseDeviceState.item.MasterVolume[0].value[0]) >= -79.5) ? parseInt(parseDeviceState.item.MasterVolume[0].value[0]) + 80 : this.volume;
+                    const mute = power ? (parseDeviceState.item.Mute[0].value[0] == 'on') : true;
+                    if (this.checkStateOnFirstRun == true || power != this.power || reference != this.reference || volume != this.volume || mute != this.mute || soundMode != this.soundMod) {
                         this.power = power;
                         this.reference = reference;
                         this.volume = volume;
@@ -109,10 +114,10 @@ class DENON extends EventEmitter {
                         this.checkStateOnFirstRun = false;
                         this.emit('stateChanged', power, reference, volume, mute, soundMode);
                     };
-                    this.emit('mqtt', 'Info', this.devInfo);
-                    this.emit('mqtt', 'State', JSON.stringify(parseStateData.item, null, 2));
+                    const mqtt = this.mqttEnabled ? this.emit('mqtt', 'Info', this.devInfo) : false;
+                    const mqtt1 = this.mqttEnabled ? this.emit('mqtt', 'State', JSON.stringify(parseDeviceState.item, null, 2)) : false;
                     const surroundMode = {
-                        'surround': mode
+                        'surround': soundMode
                     }
                     const emitMgtt = checkSoundMode ? this.emit('mqtt', 'Sound Mode', JSON.stringify(surroundMode, null, 2)) : false;
                     this.checkState();
@@ -122,12 +127,12 @@ class DENON extends EventEmitter {
                 };
             })
             .on('disconnect', () => {
-                if (this.firstDisconnect) {
-                    this.firstDisconnect = false;
+                if (this.firstRun) {
+                    this.firstRun = false;
                     this.emit('disconnected', 'Disconnected, trying to reconnect.');
                 };
 
-                this.emit('stateChanged', false, this.name, this.eventName, this.reference, this.volume, true);
+                this.emit('stateChanged', false, this.reference, this.volume, true, this.soundMode);
                 this.checkDeviceInfo();
             });
 
@@ -143,14 +148,14 @@ class DENON extends EventEmitter {
     checkDeviceInfo() {
         setTimeout(() => {
             this.emit('checkDeviceInfo');
-        }, 7500);
+        }, 10000);
     };
 
     send(apiUrl) {
         return new Promise(async (resolve, reject) => {
             try {
                 const sendCommand = await this.axiosInstance(apiUrl);
-                this.emit('message', `Send command: ${apiUrl}`);
+                const info = this.infoLog ? false : this.emit('message', `Send command: ${apiUrl}`);
                 resolve(true);
             } catch (error) {
                 this.emit('error', `Send command error: ${error}`);

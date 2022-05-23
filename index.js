@@ -202,8 +202,11 @@ class denonTvDevice {
 		this.denon = new denon({
 			host: this.host,
 			port: this.port,
+			infoLog: this.disableLogInfo,
+			debugLog: this.enableDebugMode,
 			zoneControl: this.zoneControl,
-			devInfoFile: this.devInfoFile
+			devInfoFile: this.devInfoFile,
+			mqttEnabled: this.enableMqtt
 		});
 
 		this.denon.on('connected', (message) => {
@@ -213,10 +216,10 @@ class denonTvDevice {
 				this.log('Device: %s %s, %s', this.host, this.name, error);
 			})
 			.on('debug', (message) => {
-				const debug = this.enableDebugMode ? this.log('Device: %s %s, debug: %s', this.host, this.name, message) : false;
+				this.log('Device: %s %s, debug: %s', this.host, this.name, message);
 			})
 			.on('message', (message) => {
-				const logInfo = this.disableLogInfo ? false : this.log('Device: %s %s, %s', this.host, this.name, message);
+				this.log('Device: %s %s, %s', this.host, this.name, message);
 			})
 			.on('deviceInfo', (manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion) => {
 				if (!this.disableLogDeviceInfo) {
@@ -257,8 +260,8 @@ class denonTvDevice {
 						.updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
 				}
 
-				if (this.speakerService) {
-					this.speakerService
+				if (this.tvSpeakerService) {
+					this.tvSpeakerService
 						.updateCharacteristic(Characteristic.Volume, volume)
 						.updateCharacteristic(Characteristic.Mute, mute);
 					if (this.volumeService && this.volumeControl == 1) {
@@ -556,11 +559,11 @@ class denonTvDevice {
 
 		//prepare speaker service
 		this.log.debug('prepareSpeakerService');
-		this.speakerService = new Service.TelevisionSpeaker(`${accessoryName} Speaker`, 'Speaker');
-		this.speakerService
+		this.tvSpeakerService = new Service.TelevisionSpeaker(`${accessoryName} Speaker`, 'Speaker');
+		this.tvSpeakerService
 			.setCharacteristic(Characteristic.Active, Characteristic.Active.ACTIVE)
 			.setCharacteristic(Characteristic.VolumeControlType, Characteristic.VolumeControlType.ABSOLUTE);
-		this.speakerService.getCharacteristic(Characteristic.VolumeSelector)
+		this.tvSpeakerService.getCharacteristic(Characteristic.VolumeSelector)
 			.onSet(async (command) => {
 				const zControl = this.masterVolume ? 4 : this.zoneControl;
 				const zone = ['MV', 'Z2', 'Z3', 'MV', 'MV'][zControl];
@@ -580,7 +583,7 @@ class denonTvDevice {
 				};
 			});
 
-		this.speakerService.getCharacteristic(Characteristic.Volume)
+		this.tvSpeakerService.getCharacteristic(Characteristic.Volume)
 			.onGet(async () => {
 				const volume = this.volume;
 				const logInfo = this.disableLogInfo ? false : this.log('Device: %s %s, get Volume level successful: %s dB', this.host, accessoryName, (volume - 80));
@@ -608,7 +611,7 @@ class denonTvDevice {
 				};
 			});
 
-		this.speakerService.getCharacteristic(Characteristic.Mute)
+		this.tvSpeakerService.getCharacteristic(Characteristic.Mute)
 			.onGet(async () => {
 				const state = this.muteState;
 				const logInfo = this.disableLogInfo ? false : this.log('Device: %s %s, get Mute state successful: %s', this.host, accessoryName, state ? 'ON' : 'OFF');
@@ -626,7 +629,9 @@ class denonTvDevice {
 				};
 			});
 
-		accessory.addService(this.speakerService);
+		accessory.addService(this.tvSpeakerService);
+
+
 
 		//prepare volume service
 		if (this.volumeControl >= 1) {
@@ -639,7 +644,7 @@ class denonTvDevice {
 						return volume;
 					})
 					.onSet(async (volume) => {
-						this.speakerService.setCharacteristic(Characteristic.Volume, volume);
+						this.tvSpeakerService.setCharacteristic(Characteristic.Volume, volume);
 					});
 				this.volumeService.getCharacteristic(Characteristic.On)
 					.onGet(async () => {
@@ -647,7 +652,7 @@ class denonTvDevice {
 						return state;
 					})
 					.onSet(async (state) => {
-						this.speakerService.setCharacteristic(Characteristic.Mute, !state);
+						this.tvSpeakerService.setCharacteristic(Characteristic.Mute, !state);
 					});
 
 				accessory.addService(this.volumeService);
@@ -661,7 +666,7 @@ class denonTvDevice {
 						return volume;
 					})
 					.onSet(async (volume) => {
-						this.speakerService.setCharacteristic(Characteristic.Volume, volume);
+						this.tvSpeakerService.setCharacteristic(Characteristic.Volume, volume);
 					});
 				this.volumeServiceFan.getCharacteristic(Characteristic.On)
 					.onGet(async () => {
@@ -669,7 +674,7 @@ class denonTvDevice {
 						return state;
 					})
 					.onSet(async (state) => {
-						this.speakerService.setCharacteristic(Characteristic.Mute, !state);
+						this.tvSpeakerService.setCharacteristic(Characteristic.Mute, !state);
 					});
 
 				accessory.addService(this.volumeServiceFan);
