@@ -311,27 +311,25 @@ class denonTvDevice {
 	//prepare accessory
 	prepareAccessory() {
 		this.log.debug('prepareAccessory');
-		const accessoryName = this.name;
-		const accessoryUUID = UUID.generate(this.serialNumber + this.zoneControl);
-		const accessoryCategory = Categories.AUDIO_RECEIVER;
-		const accessory = new Accessory(accessoryName, accessoryUUID, accessoryCategory);
-
-		//prepare information service
-		this.log.debug('prepareInformationService');
-
 		const manufacturer = this.manufacturer;
 		const modelName = this.modelName;
 		const serialNumber = this.serialNumber;
 		const firmwareRevision = this.firmwareRevision;
 
-		accessory.removeService(accessory.getService(Service.AccessoryInformation));
-		const informationService = new Service.AccessoryInformation(accessoryName);
-		informationService
+		//accessory
+		const accessoryName = this.name;
+		const accessoryUUID = UUID.generate(this.serialNumber + this.zoneControl);
+		const accessoryCategory = Categories.AUDIO_RECEIVER;
+		const accessory = new Accessory(accessoryName, accessoryUUID, accessoryCategory);
+
+		//information service
+		this.log.debug('prepareInformationService');
+		accessory.getService(Service.AccessoryInformation)
 			.setCharacteristic(Characteristic.Manufacturer, manufacturer)
 			.setCharacteristic(Characteristic.Model, modelName)
 			.setCharacteristic(Characteristic.SerialNumber, serialNumber)
 			.setCharacteristic(Characteristic.FirmwareRevision, firmwareRevision);
-		accessory.addService(informationService);
+
 
 		//prepare television service
 		this.log.debug('prepareTelevisionService');
