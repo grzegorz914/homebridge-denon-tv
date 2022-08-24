@@ -55,14 +55,17 @@ class DENON extends EventEmitter {
                 this.firstRun = true;
                 this.checkStateOnFirstRun = true;
                 this.emit('connected', 'Connected.');
-                this.checkState();
+
+                setTimeout(() => {
+                    this.emit('checkState');
+                }, 1500)
             })
             .on('checkDeviceInfo', async () => {
                 try {
                     const deviceInfo = await this.axiosInstance(API_URL.DeviceInfo);
                     const parseDeviceInfo = await parseStringPromise(deviceInfo.data);
                     const devInfo = JSON.stringify(parseDeviceInfo.Device_Info, null, 2);
-                    const debug = this.debugLog ? this.emit('debug', `Parse device info data: ${devInfo}`) : false;
+                    const debug = this.debugLog ? this.emit('debug', `Parse info data: ${devInfo}`) : false;
                     const writeDevInfo = (this.zoneControl == 0) ? await fsPromises.writeFile(this.devInfoFile, devInfo) : false;
                     this.devInfo = devInfo;
 
@@ -80,11 +83,11 @@ class DENON extends EventEmitter {
                         this.emit('connect');
                         this.emit('deviceInfo', manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion);
                     } else {
-                        const debug1 = this.debugLog ? this.emit('debug', `Device serial number unknown: ${serialNumber}`) : false;
+                        const debug1 = this.debugLog ? this.emit('debug', `Serial number unknown: ${serialNumber}`) : false;
                         this.checkDeviceInfo();
                     }
                 } catch (error) {
-                    this.emit('error', `Device info error: ${error}`)
+                    this.emit('error', `Info error: ${error}`)
                     this.checkDeviceInfo();
                 };
             })
@@ -120,16 +123,19 @@ class DENON extends EventEmitter {
                         'surround': soundMode
                     }
                     const emitMgtt = checkSoundMode ? this.emit('mqtt', 'Sound Mode', JSON.stringify(surroundMode, null, 2)) : false;
-                    this.checkState();
+
+                    setTimeout(() => {
+                        this.emit('checkState');
+                    }, 1500)
                 } catch (error) {
-                    this.emit('error', `Device state error: ${error}`);
+                    this.emit('error', `State error: ${error}`);
                     const firstRun = this.checkStateOnFirstRun ? this.checkDeviceInfo() : this.emit('disconnect');
                 };
             })
             .on('disconnect', () => {
                 if (this.firstRun) {
                     this.firstRun = false;
-                    this.emit('disconnected', 'Disconnected, trying to reconnect.');
+                    this.emit('disconnected', 'Disconnected.');
                 };
 
                 this.emit('stateChanged', false, this.reference, this.volume, true, this.soundMode);
@@ -139,13 +145,8 @@ class DENON extends EventEmitter {
         this.emit('checkDeviceInfo');
     };
 
-    checkState() {
-        setTimeout(() => {
-            this.emit('checkState');
-        }, 1500)
-    };
-
     checkDeviceInfo() {
+        this.emit('debug', 'Reconnect in 10s.');
         setTimeout(() => {
             this.emit('checkDeviceInfo');
         }, 10000);

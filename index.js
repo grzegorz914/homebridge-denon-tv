@@ -29,7 +29,7 @@ class denonTvPlatform {
 	constructor(log, config, api) {
 		// only load if configured
 		if (!config || !Array.isArray(config.devices)) {
-			log('No configuration found for %s', PLUGIN_NAME);
+			log(`No configuration found for ${PLUGIN_NAME}`);
 			return;
 		}
 		this.log = log;
@@ -878,8 +878,8 @@ class denonTvDevice {
 			}
 		}
 
-		this.startPrepareAccessory = false;
-		const debug3 = this.enableDebugMode ? this.log('Device: %s %s, publishExternalAccessory.', this.host, accessoryName) : false;
 		this.api.publishExternalAccessories(PLUGIN_NAME, [accessory]);
+		const debug3 = this.enableDebugMode ? this.log(`Device: ${ this.host} ${accessoryName}, published as external accessory.`) : false;
+		this.startPrepareAccessory = false;
 	}
 };
