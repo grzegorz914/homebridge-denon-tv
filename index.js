@@ -696,24 +696,26 @@ class denonTvDevice {
 		const inputsCount = inputs.length;
 		const maxInputsCount = (inputsCount < 94) ? inputsCount : 94;
 		for (let i = 0; i < maxInputsCount; i++) {
+			//input
+			const input = inputs[i];
 
 			//get input reference
-			const inputReference = (inputs[i].reference != undefined) ? inputs[i].reference : undefined;
+			const inputReference = (input.reference != undefined) ? input.reference : undefined;
 
 			//get input name		
-			const inputName = (savedInputsNames[inputReference] != undefined) ? savedInputsNames[inputReference] : inputs[i].name;
+			const inputName = (savedInputsNames[inputReference] != undefined) ? savedInputsNames[inputReference] : input.name;
 
 			//get input type
-			const inputType = (this.zoneControl <= 2) ? (inputs[i].type != undefined) ? INPUT_SOURCE_TYPES.indexOf(inputs[i].type) : 3 : 0;
+			const inputType = (this.zoneControl <= 2) ? (input.type != undefined) ? INPUT_SOURCE_TYPES.indexOf(input.type) : 3 : 0;
 
 			//get input mode
-			const inputMode = (this.zoneControl <= 2) ? (inputs[i].mode != undefined) ? inputs[i].mode : 'SI' : 'MS';
+			const inputMode = (this.zoneControl <= 2) ? (input.mode != undefined) ? input.mode : 'SI' : 'MS';
 
 			//get input switch
-			const inputSwitch = (inputs[i].switch != undefined) ? inputs[i].switch : false;
+			const inputSwitch = (input.switch != undefined) ? input.switch : false;
 
 			//get input switch
-			const inputSwitchDisplayType = (inputs[i].displayType != undefined) ? inputs[i].displayType : 0;
+			const inputSwitchDisplayType = (input.displayType != undefined) ? input.displayType : 0;
 
 			//get input configured
 			const isConfigured = 1;
@@ -842,15 +844,17 @@ class denonTvDevice {
 			if (maxButtonsCount > 0) {
 				this.log.debug('prepareButtonsService');
 				for (let i = 0; i < maxButtonsCount; i++) {
+					//button
+					const button = buttons[i];
 
 					//get button reference
-					const buttonReference = buttons[i].reference;
+					const buttonReference = button.reference;
 
 					//get button name
-					const buttonName = (buttons[i].name != undefined) ? buttons[i].name : buttons[i].reference;
+					const buttonName = (button.name != undefined) ? button.name : button.reference;
 
 					//get button display type
-					const buttonDisplayType = (buttons[i].displayType != undefined) ? buttons[i].displayType : 0;
+					const buttonDisplayType = (button.displayType != undefined) ? button.displayType : 0;
 
 					const serviceType = [Service.Outlet, Service.Switch][buttonDisplayType];
 					const buttonService = new serviceType(`${this.sZoneName} ${buttonName}`, `Button ${i}`);
