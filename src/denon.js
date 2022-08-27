@@ -1,15 +1,14 @@
+'use strict';
 const fs = require('fs');
 const fsPromises = fs.promises;
 const EventEmitter = require('events');
 const axios = require('axios');
 const parseStringPromise = require('xml2js').parseStringPromise;
-const API_URL = require('./apiurl.json');
-const BODY_XML = require('./bodyxml.json');
-const SOUND_MODE = require('./soundmode.json');
 
+const CONSTANS = require('./src/constans.json');
 const soundModeStatus = `<?xml version="1.0" encoding="utf-8"?>
             <tx>
-              <cmd id="1">${BODY_XML.GetSurroundModeStatus}</cmd>
+              <cmd id="1">${CONSTANS.BodyXml.GetSurroundModeStatus}</cmd>
             </tx>`;
 const configXml = {
     data: soundModeStatus,
@@ -52,17 +51,17 @@ class DENON extends EventEmitter {
         this.devInfo = '';
 
         this.on('connect', () => {
-                this.firstRun = true;
-                this.checkStateOnFirstRun = true;
-                this.emit('connected', 'Connected.');
+            this.firstRun = true;
+            this.checkStateOnFirstRun = true;
+            this.emit('connected', 'Connected.');
 
-                setTimeout(() => {
-                    this.emit('checkState');
-                }, 1500)
-            })
+            setTimeout(() => {
+                this.emit('checkState');
+            }, 1500)
+        })
             .on('checkDeviceInfo', async () => {
                 try {
-                    const deviceInfo = await this.axiosInstance(API_URL.DeviceInfo);
+                    const deviceInfo = await this.axiosInstance(CONSTANS.ApiUrls.DeviceInfo);
                     const parseDeviceInfo = await parseStringPromise(deviceInfo.data);
                     const devInfo = JSON.stringify(parseDeviceInfo.Device_Info, null, 2);
                     const debug = this.debugLog ? this.emit('debug', `Parse info data: ${devInfo}`) : false;
@@ -79,7 +78,7 @@ class DENON extends EventEmitter {
                     const zones = parseDeviceInfo.Device_Info.DeviceZones[0];
                     const apiVersion = parseDeviceInfo.Device_Info.CommApiVers[0];
 
-                    if (serialNumber !== null && serialNumber !== undefined) {
+                    if (serialNumber != null && serialNumber != undefined) {
                         this.emit('connect');
                         this.emit('deviceInfo', manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion);
                     } else {
@@ -93,16 +92,16 @@ class DENON extends EventEmitter {
             })
             .on('checkState', async () => {
                 try {
-                    const zoneUrl = [API_URL.MainZoneStatusLite, API_URL.Zone2StatusLite, API_URL.Zone3StatusLite, API_URL.SoundModeStatus][this.zoneControl];
+                    const zoneUrl = [CONSTANS.ApiUrls.MainZoneStatusLite, CONSTANS.ApiUrls.Zone2StatusLite, CONSTANS.ApiUrls.Zone3StatusLite, CONSTANS.ApiUrls.SoundModeStatus][this.zoneControl];
                     const deviceState = await this.axiosInstance(zoneUrl);
                     const parseDeviceState = await parseStringPromise(deviceState.data);
                     const debug = this.debugLog ? this.emit('debug', `State data: ${JSON.stringify(parseDeviceState, null, 2)}`) : false;
 
                     const checkSoundMode = (this.zoneControl == 0 || this.zoneControl == 3)
-                    const deviceSoundMode = checkSoundMode ? await this.axiosInstancePost(API_URL.AppCommand, configXml) : false;
+                    const deviceSoundMode = checkSoundMode ? await this.axiosInstancePost(CONSTANS.ApiUrls.AppCommand, configXml) : false;
                     const parseDeviceSoundMode = checkSoundMode ? await parseStringPromise(deviceSoundMode.data) : false;
                     const debug1 = this.debugLog ? this.emit('debug', `Sound mode data: ${JSON.stringify(parseDeviceSoundMode, null, 2)}`) : false;
-                    const soundMode = checkSoundMode ? SOUND_MODE[(parseDeviceSoundMode.rx.cmd[0].surround[0]).replace(/[^a-zA-Z0-9]/g, '').toUpperCase()] : this.soundMode;
+                    const soundMode = checkSoundMode ? CONSTANS.SoundMode[(parseDeviceSoundMode.rx.cmd[0].surround[0]).replace(/[^a-zA-Z0-9]/g, '').toUpperCase()] : this.soundMode;
 
                     const power = (parseDeviceState.item.Power[0].value[0] == 'ON');
                     const reference = (this.zoneControl == 3) ? soundMode : (parseDeviceState.item.InputFuncSelect[0].value[0] == 'Internet Radio') ? 'IRADIO' : (parseDeviceState.item.InputFuncSelect[0].value[0] == 'AirPlay') ? 'NET' : parseDeviceState.item.InputFuncSelect[0].value[0];

@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Note - after update to 3.15.x need remove the accessory frome Home app and add it again.
 
+## [3.17.16] - (27.08.2022)
+## Changes
+- cleanup
+
 ## [3.17.13] - (23.07.2022)
 ## Changes
 - refactor information service
