@@ -36,8 +36,8 @@ class denonTvPlatform {
 			this.log.debug('didFinishLaunching');
 			for (let i = 0; i < this.devices.length; i++) {
 				const device = this.devices[i];
-				if (!device.name || !device.host || !device.port || !device.zoneControl) {
-					this.log.warn('Device name, host, port or zone control missing!');
+				if (!device.name || !device.host || !device.port) {
+					this.log.warn('Device name, host or port missing!');
 				} else {
 					new denonTvDevice(this.log, device, this.api);
 				}
