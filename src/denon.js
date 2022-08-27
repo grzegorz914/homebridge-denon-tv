@@ -5,7 +5,7 @@ const EventEmitter = require('events');
 const axios = require('axios');
 const parseStringPromise = require('xml2js').parseStringPromise;
 
-const CONSTANS = require('./src/constans.json');
+const CONSTANS = require('./constans.json');
 const soundModeStatus = `<?xml version="1.0" encoding="utf-8"?>
             <tx>
               <cmd id="1">${CONSTANS.BodyXml.GetSurroundModeStatus}</cmd>
