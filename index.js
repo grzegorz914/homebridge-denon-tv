@@ -80,7 +80,7 @@ class denonTvDevice {
 		this.buttonsZone2 = config.buttonsZone2 || [];
 		this.buttonsZone3 = config.buttonsZone3 || [];
 		this.soundModes = config.surrounds || [];
-		this.enableMqtt = config.enableMqtt || false;
+		this.mqttEnabled = config.enableMqtt || false;
 		this.mqttHost = config.mqttHost;
 		this.mqttPort = config.mqttPort || 1883;
 		this.mqttPrefix = config.mqttPrefix;
@@ -166,7 +166,7 @@ class denonTvDevice {
 
 		//mqtt client
 		this.mqttClient = new mqttClient({
-			enabled: this.enableMqtt,
+			enabled: this.mqttEnabled,
 			host: this.mqttHost,
 			port: this.mqttPort,
 			prefix: this.mqttPrefix,
@@ -201,7 +201,7 @@ class denonTvDevice {
 			debugLog: this.enableDebugMode,
 			zoneControl: this.zoneControl,
 			devInfoFile: this.devInfoFile,
-			mqttEnabled: this.enableMqtt
+			mqttEnabled: this.mqttEnabled
 		});
 
 		this.denon.on('connected', (message) => {
