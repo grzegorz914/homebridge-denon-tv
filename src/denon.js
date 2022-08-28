@@ -26,7 +26,7 @@ class DENON extends EventEmitter {
         this.debugLog = config.debugLog;
         this.zoneControl = config.zoneControl;
         this.devInfoFile = config.devInfoFile;
-        this.mqttEnabled = config.enableMqtt;
+        this.mqttEnabled = config.mqttEnabled;
 
         const baseUrl = (`http://${this.host}:${this.port}`);
         this.axiosInstance = axios.create({
@@ -149,6 +149,7 @@ class DENON extends EventEmitter {
             try {
                 const sendCommand = await this.axiosInstance(apiUrl);
                 const info = this.infoLog ? false : this.emit('message', `Send command: ${apiUrl}`);
+                this.emit('checkState');
                 resolve(true);
             } catch (error) {
                 this.emit('error', `Send command error: ${error}`);

@@ -344,7 +344,6 @@ class denonTvDevice {
 				try {
 					const setPower = (state != this.power) ? await this.denon.send(CONSTANS.ApiUrls.iPhoneDirect + newState) : false;
 					const logInfo = this.disableLogInfo ? false : this.log('Device: %s %s, set Power state successful, state: %s', this.host, accessoryName, newState);
-					this.power = state;
 				} catch (error) {
 					this.log.error('Device: %s %s, can not set Power state. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, error);
 				};
@@ -367,7 +366,6 @@ class denonTvDevice {
 				try {
 					const setInput = (inputReference != undefined) ? await this.denon.send(CONSTANS.ApiUrls.iPhoneDirect + inputRef) : false;
 					const logInfo = this.disableLogInfo ? false : this.log('Device: %s %s, set %s successful, name: %s, reference: %s', this.host, accessoryName, this.zoneControl <= 2 ? 'Input' : 'Sound Mode', inputName, inputRef);
-					this.inputIdentifier = inputIdentifier;
 				} catch (error) {
 					this.log.error('Device: %s %s, can not set %s. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneControl <= 2 ? 'Input' : 'Sound Mode', error);
 				};
@@ -482,7 +480,6 @@ class denonTvDevice {
 					try {
 						const setBrightness = await this.denon.send(CONSTANS.ApiUrls.iPhoneDirect + brightness);
 						const logInfo = this.disableLogInfo ? false : this.log('Device: %s %s, set Brightness successful, brightness: %s', this.host, accessoryName, value);
-						this.brightness = value;
 					} catch (error) {
 						this.log.error('Device: %s %s, can not set Brightness. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, error);
 					};
