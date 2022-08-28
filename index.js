@@ -159,9 +159,9 @@ class denonTvDevice {
 			const inputs = (this.zoneControl <= 2) ? this.inputs : this.soundModes;
 			const obj = JSON.stringify(inputs, null, 2);
 			fs.writeFileSync(this.inputsFile, obj);
-			const debug = this.enableDebugMode ? this.log('Device: %s %s, save %s succesful: %s', this.host, this.name, this.zoneControl <= 2 ? 'Inputs' : 'Sound Modes', obj) : false;
+			const debug = this.enableDebugMode ? this.log(`Device: ${this.host} ${this.name}, save ${this.zoneControl <= 2 ? 'Inputs' : 'Sound Modes'} succesful: ${obj}`) : false;
 		} catch (error) {
-			this.log.error('Device: %s %s, save %s error: %s', this.host, this.name, this.zoneControl <= 2 ? 'Inputs' : 'Sound Modes', error);
+			this.log.error(`Device: ${this.host} ${this.name}, save ${this.zoneControl <= 2 ? 'Inputs' : 'Sound Modes'} error: ${error}`);
 		};
 
 		//mqtt client
@@ -178,19 +178,19 @@ class denonTvDevice {
 		});
 
 		this.mqttClient.on('connected', (message) => {
-			this.log('Device: %s %s, %s', this.host, this.name, message);
+			this.log(`Device: ${this.host} ${this.name}, ${message}`);
 		})
 			.on('error', (error) => {
-				this.log('Device: %s %s, %s', this.host, this.name, error);
+				this.log.error(`Device: ${this.host} ${this.name}, ${error}`);
 			})
 			.on('debug', (message) => {
-				this.log('Device: %s %s, debug: %s', this.host, this.name, message);
+				this.log(`Device: ${this.host} ${this.name}, debug: ${message}`);
 			})
 			.on('message', (message) => {
-				this.log('Device: %s %s, %s', this.host, this.name, message);
+				this.log(`Device: ${this.host} ${this.name}, ${message}`);
 			})
 			.on('disconnected', (message) => {
-				this.log('Device: %s %s, %s', this.host, this.name, message);
+				this.log(`Device: ${this.host} ${this.name}, ${message}`);
 			});
 
 		//denon client
@@ -205,16 +205,16 @@ class denonTvDevice {
 		});
 
 		this.denon.on('connected', (message) => {
-			this.log('Device: %s %s, %s', this.host, this.name, message);
+			this.log(`Device: ${this.host} ${this.name}, ${message}`);
 		})
 			.on('error', (error) => {
-				this.log('Device: %s %s, %s', this.host, this.name, error);
+				this.log.error(`Device: ${this.host} ${this.name}, ${error}`);
 			})
 			.on('debug', (message) => {
-				this.log('Device: %s %s, debug: %s', this.host, this.name, message);
+				this.log(`Device: ${this.host} ${this.name}, debug: ${message}`);
 			})
 			.on('message', (message) => {
-				this.log('Device: %s %s, %s', this.host, this.name, message);
+				this.log(`Device: ${this.host} ${this.name}, ${message}`);
 			})
 			.on('deviceInfo', (manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion) => {
 				if (!this.disableLogDeviceInfo) {
@@ -299,7 +299,7 @@ class denonTvDevice {
 				this.mqttClient.send(topic, message);
 			})
 			.on('disconnected', (message) => {
-				this.log('Device: %s %s, %s', this.host, this.name, message);
+				this.log(`Device: ${this.host} ${this.name}, ${message}`);
 			});
 	}
 
