@@ -23,21 +23,10 @@ This plugin is based upon the official documentation for communicating with and 
 | Package | Installation | Role | Required |
 | --- | --- | --- | --- |
 | [Homebridge](https://github.com/homebridge/homebridge) | [Homebridge Wiki](https://github.com/homebridge/homebridge/wiki) | HomeKit Bridge | Required |
-| [Config UI X](https://github.com/oznu/homebridge-config-ui-x/wiki) | [Config UI X Wiki](https://github.com/oznu/homebridge-config-ui-x/wiki) | Web User Interface | Recommended |
-| [Denon TV](https://www.npmjs.com/package/homebridge-denon-tv) | `npm install -g homebridge-denon-tv` | Plug-In | Required |
+| [Config UI X](https://github.com/oznu/homebridge-config-ui-x/wiki) | [Config UI X Wiki](https://github.com/oznu/homebridge-config-ui-x/wiki) | Homebridge Web User Interface | Recommended |
+| [Denon TV](https://www.npmjs.com/package/homebridge-denon-tv) | [Plug-In Wiki](https://github.com/grzegorz914/homebridge-denon-tv/wiki) | Homebridge Plug-In | Required |
 
-## Note
-* For homebridge-denon-tv versions 3.6.0 and above the minimum required version of Homebridge is 1.3.x.
-* If update to 3.15.0 need remove the accessory frome HomeKit app and add it again.
-
-## Troubleshooting
-* If for some reason the device is not displayed in HomeKit app try this procedure:
-   * Go to `./homebridge/persist` macOS or `/var/lib/homebridge/persist` for RPI.
-   * Remove `AccessoryInfo.xxx` file which contain Your device data: `{"displayName":"AV Receiver"}`.
-   * Next remove `IdentifierCashe.xxx` file with same name as `AccessoryInfo.xxx`.
-   * Restart Homebridge and try add it to the HomeKit app again.
-
-## Features and How To Use Them
+## About the plugin
 * Multi Zone control.
 * Power ON/OFF short press tile in HomeKit app.
 * RC/Media control is possible after you go to the RC app on iPhone/iPad.
@@ -288,31 +277,3 @@ This plugin is based upon the official documentation for communicating with and 
     ]
 }
 ```
-
-### Adding to HomeKit
-* Each accessory needs to be manually paired. 
-  * Open the Home <img src='https://user-images.githubusercontent.com/3979615/78010622-4ea1d380-738e-11ea-8a17-e6a465eeec35.png' width='16.42px'> app on your device. 
-  * Tap the Home tab, then tap <img src='https://user-images.githubusercontent.com/3979615/78010869-9aed1380-738e-11ea-9644-9f46b3633026.png' width='16.42px'>. 
-  * Tap *Add Accessory*, and select *I Don't Have a Code, Cannot Scan* or *More options*. 
-  * Select Your accessory and press add anyway. 
-  * Enter the PIN or scan the QR code, this can be found in Homebridge UI or Homebridge logs.
-  * Complete the accessory setup.
-
-## Limitations
-* That maximum Services for 1 accessory is 100. If Services > 100, accessory stop responding.
-* To solve this problem the plugin counts the number of Services and not allow add more as 100.
-* If You have configured more as 100 Services some inputs or buttons will not be available in the HomeKit app.
-* The Services in this accessory are:
-  * Information.
-  * Speaker.
-  * Lightbulb.
-  * Fan.
-  * Television.
-  * Inputs, which may range from 6 to 100 as each input is 1 service.
-  * Buttons, which may range from 6 to 100 as each button is 1 service.
-
-## [What's New](https://github.com/grzegorz914/homebridge-denon-tv/blob/main/CHANGELOG.md)
-
-## Development
-Please feel free to create a Pull request and help in development. It will be highly appreciated.
-
