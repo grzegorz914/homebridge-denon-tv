@@ -61,20 +61,20 @@ class DENON extends EventEmitter {
                 try {
                     const deviceInfo = await this.axiosInstance(CONSTANS.ApiUrls.DeviceInfo);
                     const parseDeviceInfo = await parseStringPromise(deviceInfo.data);
-                    const devInfo = JSON.stringify(parseDeviceInfo.Device_Info, null, 2);
-                    const debug = this.debugLog ? this.emit('debug', `Parse info data: ${devInfo}`) : false;
-                    const writeDevInfo = (this.zoneControl == 0) ? await fsPromises.writeFile(this.devInfoFile, devInfo) : false;
-                    this.devInfo = devInfo;
+                    const devInfo = parseDeviceInfo.Device_Info;
+                    const debug = this.debugLog ? this.emit('debug', `Parse info data: ${JSON.stringify(devInfo, null, 2)}`) : false;
+                    const writeDevInfo = (this.zoneControl == 0) ? await fsPromises.writeFile(this.devInfoFile, JSON.stringify(devInfo, null, 2)) : false;
 
                     let manufacturer = 'Denon/Marantz';
-                    if (typeof parseDeviceInfo.Device_Info.BrandCode[0] !== 'undefined') {
-                        manufacturer = ['Denon', 'Marantz'][parseDeviceInfo.Device_Info.BrandCode[0]];
+                    if (typeof devInfo.BrandCode[0] !== 'undefined') {
+                        manufacturer = ['Denon', 'Marantz'][devInfo.BrandCode[0]];
                     };
-                    const modelName = parseDeviceInfo.Device_Info.ModelName[0];
-                    const serialNumber = parseDeviceInfo.Device_Info.MacAddress[0];
-                    const firmwareRevision = parseDeviceInfo.Device_Info.UpgradeVersion[0];
-                    const zones = parseDeviceInfo.Device_Info.DeviceZones[0];
-                    const apiVersion = parseDeviceInfo.Device_Info.CommApiVers[0];
+                    const modelName = devInfo.ModelName[0];
+                    const serialNumber = devInfo.MacAddress[0];
+                    const firmwareRevision = devInfo.UpgradeVersion[0];
+                    const zones = devInfo.DeviceZones[0];
+                    const apiVersion = devInfo.CommApiVers[0];
+                    this.devInfo = devInfo;
 
                     if (serialNumber != null && serialNumber != undefined) {
                         this.emit('deviceInfo', manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion);
@@ -93,7 +93,8 @@ class DENON extends EventEmitter {
                     const zoneUrl = [CONSTANS.ApiUrls.MainZoneStatusLite, CONSTANS.ApiUrls.Zone2StatusLite, CONSTANS.ApiUrls.Zone3StatusLite, CONSTANS.ApiUrls.SoundModeStatus][this.zoneControl];
                     const deviceState = await this.axiosInstance(zoneUrl);
                     const parseDeviceState = await parseStringPromise(deviceState.data);
-                    const debug = this.debugLog ? this.emit('debug', `State data: ${JSON.stringify(parseDeviceState, null, 2)}`) : false;
+                    const devState = parseDeviceState.item;
+                    const debug = this.debugLog ? this.emit('debug', `State data: ${JSON.stringify(devState, null, 2)}`) : false;
 
                     const checkSoundMode = (this.zoneControl == 0 || this.zoneControl == 3)
                     const deviceSoundMode = checkSoundMode ? await this.axiosInstancePost(CONSTANS.ApiUrls.AppCommand, configXml) : false;
@@ -101,10 +102,10 @@ class DENON extends EventEmitter {
                     const debug1 = this.debugLog ? this.emit('debug', `Sound mode data: ${JSON.stringify(parseDeviceSoundMode, null, 2)}`) : false;
                     const soundMode = checkSoundMode ? CONSTANS.SoundMode[(parseDeviceSoundMode.rx.cmd[0].surround[0]).replace(/[^a-zA-Z0-9]/g, '').toUpperCase()] : this.soundMode;
 
-                    const power = (parseDeviceState.item.Power[0].value[0] == 'ON');
-                    const reference = (this.zoneControl == 3) ? soundMode : (parseDeviceState.item.InputFuncSelect[0].value[0] == 'Internet Radio') ? 'IRADIO' : (parseDeviceState.item.InputFuncSelect[0].value[0] == 'AirPlay') ? 'NET' : parseDeviceState.item.InputFuncSelect[0].value[0];
-                    const volume = (parseFloat(parseDeviceState.item.MasterVolume[0].value[0]) >= -79.5) ? parseInt(parseDeviceState.item.MasterVolume[0].value[0]) + 80 : this.volume;
-                    const mute = power ? (parseDeviceState.item.Mute[0].value[0] == 'on') : true;
+                    const power = (devState.Power[0].value[0] == 'ON');
+                    const reference = (this.zoneControl == 3) ? soundMode : (devState.InputFuncSelect[0].value[0] == 'Internet Radio') ? 'IRADIO' : (devState.InputFuncSelect[0].value[0] == 'AirPlay') ? 'NET' : devState.InputFuncSelect[0].value[0];
+                    const volume = (parseFloat(devState.MasterVolume[0].value[0]) >= -79.5) ? parseInt(devState.MasterVolume[0].value[0]) + 80 : this.volume;
+                    const mute = power ? (devState.Mute[0].value[0] == 'on') : true;
                     if (this.checkStateOnFirstRun == true || power != this.power || reference != this.reference || volume != this.volume || mute != this.mute || soundMode != this.soundMod) {
                         this.power = power;
                         this.reference = reference;
@@ -114,8 +115,8 @@ class DENON extends EventEmitter {
                         this.checkStateOnFirstRun = false;
                         this.emit('stateChanged', power, reference, volume, mute, soundMode);
                     };
-                    const mqtt = this.mqttEnabled ? this.emit('mqtt', 'Info', this.devInfo) : false;
-                    const mqtt1 = this.mqttEnabled ? this.emit('mqtt', 'State', JSON.stringify(parseDeviceState.item, null, 2)) : false;
+                    const mqtt = this.mqttEnabled ? this.emit('mqtt', 'Info', JSON.stringify(this.devInfo, null, 2)) : false;
+                    const mqtt1 = this.mqttEnabled ? this.emit('mqtt', 'State', JSON.stringify(devState, null, 2)) : false;
                     const surroundMode = {
                         'surround': soundMode
                     }
