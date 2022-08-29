@@ -62,7 +62,7 @@ class DENON extends EventEmitter {
                     const deviceInfo = await this.axiosInstance(CONSTANS.ApiUrls.DeviceInfo);
                     const parseDeviceInfo = await parseStringPromise(deviceInfo.data);
                     const devInfo = parseDeviceInfo.Device_Info;
-                    const debug = this.debugLog ? this.emit('debug', `Parse info data: ${JSON.stringify(devInfo, null, 2)}`) : false;
+                    const debug = this.debugLog ? this.emit('debug', `Info: ${JSON.stringify(devInfo, null, 2)}`) : false;
                     const writeDevInfo = (this.zoneControl == 0) ? await fsPromises.writeFile(this.devInfoFile, JSON.stringify(devInfo, null, 2)) : false;
 
                     let manufacturer = 'Denon/Marantz';
@@ -94,12 +94,12 @@ class DENON extends EventEmitter {
                     const deviceState = await this.axiosInstance(zoneUrl);
                     const parseDeviceState = await parseStringPromise(deviceState.data);
                     const devState = parseDeviceState.item;
-                    const debug = this.debugLog ? this.emit('debug', `State data: ${JSON.stringify(devState, null, 2)}`) : false;
+                    const debug = this.debugLog ? this.emit('debug', `State: ${JSON.stringify(devState, null, 2)}`) : false;
 
                     const checkSoundMode = (this.zoneControl == 0 || this.zoneControl == 3)
                     const deviceSoundMode = checkSoundMode ? await this.axiosInstancePost(CONSTANS.ApiUrls.AppCommand, configXml) : false;
                     const parseDeviceSoundMode = checkSoundMode ? await parseStringPromise(deviceSoundMode.data) : false;
-                    const debug1 = this.debugLog ? this.emit('debug', `Sound mode data: ${JSON.stringify(parseDeviceSoundMode, null, 2)}`) : false;
+                    const debug1 = this.debugLog ? this.emit('debug', `Sound mode: ${JSON.stringify(parseDeviceSoundMode, null, 2)}`) : false;
                     const soundMode = checkSoundMode ? CONSTANS.SoundMode[(parseDeviceSoundMode.rx.cmd[0].surround[0]).replace(/[^a-zA-Z0-9]/g, '').toUpperCase()] : this.soundMode;
 
                     const power = (devState.Power[0].value[0] == 'ON');
