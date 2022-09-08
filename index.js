@@ -2,8 +2,8 @@
 const path = require('path');
 const fs = require('fs');
 const fsPromises = fs.promises;
-const denon = require('./src/denon');
-const mqttClient = require('./src/mqtt.js');
+const Mqtt = require('./src/mqtt.js');
+const Denon = require('./src/denon.js');
 
 const PLUGIN_NAME = 'homebridge-denon-tv';
 const PLATFORM_NAME = 'DenonTv';
@@ -165,7 +165,7 @@ class denonTvDevice {
 		};
 
 		//mqtt client
-		this.mqttClient = new mqttClient({
+		this.mqtt = new Mqtt({
 			enabled: this.mqttEnabled,
 			host: this.mqttHost,
 			port: this.mqttPort,
@@ -177,7 +177,7 @@ class denonTvDevice {
 			debug: this.mqttDebug
 		});
 
-		this.mqttClient.on('connected', (message) => {
+		this.mqtt.on('connected', (message) => {
 			this.log(`Device: ${this.host} ${this.name}, ${message}`);
 		})
 			.on('error', (error) => {
@@ -194,10 +194,9 @@ class denonTvDevice {
 			});
 
 		//denon client
-		this.denon = new denon({
+		this.denon = new Denon({
 			host: this.host,
 			port: this.port,
-			infoLog: this.disableLogInfo,
 			debugLog: this.enableDebugMode,
 			zoneControl: this.zoneControl,
 			devInfoFile: this.devInfoFile,
@@ -207,15 +206,6 @@ class denonTvDevice {
 		this.denon.on('connected', (message) => {
 			this.log(`Device: ${this.host} ${this.name}, ${message}`);
 		})
-			.on('error', (error) => {
-				this.log.error(`Device: ${this.host} ${this.name}, ${error}`);
-			})
-			.on('debug', (message) => {
-				this.log(`Device: ${this.host} ${this.name}, debug: ${message}`);
-			})
-			.on('message', (message) => {
-				this.log(`Device: ${this.host} ${this.name}, ${message}`);
-			})
 			.on('deviceInfo', (manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion) => {
 				if (!this.disableLogDeviceInfo) {
 					this.log('-------- %s --------', this.name);
@@ -295,8 +285,14 @@ class denonTvDevice {
 					this.prepareAccessory();
 				};
 			})
-			.on('mqtt', (topic, message) => {
-				this.mqttClient.send(topic, message);
+			.on('error', (error) => {
+				this.log.error(`Device: ${this.host} ${this.name}, ${error}`);
+			})
+			.on('debug', (message) => {
+				this.log(`Device: ${this.host} ${this.name}, debug: ${message}`);
+			})
+			.on('message', (message) => {
+				this.log(`Device: ${this.host} ${this.name}, ${message}`);
 			})
 			.on('disconnected', (message) => {
 				this.log(`Device: ${this.host} ${this.name}, ${message}`);
@@ -344,6 +340,7 @@ class denonTvDevice {
 				try {
 					const setPower = (state != this.power) ? await this.denon.send(CONSTANS.ApiUrls.iPhoneDirect + newState) : false;
 					const logInfo = this.disableLogInfo ? false : this.log('Device: %s %s, set Power state successful, state: %s', this.host, accessoryName, newState);
+					this.power = state;
 				} catch (error) {
 					this.log.error('Device: %s %s, can not set Power state. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, error);
 				};
@@ -366,6 +363,7 @@ class denonTvDevice {
 				try {
 					const setInput = (inputReference != undefined) ? await this.denon.send(CONSTANS.ApiUrls.iPhoneDirect + inputRef) : false;
 					const logInfo = this.disableLogInfo ? false : this.log('Device: %s %s, set %s successful, name: %s, reference: %s', this.host, accessoryName, this.zoneControl <= 2 ? 'Input' : 'Sound Mode', inputName, inputRef);
+					this.inputIdentifier = inputIdentifier;
 				} catch (error) {
 					this.log.error('Device: %s %s, can not set %s. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, this.zoneControl <= 2 ? 'Input' : 'Sound Mode', error);
 				};
@@ -596,6 +594,7 @@ class denonTvDevice {
 				try {
 					const setVolume = await this.denon.send(CONSTANS.ApiUrls.iPhoneDirect + zone + volume);
 					const logInfo = this.disableLogInfo ? false : this.log('Device: %s %s, set new Volume level successful, volume: %s dB', this.host, accessoryName, volume - 80);
+					this.volume = volume;
 				} catch (error) {
 					this.log.error('Device: %s %s, can not set new Volume level. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, error);
 				};
@@ -614,6 +613,7 @@ class denonTvDevice {
 				try {
 					const toggleMute = (this.power && state != this.mute) ? await this.denon.send(CONSTANS.ApiUrls.iPhoneDirect + zone + newState) : false;
 					const logInfo = this.disableLogInfo ? false : this.log('Device: %s %s, set new Mute state successful, state: %s', this.host, accessoryName, state ? 'ON' : 'OFF');
+					this.mute = state;
 				} catch (error) {
 					this.log.error('Device: %s %s, can not set new Mute state. Might be due to a wrong settings in config, error: %s', this.host, accessoryName, error);
 				};
