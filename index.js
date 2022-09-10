@@ -294,6 +294,9 @@ class denonTvDevice {
 			.on('message', (message) => {
 				this.log(`Device: ${this.host} ${this.name}, ${message}`);
 			})
+			.on('mqtt', (topic, message) => {
+				this.mqtt.send(topic, message);
+			})
 			.on('disconnected', (message) => {
 				this.log(`Device: ${this.host} ${this.name}, ${message}`);
 			});

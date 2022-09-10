@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Note - after update to 3.15.x need remove the accessory frome Home app and add it again.
 
+## [3.17.23] - (10.09.2022)
+## Changes
+- bump dependencies
+- fix mqtt
+
 ## [3.17.21] - (28.08.2022)
 ## Changes
 - cleanup
