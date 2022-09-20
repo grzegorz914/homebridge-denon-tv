@@ -48,9 +48,8 @@ class DENON extends EventEmitter {
         this.soundMode = '';
         this.devInfo = '';
 
-        this.on('connect', () => {
+        this.on('firstRun', () => {
             this.checkStateOnFirstRun = true;
-            this.emit('connected', 'Connected.');
 
             setTimeout(() => {
                 this.emit('checkState');
@@ -76,8 +75,9 @@ class DENON extends EventEmitter {
                     this.devInfo = devInfo;
 
                     if (serialNumber != null && serialNumber != undefined) {
+                        this.emit('connected', 'Connected.');
                         this.emit('deviceInfo', manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion);
-                        this.emit('connect');
+                        this.emit('firstRun');
                     } else {
                         const debug1 = debugLog ? this.emit('debug', `Serial number unknown: ${serialNumber}, reconnect in 15s.`) : false;
                         this.checkDeviceInfo();

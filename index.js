@@ -75,10 +75,12 @@ class denonTvDevice {
 		this.disableLogInfo = config.disableLogInfo || false;
 		this.disableLogDeviceInfo = config.disableLogDeviceInfo || false;
 		this.enableDebugMode = config.enableDebugMode || false;
+		this.getInputsFromDevice = config.getInputsFromDevice || false;
 		this.inputs = config.inputs || [];
 		this.buttonsMainZone = config.buttonsMainZone || [];
 		this.buttonsZone2 = config.buttonsZone2 || [];
 		this.buttonsZone3 = config.buttonsZone3 || [];
+		this.getSurroundsFromDevice = config.getSurroundsFromDevice || false;
 		this.soundModes = config.surrounds || [];
 		this.mqttEnabled = config.enableMqtt || false;
 		this.mqttHost = config.mqttHost;
@@ -154,16 +156,6 @@ class denonTvDevice {
 			fs.writeFileSync(this.inputsTargetVisibilityFile, '');
 		}
 
-		//save inputs to the file
-		try {
-			const inputs = (this.zoneControl <= 2) ? this.inputs : this.soundModes;
-			const obj = JSON.stringify(inputs, null, 2);
-			fs.writeFileSync(this.inputsFile, obj);
-			const debug = this.enableDebugMode ? this.log(`Device: ${this.host} ${this.name}, save ${this.zoneControl <= 2 ? 'Inputs' : 'Sound Modes'} succesful: ${obj}`) : false;
-		} catch (error) {
-			this.log.error(`Device: ${this.host} ${this.name}, save ${this.zoneControl <= 2 ? 'Inputs' : 'Sound Modes'} error: ${error}`);
-		};
-
 		//mqtt client
 		this.mqtt = new Mqtt({
 			enabled: this.mqttEnabled,
@@ -198,13 +190,23 @@ class denonTvDevice {
 			host: this.host,
 			port: this.port,
 			debugLog: this.enableDebugMode,
-			zoneControl: this.zoneControl,
 			devInfoFile: this.devInfoFile,
+			zoneControl: this.zoneControl,
 			mqttEnabled: this.mqttEnabled
 		});
 
-		this.denon.on('connected', (message) => {
+		this.denon.on('connected', async (message) => {
 			this.log(`Device: ${this.host} ${this.name}, ${message}`);
+
+			//save inputs to the file
+			try {
+				const inputs = (this.zoneControl <= 2) ? this.inputs : this.soundModes;
+				const obj = JSON.stringify(inputs, null, 2);
+				const writeInputs = await fsPromises.writeFile(this.inputsFile, obj);
+				const debug = this.enableDebugMode ? this.log(`Device: ${this.host} ${this.name}, save ${this.zoneControl <= 2 ? 'Inputs' : 'Sound Modes'} succesful: ${obj}`) : false;
+			} catch (error) {
+				this.log.error(`Device: ${this.host} ${this.name}, save ${this.zoneControl <= 2 ? 'Inputs' : 'Sound Modes'} error: ${error}`);
+			};
 		})
 			.on('deviceInfo', (manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion) => {
 				if (!this.disableLogDeviceInfo) {

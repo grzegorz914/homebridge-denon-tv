@@ -39,7 +39,8 @@
               "maximum": 3,
               "default": 0,
               "description": "Here select which Zone You want control.",
-              "oneOf": [{
+              "oneOf": [
+                {
                   "title": "Main Zone",
                   "enum": [
                     0
@@ -73,7 +74,8 @@
               "maximum": 2,
               "default": 0,
               "description": "Here select what a volume control mode You want to use. If select *None* only hardware buttons in RC app can be used to control volume.",
-              "oneOf": [{
+              "oneOf": [
+                {
                   "title": "None",
                   "enum": [
                     0
@@ -118,7 +120,8 @@
             "infoButtonCommand": {
               "title": "Info Button",
               "type": "string",
-              "oneOf": [{
+              "oneOf": [
+                {
                   "title": "MENU",
                   "enum": [
                     "MNMEN ON"
@@ -161,6 +164,13 @@
               "description": "This enable debug mode.",
               "required": false
             },
+            "getInputsFromDevice": {
+              "title": "Load Inputs From Device",
+              "type": "boolean",
+              "default": false,
+              "description": "This function get all available inputs direct from device, manually configured inputs will be skipped, (Not working yet).",
+              "required": false
+            },
             "inputs": {
               "type": "array",
               "items": {
@@ -170,15 +180,16 @@
                   "name": {
                     "title": "Name",
                     "type": "string",
-                    "placeholder": "Input name",
+                    "placeholder": "Name",
                     "description": "Here set Your own name.",
                     "required": true
                   },
                   "reference": {
-                    "title": "Input",
+                    "title": "Reference",
                     "type": "string",
                     "description": "Here select input.",
-                    "oneOf": [{
+                    "oneOf": [
+                      {
                         "title": "TV AUDIO",
                         "enum": [
                           "TV"
@@ -515,7 +526,8 @@
                     "title": "Mode",
                     "type": "string",
                     "description": "Here select input mode.",
-                    "oneOf": [{
+                    "oneOf": [
+                      {
                         "title": "INPUT",
                         "enum": [
                           "SI"
@@ -545,7 +557,8 @@
                   "displayType": {
                     "title": "Extra Input Tile Type",
                     "type": "integer",
-                    "oneOf": [{
+                    "oneOf": [
+                      {
                         "title": "Button",
                         "enum": [
                           0
@@ -576,6 +589,13 @@
                 }
               }
             },
+            "getSurroundsFromDevice": {
+              "title": "Load Surrounds From Device",
+              "type": "boolean",
+              "default": false,
+              "description": "This function get all available surrounds direct from device, manually configured surrounds will be skipped, (Not working yet).",
+              "required": false
+            },
             "surrounds": {
               "type": "array",
               "items": {
@@ -593,7 +613,8 @@
                     "title": "Surround",
                     "type": "string",
                     "description": "Here select surround mode.",
-                    "oneOf": [{
+                    "oneOf": [
+                      {
                         "title": "MOVIE",
                         "enum": [
                           "MOVIE"
@@ -743,7 +764,8 @@
                   "displayType": {
                     "title": "Extra Surround Tile Type",
                     "type": "integer",
-                    "oneOf": [{
+                    "oneOf": [
+                      {
                         "title": "Button",
                         "enum": [
                           0
@@ -791,7 +813,8 @@
                     "title": "Function",
                     "type": "string",
                     "description": "Here select function.",
-                    "oneOf": [{
+                    "oneOf": [
+                      {
                         "title": "POWER ON ALL",
                         "enum": [
                           "PWON"
@@ -2915,7 +2938,8 @@
                   "displayType": {
                     "title": "Display Type",
                     "type": "integer",
-                    "oneOf": [{
+                    "oneOf": [
+                      {
                         "title": "Button",
                         "enum": [
                           0
@@ -2951,7 +2975,8 @@
                     "title": "Function",
                     "type": "string",
                     "description": "Here select function.",
-                    "oneOf": [{
+                    "oneOf": [
+                      {
                         "title": "POWER ON",
                         "enum": [
                           "Z2ON"
@@ -3107,7 +3132,8 @@
                   "displayType": {
                     "title": "Display Type",
                     "type": "integer",
-                    "oneOf": [{
+                    "oneOf": [
+                      {
                         "title": "Button",
                         "enum": [
                           0
@@ -3143,7 +3169,8 @@
                     "title": "Function",
                     "type": "string",
                     "description": "Here select function.",
-                    "oneOf": [{
+                    "oneOf": [
+                      {
                         "title": "POWER ON",
                         "enum": [
                           "Z3ON"
@@ -3287,7 +3314,8 @@
                   "displayType": {
                     "title": "Display Type",
                     "type": "integer",
-                    "oneOf": [{
+                    "oneOf": [
+                      {
                         "title": "Button",
                         "enum": [
                           0
@@ -3389,152 +3417,172 @@
       }
     }
   },
-  "layout": [{
-    "key": "devices",
-    "type": "tabarray",
-    "title": "{{ value.name || 'new device' }}",
-    "items": [
-      "devices[].name",
-      "devices[].host",
-      "devices[].port",
-      "devices[].zoneControl",
-      {
-        "key": "devices[]",
-        "type": "section",
-        "title": "Inputs",
-        "expandable": true,
-        "expanded": false,
-        "items": [{
-          "key": "devices[].inputs",
-          "type": "tabarray",
-          "title": "{{ value.name || 'new input' }}",
+  "layout": [
+    {
+      "key": "devices",
+      "type": "tabarray",
+      "title": "{{ value.name || 'new device' }}",
+      "items": [
+        "devices[].name",
+        "devices[].host",
+        "devices[].port",
+        "devices[].zoneControl",
+        {
+          "key": "devices[]",
+          "type": "section",
+          "title": "Inputs",
+          "expandable": true,
+          "expanded": false,
           "items": [
-            "devices[].inputs[].name",
-            "devices[].inputs[].reference",
-            "devices[].inputs[].mode",
-            "devices[].inputs[].switch",
-            "devices[].inputs[].displayType"
-          ]
-        }],
-        "condition": {
-          "functionBody": "return model.devices[arrayIndices].zoneControl <= 2;"
-        }
-      },
-      {
-        "key": "devices[]",
-        "type": "section",
-        "title": "Surrounds",
-        "expandable": true,
-        "expanded": false,
-        "items": [{
-          "key": "devices[].surrounds",
-          "type": "tabarray",
-          "title": "{{ value.name || 'new surround' }}",
+            "devices[].getInputsFromDevice",
+            {
+              "key": "devices[].inputs",
+              "type": "tabarray",
+              "title": "{{ value.name || 'new input' }}",
+              "items": [
+                "devices[].inputs[].name",
+                "devices[].inputs[].reference",
+                "devices[].inputs[].mode",
+                "devices[].inputs[].switch",
+                "devices[].inputs[].displayType"
+              ],
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].getInputsFromDevice === false;"
+              }
+            }
+          ],
+          "condition": {
+            "functionBody": "return model.devices[arrayIndices].zoneControl <= 2;"
+          }
+        },
+        {
+          "key": "devices[]",
+          "type": "section",
+          "title": "Surrounds",
+          "expandable": true,
+          "expanded": false,
           "items": [
-            "devices[].surrounds[].name",
-            "devices[].surrounds[].reference",
-            "devices[].surrounds[].switch",
-            "devices[].surrounds[].displayType"
-          ]
-        }],
-        "condition": {
-          "functionBody": "return model.devices[arrayIndices].zoneControl === 3;"
-        }
-      },
-      {
-        "key": "devices[]",
-        "type": "section",
-        "title": "Buttons",
-        "expandable": true,
-        "expanded": false,
-        "items": [{
-          "key": "devices[].buttonsMainZone",
-          "type": "tabarray",
-          "title": "{{ value.name || 'new button' }}",
+            "devices[].getSurroundsFromDevice",
+            {
+              "key": "devices[].surrounds",
+              "type": "tabarray",
+              "title": "{{ value.name || 'new surround' }}",
+              "items": [
+                "devices[].surrounds[].name",
+                "devices[].surrounds[].reference",
+                "devices[].surrounds[].switch",
+                "devices[].surrounds[].displayType"
+              ],
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].getSurroundsFromDevice === false;"
+              }
+            }
+          ],
+          "condition": {
+            "functionBody": "return model.devices[arrayIndices].zoneControl === 3;"
+          }
+        },
+        {
+          "key": "devices[]",
+          "type": "section",
+          "title": "Buttons",
+          "expandable": true,
+          "expanded": false,
           "items": [
-            "devices[].buttonsMainZone[].name",
-            "devices[].buttonsMainZone[].reference",
-            "devices[].buttonsMainZone[].displayType"
-          ]
-        }],
-        "condition": {
-          "functionBody": "return model.devices[arrayIndices].zoneControl === 0;"
-        }
-      },
-      {
-        "key": "devices[]",
-        "type": "section",
-        "title": "Buttons",
-        "expandable": true,
-        "expanded": false,
-        "items": [{
-          "key": "devices[].buttonsZone2",
-          "type": "tabarray",
-          "title": "{{ value.name || 'new button' }}",
+            {
+              "key": "devices[].buttonsMainZone",
+              "type": "tabarray",
+              "title": "{{ value.name || 'new button' }}",
+              "items": [
+                "devices[].buttonsMainZone[].name",
+                "devices[].buttonsMainZone[].reference",
+                "devices[].buttonsMainZone[].displayType"
+              ]
+            }
+          ],
+          "condition": {
+            "functionBody": "return model.devices[arrayIndices].zoneControl === 0;"
+          }
+        },
+        {
+          "key": "devices[]",
+          "type": "section",
+          "title": "Buttons",
+          "expandable": true,
+          "expanded": false,
           "items": [
-            "devices[].buttonsZone2[].name",
-            "devices[].buttonsZone2[].reference",
-            "devices[].buttonsZone2[].displayType"
-          ]
-        }],
-        "condition": {
-          "functionBody": "return model.devices[arrayIndices].zoneControl === 1;"
-        }
-      },
-      {
-        "key": "devices[]",
-        "type": "section",
-        "title": "Buttons",
-        "expandable": true,
-        "expanded": false,
-        "items": [{
-          "key": "devices[].buttonsZone3",
-          "type": "tabarray",
-          "title": "{{ value.name || 'new button' }}",
+            {
+              "key": "devices[].buttonsZone2",
+              "type": "tabarray",
+              "title": "{{ value.name || 'new button' }}",
+              "items": [
+                "devices[].buttonsZone2[].name",
+                "devices[].buttonsZone2[].reference",
+                "devices[].buttonsZone2[].displayType"
+              ]
+            }
+          ],
+          "condition": {
+            "functionBody": "return model.devices[arrayIndices].zoneControl === 1;"
+          }
+        },
+        {
+          "key": "devices[]",
+          "type": "section",
+          "title": "Buttons",
+          "expandable": true,
+          "expanded": false,
           "items": [
-            "devices[].buttonsZone3[].name",
-            "devices[].buttonsZone3[].reference",
-            "devices[].buttonsZone3[].displayType"
+            {
+              "key": "devices[].buttonsZone3",
+              "type": "tabarray",
+              "title": "{{ value.name || 'new button' }}",
+              "items": [
+                "devices[].buttonsZone3[].name",
+                "devices[].buttonsZone3[].reference",
+                "devices[].buttonsZone3[].displayType"
+              ]
+            }
+          ],
+          "condition": {
+            "functionBody": "return model.devices[arrayIndices].zoneControl === 2;"
+          }
+        },
+        {
+          "key": "devices[]",
+          "type": "section",
+          "title": "Advanced Settings",
+          "expandable": true,
+          "expanded": false,
+          "items": [
+            "devices[].enableDebugMode",
+            "devices[].disableLogInfo",
+            "devices[].disableLogDeviceInfo",
+            "devices[].masterPower",
+            "devices[].masterVolume",
+            "devices[].masterMute",
+            "devices[].infoButtonCommand",
+            "devices[].volumeControl"
           ]
-        }],
-        "condition": {
-          "functionBody": "return model.devices[arrayIndices].zoneControl === 2;"
+        },
+        {
+          "key": "devices[]",
+          "type": "section",
+          "title": "MQTT",
+          "expandable": true,
+          "expanded": false,
+          "items": [
+            "devices[].enableMqtt",
+            "devices[].mqttHost",
+            "devices[].mqttPort",
+            "devices[].mqttPrefix",
+            "devices[].mqttAuth",
+            "devices[].mqttUser",
+            "devices[].mqttPasswd",
+            "devices[].mqttDebug"
+          ]
         }
-      },
-      {
-        "key": "devices[]",
-        "type": "section",
-        "title": "Advanced Settings",
-        "expandable": true,
-        "expanded": false,
-        "items": [
-          "devices[].enableDebugMode",
-          "devices[].disableLogInfo",
-          "devices[].disableLogDeviceInfo",
-          "devices[].masterPower",
-          "devices[].masterVolume",
-          "devices[].masterMute",
-          "devices[].infoButtonCommand",
-          "devices[].volumeControl"
-        ]
-      },
-      {
-        "key": "devices[]",
-        "type": "section",
-        "title": "MQTT",
-        "expandable": true,
-        "expanded": false,
-        "items": [
-          "devices[].enableMqtt",
-          "devices[].mqttHost",
-          "devices[].mqttPort",
-          "devices[].mqttPrefix",
-          "devices[].mqttAuth",
-          "devices[].mqttUser",
-          "devices[].mqttPasswd",
-          "devices[].mqttDebug"
-        ]
-      }
-    ]
-  }]
+      ]
+    }
+  ]
 }
