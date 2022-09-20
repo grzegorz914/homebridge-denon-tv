@@ -46,6 +46,7 @@ This plugin is based upon the official documentation for communicating with and 
 </p>
 
 ### Configuration
+* Fist enable network contorl on [Denon](https://manuals.denon.com/avrx6300h/na/en/HJWMSYmehwmguq.php)/[Marantz](https://manuals.marantz.com/SR7012/EU/EN/HJWMSYmehwmguq.php)
 * Run this plugin as a child bridge (Highly Recommended).
 * Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-config-ui-x/wiki) to configure this plugin (Highly Recommended). 
 * The sample configuration can be edited and used manually as an alternative. 
