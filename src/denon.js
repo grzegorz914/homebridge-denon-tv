@@ -30,14 +30,12 @@ class DENON extends EventEmitter {
         const baseUrl = (`http://${host}:${port}`);
         this.axiosInstance = axios.create({
             method: 'GET',
-            baseURL: baseUrl,
-            timeout: 10000
+            baseURL: baseUrl
         });
 
         this.axiosInstancePost = axios.create({
             method: 'POST',
-            baseURL: baseUrl,
-            timeout: 10000
+            baseURL: baseUrl
         });
 
         this.checkStateOnFirstRun = false;
@@ -123,7 +121,7 @@ class DENON extends EventEmitter {
 
                     setTimeout(() => {
                         this.emit('checkState');
-                    }, 1500)
+                    }, 3000)
                 } catch (error) {
                     this.emit('error', `State error: ${error}, reconnect in 15s.`);
                     const firstRun = this.checkStateOnFirstRun ? this.checkDeviceInfo() : this.emit('disconnect');
