@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Note - after update to 3.15.x need remove the accessory frome Home app and add it again.
 
+## [3.17.25] - (07.10.2022)
+## Changes
+- bump dependencies
+- fix [#150](https://github.com/grzegorz914/homebridge-denon-tv/issues/150)
+
 ## [3.17.23] - (10.09.2022)
 ## Changes
 - bump dependencies
