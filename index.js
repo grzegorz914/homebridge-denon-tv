@@ -280,8 +280,9 @@ class denonTvDevice {
 				}
 
 				if (this.sensorMuteService) {
+					const state = power ? this.mute : false;
 					this.sensorMuteService
-						.updateCharacteristic(Characteristic.MotionDetected, mute)
+						.updateCharacteristic(Characteristic.MotionDetected, state)
 				}
 
 				if (this.switchServices) {
@@ -725,7 +726,7 @@ class denonTvDevice {
 			this.sensorMuteService = new Service.MotionSensor(`${this.sZoneName} Mute Sensor`, `Mute Sensor`);
 			this.sensorMuteService.getCharacteristic(Characteristic.MotionDetected)
 				.onGet(async () => {
-					const state = this.mute;
+					const state = this.power ? this.mute : false;
 					return state;
 				});
 			accessory.addService(this.sensorMuteService);
