@@ -14,169 +14,185 @@
         "comment": "In this section set the port for Homebridge accessories."
     },
     "accessories": [],
-    "platforms": [{
-        "platform": "DenonTv",
-        "devices": [{
-                "name": "AV Main Zone",
-                "host": "192.168.1.5",
-                "port": 8080,
-                "zoneControl": 0,
-                "volumeControl": 0,
-                "masterPower": false,
-                "masterVolume": false,
-                "masterMute": false,
-                "infoButtonCommand": "MNINF",
-                "disableLogInfo": false,
-                "disableLogDeviceInfo": false,
-                "enableDebugMode": false,
-                "inputs": [{
-                        "name": "Xbox One",
-                        "reference": "GAME",
-                        "mode": "SI",
-                        "switch": false,
-                        "displayType": 0
-                    },
-                    {
-                        "name": "Television",
-                        "reference": "TV",
-                        "mode": "SI",
-                        "switch": false,
-                        "displayType": 0
-                    }
-                ],
-                "buttonsMainZone": [{
-                    "name": "POWER ON",
-                    "reference": "ZMON",
-                    "displayType": 0
-                }],
-                "enableMqtt": false,
-                "mqttHost": "192.168.1.33",
-                "mqttPort": 1883,
-                "mqttPrefix": "home/envoy",
-                "mqttAuth": false,
-                "mqttUser": "user",
-                "mqttPass": "password",
-                "mqttDebug": false
-            },
-            {
-                "name": "AV Zone 1",
-                "host": "192.168.1.5",
-                "port": 8080,
-                "zoneControl": 1,
-                "volumeControl": 0,
-                "masterPower": false,
-                "masterVolume": false,
-                "masterMute": false,
-                "infoButtonCommand": "MNINF",
-                "disableLogInfo": false,
-                "disableLogDeviceInfo": false,
-                "enableDebugMode": false,
-                "inputs": [{
-                        "name": "Xbox One",
-                        "reference": "GAME",
-                        "mode": "SI",
-                        "switch": false,
-                        "displayType": 0
-                    },
-                    {
-                        "name": "Television",
-                        "reference": "TV",
-                        "mode": "SI",
-                        "switch": false,
-                        "displayType": 0
-                    }
-                ],
-                "buttonsZone2": [{
-                    "name": "POWER ON",
-                    "reference": "Z2ON",
-                    "displayType": 0
-                }],
-                "enableMqtt": false,
-                "mqttHost": "192.168.1.33",
-                "mqttPort": 1883,
-                "mqttPrefix": "home/denon",
-                "mqttAuth": false,
-                "mqttUser": "user",
-                "mqttPass": "password",
-                "mqttDebug": false
-            },
-            {
-                "name": "AV Zone 2",
-                "host": "192.168.1.5",
-                "port": 8080,
-                "zoneControl": 2,
-                "volumeControl": 0,
-                "masterPower": false,
-                "masterVolume": false,
-                "masterMute": false,
-                "infoButtonCommand": "MNINF",
-                "disableLogInfo": false,
-                "disableLogDeviceInfo": false,
-                "enableDebugMode": false,
-                "inputs": [{
-                        "name": "Xbox One",
-                        "reference": "GAME",
-                        "mode": "SI",
-                        "switch": false,
-                        "displayType": 0
-                    },
-                    {
-                        "name": "Television",
-                        "reference": "TV",
-                        "mode": "SI",
-                        "switch": false,
-                        "displayType": 0
-                    }
-                ],
-                "buttonsZone3": [{
-                    "name": "POWER ON",
-                    "reference": "Z3ON",
-                    "displayType": 0
-                }],
-                "enableMqtt": false,
-                "mqttHost": "192.168.1.33",
-                "mqttPort": 1883,
-                "mqttPrefix": "home/denon",
-                "mqttAuth": false,
-                "mqttUser": "user",
-                "mqttPass": "password",
-                "mqttDebug": false
-            },
-            {
-                "name": "AV Surround Mode",
-                "host": "192.168.1.5",
-                "port": 8080,
-                "zoneControl": 3,
-                "volumeControl": 0,
-                "masterPower": false,
-                "masterVolume": false,
-                "masterMute": false,
-                "infoButtonCommand": "MNINF",
-                "disableLogInfo": false,
-                "disableLogDeviceInfo": false,
-                "enableDebugMode": false,
-                "surrounds": [{
-                        "name": "MCH Stereo",
-                        "reference": "MCH STEREO",
-                        "switch": false,
-                        "displayType": 0
-                    },
-                    {
-                        "name": "Stereo",
-                        "reference": "STEREO",
-                        "switch": false,
-                        "displayType": 0
-                    }
-                ],
-                "enableMqtt": false,
-                "mqttHost": "192.168.1.33",
-                "mqttPort": 1883,
-                "mqttPrefix": "home/denon",
-                "mqttAuth": false,
-                "mqttUser": "user",
-                "mqttPass": "password",
-                "mqttDebug": false
-            }
-        ]
-    }]
+    "platforms": [
+        {
+            "platform": "DenonTv",
+            "devices": [
+                {
+                    "name": "AV Main Zone",
+                    "host": "192.168.1.5",
+                    "port": 8080,
+                    "zoneControl": 0,
+                    "volumeControl": 0,
+                    "masterPower": false,
+                    "sensorPower": false,
+                    "masterVolume": false,
+                    "sensorVolume": false,
+                    "masterMute": false,
+                    "sensorMute": false,
+                    "infoButtonCommand": "MNINF",
+                    "disableLogInfo": false,
+                    "disableLogDeviceInfo": false,
+                    "enableDebugMode": false,
+                    "inputs": [
+                        {
+                            "name": "Xbox One",
+                            "reference": "GAME",
+                            "mode": "SI",
+                            "switch": false,
+                            "displayType": 0
+                        },
+                        {
+                            "name": "Television",
+                            "reference": "TV",
+                            "mode": "SI",
+                            "switch": false,
+                            "displayType": 0
+                        }
+                    ],
+                    "buttonsMainZone": [
+                        {
+                            "name": "POWER ON",
+                            "reference": "ZMON",
+                            "displayType": 0
+                        }
+                    ],
+                    "enableMqtt": false,
+                    "mqttHost": "192.168.1.33",
+                    "mqttPort": 1883,
+                    "mqttPrefix": "home/envoy",
+                    "mqttAuth": false,
+                    "mqttUser": "user",
+                    "mqttPass": "password",
+                    "mqttDebug": false
+                },
+                {
+                    "name": "AV Zone 1",
+                    "host": "192.168.1.5",
+                    "port": 8080,
+                    "zoneControl": 1,
+                    "volumeControl": 0,
+                    "masterPower": false,
+                    "masterVolume": false,
+                    "masterMute": false,
+                    "infoButtonCommand": "MNINF",
+                    "disableLogInfo": false,
+                    "disableLogDeviceInfo": false,
+                    "enableDebugMode": false,
+                    "inputs": [
+                        {
+                            "name": "Xbox One",
+                            "reference": "GAME",
+                            "mode": "SI",
+                            "switch": false,
+                            "displayType": 0
+                        },
+                        {
+                            "name": "Television",
+                            "reference": "TV",
+                            "mode": "SI",
+                            "switch": false,
+                            "displayType": 0
+                        }
+                    ],
+                    "buttonsZone2": [
+                        {
+                            "name": "POWER ON",
+                            "reference": "Z2ON",
+                            "displayType": 0
+                        }
+                    ],
+                    "enableMqtt": false,
+                    "mqttHost": "192.168.1.33",
+                    "mqttPort": 1883,
+                    "mqttPrefix": "home/denon",
+                    "mqttAuth": false,
+                    "mqttUser": "user",
+                    "mqttPass": "password",
+                    "mqttDebug": false
+                },
+                {
+                    "name": "AV Zone 2",
+                    "host": "192.168.1.5",
+                    "port": 8080,
+                    "zoneControl": 2,
+                    "volumeControl": 0,
+                    "masterPower": false,
+                    "masterVolume": false,
+                    "masterMute": false,
+                    "infoButtonCommand": "MNINF",
+                    "disableLogInfo": false,
+                    "disableLogDeviceInfo": false,
+                    "enableDebugMode": false,
+                    "inputs": [
+                        {
+                            "name": "Xbox One",
+                            "reference": "GAME",
+                            "mode": "SI",
+                            "switch": false,
+                            "displayType": 0
+                        },
+                        {
+                            "name": "Television",
+                            "reference": "TV",
+                            "mode": "SI",
+                            "switch": false,
+                            "displayType": 0
+                        }
+                    ],
+                    "buttonsZone3": [
+                        {
+                            "name": "POWER ON",
+                            "reference": "Z3ON",
+                            "displayType": 0
+                        }
+                    ],
+                    "enableMqtt": false,
+                    "mqttHost": "192.168.1.33",
+                    "mqttPort": 1883,
+                    "mqttPrefix": "home/denon",
+                    "mqttAuth": false,
+                    "mqttUser": "user",
+                    "mqttPass": "password",
+                    "mqttDebug": false
+                },
+                {
+                    "name": "AV Surround Mode",
+                    "host": "192.168.1.5",
+                    "port": 8080,
+                    "zoneControl": 3,
+                    "volumeControl": 0,
+                    "masterPower": false,
+                    "masterVolume": false,
+                    "masterMute": false,
+                    "infoButtonCommand": "MNINF",
+                    "disableLogInfo": false,
+                    "disableLogDeviceInfo": false,
+                    "enableDebugMode": false,
+                    "surrounds": [
+                        {
+                            "name": "MCH Stereo",
+                            "reference": "MCH STEREO",
+                            "switch": false,
+                            "displayType": 0
+                        },
+                        {
+                            "name": "Stereo",
+                            "reference": "STEREO",
+                            "switch": false,
+                            "displayType": 0
+                        }
+                    ],
+                    "enableMqtt": false,
+                    "mqttHost": "192.168.1.33",
+                    "mqttPort": 1883,
+                    "mqttPrefix": "home/denon",
+                    "mqttAuth": false,
+                    "mqttUser": "user",
+                    "mqttPass": "password",
+                    "mqttDebug": false
+                }
+            ]
+        }
+    ]
 }

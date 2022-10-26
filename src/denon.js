@@ -30,11 +30,13 @@ class DENON extends EventEmitter {
         const baseUrl = (`http://${host}:${port}`);
         this.axiosInstance = axios.create({
             method: 'GET',
+            timeout: 10000,
             baseURL: baseUrl
         });
 
         this.axiosInstancePost = axios.create({
             method: 'POST',
+            timeout: 10000,
             baseURL: baseUrl
         });
 

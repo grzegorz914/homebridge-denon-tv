@@ -67,8 +67,11 @@ This plugin is based upon the official documentation for communicating with and 
 | `disableLogInfo` | If enabled, disable log info, all values and state will not be displayed in Homebridge log console. |
 | `disableLogDeviceInfo` | If enabled, add ability to disable log device info by every connections device to the network. |
 | `masterPower` | If enabled, then the power switch for that zone (typically you would only use this for the Main Zone) will turn the entire receiver `ON` or `OFF/STANDBY` rather than just the zone itself |
+| `sensorPower`| If enabled, then Power will be exposed as a Motion Sensor to use with automations. |
 | `masterVolume`| If enabled, then the volume for that zone (typically you would only use this for the Main Zone) will set the entire receiver `UP` or `DOWN` rather than just the zone itself |
+| `sensorVolume`| If enabled, then Volume will be exposed as a Motion Sensor to use with automations. |
 | `masterMute`| If enabled, then the mute switch for that zone (typically you would only use this for the Main Zone) will muted the entire receiver `ON` or `OFF` rather than just the zone itself |
+| `sensorMute`| If enabled, then Mute will be exposed as a Motion Sensor to use with automations. |
 | `volumeControl` | Here choice what a additional volume control mode You want to use (None, Lightbulb, Fan). |
 | `infoButtonCommand` | Here select the function of `I` button in RC app. |
 | `inputs.name` | Here set *Input Name* which You want expose to the *Homebridge/HomeKit*. |
@@ -111,8 +114,11 @@ This plugin is based upon the official documentation for communicating with and 
             "zoneControl" : 0,
             "volumeControl": 0,
             "masterPower": false,
+            "sensorPower": false,
             "masterVolume": false,
+            "sensorVolume": false,
             "masterMute": false,
+            "sensorMute": false,
             "infoButtonCommand": "MNINF",
             "disableLogInfo": false,
             "disableLogDeviceInfo": false,

@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Note - after update to 3.15.x need remove the accessory frome Home app and add it again.
 
+## [3.18.0] - (26.10.2022)
+## Changes
+- added Power Motion Sensor for use with automations
+- added Volume Motion Sensor for use with automations (every volume change report motion)
+- added Mute Motion Sensor for use with automations
+- config.schema updated
+- other small fixes
+
 ## [3.17.25] - (07.10.2022)
 ## Changes
 - bump dependencies

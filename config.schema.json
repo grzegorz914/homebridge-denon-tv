@@ -103,6 +103,13 @@
               "description": "The power switch for that zone will turn the entire receiver *ON* or *OFF/STANDBY* rather than just the zone itself.",
               "required": false
             },
+            "sensorPower": {
+              "title": "Power Sensor",
+              "type": "boolean",
+              "default": false,
+              "description": "This expose Power as a Motion Sensor to use with automations.",
+              "required": false
+            },
             "masterVolume": {
               "title": "Master Volume Control",
               "type": "boolean",
@@ -110,11 +117,25 @@
               "description": "The volume for that zone will set the entire receiver volume *UP* or *DOWN* rather than just the zone itself.",
               "required": false
             },
+            "sensorVolume": {
+              "title": "Volume Sensor",
+              "type": "boolean",
+              "default": false,
+              "description": "This expose Volume as a Motion Sensor to use with automations.",
+              "required": false
+            },
             "masterMute": {
               "title": "Master Mute Control",
               "type": "boolean",
               "default": false,
               "description": "The mute switch for that zone will muted the entire receiver *ON* or *OFF* rather than just the zone itself.",
+              "required": false
+            },
+            "sensorMute": {
+              "title": "Mute Sensor",
+              "type": "boolean",
+              "default": false,
+              "description": "This expose Mute as a Motion Sensor to use with automations.",
               "required": false
             },
             "infoButtonCommand": {
@@ -3559,8 +3580,11 @@
             "devices[].disableLogInfo",
             "devices[].disableLogDeviceInfo",
             "devices[].masterPower",
+            "devices[].sensorPower",
             "devices[].masterVolume",
+            "devices[].sensorVolume",
             "devices[].masterMute",
+            "devices[].sensorMute",
             "devices[].infoButtonCommand",
             "devices[].volumeControl"
           ]
