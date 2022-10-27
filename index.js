@@ -699,6 +699,7 @@ class denonTvDevice {
 			}
 		};
 
+		//prepare sensor service
 		if (this.sensorPower) {
 			this.log.debug('prepareSensorPowerService')
 			this.sensorPowerService = new Service.MotionSensor(`${this.sZoneName} Power Sensor`, `Power Sensor`);
