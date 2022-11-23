@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Note - after update to 3.15.x need remove the accessory frome Home app and add it again.
 
+## [3.18.2] - (23.11.2022)
+## Changes
+- bump dependencies
+
 ## [3.18.1] - (26.10.2022)
 ## Changes
 - fix Mute Sensor state after power off
