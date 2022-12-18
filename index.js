@@ -135,32 +135,6 @@ class denonTvDevice {
 		this.inputsNamesFile = `${this.prefDir}/inputsNames_${this.sZoneName}${this.host.split('.').join('')}`;
 		this.inputsTargetVisibilityFile = `${this.prefDir}/inputsTargetVisibility_${this.sZoneName}${this.host.split('.').join('')}`;
 
-		//check if the directory exists, if not then create it
-		if (fs.existsSync(this.prefDir) == false) {
-			fs.mkdirSync(this.prefDir);
-		}
-		if (this.zoneControl == 0) {
-			if (fs.existsSync(this.devInfoFile) == false) {
-				const obj = {
-					'manufacturer': this.manufacturer,
-					'modelName': this.modelName,
-					'serialNumber': this.serialNumber,
-					'firmwareRevision': this.firmwareRevision
-				};
-				const devInfo = JSON.stringify(obj, null, 2);
-				fs.writeFileSync(this.devInfoFile, devInfo);
-			}
-		}
-		if (fs.existsSync(this.inputsFile) == false) {
-			fs.writeFileSync(this.inputsFile, '');
-		}
-		if (fs.existsSync(this.inputsNamesFile) == false) {
-			fs.writeFileSync(this.inputsNamesFile, '');
-		}
-		if (fs.existsSync(this.inputsTargetVisibilityFile) == false) {
-			fs.writeFileSync(this.inputsTargetVisibilityFile, '');
-		}
-
 		//mqtt client
 		this.mqtt = new Mqtt({
 			enabled: this.mqttEnabled,
@@ -195,25 +169,57 @@ class denonTvDevice {
 			host: this.host,
 			port: this.port,
 			debugLog: this.enableDebugMode,
-			devInfoFile: this.devInfoFile,
 			zoneControl: this.zoneControl,
 			mqttEnabled: this.mqttEnabled
 		});
 
-		this.denon.on('connected', async (message) => {
-			this.log(`Device: ${this.host} ${this.name}, ${message}`);
+		this.denon.on('connected', async (devInfo) => {
+			this.log(`Device: ${this.host} ${this.name}, Connected.`);
 
-			//save inputs to the file
 			try {
-				const inputs = (this.zoneControl <= 2) ? this.inputs : this.soundModes;
-				const obj = JSON.stringify(inputs, null, 2);
-				const writeInputs = await fsPromises.writeFile(this.inputsFile, obj);
-				const debug = this.enableDebugMode ? this.log(`Device: ${this.host} ${this.name}, save ${this.zoneControl <= 2 ? 'Inputs' : 'Sound Modes'} succesful: ${obj}`) : false;
+				// Create pref directory if it doesn't exist
+				if (!fs.existsSync(this.prefDir)) {
+					await fsPromises.mkdir(this.prefDir);
+				}
+
+				// Create device info file if it doesn't exist
+				if (this.zoneControl === 0) {
+					if (!fs.existsSync(this.devInfoFile)) {
+						await fsPromises.writeFile(this.devInfoFile, '');
+					}
+					await fsPromises.writeFile(this.devInfoFile, devInfo);
+				}
+
+				// Create inputs file if it doesn't exist
+				if (!fs.existsSync(this.inputsFile)) {
+					await fsPromises.writeFile(this.inputsFile, '');
+				}
+
+				// Create inputs names file if it doesn't exist
+				if (!fs.existsSync(this.inputsNamesFile)) {
+					await fsPromises.writeFile(this.inputsNamesFile, '');
+				}
+
+				// Create inputs target visibility file if it doesn't exist
+				if (!fs.existsSync(this.inputsTargetVisibilityFile)) {
+					await fsPromises.writeFile(this.inputsTargetVisibilityFile, '');
+				}
+
+				//save inputs to the file
+				try {
+					const source = (this.zoneControl <= 2) ? this.inputs : this.soundModes;
+					const inputs = JSON.stringify(source, null, 2);
+					const writeInputs = await fsPromises.writeFile(this.inputsFile, inputs);
+					const debug = this.enableDebugMode ? this.log(`Device: ${this.host} ${this.name}, save ${this.zoneControl <= 2 ? 'Inputs' : 'Sound Modes'} succesful: ${inputs}`) : false;
+				} catch (error) {
+					this.log.error(`Device: ${this.host} ${this.name}, save ${this.zoneControl <= 2 ? 'Inputs' : 'Sound Modes'} error: ${error}`);
+				};
 			} catch (error) {
-				this.log.error(`Device: ${this.host} ${this.name}, save ${this.zoneControl <= 2 ? 'Inputs' : 'Sound Modes'} error: ${error}`);
+				this.log.error(`Device: ${this.host} ${this.name}, ${this.zoneControl} create files or save devInfo error: ${error}`);
 			};
 		})
 			.on('deviceInfo', (manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion) => {
+
 				if (!this.disableLogDeviceInfo) {
 					this.log('-------- %s --------', this.name);
 					this.log('Manufacturer: %s', manufacturer);

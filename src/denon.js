@@ -1,6 +1,4 @@
 'use strict';
-const fs = require('fs');
-const fsPromises = fs.promises;
 const axios = require('axios');
 const parseString = require('xml2js').parseStringPromise;
 const EventEmitter = require('events');
@@ -24,7 +22,6 @@ class DENON extends EventEmitter {
         const port = config.port;
         const debugLog = config.debugLog;
         const zoneControl = config.zoneControl;
-        const devInfoFile = config.devInfoFile;
         const mqttEnabled = config.mqttEnabled;
 
         const baseUrl = (`http://${host}:${port}`);
@@ -60,8 +57,8 @@ class DENON extends EventEmitter {
                     const deviceInfo = await this.axiosInstance(CONSTANS.ApiUrls.DeviceInfo);
                     const parseDeviceInfo = await parseString(deviceInfo.data);
                     const devInfo = parseDeviceInfo.Device_Info;
+                    const devInfo1 = JSON.stringify(devInfo, null, 2);
                     const debug = debugLog ? this.emit('debug', `Info: ${JSON.stringify(devInfo, null, 2)}`) : false;
-                    const writeDevInfo = (zoneControl == 0) ? await fsPromises.writeFile(devInfoFile, JSON.stringify(devInfo, null, 2)) : false;
 
                     let manufacturer = 'Denon/Marantz';
                     if (typeof devInfo.BrandCode[0] !== 'undefined') {
@@ -75,7 +72,7 @@ class DENON extends EventEmitter {
                     this.devInfo = devInfo;
 
                     if (serialNumber != null && serialNumber != undefined) {
-                        this.emit('connected', 'Connected.');
+                        this.emit('connected', devInfo1);
                         this.emit('deviceInfo', manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion);
                         this.emit('firstRun');
                     } else {
