@@ -280,7 +280,7 @@ class denonTvDevice {
 				}
 
 				if (this.sensorMuteService) {
-					const state = power ? this.mute : false;
+					const state = power ? mute : false;
 					this.sensorMuteService
 						.updateCharacteristic(Characteristic.MotionDetected, state)
 				}
