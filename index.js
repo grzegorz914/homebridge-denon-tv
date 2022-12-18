@@ -870,10 +870,12 @@ class denonTvDevice {
 							try {
 								const setSwitchInput = (state && this.power) ? await this.denon.send(CONSTANS.ApiUrls.iPhoneDirect + inputSwitchRef) : false;
 								const logInfo = this.disableLogInfo ? false : this.log('Device: %s %s, set new Input successful, name: %s, reference: %s', this.host, accessoryName, inputSwitchName, inputSwitchReference);
-								switchService.updateCharacteristic(Characteristic.On, false);
+
+								setTimeout(() => {
+									const setChar = (state && this.power) ? switchService.updateCharacteristic(Characteristic.On, false) : false;
+								}, 300)
 							} catch (error) {
 								this.log.error('Device: %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s.', this.host, accessoryName, error);
-								switchService.updateCharacteristic(Characteristic.On, false);
 							};
 						};
 					});
@@ -916,10 +918,12 @@ class denonTvDevice {
 							try {
 								const setFunction = (state && this.power) ? await this.denon.send(CONSTANS.ApiUrls.iPhoneDirect + buttonReference) : false;
 								const logInfo = this.disableLogInfo ? false : this.log('Device: %s %s, set new Input successful, name: %s, reference: %s', this.host, accessoryName, buttonName, buttonReference);
-								buttonService.updateCharacteristic(Characteristic.On, false);
+
+								setTimeout(() => {
+									const setChar = (state && this.power) ? buttonService.updateCharacteristic(Characteristic.On, false) : false;
+								}, 300)
 							} catch (error) {
 								this.log.error('Device: %s %s, can not set new Input. Might be due to a wrong settings in config, error: %s.', this.host, accessoryName, error);
-								buttonService.updateCharacteristic(Characteristic.On, false);
 							};
 						});
 
