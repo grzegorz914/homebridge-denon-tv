@@ -85,6 +85,7 @@ class denonTvDevice {
 		this.buttonsZone3 = config.buttonsZone3 || [];
 		this.getSurroundsFromDevice = config.getSurroundsFromDevice || false;
 		this.soundModes = config.surrounds || [];
+		this.refreshInterval = config.refreshInterval || 5;
 		this.mqttEnabled = config.enableMqtt || false;
 		this.mqttHost = config.mqttHost;
 		this.mqttPort = config.mqttPort || 1883;
@@ -170,6 +171,7 @@ class denonTvDevice {
 			port: this.port,
 			debugLog: this.enableDebugMode,
 			zoneControl: this.zoneControl,
+			refreshInterval: this.refreshInterval,
 			mqttEnabled: this.mqttEnabled
 		});
 

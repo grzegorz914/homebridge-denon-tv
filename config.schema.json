@@ -3355,6 +3355,15 @@
                 }
               }
             },
+            "refreshInterval": {
+							"title": "Refresh interval (sec)",
+							"type": "integer",
+							"default": 5,
+							"minimum": 0,
+							"maximum": 30,
+              "description": "Here set the background data refresh interval.",
+							"required": true
+						},
             "enableMqtt": {
               "title": "Enable",
               "type": "boolean",
@@ -3586,7 +3595,8 @@
             "devices[].masterMute",
             "devices[].sensorMute",
             "devices[].infoButtonCommand",
-            "devices[].volumeControl"
+            "devices[].volumeControl",
+            "devices[].refreshInterval"
           ]
         },
         {

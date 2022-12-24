@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Note - after update to 3.15.x need remove the accessory frome Home app and add it again.
 
+## [3.18.7] - (23.12.2022)
+## Changes
+- added refresh interval, this help fix server freezing on AVR side
+
 ## [3.18.4] - (18.12.2022)
 ## Changes
 - fix buttons and switch services

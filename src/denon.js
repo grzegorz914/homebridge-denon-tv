@@ -22,6 +22,7 @@ class DENON extends EventEmitter {
         const port = config.port;
         const debugLog = config.debugLog;
         const zoneControl = config.zoneControl;
+        const refreshInterval = config.refreshInterval;
         const mqttEnabled = config.mqttEnabled;
 
         const baseUrl = (`http://${host}:${port}`);
@@ -120,7 +121,7 @@ class DENON extends EventEmitter {
 
                     setTimeout(() => {
                         this.emit('checkState');
-                    }, 3000)
+                    }, refreshInterval * 1000)
                 } catch (error) {
                     this.emit('error', `State error: ${error}, reconnect in 15s.`);
                     const firstRun = this.checkStateOnFirstRun ? this.checkDeviceInfo() : this.emit('disconnect');
