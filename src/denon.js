@@ -72,14 +72,15 @@ class DENON extends EventEmitter {
                     const apiVersion = devInfo.CommApiVers[0];
                     this.devInfo = devInfo;
 
-                    if (serialNumber != null && serialNumber != undefined) {
-                        this.emit('connected', devInfo1);
-                        this.emit('deviceInfo', manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion);
-                        this.emit('firstRun');
-                    } else {
+                    if (serialNumber === null || serialNumber === undefined) {
                         const debug1 = debugLog ? this.emit('debug', `Serial number unknown: ${serialNumber}, reconnect in 15s.`) : false;
                         this.checkDeviceInfo();
+                        return;
                     }
+
+                    this.emit('connected', devInfo1);
+                    this.emit('deviceInfo', manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion);
+                    this.emit('firstRun');
                 } catch (error) {
                     this.emit('error', `Info error: ${error}, reconnect in 15s.`)
                     this.checkDeviceInfo();
@@ -93,17 +94,17 @@ class DENON extends EventEmitter {
                     const devState = parseDeviceState.item;
                     const debug = debugLog ? this.emit('debug', `State: ${JSON.stringify(devState, null, 2)}`) : false;
 
-                    const checkSoundMode = (zoneControl == 0 || zoneControl == 3)
+                    const checkSoundMode = (zoneControl === 0 || zoneControl === 3)
                     const deviceSoundMode = checkSoundMode ? await this.axiosInstancePost(CONSTANS.ApiUrls.AppCommand, CONFIG_XML) : false;
                     const parseDeviceSoundMode = checkSoundMode ? await parseString(deviceSoundMode.data) : false;
                     const debug1 = this.debugLog ? this.emit('debug', `Sound mode: ${JSON.stringify(parseDeviceSoundMode, null, 2)}`) : false;
                     const soundMode = checkSoundMode ? CONSTANS.SoundMode[(parseDeviceSoundMode.rx.cmd[0].surround[0]).replace(/[^a-zA-Z0-9]/g, '').toUpperCase()] : this.soundMode;
 
-                    const power = (devState.Power[0].value[0] == 'ON');
-                    const reference = (zoneControl == 3) ? soundMode : (devState.InputFuncSelect[0].value[0] == 'Internet Radio') ? 'IRADIO' : (devState.InputFuncSelect[0].value[0] == 'AirPlay') ? 'NET' : devState.InputFuncSelect[0].value[0];
+                    const power = (devState.Power[0].value[0] === 'ON');
+                    const reference = (zoneControl === 3) ? soundMode : (devState.InputFuncSelect[0].value[0] === 'Internet Radio') ? 'IRADIO' : (devState.InputFuncSelect[0].value[0] === 'AirPlay') ? 'NET' : devState.InputFuncSelect[0].value[0];
                     const volume = (parseFloat(devState.MasterVolume[0].value[0]) >= -79.5) ? parseInt(devState.MasterVolume[0].value[0]) + 80 : this.volume;
                     const mute = power ? (devState.Mute[0].value[0] == 'on') : true;
-                    if (this.checkStateOnFirstRun || power != this.power || reference != this.reference || volume != this.volume || mute != this.mute || soundMode != this.soundMod) {
+                    if (this.checkStateOnFirstRun || power !== this.power || reference !== this.reference || volume !== this.volume || mute !== this.mute || soundMode !== this.soundMode) {
                         this.power = power;
                         this.reference = reference;
                         this.volume = volume;
@@ -146,7 +147,6 @@ class DENON extends EventEmitter {
         return new Promise(async (resolve, reject) => {
             try {
                 const sendCommand = await this.axiosInstance(apiUrl);
-                this.emit('checkState');
                 resolve(true);
             } catch (error) {
                 this.emit('error', `Send command error: ${error}`);

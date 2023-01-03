@@ -29,18 +29,17 @@ class denonTvPlatform {
 		}
 		this.log = log;
 		this.api = api;
-		this.devices = config.devices;
 		this.accessories = [];
+		const devices = config.devices;
 
 		this.api.on('didFinishLaunching', () => {
 			this.log.debug('didFinishLaunching');
-			for (let i = 0; i < this.devices.length; i++) {
-				const device = this.devices[i];
+			for (const device of devices) {
 				if (!device.name || !device.host || !device.port) {
 					this.log.warn('Device name, host or port missing!');
-				} else {
-					new denonTvDevice(this.log, device, this.api);
+					return;
 				}
+				new denonTvDevice(this.log, device, this.api);
 			}
 		});
 	}
@@ -113,7 +112,6 @@ class denonTvDevice {
 		this.inputsName = new Array();
 		this.inputsType = new Array();
 		this.inputsMode = new Array();
-
 		this.switches = new Array();
 		this.switchesDisplayType = new Array();
 
@@ -124,10 +122,8 @@ class denonTvDevice {
 		this.soundMode = '';
 		this.mediaState = false;
 		this.inputIdentifier = 0;
-
 		this.pictureMode = 0;
 		this.brightness = 0;
-
 		this.sensorVolumeState = false;
 
 		this.prefDir = path.join(api.user.storagePath(), 'denonTv');
@@ -226,20 +222,20 @@ class denonTvDevice {
 					this.log('-------- %s --------', this.name);
 					this.log('Manufacturer: %s', manufacturer);
 					this.log('Model: %s', modelName);
-					if (this.zoneControl == 0) {
+					if (this.zoneControl === 0) {
 						this.log('Zones: %s', zones);
 						this.log('Control: Main Zone');
 						this.log('Firmware: %s', firmwareRevision);
 						this.log('Api version: %s', apiVersion);
 						this.log('Serialnr: %s', serialNumber);
 					}
-					if (this.zoneControl == 1) {
+					if (this.zoneControl === 1) {
 						this.log('Control: Zone 2');
 					}
-					if (this.zoneControl == 2) {
+					if (this.zoneControl === 2) {
 						this.log('Control: Zone 3');
 					}
-					if (this.zoneControl == 3) {
+					if (this.zoneControl === 3) {
 						this.log('Control: Sound Modes');
 					}
 					this.log('----------------------------------');
@@ -281,7 +277,7 @@ class denonTvDevice {
 				}
 
 				if (this.sensorVolumeService) {
-					const state = (this.volume != volume) ? true : false;
+					const state = (this.volume !== volume) ? true : false;
 					this.sensorVolumeService
 						.updateCharacteristic(Characteristic.MotionDetected, state)
 					this.sensorVolumeState = state;
@@ -297,7 +293,7 @@ class denonTvDevice {
 					const switchServicesCount = this.switchServices.length;
 					for (let i = 0; i < switchServicesCount; i++) {
 						const index = this.switches[i];
-						const state = power ? (this.inputsReference[index] == reference) : false;
+						const state = power ? (this.inputsReference[index] === reference) : false;
 						const displayType = this.switchesDisplayType[index];
 						const characteristicType = [Characteristic.On, Characteristic.On, Characteristic.MotionDetected, Characteristic.OccupancyDetected][displayType];
 						this.switchServices[i]
@@ -375,7 +371,7 @@ class denonTvDevice {
 				const masterControl = this.masterPower ? 4 : zoneControl;
 				const newState = [(state ? 'ZMON' : 'ZMOFF'), (state ? 'Z2ON' : 'Z2OFF'), (state ? 'Z3ON' : 'Z3OFF'), (state ? 'ZMON' : 'ZMOFF'), (state ? 'PWON' : 'PWSTANDBY')][masterControl];
 				try {
-					const setPower = (state != this.power) ? await this.denon.send(CONSTANS.ApiUrls.iPhoneDirect + newState) : false;
+					const setPower = (state !== this.power) ? await this.denon.send(CONSTANS.ApiUrls.iPhoneDirect + newState) : false;
 					const logInfo = this.disableLogInfo ? false : this.log('Device: %s %s, set Power state successful, state: %s', this.host, accessoryName, newState);
 					this.power = state;
 				} catch (error) {
@@ -398,7 +394,7 @@ class denonTvDevice {
 				const zone = [inputMode, 'Z2', 'Z3', inputMode][zoneControl];
 				const inputRef = zone + inputReference;
 				try {
-					const setInput = (inputReference != undefined) ? await this.denon.send(CONSTANS.ApiUrls.iPhoneDirect + inputRef) : false;
+					const setInput = await this.denon.send(CONSTANS.ApiUrls.iPhoneDirect + inputRef);
 					const logInfo = this.disableLogInfo ? false : this.log('Device: %s %s, set %s successful, name: %s, reference: %s', this.host, accessoryName, zoneControl <= 2 ? 'Input' : 'Sound Mode', inputName, inputRef);
 					this.inputIdentifier = inputIdentifier;
 				} catch (error) {
@@ -408,7 +404,7 @@ class denonTvDevice {
 
 		this.televisionService.getCharacteristic(Characteristic.RemoteKey)
 			.onSet(async (command) => {
-				if (this.inputReference == 'SPOTIFY' || this.inputReference == 'BT' || this.inputReference == 'USB/IPOD' || this.inputReference == 'NET' || this.inputReference == 'MPLAY') {
+				if (this.inputReference === 'SPOTIFY' || this.inputReference === 'BT' || this.inputReference === 'USB/IPOD' || this.inputReference === 'NET' || this.inputReference === 'MPLAY') {
 					switch (command) {
 						case Characteristic.RemoteKey.REWIND:
 							command = 'NS9E';
@@ -504,7 +500,7 @@ class denonTvDevice {
 
 
 		//optional television characteristics
-		if (zoneControl == 0) {
+		if (zoneControl === 0) {
 			this.televisionService.getCharacteristic(Characteristic.Brightness)
 				.onGet(async () => {
 					const brightness = this.brightness;
@@ -617,7 +613,7 @@ class denonTvDevice {
 			.onSet(async (volume) => {
 				const masterControl = this.masterVolume ? 4 : zoneControl;
 				const zone = ['MV', 'Z2', 'Z3', 'MV', 'MV'][masterControl];
-				if (volume == 0 || volume == 100) {
+				if (volume === 0 || volume === 100) {
 					if (this.volume < 10) {
 						volume = `0${this.volume}`;
 					} else {
@@ -648,7 +644,7 @@ class denonTvDevice {
 				const zone = ['', 'Z2', 'Z3', '', ''][masterControl];
 				const newState = state ? 'MUON' : 'MUOFF';
 				try {
-					const toggleMute = (this.power && state != this.mute) ? await this.denon.send(CONSTANS.ApiUrls.iPhoneDirect + zone + newState) : false;
+					const toggleMute = (this.power && state !== this.mute) ? await this.denon.send(CONSTANS.ApiUrls.iPhoneDirect + zone + newState) : false;
 					const logInfo = this.disableLogInfo ? false : this.log('Device: %s %s, set new Mute state successful, state: %s', this.host, accessoryName, state ? 'ON' : 'OFF');
 					this.mute = state;
 				} catch (error) {
@@ -662,7 +658,7 @@ class denonTvDevice {
 		//prepare volume service
 		if (this.volumeControl >= 1) {
 			this.log.debug('prepareVolumeService');
-			if (this.volumeControl == 1) {
+			if (this.volumeControl === 1) {
 				this.volumeService = new Service.Lightbulb(`${accessoryName} Volume`, 'Volume');
 				this.volumeService.getCharacteristic(Characteristic.Brightness)
 					.onGet(async () => {
@@ -684,7 +680,7 @@ class denonTvDevice {
 				accessory.addService(this.volumeService);
 			}
 
-			if (this.volumeControl == 2) {
+			if (this.volumeControl === 2) {
 				this.volumeServiceFan = new Service.Fan(`${accessoryName} Volume`, 'Volume');
 				this.volumeServiceFan.getCharacteristic(Characteristic.RotationSpeed)
 					.onGet(async () => {
@@ -762,28 +758,28 @@ class denonTvDevice {
 			const input = inputs[i];
 
 			//get input reference
-			const inputReference = (input.reference != undefined) ? input.reference : undefined;
+			const inputReference = (input.reference !== undefined) ? input.reference : undefined;
 
 			//get input name		
-			const inputName = (savedInputsNames[inputReference] != undefined) ? savedInputsNames[inputReference] : input.name;
+			const inputName = (savedInputsNames[inputReference] !== undefined) ? savedInputsNames[inputReference] : input.name;
 
 			//get input type
-			const inputType = (zoneControl <= 2) ? (input.type != undefined) ? CONSTANS.InputSourceType.indexOf(input.type) : 3 : 0;
+			const inputType = (zoneControl <= 2) ? (input.type !== undefined) ? CONSTANS.InputSourceType.indexOf(input.type) : 3 : 0;
 
 			//get input mode
-			const inputMode = (zoneControl <= 2) ? (input.mode != undefined) ? input.mode : 'SI' : 'MS';
+			const inputMode = (zoneControl <= 2) ? (input.mode !== undefined) ? input.mode : 'SI' : 'MS';
 
 			//get input switch
-			const inputSwitch = (input.switch != undefined) ? input.switch : false;
+			const inputSwitch = (input.switch !== undefined) ? input.switch : false;
 
 			//get input switch
-			const inputSwitchDisplayType = (input.displayType != undefined) ? input.displayType : 0;
+			const inputSwitchDisplayType = (input.displayType !== undefined) ? input.displayType : 0;
 
 			//get input configured
 			const isConfigured = 1;
 
 			//get input visibility state
-			const currentVisibility = (savedInputsTargetVisibility[inputReference] != undefined) ? savedInputsTargetVisibility[inputReference] : 0;
+			const currentVisibility = (savedInputsTargetVisibility[inputReference] !== undefined) ? savedInputsTargetVisibility[inputReference] : 0;
 			const targetVisibility = currentVisibility;
 
 			const service = zoneControl <= 2 ? 'Input' : 'Sound Mode';
@@ -799,7 +795,7 @@ class denonTvDevice {
 			inputService
 				.getCharacteristic(Characteristic.ConfiguredName)
 				.onSet(async (name) => {
-					const nameIdentifier = (inputReference != undefined) ? inputReference : false;
+					const nameIdentifier = (inputReference !== undefined) ? inputReference : false;
 					let newName = savedInputsNames;
 					newName[nameIdentifier] = name;
 					const newCustomName = JSON.stringify(newName, null, 2);
@@ -814,7 +810,7 @@ class denonTvDevice {
 			inputService
 				.getCharacteristic(Characteristic.TargetVisibilityState)
 				.onSet(async (state) => {
-					const targetVisibilityIdentifier = (inputReference != undefined) ? inputReference : false;
+					const targetVisibilityIdentifier = (inputReference !== undefined) ? inputReference : false;
 					let newState = savedInputsTargetVisibility;
 					newState[targetVisibilityIdentifier] = state;
 					const newTargetVisibility = JSON.stringify(newState, null, 2);
@@ -868,7 +864,7 @@ class denonTvDevice {
 				const switchService = new serviceType(`${this.sZoneName} ${inputSwitchName}`, `Sensor ${i}`);
 				switchService.getCharacteristic(characteristicType)
 					.onGet(async () => {
-						const state = this.power ? (inputSwitchReference == this.reference) : false;
+						const state = this.power ? (inputSwitchReference === this.reference) : false;
 						return state;
 					})
 					.onSet(async (state) => {
@@ -898,21 +894,18 @@ class denonTvDevice {
 			const maxButtonsCount = (availableButtonsCount > 0) ? (availableButtonsCount > buttonsCount) ? buttonsCount : availableButtonsCount : 0;
 			if (maxButtonsCount > 0) {
 				this.log.debug('prepareButtonsService');
-				for (let i = 0; i < maxButtonsCount; i++) {
-					//button
-					const button = buttons[i];
-
+				for (const button of buttons) {
 					//get button reference
 					const buttonReference = button.reference;
 
 					//get button name
-					const buttonName = (button.name != undefined) ? button.name : button.reference;
+					const buttonName = (button.name !== undefined) ? button.name : button.reference;
 
 					//get button display type
-					const buttonDisplayType = (button.displayType != undefined) ? button.displayType : 0;
+					const buttonDisplayType = (button.displayType !== undefined) ? button.displayType : 0;
 
 					const serviceType = [Service.Outlet, Service.Switch][buttonDisplayType];
-					const buttonService = new serviceType(`${this.sZoneName} ${buttonName}`, `Button ${i}`);
+					const buttonService = new serviceType(`${this.sZoneName} ${buttonName}`, `Button ${buttonName}`);
 					buttonService.getCharacteristic(Characteristic.On)
 						.onGet(async () => {
 							const state = false;
