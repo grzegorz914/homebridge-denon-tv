@@ -758,28 +758,28 @@ class denonTvDevice {
 			const input = inputs[i];
 
 			//get input reference
-			const inputReference = (input.reference !== undefined) ? input.reference : undefined;
+			const inputReference = (input.reference) ? input.reference : undefined;
 
 			//get input name		
-			const inputName = (savedInputsNames[inputReference] !== undefined) ? savedInputsNames[inputReference] : input.name;
+			const inputName = (savedInputsNames[inputReference]) ? savedInputsNames[inputReference] : input.name;
 
 			//get input type
-			const inputType = (zoneControl <= 2) ? (input.type !== undefined) ? CONSTANS.InputSourceType.indexOf(input.type) : 3 : 0;
+			const inputType = (zoneControl <= 2) ? (input.type) ? CONSTANS.InputSourceType.indexOf(input.type) : 3 : 0;
 
 			//get input mode
-			const inputMode = (zoneControl <= 2) ? (input.mode !== undefined) ? input.mode : 'SI' : 'MS';
+			const inputMode = (zoneControl <= 2) ? (input.mode) ? input.mode : 'SI' : 'MS';
 
 			//get input switch
-			const inputSwitch = (input.switch !== undefined) ? input.switch : false;
+			const inputSwitch = (input.switch) ? input.switch : false;
 
 			//get input switch
-			const inputSwitchDisplayType = (input.displayType !== undefined) ? input.displayType : 0;
+			const inputSwitchDisplayType = (input.displayType) ? input.displayType : 0;
 
 			//get input configured
 			const isConfigured = 1;
 
 			//get input visibility state
-			const currentVisibility = (savedInputsTargetVisibility[inputReference] !== undefined) ? savedInputsTargetVisibility[inputReference] : 0;
+			const currentVisibility = (savedInputsTargetVisibility[inputReference]) ? savedInputsTargetVisibility[inputReference] : 0;
 			const targetVisibility = currentVisibility;
 
 			const service = zoneControl <= 2 ? 'Input' : 'Sound Mode';
@@ -795,10 +795,9 @@ class denonTvDevice {
 			inputService
 				.getCharacteristic(Characteristic.ConfiguredName)
 				.onSet(async (name) => {
-					const nameIdentifier = (inputReference !== undefined) ? inputReference : false;
-					let newName = savedInputsNames;
-					newName[nameIdentifier] = name;
-					const newCustomName = JSON.stringify(newName, null, 2);
+					const nameIdentifier = (inputReference) ? inputReference : false;
+					savedInputsNames[nameIdentifier] = name;
+					const newCustomName = JSON.stringify(savedInputsNames, null, 2);
 					try {
 						const writeNewCustomName = nameIdentifier ? await fsPromises.writeFile(this.inputsNamesFile, newCustomName) : false;
 						const logInfo = this.disableLogInfo ? false : this.log('Device: %s %s, new %s name saved successful, name: %s, reference: %s', this.host, accessoryName, zoneControl <= 2 ? 'Input' : 'Sound Mode', name, inputReference);
@@ -810,10 +809,9 @@ class denonTvDevice {
 			inputService
 				.getCharacteristic(Characteristic.TargetVisibilityState)
 				.onSet(async (state) => {
-					const targetVisibilityIdentifier = (inputReference !== undefined) ? inputReference : false;
-					let newState = savedInputsTargetVisibility;
-					newState[targetVisibilityIdentifier] = state;
-					const newTargetVisibility = JSON.stringify(newState, null, 2);
+					const targetVisibilityIdentifier = (inputReference) ? inputReference : false;
+					savedTargetVisibility[targetVisibilityIdentifier] = state;
+					const newTargetVisibility = JSON.stringify(savedTargetVisibility, null, 2);
 					try {
 						const writeNewTargetVisibility = targetVisibilityIdentifier ? await fsPromises.writeFile(this.inputsTargetVisibilityFile, newTargetVisibility) : false;
 						const logInfo = this.disableLogInfo ? false : this.log('Device: %s %s, new %s Target Visibility saved successful, name: %s, state: %s', this.host, accessoryName, zoneControl <= 2 ? 'Input' : 'Sound Mode', inputName, state ? 'HIDEN' : 'SHOWN');
@@ -899,10 +897,10 @@ class denonTvDevice {
 					const buttonReference = button.reference;
 
 					//get button name
-					const buttonName = (button.name !== undefined) ? button.name : button.reference;
+					const buttonName = (button.name) ? button.name : button.reference;
 
 					//get button display type
-					const buttonDisplayType = (button.displayType !== undefined) ? button.displayType : 0;
+					const buttonDisplayType = (button.displayType) ? button.displayType : 0;
 
 					const serviceType = [Service.Outlet, Service.Switch][buttonDisplayType];
 					const buttonService = new serviceType(`${this.sZoneName} ${buttonName}`, `Button ${buttonName}`);

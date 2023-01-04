@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Note - after update to 3.15.x need remove the accessory frome Home app and add it again.
 
+## [3.18.10] - (04.01.2023)
+## Changes
+- fix save target visibility
+- fix save custom names 
+
 ## [3.18.8] - (31.12.2022)
 ## Changes
 - bump dependencies
