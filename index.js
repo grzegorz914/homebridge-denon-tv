@@ -74,6 +74,7 @@ class denonTvDevice {
 		this.sensorVolume = config.sensorVolume || false
 		this.masterMute = config.masterMute || false;
 		this.sensorMute = config.sensorMute || false
+		this.sensorInput = config.sensorInput || false
 		this.disableLogInfo = config.disableLogInfo || false;
 		this.disableLogDeviceInfo = config.disableLogDeviceInfo || false;
 		this.enableDebugMode = config.enableDebugMode || false;
@@ -125,6 +126,7 @@ class denonTvDevice {
 		this.pictureMode = 0;
 		this.brightness = 0;
 		this.sensorVolumeState = false;
+		this.sensorInputState = false;
 
 		this.prefDir = path.join(api.user.storagePath(), 'denonTv');
 		this.devInfoFile = `${this.prefDir}/devInfo_${this.host.split('.').join('')}`;
@@ -287,6 +289,13 @@ class denonTvDevice {
 					const state = power ? mute : false;
 					this.sensorMuteService
 						.updateCharacteristic(Characteristic.MotionDetected, state)
+				}
+
+				if (this.sensorInputService) {
+					const state = (this.inputIdentifier !== inputIdentifier) ? true : false;
+					this.sensorInputService
+						.updateCharacteristic(Characteristic.MotionDetected, state)
+					this.sensorInputState = state;
 				}
 
 				if (this.switchServices) {
@@ -737,6 +746,17 @@ class denonTvDevice {
 			accessory.addService(this.sensorMuteService);
 		};
 
+		if (this.sensorInput) {
+			this.log.debug('prepareSensorChannelService')
+			this.sensorInputService = new Service.MotionSensor(`${accessoryName} Input Sensor`, `Input Sensor`);
+			this.sensorInputService.getCharacteristic(Characteristic.MotionDetected)
+				.onGet(async () => {
+					const state = this.sensorInputState;
+					return state;
+				});
+			accessory.addService(this.sensorInputService);
+		};
+
 		//prepare input service
 		this.log.debug('prepareInputsService');
 
@@ -810,8 +830,8 @@ class denonTvDevice {
 				.getCharacteristic(Characteristic.TargetVisibilityState)
 				.onSet(async (state) => {
 					const targetVisibilityIdentifier = (inputReference) ? inputReference : false;
-					savedTargetVisibility[targetVisibilityIdentifier] = state;
-					const newTargetVisibility = JSON.stringify(savedTargetVisibility, null, 2);
+					savedInputsTargetVisibility[targetVisibilityIdentifier] = state;
+					const newTargetVisibility = JSON.stringify(savedInputsTargetVisibility, null, 2);
 					try {
 						const writeNewTargetVisibility = targetVisibilityIdentifier ? await fsPromises.writeFile(this.inputsTargetVisibilityFile, newTargetVisibility) : false;
 						const logInfo = this.disableLogInfo ? false : this.log('Device: %s %s, new %s Target Visibility saved successful, name: %s, state: %s', this.host, accessoryName, zoneControl <= 2 ? 'Input' : 'Sound Mode', inputName, state ? 'HIDEN' : 'SHOWN');

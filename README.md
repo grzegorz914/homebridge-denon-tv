@@ -69,6 +69,7 @@ This plugin is based upon the official documentation for communicating with and 
 | `sensorVolume`| If enabled, then the Volume will be exposed as a `Motion Sensor` to use with automations. |
 | `masterMute`| If enabled, then the Mute switch for that zone (typically you would only use this for the Main Zone) will muted the entire receiver `ON` or `OFF` rather than just the zone itself |
 | `sensorMute`| If enabled, then the Mute will be exposed as a `Motion Sensor` to use with automations. |
+| `sensorInput`| If enabled, then the Input will be exposed as a `Motion Sensor` to use with automations. |
 | `volumeControl` | Here choice what a additional volume control mode You want to use (None, Lightbulb, Fan). |
 | `infoButtonCommand` | Here select the function of `I` button in RC app. |
 | `inputs.name` | Here set *Input Name* which You want expose to the *Homebridge/HomeKit*. |
@@ -119,6 +120,7 @@ This plugin is based upon the official documentation for communicating with and 
             "sensorVolume": false,
             "masterMute": false,
             "sensorMute": false,
+            "sensorInput": false,
             "infoButtonCommand": "MNINF",
             "disableLogInfo": false,
             "disableLogDeviceInfo": false,
@@ -167,6 +169,7 @@ This plugin is based upon the official documentation for communicating with and 
             "sensorVolume": false,
             "masterMute": false,
             "sensorMute": false,
+            "sensorInput": false,
             "infoButtonCommand": "MNINF",
             "disableLogInfo": false,
             "disableLogDeviceInfo": false,
@@ -215,6 +218,7 @@ This plugin is based upon the official documentation for communicating with and 
             "sensorVolume": false,
             "masterMute": false,
             "sensorMute": false,
+            "sensorInput": false,
             "infoButtonCommand": "MNINF",
             "disableLogInfo": false,
             "disableLogDeviceInfo": false,
@@ -263,6 +267,7 @@ This plugin is based upon the official documentation for communicating with and 
             "sensorVolume": false,
             "masterMute": false,
             "sensorMute": false,
+            "sensorInput": false,
             "infoButtonCommand": "MNINF",
             "disableLogInfo": false,
             "disableLogDeviceInfo": false,
