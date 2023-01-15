@@ -107,7 +107,7 @@
               "title": "Power",
               "type": "boolean",
               "default": false,
-              "description": "This expose Power as a Motion Sensor to use with automations.",
+              "description": "This expose Power as a Contact Sensor to use with automations.",
               "required": false
             },
             "masterVolume": {
@@ -121,7 +121,7 @@
               "title": "Volume",
               "type": "boolean",
               "default": false,
-              "description": "This expose Volume as a Motion Sensor to use with automations.",
+              "description": "This expose Volume as a Contact Sensor to use with automations.",
               "required": false
             },
             "masterMute": {
@@ -135,14 +135,14 @@
               "title": "Mute",
               "type": "boolean",
               "default": false,
-              "description": "This expose Mute as a Motion Sensor to use with automations.",
+              "description": "This expose Mute as a Contact Sensor to use with automations.",
               "required": false
             },
             "sensorInput": {
               "title": "Input",
               "type": "boolean",
               "default": false,
-              "description": "This expose Input as a Motion Sensor to use with automations.",
+              "description": "This expose Input as a Contact Sensor to use with automations.",
               "required": false
             },
             "infoButtonCommand": {
@@ -599,7 +599,7 @@
                         ]
                       },
                       {
-                        "title": "Motion Sensor",
+                        "title": "Contact Sensor",
                         "enum": [
                           2
                         ]
@@ -806,7 +806,7 @@
                         ]
                       },
                       {
-                        "title": "Motion Sensor",
+                        "title": "Contact Sensor",
                         "enum": [
                           2
                         ]

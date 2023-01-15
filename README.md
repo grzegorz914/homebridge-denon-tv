@@ -64,12 +64,12 @@ This plugin is based upon the official documentation for communicating with and 
 | `port` | Here set the API communication port, if `8080` is not working try to use port `80` which some receivers use alternatively. |
 | `zoneControl` | Selects which zone will be controlled by this section (`0` - Main Zone, `1` - Zone 2, `2` - Zone 3, `3` - Surround Mode) or choice from the configurations GUI |
 | `masterPower` | If enabled, then the Power switch for that zone (typically you would only use this for the Main Zone) will turn the entire receiver `ON` or `OFF/STANDBY` rather than just the zone itself |
-| `sensorPower`| If enabled, then the Power will be exposed as a `Motion Sensor` to use with automations. |
+| `sensorPower`| If enabled, then the Power will be exposed as a `Contact Sensor` to use with automations. |
 | `masterVolume`| If enabled, then the Volume for that zone (typically you would only use this for the Main Zone) will set the entire receiver `UP` or `DOWN` rather than just the zone itself |
-| `sensorVolume`| If enabled, then the Volume will be exposed as a `Motion Sensor` to use with automations. |
+| `sensorVolume`| If enabled, then the Volume will be exposed as a `Contact Sensor` to use with automations. |
 | `masterMute`| If enabled, then the Mute switch for that zone (typically you would only use this for the Main Zone) will muted the entire receiver `ON` or `OFF` rather than just the zone itself |
-| `sensorMute`| If enabled, then the Mute will be exposed as a `Motion Sensor` to use with automations. |
-| `sensorInput`| If enabled, then the Input will be exposed as a `Motion Sensor` to use with automations. |
+| `sensorMute`| If enabled, then the Mute will be exposed as a `Contact Sensor` to use with automations. |
+| `sensorInput`| If enabled, then the Input will be exposed as a `Contact Sensor` to use with automations. |
 | `volumeControl` | Here choice what a additional volume control mode You want to use (None, Lightbulb, Fan). |
 | `infoButtonCommand` | Here select the function of `I` button in RC app. |
 | `inputs.name` | Here set *Input Name* which You want expose to the *Homebridge/HomeKit*. |

@@ -73,8 +73,8 @@ class denonTvDevice {
 		this.masterVolume = config.masterVolume || false;
 		this.sensorVolume = config.sensorVolume || false
 		this.masterMute = config.masterMute || false;
-		this.sensorMute = config.sensorMute || false
-		this.sensorInput = config.sensorInput || false
+		this.sensorMute = config.sensorMute || false;
+		this.sensorInput = config.sensorInput || false;
 		this.disableLogInfo = config.disableLogInfo || false;
 		this.disableLogDeviceInfo = config.disableLogDeviceInfo || false;
 		this.enableDebugMode = config.enableDebugMode || false;
@@ -275,26 +275,26 @@ class denonTvDevice {
 
 				if (this.sensorPowerService) {
 					this.sensorPowerService
-						.updateCharacteristic(Characteristic.MotionDetected, power)
+						.updateCharacteristic(Characteristic.ContactSensorState, power)
 				}
 
 				if (this.sensorVolumeService) {
 					const state = (this.volume !== volume) ? true : false;
 					this.sensorVolumeService
-						.updateCharacteristic(Characteristic.MotionDetected, state)
+						.updateCharacteristic(Characteristic.ContactSensorState, state)
 					this.sensorVolumeState = state;
 				}
 
 				if (this.sensorMuteService) {
 					const state = power ? mute : false;
 					this.sensorMuteService
-						.updateCharacteristic(Characteristic.MotionDetected, state)
+						.updateCharacteristic(Characteristic.ContactSensorState, state)
 				}
 
 				if (this.sensorInputService) {
 					const state = (this.inputIdentifier !== inputIdentifier) ? true : false;
 					this.sensorInputService
-						.updateCharacteristic(Characteristic.MotionDetected, state)
+						.updateCharacteristic(Characteristic.ContactSensorState, state)
 					this.sensorInputState = state;
 				}
 
@@ -304,7 +304,7 @@ class denonTvDevice {
 						const index = this.switches[i];
 						const state = power ? (this.inputsReference[index] === reference) : false;
 						const displayType = this.switchesDisplayType[index];
-						const characteristicType = [Characteristic.On, Characteristic.On, Characteristic.MotionDetected, Characteristic.OccupancyDetected][displayType];
+						const characteristicType = [Characteristic.On, Characteristic.On, Characteristic.ContactSensorState, Characteristic.OccupancyDetected][displayType];
 						this.switchServices[i]
 							.updateCharacteristic(characteristicType, state);
 					}
@@ -715,8 +715,8 @@ class denonTvDevice {
 		//prepare sensor service
 		if (this.sensorPower) {
 			this.log.debug('prepareSensorPowerService')
-			this.sensorPowerService = new Service.MotionSensor(`${this.sZoneName} Power Sensor`, `Power Sensor`);
-			this.sensorPowerService.getCharacteristic(Characteristic.MotionDetected)
+			this.sensorPowerService = new Service.ContactSensor(`${this.sZoneName} Power Sensor`, `Power Sensor`);
+			this.sensorPowerService.getCharacteristic(Characteristic.ContactSensorState)
 				.onGet(async () => {
 					const state = this.power;
 					return state;
@@ -726,8 +726,8 @@ class denonTvDevice {
 
 		if (this.sensorVolume) {
 			this.log.debug('prepareSensorVolumeService')
-			this.sensorVolumeService = new Service.MotionSensor(`${this.sZoneName} Volume Sensor`, `Volume Sensor`);
-			this.sensorVolumeService.getCharacteristic(Characteristic.MotionDetected)
+			this.sensorVolumeService = new Service.ContactSensor(`${this.sZoneName} Volume Sensor`, `Volume Sensor`);
+			this.sensorVolumeService.getCharacteristic(Characteristic.ContactSensorState)
 				.onGet(async () => {
 					const state = this.sensorVolumeState;
 					return state;
@@ -737,8 +737,8 @@ class denonTvDevice {
 
 		if (this.sensorMute) {
 			this.log.debug('prepareSensorMuteService')
-			this.sensorMuteService = new Service.MotionSensor(`${this.sZoneName} Mute Sensor`, `Mute Sensor`);
-			this.sensorMuteService.getCharacteristic(Characteristic.MotionDetected)
+			this.sensorMuteService = new Service.ContactSensor(`${this.sZoneName} Mute Sensor`, `Mute Sensor`);
+			this.sensorMuteService.getCharacteristic(Characteristic.ContactSensorState)
 				.onGet(async () => {
 					const state = this.power ? this.mute : false;
 					return state;
@@ -748,8 +748,8 @@ class denonTvDevice {
 
 		if (this.sensorInput) {
 			this.log.debug('prepareSensorChannelService')
-			this.sensorInputService = new Service.MotionSensor(`${accessoryName} Input Sensor`, `Input Sensor`);
-			this.sensorInputService.getCharacteristic(Characteristic.MotionDetected)
+			this.sensorInputService = new Service.ContactSensor(`${this.sZoneName} Input Sensor`, `Input Sensor`);
+			this.sensorInputService.getCharacteristic(Characteristic.ContactSensorState)
 				.onGet(async () => {
 					const state = this.sensorInputState;
 					return state;
@@ -877,8 +877,8 @@ class denonTvDevice {
 				//get switch display type
 				const inputSwitchDisplayType = this.switchesDisplayType[inputSwitch];
 
-				const serviceType = [Service.Outlet, Service.Switch, Service.MotionSensor, Service.OccupancySensor][inputSwitchDisplayType];
-				const characteristicType = [Characteristic.On, Characteristic.On, Characteristic.MotionDetected, Characteristic.OccupancyDetected][inputSwitchDisplayType];
+				const serviceType = [Service.Outlet, Service.Switch, Service.ContactSensor, Service.OccupancySensor][inputSwitchDisplayType];
+				const characteristicType = [Characteristic.On, Characteristic.On, Characteristic.ContactSensorState, Characteristic.OccupancyDetected][inputSwitchDisplayType];
 				const switchService = new serviceType(`${this.sZoneName} ${inputSwitchName}`, `Sensor ${i}`);
 				switchService.getCharacteristic(characteristicType)
 					.onGet(async () => {

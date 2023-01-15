@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Note - after update to 3.15.x need remove the accessory frome Home app and add it again.
 
+## [3.19.1] - (15.01.2023)
+## Changes
+- changed Motion Sensor to Contact Sensor
+- fix Input/Surrounds Sensor
+
 ## [3.19.0] - (14.01.2023)
 ## Changes
 - added Input/Surround Motion Sensor for use with automations (every Input/Surround change report motion)
