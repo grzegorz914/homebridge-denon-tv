@@ -109,12 +109,12 @@ class denonTvDevice {
 		//setup variables
 		this.startPrepareAccessory = true;
 
-		this.inputsReference = new Array();
-		this.inputsName = new Array();
-		this.inputsType = new Array();
-		this.inputsMode = new Array();
-		this.switches = new Array();
-		this.switchesDisplayType = new Array();
+		this.inputsReference = [];
+		this.inputsName = [];
+		this.inputsType = [];
+		this.inputsMode = [];
+		this.switches = [];
+		this.switchesDisplayType = [];
 
 		this.power = false;
 		this.reference = '';
@@ -860,7 +860,7 @@ class denonTvDevice {
 		const maxSwitchesCount = (availableSwitchesCount > 0) ? (availableSwitchesCount > switchesCount) ? switchesCount : availableSwitchesCount : 0;
 		if (maxSwitchesCount > 0) {
 			this.log.debug('prepareSwitchsService');
-			this.switchServices = new Array();
+			this.switchServices = [];
 			for (let i = 0; i < maxSwitchesCount; i++) {
 				//get switch
 				const inputSwitch = switches[i];
