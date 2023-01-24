@@ -65,7 +65,7 @@ class denonTvDevice {
 		this.name = config.name;
 		this.host = config.host;
 		this.port = config.port;
-		this.zoneControl = config.zoneControl;
+		this.zoneControl = config.zoneControl || 0;
 		this.volumeControl = config.volumeControl || 0;
 		this.infoButtonCommand = config.infoButtonCommand || 'MNINF';
 		this.masterPower = config.masterPower || false;
@@ -843,7 +843,7 @@ class denonTvDevice {
 			this.inputsType.push(inputType);
 			this.inputsMode.push(inputMode);
 			this.inputsSwitchsSensorsDisplayType.push(inputSwitchSensorDisplayType);
-			const pushInputSwitchIndex = inputSwitchSensorDisplayType === -1 ? false : this.inputsSwitchesSensors.push(i);
+			const pushInputSwitchIndex = inputSwitchSensorDisplayType >= 0 ? this.inputsSwitchesSensors.push(i) : false;
 
 			this.televisionService.addLinkedService(inputService);
 			accessory.addService(inputService);

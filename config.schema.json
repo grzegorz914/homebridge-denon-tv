@@ -37,7 +37,6 @@
               "type": "integer",
               "minimum": 0,
               "maximum": 3,
-              "default": 0,
               "description": "Here select which Zone You want control.",
               "oneOf": [
                 {
@@ -72,7 +71,6 @@
               "type": "integer",
               "minimum": 0,
               "maximum": 2,
-              "default": 0,
               "description": "Here select what a volume control mode You want to use. If select *None* only hardware buttons in RC app can be used to control volume.",
               "oneOf": [
                 {
@@ -579,7 +577,6 @@
                   "displayType": {
                     "title": "Extra Input Tile Type",
                     "type": "integer",
-                    "default": -1,
                     "oneOf": [
                       {
                         "title": "None",
@@ -793,7 +790,6 @@
                   "displayType": {
                     "title": "Extra Surround Tile Type",
                     "type": "integer",
-                    "default": -1,
                     "oneOf": [
                       {
                         "title": "None",
