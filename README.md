@@ -75,8 +75,7 @@ This plugin is based upon the official documentation for communicating with and 
 | `inputs.name` | Here set *Input Name* which You want expose to the *Homebridge/HomeKit*. |
 | `inputs.reference` | Choose from available inputs, the inputs that should be published to and appear in HomeKit app in the device tile as inputs list |
 | `inputs.mode` | Choose from available inputs mode. |
-| `inputs.switch` | If enabled, the tile for that input will be expose to the *Homebridge/HomeKit* and can be used for HomeKit automation. |
-| `inputs.displayType` | Here select display type in HomeKit app, possible `Button`, `Switch`, `Motion Sensor`, `Occupancy Sensor`.|
+| `inputs.displayType` | Here select display type in HomeKit app, possible `None`, `Button`, `Switch`, `Motion Sensor`, `Occupancy Sensor`, `Contact Sensor`.|
 | `buttonsMainZone.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. |
 | `buttonsMainZone.reference` | Here choice function for additional control button for Main Zone. |
 | `buttonsMainZone.displayType` | Here select display type in HomeKit app, possible `Button`, `Switch`.|
@@ -88,8 +87,7 @@ This plugin is based upon the official documentation for communicating with and 
 | `buttonsZone3.displayType` | Here select display type in HomeKit app, possible `Button`, `Switch`.|
 | `surrounds.name` | Here set *Surround Mode Name* which You want expose to the *Homebridge/HomeKit*. |
 | `surrounds.reference` | Here choice *Surround Mode*, the mode that should be published to and appear in HomeKit app in the extra tile as Surrounds List. |
-| `surrounds.switch` | If enabled, the tile for that surround mode will be expose to the *Homebridge/HomeKit* and can be used for HomeKit automation. |
-| `surrounds.displayType` | Here select display type in HomeKit app, possible `Button`, `Switch`, `Motion Sensor`, `Occupancy Sensor`.|
+| `surrounds.displayType` | Here select display type in HomeKit app, possible `None`, `Button`, `Switch`, `Motion Sensor`, `Occupancy Sensor`, `Contact Sensor`.|
 | `enableDebugMode` | If enabled, deep log will be present in homebridge console. |
 | `disableLogInfo` | If enabled, disable log info, all values and state will not be displayed in Homebridge log console. |
 | `disableLogDeviceInfo` | If enabled, add ability to disable log device info by every connections device to the network. |
@@ -130,15 +128,13 @@ This plugin is based upon the official documentation for communicating with and 
                     "name": "Xbox One",
                     "reference": "GAME",
                     "mode": "SI",
-                    "switch": false,
-					"displayType": 0
+					"displayType": -1
                 },
                 {
                     "name": "Television",
                     "reference": "TV",
                     "mode": "SI",
-                    "switch": false,
-					"displayType": 0
+					"displayType": -1
                 }
             ],
             "buttonsMainZone": [
@@ -179,15 +175,13 @@ This plugin is based upon the official documentation for communicating with and 
                     "name": "Xbox One",
                     "reference": "GAME",
                     "mode": "SI",
-                    "switch": false,
-					"displayType": 0
+					"displayType": -1
                 },
                 {
                     "name": "Television",
                     "reference": "TV",
                     "mode": "SI",
-                    "switch": false,
-					"displayType": 0
+					"displayType": -1
                 }
             ],
             "buttonsZone2": [
@@ -228,15 +222,13 @@ This plugin is based upon the official documentation for communicating with and 
                     "name": "Xbox One",
                     "reference": "GAME",
                     "mode": "SI",
-                    "switch": false,
-					"displayType": 0
+					"displayType": -1
                 },
                 {
                     "name": "Television",
                     "reference": "TV",
                     "mode": "SI",
-                    "switch": false,
-					"displayType": 0
+					"displayType": -1
                 }
             ],
             "buttonsZone3": [
@@ -276,14 +268,12 @@ This plugin is based upon the official documentation for communicating with and 
                 {
                     "name": "MCH Stereo",
                     "reference": "MCH STEREO",
-                    "switch": false,
-					"displayType": 0
+					"displayType": -1
                 },
                 {
                     "name": "Stereo",
                     "reference": "STEREO",
-                    "switch": false,
-					"displayType": 0
+					"displayType": -1
                 }
             ],
             "enableMqtt": false,

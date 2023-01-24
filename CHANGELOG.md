@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Note - after update to 3.15.x need remove the accessory frome Home app and add it again.
 
+## [3.20.0] - (24.01.2023)
+## Changes
+- removed switch properties from inputs/surrounds section
+- added None and Contact Sensor options for displayType in the inputs/surrounds section
+- config.schema updated
+- cleanup
+
 ## [3.19.1] - (15.01.2023)
 ## Changes
 - changed Motion Sensor to Contact Sensor

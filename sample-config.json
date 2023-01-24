@@ -40,15 +40,13 @@
                             "name": "Xbox One",
                             "reference": "GAME",
                             "mode": "SI",
-                            "switch": false,
-                            "displayType": 0
+                            "displayType": -1
                         },
                         {
                             "name": "Television",
                             "reference": "TV",
                             "mode": "SI",
-                            "switch": false,
-                            "displayType": 0
+                            "displayType": -1
                         }
                     ],
                     "buttonsMainZone": [
@@ -89,15 +87,13 @@
                             "name": "Xbox One",
                             "reference": "GAME",
                             "mode": "SI",
-                            "switch": false,
-                            "displayType": 0
+                            "displayType": -1
                         },
                         {
                             "name": "Television",
                             "reference": "TV",
                             "mode": "SI",
-                            "switch": false,
-                            "displayType": 0
+                            "displayType": -1
                         }
                     ],
                     "buttonsZone2": [
@@ -138,15 +134,13 @@
                             "name": "Xbox One",
                             "reference": "GAME",
                             "mode": "SI",
-                            "switch": false,
-                            "displayType": 0
+                            "displayType": -1
                         },
                         {
                             "name": "Television",
                             "reference": "TV",
                             "mode": "SI",
-                            "switch": false,
-                            "displayType": 0
+                            "displayType": -1
                         }
                     ],
                     "buttonsZone3": [
@@ -186,14 +180,12 @@
                         {
                             "name": "MCH Stereo",
                             "reference": "MCH STEREO",
-                            "switch": false,
-                            "displayType": 0
+                            "displayType": -1
                         },
                         {
                             "name": "Stereo",
                             "reference": "STEREO",
-                            "switch": false,
-                            "displayType": 0
+                            "displayType": -1
                         }
                     ],
                     "enableMqtt": false,

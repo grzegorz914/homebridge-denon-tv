@@ -576,16 +576,17 @@
                     ],
                     "required": true
                   },
-                  "switch": {
-                    "title": "Extra Input Tile",
-                    "type": "boolean",
-                    "description": "If enabled, the input tile will be added to the HomeKit app and can be used with automation.",
-                    "required": true
-                  },
                   "displayType": {
                     "title": "Extra Input Tile Type",
                     "type": "integer",
+                    "default": -1,
                     "oneOf": [
+                      {
+                        "title": "None",
+                        "enum": [
+                          -1
+                        ]
+                      },
                       {
                         "title": "Button",
                         "enum": [
@@ -599,7 +600,7 @@
                         ]
                       },
                       {
-                        "title": "Contact Sensor",
+                        "title": "Motion Sensor",
                         "enum": [
                           2
                         ]
@@ -609,9 +610,15 @@
                         "enum": [
                           3
                         ]
+                      },
+                      {
+                        "title": "Contact Sensor",
+                        "enum": [
+                          4
+                        ]
                       }
                     ],
-                    "description": "Here select the tile control or display type in HomeKit app.",
+                    "description": "Here select extra function/tile to be exposed in HomeKit app.",
                     "required": true
                   }
                 }
@@ -783,16 +790,17 @@
                     ],
                     "required": true
                   },
-                  "switch": {
-                    "title": "Extra Surround Tile",
-                    "type": "boolean",
-                    "description": "If enabled, the surround mode tile will be added to the HomeKit app and can be used with automation.",
-                    "required": true
-                  },
                   "displayType": {
                     "title": "Extra Surround Tile Type",
                     "type": "integer",
+                    "default": -1,
                     "oneOf": [
+                      {
+                        "title": "None",
+                        "enum": [
+                          -1
+                        ]
+                      },
                       {
                         "title": "Button",
                         "enum": [
@@ -806,7 +814,7 @@
                         ]
                       },
                       {
-                        "title": "Contact Sensor",
+                        "title": "Motion Sensor",
                         "enum": [
                           2
                         ]
@@ -816,9 +824,15 @@
                         "enum": [
                           3
                         ]
+                      },
+                      {
+                        "title": "Contact Sensor",
+                        "enum": [
+                          4
+                        ]
                       }
                     ],
-                    "description": "Here select tile control or display type in HomeKit app.",
+                    "description": "Here select extra function/tile to be exposed in HomeKit app.",
                     "required": true
                   }
                 }
@@ -3480,7 +3494,6 @@
                 "devices[].inputs[].name",
                 "devices[].inputs[].reference",
                 "devices[].inputs[].mode",
-                "devices[].inputs[].switch",
                 "devices[].inputs[].displayType"
               ],
               "condition": {
@@ -3507,7 +3520,6 @@
               "items": [
                 "devices[].surrounds[].name",
                 "devices[].surrounds[].reference",
-                "devices[].surrounds[].switch",
                 "devices[].surrounds[].displayType"
               ],
               "condition": {
