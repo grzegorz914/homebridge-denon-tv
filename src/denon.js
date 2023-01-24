@@ -99,7 +99,7 @@ class DENON extends EventEmitter {
                     const volume = (parseFloat(devState.MasterVolume[0].value[0]) >= -79.5) ? parseInt(devState.MasterVolume[0].value[0]) + 80 : this.volume;
                     const mute = power ? (devState.Mute[0].value[0] == 'on') : true;
 
-                    if (this.checkStateOnFirstRun && power !== this.power && reference !== this.reference && volume !== this.volume && mute !== this.mute && soundMode !== this.soundMode) {
+                    if (!this.checkStateOnFirstRun && power === this.power && reference === this.reference && volume === this.volume && mute === this.mute && soundMode === this.soundMode) {
                         this.checkState();
                         return;
                     };
