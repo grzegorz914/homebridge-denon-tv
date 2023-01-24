@@ -279,7 +279,7 @@ class denonTvDevice {
 				}
 
 				if (this.sensorVolumeService) {
-					const state = (this.volume !== volume) ? true : false;
+					const state = power ? (this.volume !== volume) : false;
 					this.sensorVolumeService
 						.updateCharacteristic(Characteristic.ContactSensorState, state)
 					this.sensorVolumeState = state;
@@ -292,7 +292,7 @@ class denonTvDevice {
 				}
 
 				if (this.sensorInputService) {
-					const state = (this.inputIdentifier !== inputIdentifier) ? true : false;
+					const state = power ? (this.inputIdentifier !== inputIdentifier) : false;
 					this.sensorInputService
 						.updateCharacteristic(Characteristic.ContactSensorState, state)
 					this.sensorInputState = state;
