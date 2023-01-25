@@ -25,16 +25,20 @@
                     "zoneControl": 0,
                     "volumeControl": 0,
                     "masterPower": false,
-                    "sensorPower": false,
                     "masterVolume": false,
-                    "sensorVolume": false,
                     "masterMute": false,
+                    "sensorPower": false,
+                    "sensorVolume": false,
                     "sensorMute": false,
                     "sensorInput": false,
-                    "infoButtonCommand": "MNINF",
-                    "disableLogInfo": false,
-                    "disableLogDeviceInfo": false,
-                    "enableDebugMode": false,
+                    "sensorInputs": [
+                        {
+                            "name": "Tuner Sat",
+                            "reference": "CBL/SAT",
+                            "displayType": -1
+                        }
+                    ],
+                    "getInputsFromDevice": false,
                     "inputs": [
                         {
                             "name": "Xbox One",
@@ -56,10 +60,14 @@
                             "displayType": 0
                         }
                     ],
+                    "enableDebugMode": false,
+                    "disableLogInfo": false,
+                    "disableLogDeviceInfo": false,
+                    "infoButtonCommand": "MNINF",
                     "enableMqtt": false,
                     "mqttHost": "192.168.1.33",
                     "mqttPort": 1883,
-                    "mqttPrefix": "home/envoy",
+                    "mqttPrefix": "home/denon",
                     "mqttAuth": false,
                     "mqttUser": "user",
                     "mqttPass": "password",
@@ -72,16 +80,20 @@
                     "zoneControl": 1,
                     "volumeControl": 0,
                     "masterPower": false,
-                    "sensorPower": false,
                     "masterVolume": false,
-                    "sensorVolume": false,
                     "masterMute": false,
+                    "sensorPower": false,
+                    "sensorVolume": false,
                     "sensorMute": false,
                     "sensorInput": false,
-                    "infoButtonCommand": "MNINF",
-                    "disableLogInfo": false,
-                    "disableLogDeviceInfo": false,
-                    "enableDebugMode": false,
+                    "sensorInputs": [
+                        {
+                            "name": "Tuner Sat",
+                            "reference": "CBL/SAT",
+                            "displayType": -1
+                        }
+                    ],
+                    "getInputsFromDevice": false,
                     "inputs": [
                         {
                             "name": "Xbox One",
@@ -103,6 +115,10 @@
                             "displayType": 0
                         }
                     ],
+                    "enableDebugMode": false,
+                    "disableLogInfo": false,
+                    "disableLogDeviceInfo": false,
+                    "infoButtonCommand": "MNINF",
                     "enableMqtt": false,
                     "mqttHost": "192.168.1.33",
                     "mqttPort": 1883,
@@ -119,16 +135,20 @@
                     "zoneControl": 2,
                     "volumeControl": 0,
                     "masterPower": false,
-                    "sensorPower": false,
                     "masterVolume": false,
-                    "sensorVolume": false,
                     "masterMute": false,
+                    "sensorPower": false,
+                    "sensorVolume": false,
                     "sensorMute": false,
                     "sensorInput": false,
-                    "infoButtonCommand": "MNINF",
-                    "disableLogInfo": false,
-                    "disableLogDeviceInfo": false,
-                    "enableDebugMode": false,
+                    "sensorInputs": [
+                        {
+                            "name": "Tuner Sat",
+                            "reference": "CBL/SAT",
+                            "displayType": -1
+                        }
+                    ],
+                    "getInputsFromDevice": false,
                     "inputs": [
                         {
                             "name": "Xbox One",
@@ -150,6 +170,10 @@
                             "displayType": 0
                         }
                     ],
+                    "enableDebugMode": false,
+                    "disableLogInfo": false,
+                    "disableLogDeviceInfo": false,
+                    "infoButtonCommand": "MNINF",
                     "enableMqtt": false,
                     "mqttHost": "192.168.1.33",
                     "mqttPort": 1883,
@@ -166,16 +190,12 @@
                     "zoneControl": 3,
                     "volumeControl": 0,
                     "masterPower": false,
-                    "sensorPower": false,
                     "masterVolume": false,
-                    "sensorVolume": false,
                     "masterMute": false,
+                    "sensorPower": false,
+                    "sensorVolume": false,
                     "sensorMute": false,
                     "sensorInput": false,
-                    "infoButtonCommand": "MNINF",
-                    "disableLogInfo": false,
-                    "disableLogDeviceInfo": false,
-                    "enableDebugMode": false,
                     "surrounds": [
                         {
                             "name": "MCH Stereo",
@@ -188,6 +208,10 @@
                             "displayType": -1
                         }
                     ],
+                    "enableDebugMode": false,
+                    "disableLogInfo": false,
+                    "disableLogDeviceInfo": false,
+                    "infoButtonCommand": "MNINF",
                     "enableMqtt": false,
                     "mqttHost": "192.168.1.33",
                     "mqttPort": 1883,

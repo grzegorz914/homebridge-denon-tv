@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Note - after update to 3.15.x need remove the accessory frome Home app and add it again.
 
+## [3.21.0] - (25.01.2023)
+## Changes
+- added possibility load inputs and quick selects from device (test phase)
+- added custom sensors based on inputs reference if inputs are loaded from device
+- config.schema updated
+- bump dependencies
+- cleanup
+
+
 ## [3.20.0] - (24.01.2023)
 ## Changes
 - removed switch properties from inputs/surrounds section

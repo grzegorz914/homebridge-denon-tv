@@ -54,15 +54,12 @@ class DENON extends EventEmitter {
                 const devInfo1 = JSON.stringify(devInfo, null, 2);
                 const debug = debugLog ? this.emit('debug', `Info: ${JSON.stringify(devInfo, null, 2)}`) : false;
 
-                let manufacturer = 'Denon/Marantz';
-                if (typeof devInfo.BrandCode[0] !== 'undefined') {
-                    manufacturer = ['Denon', 'Marantz'][devInfo.BrandCode[0]];
-                };
-                const modelName = devInfo.ModelName[0];
-                const serialNumber = devInfo.MacAddress[0];
-                const firmwareRevision = devInfo.UpgradeVersion[0];
-                const zones = devInfo.DeviceZones[0];
-                const apiVersion = devInfo.CommApiVers[0];
+                const manufacturer = ['Denon', 'Marantz'][devInfo.BrandCode[0]] || 'Marantz';
+                const modelName = devInfo.ModelName[0] || 'undefined';
+                const serialNumber = devInfo.MacAddress[0] || 'undefined';
+                const firmwareRevision = devInfo.UpgradeVersion[0] || 'undefined';
+                const zones = devInfo.DeviceZones[0] || 'undefined';
+                const apiVersion = devInfo.CommApiVers[0] || 'undefined';
                 this.devInfo = devInfo;
 
                 if (serialNumber === null || serialNumber === undefined) {
@@ -72,7 +69,7 @@ class DENON extends EventEmitter {
                 }
 
                 this.checkStateOnFirstRun = true;
-                this.emit('connected', devInfo1);
+                this.emit('connected', devInfo, devInfo1);
                 this.emit('deviceInfo', manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion);
                 this.emit('checkState');
             } catch (error) {
