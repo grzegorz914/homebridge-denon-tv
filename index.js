@@ -238,7 +238,7 @@ class denonTvDevice {
 							quickSelectArr.push(inputsObj);
 						};
 					};
-					
+
 					const allInputsArr = this.zoneControl <= 2 ? this.getInputsFromDevice ? [...inputsArr, ...quickSelectArr] : this.inputs : this.soundModes;
 					const inputs = JSON.stringify(allInputsArr, null, 2);
 					const writeInputs = await fsPromises.writeFile(this.inputsFile, inputs);
@@ -900,12 +900,12 @@ class denonTvDevice {
 			accessory.addService(inputService);
 		};
 
+		//prepare inputs switch service
+		const inputsSwitchesSensors = this.inputsSwitchesSensors;
+		const inputsSwitchesSensorsCount = inputsSwitchesSensors.length;
+		const availableInputsSwitchesSensorsCount = 90 - maxInputsCount;
+		const maxInputsSwitchesSensorsCount = (availableInputsSwitchesSensorsCount > 0) ? (availableInputsSwitchesSensorsCount > inputsSwitchesSensorsCount) ? inputsSwitchesSensorsCount : availableInputsSwitchesSensorsCount : 0;
 		if (!this.getInputsFromDevice) {
-			//prepare inputs switch service
-			const inputsSwitchesSensors = this.inputsSwitchesSensors;
-			const inputsSwitchesSensorsCount = inputsSwitchesSensors.length;
-			const availableInputsSwitchesSensorsCount = 90 - maxInputsCount;
-			const maxInputsSwitchesSensorsCount = (availableInputsSwitchesSensorsCount > 0) ? (availableInputsSwitchesSensorsCount > inputsSwitchesSensorsCount) ? inputsSwitchesSensorsCount : availableInputsSwitchesSensorsCount : 0;
 			if (maxInputsSwitchesSensorsCount > 0) {
 				this.log.debug('prepareSwitchsService');
 				this.inputSwitchSensorServices = [];
@@ -952,12 +952,12 @@ class denonTvDevice {
 			};
 		};
 
+		//prepare sonsor service
+		const inputsSensors = this.sensorInputs;
+		const inputsSensorsCount = inputsSensors.length;
+		const availableInputsSensorsCount = 90 - maxInputsCount;
+		const maxInputsSensorsCount = (availableInputsSensorsCount > 0) ? (availableInputsSensorsCount > inputsSensorsCount) ? inputsSensorsCount : availableInputsSensorsCount : 0;
 		if (this.getInputsFromDevice) {
-			//prepare sonsor service
-			const inputsSensors = this.sensorInputs;
-			const inputsSensorsCount = inputsSensors.length;
-			const availableInputsSensorsCount = 90 - maxInputsCount;
-			const maxInputsSensorsCount = (availableInputsSensorsCount > 0) ? (availableInputsSensorsCount > inputsSensorsCount) ? inputsSensorsCount : availableInputsSensorsCount : 0;
 			if (maxInputsSensorsCount > 0) {
 				this.log.debug('prepareSwitchsService');
 				this.inputSensorServices = [];
@@ -997,7 +997,8 @@ class denonTvDevice {
 			//check available buttons and possible count (max 94)
 			const buttons = this.buttons;
 			const buttonsCount = buttons.length;
-			const availableButtonsCount = (90 - (maxInputsCount + maxInputsSwitchesSensorsCount));
+			const maxCount = this.getInputsFromDevice ? maxInputsSensorsCount : maxInputsSwitchesSensorsCount;
+			const availableButtonsCount = (90 - (maxInputsCount + maxCount));
 			const maxButtonsCount = (availableButtonsCount > 0) ? (availableButtonsCount > buttonsCount) ? buttonsCount : availableButtonsCount : 0;
 			if (maxButtonsCount > 0) {
 				this.log.debug('prepareButtonsService');
