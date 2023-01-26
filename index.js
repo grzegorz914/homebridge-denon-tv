@@ -1003,7 +1003,7 @@ class denonTvDevice {
 			//check available buttons and possible count (max 80)
 			const buttons = this.buttons;
 			const buttonsCount = buttons.length;
-			const maxCount = this.getInputsFromDevice ? maxInputsSensorsCount : maxInputsSwitchesSensorsCount;
+			const maxCount = this.getInputsFromDevice ? maxSensorInputsCount : maxInputsSwitchesSensorsCount;
 			const availableButtonsCount = (80 - (maxInputsCount + maxCount));
 			const maxButtonsCount = (availableButtonsCount > 0) ? (availableButtonsCount > buttonsCount) ? buttonsCount : availableButtonsCount : 0;
 			if (maxButtonsCount > 0) {
