@@ -354,6 +354,7 @@ class denonTvDevice {
 					}
 				}
 
+				if (this.getInputsFromDevice && this.sensorInputsServices) {
 					const servicesCount = this.sensorInputsServices.length;
 					for (let i = 0; i < servicesCount; i++) {
 						const state = this.power ? (this.sensorInputsReference[i] === reference) : false;
@@ -823,10 +824,10 @@ class denonTvDevice {
 		const savedInputsTargetVisibility = ((fs.readFileSync(this.inputsTargetVisibilityFile)).length > 0) ? JSON.parse(fs.readFileSync(this.inputsTargetVisibilityFile)) : {};
 		const debug2 = this.enableDebugMode ? this.log('Device: %s %s, read saved %s Target Visibility successful: %s', this.host, accessoryName, zoneControl <= 2 ? 'Input' : 'Sound Mode', JSON.stringify(savedInputsTargetVisibility, null, 2)) : false;
 
-		//check available inputs and possible count (max 90)
+		//check available inputs and possible count (max 80)
 		const inputs = savedInputs;
 		const inputsCount = inputs.length;
-		const maxInputsCount = (inputsCount < 90) ? inputsCount : 90;
+		const maxInputsCount = (inputsCount < 80) ? inputsCount : 80;
 		for (let i = 0; i < maxInputsCount; i++) {
 			//input
 			const input = inputs[i];
@@ -907,7 +908,7 @@ class denonTvDevice {
 		//prepare inputs switch sensor ervice
 		const inputsSwitchesSensors = this.inputsSwitchesSensors;
 		const inputsSwitchesSensorsCount = inputsSwitchesSensors.length;
-		const availableInputsSwitchesSensorsCount = 90 - maxInputsCount;
+		const availableInputsSwitchesSensorsCount = 80 - maxInputsCount;
 		const maxInputsSwitchesSensorsCount = (availableInputsSwitchesSensorsCount > 0) ? (availableInputsSwitchesSensorsCount > inputsSwitchesSensorsCount) ? inputsSwitchesSensorsCount : availableInputsSwitchesSensorsCount : 0;
 		if (!this.getInputsFromDevice) {
 			if (maxInputsSwitchesSensorsCount > 0) {
@@ -959,7 +960,7 @@ class denonTvDevice {
 		//prepare sonsor service
 		const sensorInputs = this.sensorInputs;
 		const sensorInputsCount = sensorInputs.length;
-		const availableSensorInputsCount = 90 - maxInputsCount;
+		const availableSensorInputsCount = 80 - maxInputsCount;
 		const maxSensorInputsCount = (availableSensorInputsCount > 0) ? (availableSensorInputsCount > sensorInputsCount) ? sensorInputsCount : availableSensorInputsCount : 0;
 		if (this.getInputsFromDevice) {
 			if (maxSensorInputsCount > 0) {
@@ -999,11 +1000,11 @@ class denonTvDevice {
 
 		//prepare button service
 		if (zoneControl <= 2) {
-			//check available buttons and possible count (max 94)
+			//check available buttons and possible count (max 80)
 			const buttons = this.buttons;
 			const buttonsCount = buttons.length;
 			const maxCount = this.getInputsFromDevice ? maxInputsSensorsCount : maxInputsSwitchesSensorsCount;
-			const availableButtonsCount = (90 - (maxInputsCount + maxCount));
+			const availableButtonsCount = (80 - (maxInputsCount + maxCount));
 			const maxButtonsCount = (availableButtonsCount > 0) ? (availableButtonsCount > buttonsCount) ? buttonsCount : availableButtonsCount : 0;
 			if (maxButtonsCount > 0) {
 				this.log.debug('prepareButtonsService');
