@@ -66,12 +66,12 @@ This plugin is based upon the official documentation for communicating with and 
 | `masterPower` | If enabled, then the Power switch for that zone (typically you would only use this for the Main Zone) will turn the entire receiver `ON` or `OFF/STANDBY` rather than just the zone itself |
 | `masterVolume`| If enabled, then the Volume for that zone (typically you would only use this for the Main Zone) will set the entire receiver `UP` or `DOWN` rather than just the zone itself |
 | `masterMute`| If enabled, then the Mute switch for that zone (typically you would only use this for the Main Zone) will muted the entire receiver `ON` or `OFF` rather than just the zone itself |
-| `sensorPower`| If enabled, then the Power will be exposed as a `Contact Sensor` to use with automations. |
-| `sensorVolume`| If enabled, then the Volume will be exposed as a `Contact Sensor` to use with automations. |
-| `sensorMute`| If enabled, then the Mute will be exposed as a `Contact Sensor` to use with automations. |
-| `sensorInput`| If enabled, then the Input will be exposed as a `Contact Sensor` to use with automations. |
+| `sensorPower`| If enabled, then the Power will be exposed as a `Motion Sensor` (active on Power ON) to use with automations. |
+| `sensorVolume`| If enabled, then the Volume will be exposed as a `Motion Sensor` (active on every Volume change) to use with automations. |
+| `sensorMute`| If enabled, then the Mute will be exposed as a `Motion Sensor` (active on Mute ON) to use with automations. |
+| `sensorInput`| If enabled, then the Input will be exposed as a `Motion Sensor` (active on every Input change) to use with automations. |
 | `sensorInputs.name` | Here set own *Name* which You want expose to the *Homebridge/HomeKit* for this sensor. |
-| `sensorInputs.reference` | Here set *Reference* like `CBL/SAT`, `GAME` to be exposed as sensor. | 
+| `sensorInputs.reference` | Here set *Reference* like `CBL/SAT`, `GAME` to be exposed as sensor (active on switch to this Input). | 
 | `sensorInputs.displayType` | Here select sensor type to be exposed in HomeKit app, possible `None`, `Motion Sensor`, `Occupancy Sensor`, `Contact Sensor`. |
 | `volumeControl` | Here choice what a additional volume control mode You want to use (None, Lightbulb, Fan). |
 | `infoButtonCommand` | Here select the function of `I` button in RC app. |

@@ -113,6 +113,10 @@ class denonTvDevice {
 		this.inputsName = [];
 		this.inputsType = [];
 		this.inputsMode = [];
+
+		this.sensorInputsReference = [];
+		this.sensorInputsDisplayType = [];
+		
 		this.inputsSwitchesSensors = [];
 		this.inputsSwitchsSensorsDisplayType = [];
 
@@ -350,13 +354,12 @@ class denonTvDevice {
 					}
 				}
 
-				if (this.getInputsFromDevice && this.inputSensorServices) {
-					const servicesCount = this.inputSensorServices.length;
+					const servicesCount = this.sensorInputsServices.length;
 					for (let i = 0; i < servicesCount; i++) {
-						const state = this.power ? (this.inputsSensorsReference[i] === reference) : false;
-						const displayType = this.inputsSensorsDisplayType[i];
+						const state = this.power ? (this.sensorInputsReference[i] === reference) : false;
+						const displayType = this.sensorInputsDisplayType[i];
 						const characteristicType = [Characteristic.MotionDetected, Characteristic.OccupancyDetected, Characteristic.ContactSensorState][displayType];
-						this.inputSensorServices[i]
+						this.sensorInputsServices[i]
 							.updateCharacteristic(characteristicType, state);
 					}
 				}
@@ -893,6 +896,7 @@ class denonTvDevice {
 			this.inputsName.push(inputName);
 			this.inputsType.push(inputType);
 			this.inputsMode.push(inputMode);
+
 			this.inputsSwitchsSensorsDisplayType.push(inputSwitchSensorDisplayType);
 			const pushInputSwitchIndex = inputSwitchSensorDisplayType >= 0 ? this.inputsSwitchesSensors.push(i) : false;
 
@@ -900,7 +904,7 @@ class denonTvDevice {
 			accessory.addService(inputService);
 		};
 
-		//prepare inputs switch service
+		//prepare inputs switch sensor ervice
 		const inputsSwitchesSensors = this.inputsSwitchesSensors;
 		const inputsSwitchesSensorsCount = inputsSwitchesSensors.length;
 		const availableInputsSwitchesSensorsCount = 90 - maxInputsCount;
@@ -953,40 +957,41 @@ class denonTvDevice {
 		};
 
 		//prepare sonsor service
-		const inputsSensors = this.sensorInputs;
-		const inputsSensorsCount = inputsSensors.length;
-		const availableInputsSensorsCount = 90 - maxInputsCount;
-		const maxInputsSensorsCount = (availableInputsSensorsCount > 0) ? (availableInputsSensorsCount > inputsSensorsCount) ? inputsSensorsCount : availableInputsSensorsCount : 0;
+		const sensorInputs = this.sensorInputs;
+		const sensorInputsCount = sensorInputs.length;
+		const availableSensorInputsCount = 90 - maxInputsCount;
+		const maxSensorInputsCount = (availableSensorInputsCount > 0) ? (availableSensorInputsCount > sensorInputsCount) ? sensorInputsCount : availableSensorInputsCount : 0;
 		if (this.getInputsFromDevice) {
-			if (maxInputsSensorsCount > 0) {
-				this.log.debug('prepareSwitchsService');
-				this.inputSensorServices = [];
-				for (let i = 0; i < maxInputsSensorsCount; i++) {
+			if (maxSensorInputsCount > 0) {
+				this.log.debug('prepareInputSensorServices');
+				this.sensorInputsServices = [];
+				for (let i = 0; i < maxSensorInputsCount; i++) {
 					//get sensor
-					const inputSensor = inputsSensors[i];
+					const sensorInput = sensorInputs[i];
 
 					//get sensor name		
-					const inputSensorName = inputSensor.name;
+					const sensorInputName = sensorInput.name;
 
 					//get sensor reference
-					const inputSensorReference = inputSensor.reference;
+					const sensorInputReference = sensorInput.reference;
 
 					//get sensor display type
-					const inputSensorDisplayType = inputSensor.displayType || -1;
+					const sensorInputDisplayType = sensorInput.displayType || -1;
 
-					if (inputSensorDisplayType >= 0) {
-						const serviceType = [Service.MotionSensor, Service.OccupancySensor, Service.ContactSensor][inputSensorDisplayType];
-						const characteristicType = [Characteristic.MotionDetected, Characteristic.OccupancyDetected, Characteristic.ContactSensorState][inputSensorDisplayType];
-						const inputSensorService = new serviceType(`${accessoryName} ${inputSensorName}`, `Sensor ${inputSensorName}`);
-						inputSensorService.getCharacteristic(characteristicType)
+					if (sensorInputDisplayType >= 0) {
+						const serviceType = [Service.MotionSensor, Service.OccupancySensor, Service.ContactSensor][sensorInputDisplayType];
+						const characteristicType = [Characteristic.MotionDetected, Characteristic.OccupancyDetected, Characteristic.ContactSensorState][sensorInputDisplayType];
+						const sensorInputService = new serviceType(`${accessoryName} ${sensorInputName}`, `Sensor ${sensorInputName}`);
+						sensorInputService.getCharacteristic(characteristicType)
 							.onGet(async () => {
-								const state = this.power ? (inputSensorReference === this.reference) : false;
+								const state = this.power ? (this.reference === sensorInputReference) : false;
 								return state;
 							});
 
-						this.inputsSensorsReference.push(inputSensorReference);
-						this.inputSensorServices.push(inputSensorService);
-						accessory.addService(this.inputSensorServices[i]);
+						this.sensorInputsReference.push(sensorInputReference);
+						this.sensorInputsDisplayType.push(sensorInputDisplayType);
+						this.sensorInputsServices.push(sensorInputService);
+						accessory.addService(this.sensorInputsServices[i]);
 					}
 				}
 			}
