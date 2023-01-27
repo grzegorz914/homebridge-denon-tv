@@ -124,7 +124,6 @@ class denonTvDevice {
 		this.reference = '';
 		this.volume = 0;
 		this.mute = true;
-		this.soundMode = '';
 		this.mediaState = false;
 		this.inputIdentifier = 0;
 		this.pictureMode = 0;
@@ -212,7 +211,6 @@ class denonTvDevice {
 				//save inputs to the file
 				try {
 					const inputsArr = [];
-					const quickSelectArr = [];
 					if (this.getInputsFromDevice && this.zoneControl <= 2) {
 						const deviceInputs = devInfo.DeviceZoneCapabilities[this.zoneControl].InputSource[0].List[0].Source;
 						for (const input of deviceInputs) {
@@ -227,23 +225,25 @@ class denonTvDevice {
 							inputsArr.push(inputsObj);
 						};
 
-						const deviceQuickSelect = devInfo.DeviceZoneCapabilities[this.zoneControl].Operation[0].QuickSelect[0];
-						const maxQuickSelect = deviceQuickSelect.MaxQuickSelect[0];
-						for (let i = 0; i < maxQuickSelect; i++) {
-							const key = [deviceQuickSelect.QuickSelect1, deviceQuickSelect.QuickSelect2, deviceQuickSelect.QuickSelect3, deviceQuickSelect.QuickSelect4, deviceQuickSelect.QuickSelect5, deviceQuickSelect.QuickSelect6][i];
-							const name = key[0].Name[0];
-							const reference = key[0].FuncName[0];
-							const inputsObj = {
-								'name': name,
-								'reference': reference,
-								'mode': 'MS',
-								"displayType": -1
-							}
-							quickSelectArr.push(inputsObj);
+						if (this.zoneControl === 0) {
+							const deviceQuickSelect = devInfo.DeviceZoneCapabilities[this.zoneControl].Operation[0].QuickSelect[0];
+							const maxQuickSelect = deviceQuickSelect.MaxQuickSelect[0];
+							for (let i = 0; i < maxQuickSelect; i++) {
+								const key = [deviceQuickSelect.QuickSelect1, deviceQuickSelect.QuickSelect2, deviceQuickSelect.QuickSelect3, deviceQuickSelect.QuickSelect4, deviceQuickSelect.QuickSelect5, deviceQuickSelect.QuickSelect6][i];
+								const name = key[0].Name[0];
+								const reference = key[0].FuncName[0];
+								const inputsObj = {
+									'name': name,
+									'reference': reference,
+									'mode': 'MS',
+									"displayType": -1
+								}
+								inputsArr.push(inputsObj);
+							};
 						};
 					};
 
-					const allInputsArr = this.zoneControl <= 2 ? (this.getInputsFromDevice ? [...inputsArr, ...quickSelectArr] : this.inputs) : this.soundModes;
+					const allInputsArr = this.zoneControl <= 2 ? (this.getInputsFromDevice ? inputsArr : this.inputs) : this.soundModes;
 					const inputs = JSON.stringify(allInputsArr, null, 2);
 					const writeInputs = await fsPromises.writeFile(this.inputsFile, inputs);
 					const debug = this.enableDebugMode ? this.log(`Device: ${this.host} ${this.name}, save ${this.zoneControl <= 2 ? 'Inputs' : 'Sound Modes'} succesful: ${inputs}`) : false;
@@ -251,7 +251,7 @@ class denonTvDevice {
 					this.log.error(`Device: ${this.host} ${this.name}, save ${this.zoneControl <= 2 ? 'Inputs' : 'Sound Modes'} error: ${error}`);
 				};
 			} catch (error) {
-				this.log.error(`Device: ${this.host} ${this.name}, ${this.zoneControl} create files or save devInfo error: ${error}`);
+				this.log.error(`Device: ${this.host} ${this.name}, create files or save devInfo error: ${error}`);
 			};
 		})
 			.on('deviceInfo', (manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion) => {
@@ -292,7 +292,7 @@ class denonTvDevice {
 				this.serialNumber = serialNumber;
 				this.firmwareRevision = firmwareRevision;
 			})
-			.on('stateChanged', (power, reference, volume, mute, soundMode) => {
+			.on('stateChanged', (power, reference, volume, mute) => {
 				const inputIdentifier = this.inputsReference.includes(reference) ? this.inputsReference.findIndex(index => index === reference) : this.inputIdentifier;
 
 				if (this.televisionService) {
@@ -369,7 +369,6 @@ class denonTvDevice {
 				this.reference = reference;
 				this.volume = volume;
 				this.mute = mute;
-				this.soundMode = soundMode;
 				this.inputIdentifier = inputIdentifier;
 
 				//start prepare accessory
@@ -936,7 +935,7 @@ class denonTvDevice {
 					const inputSwitchSensorService = new serviceType(`${this.sZoneName} ${inputName}`, `Sensor ${i}`);
 					inputSwitchSensorService.getCharacteristic(characteristicType)
 						.onGet(async () => {
-							const state = this.power ? (inputReference === this.reference) : false;
+							const state = this.power ? (this.reference === inputReference) : false;
 							return state;
 						})
 						.onSet(async (state) => {

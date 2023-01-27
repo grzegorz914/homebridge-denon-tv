@@ -43,7 +43,6 @@ class DENON extends EventEmitter {
         this.reference = '';
         this.volume = 0;
         this.mute = true;
-        this.soundMode = '';
         this.devInfo = '';
 
         this.on('checkDeviceInfo', async () => {
@@ -84,19 +83,18 @@ class DENON extends EventEmitter {
                     const devState = parseDeviceState.item;
                     const debug = debugLog ? this.emit('debug', `State: ${JSON.stringify(devState, null, 2)}`) : false;
 
-                    const checkSoundMode = (zoneControl === 0 || zoneControl === 3)
+                    const checkSoundMode = zoneControl === 3;
                     const deviceSoundMode = checkSoundMode ? await this.axiosInstancePost(CONSTANS.ApiUrls.AppCommand, CONFIG_XML) : false;
                     const parseDeviceSoundMode = checkSoundMode ? await parseString(deviceSoundMode.data) : false;
-                    const debug1 = this.debugLog ? this.emit('debug', `Sound mode: ${JSON.stringify(parseDeviceSoundMode, null, 2)}`) : false;
-                    const soundMode = checkSoundMode ? CONSTANS.SoundMode[(parseDeviceSoundMode.rx.cmd[0].surround[0]).replace(/[^a-zA-Z0-9]/g, '').toUpperCase()] : this.soundMode;
+                    const debug1 = checkSoundMode && debugLog ? this.emit('debug', `Sound mode: ${JSON.stringify(parseDeviceSoundMode, null, 2)}`) : false;
+                    const soundMode = checkSoundMode ? CONSTANS.SoundMode[(parseDeviceSoundMode.rx.cmd[0].surround[0]).replace(/[^a-zA-Z0-9]/g, '').toUpperCase()] : '';
 
                     const power = (devState.Power[0].value[0] === 'ON');
-                    const reference = zoneControl === 3 ? soundMode : (devState.InputFuncSelect[0].value[0] === 'Internet Radio') ? 'IRADIO' : (devState.InputFuncSelect[0].value[0] === 'AirPlay') ? 'NET' : devState.InputFuncSelect[0].value[0];
-
+                    const reference = checkSoundMode ? soundMode : (devState.InputFuncSelect[0].value[0] === 'Internet Radio') ? 'IRADIO' : (devState.InputFuncSelect[0].value[0] === 'AirPlay') ? 'NET' : devState.InputFuncSelect[0].value[0];
                     const volume = parseFloat(devState.MasterVolume[0].value[0] >= -79.5) ? parseInt(devState.MasterVolume[0].value[0]) + 80 : this.volume;
                     const mute = power ? (devState.Mute[0].value[0] == 'on') : true;
 
-                    if (!this.checkStateOnFirstRun && power === this.power && reference === this.reference && volume === this.volume && mute === this.mute && soundMode === this.soundMode) {
+                    if (!this.checkStateOnFirstRun && power === this.power && reference === this.reference && volume === this.volume && mute === this.mute) {
                         this.checkState();
                         return;
                     };
@@ -105,9 +103,8 @@ class DENON extends EventEmitter {
                     this.reference = reference;
                     this.volume = volume;
                     this.mute = mute;
-                    this.soundMode = soundMode;
                     this.checkStateOnFirstRun = false;
-                    this.emit('stateChanged', power, reference, volume, mute, soundMode);
+                    this.emit('stateChanged', power, reference, volume, mute);
                     const mqtt = mqttEnabled ? this.emit('mqtt', 'Info', JSON.stringify(this.devInfo, null, 2)) : false;
                     const mqtt1 = mqttEnabled ? this.emit('mqtt', 'State', JSON.stringify(devState, null, 2)) : false;
                     const surroundMode = {
@@ -122,7 +119,7 @@ class DENON extends EventEmitter {
             })
             .on('disconnect', () => {
                 this.emit('disconnected', 'Disconnected.');
-                this.emit('stateChanged', false, this.reference, this.volume, true, this.soundMode);
+                this.emit('stateChanged', false, this.reference, this.volume, true);
                 this.checkDeviceInfo();
             });
 
