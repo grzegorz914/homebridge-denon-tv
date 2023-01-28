@@ -54,14 +54,14 @@ class DENON extends EventEmitter {
 
                 const manufacturer = ['Denon', 'Marantz'][devInfo.BrandCode[0]] || 'Marantz';
                 const modelName = devInfo.ModelName[0] || 'undefined';
-                const serialNumber = devInfo.MacAddress[0] || 'undefined';
+                const serialNumber = devInfo.MacAddress[0] || false;
                 const firmwareRevision = devInfo.UpgradeVersion[0] || 'undefined';
                 const zones = devInfo.DeviceZones[0] || 'undefined';
                 const apiVersion = devInfo.CommApiVers[0] || 'undefined';
                 this.devInfo = devInfo;
 
-                if (serialNumber === null || serialNumber === undefined) {
-                    const debug1 = debugLog ? this.emit('debug', `Serial number unknown: ${serialNumber}, reconnect in 15s.`) : false;
+                if (!serialNumber) {
+                    const debug1 = debugLog ? this.emit('debug', `Serial number: ${serialNumber}, reconnect in 15s.`) : false;
                     this.checkDeviceInfo();
                     return;
                 }
