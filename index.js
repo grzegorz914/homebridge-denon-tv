@@ -812,13 +812,13 @@ class denonTvDevice {
 		//prepare input service
 		this.log.debug('prepareInputsService');
 
-		const savedInputs = fs.readFileSync(this.inputsFile) ? JSON.parse(fs.readFileSync(this.inputsFile)) : (zoneControl <= 2 ? this.inputs : this.soundModes);
+		const savedInputs = fs.readFileSync(this.inputsFile).length > 0 ? JSON.parse(fs.readFileSync(this.inputsFile)) : (zoneControl <= 2 ? this.inputs : this.soundModes);
 		const debug = this.enableDebugMode ? this.log(`Device: ${this.host} ${accessoryName}, read saved ${zoneControl <= 2 ? 'Input' : 'Sound Mode'}, successful: ${JSON.stringify(savedInputs, null, 2)}`) : false;
 
-		const savedInputsNames = fs.readFileSync(this.inputsNamesFile) ? JSON.parse(fs.readFileSync(this.inputsNamesFile)) : {};
+		const savedInputsNames = fs.readFileSync(this.inputsNamesFile).length > 0 ? JSON.parse(fs.readFileSync(this.inputsNamesFile)) : {};
 		const debug1 = this.enableDebugMode ? this.log(`Device: ${this.host} ${accessoryName}, read saved custom ${zoneControl <= 2 ? 'Input' : 'Sound Mode'}, Names successful: ${JSON.stringify(savedInputsNames, null, 2)}`) : false;
 
-		const savedInputsTargetVisibility = fs.readFileSync(this.inputsTargetVisibilityFile) ? JSON.parse(fs.readFileSync(this.inputsTargetVisibilityFile)) : {};
+		const savedInputsTargetVisibility = fs.readFileSync(this.inputsTargetVisibilityFile).length > 0 ? JSON.parse(fs.readFileSync(this.inputsTargetVisibilityFile)) : {};
 		const debug2 = this.enableDebugMode ? this.log(`Device: ${this.host} ${accessoryName}, read saved ${zoneControl <= 2 ? 'Input' : 'Sound Mode'}, Target Visibility successful: ${JSON.stringify(savedInputsTargetVisibility, null, 2)}`) : false;
 
 		//check available inputs and possible count (max 80)
