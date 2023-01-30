@@ -91,7 +91,7 @@ class DENON extends EventEmitter {
 
                     const power = (devState.Power[0].value[0] === 'ON');
                     const reference = checkSoundMode ? soundMode : (devState.InputFuncSelect[0].value[0] === 'Internet Radio') ? 'IRADIO' : (devState.InputFuncSelect[0].value[0] === 'AirPlay') ? 'NET' : devState.InputFuncSelect[0].value[0];
-                    const volume = parseFloat(devState.MasterVolume[0].value[0] >= -79.5) ? parseInt(devState.MasterVolume[0].value[0]) + 80 : this.volume;
+                    const volume = parseFloat(devState.MasterVolume[0].value[0]) >= -79.5 ? parseInt(devState.MasterVolume[0].value[0]) + 80 : this.volume;
                     const mute = power ? (devState.Mute[0].value[0] == 'on') : true;
 
                     if (!this.checkStateOnFirstRun && power === this.power && reference === this.reference && volume === this.volume && mute === this.mute) {
