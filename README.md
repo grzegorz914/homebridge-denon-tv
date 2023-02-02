@@ -95,10 +95,11 @@ This plugin is based upon the official documentation for communicating with and 
 | `enableDebugMode` | If enabled, deep log will be present in homebridge console. |
 | `disableLogInfo` | If enabled, disable log info, all values and state will not be displayed in Homebridge log console. |
 | `disableLogDeviceInfo` | If enabled, add ability to disable log device info by every connections device to the network. |
+| `refreshInterval` | Here set the data refresh interval. |
 | `enableMqtt` | If enabled, MQTT Broker will start automatically and publish all awailable PV installation data. |
-| `mqttHost` | Here set the *IP Address* or *Hostname* for MQTT Broker.) |
-| `mqttPort` | Here set the *Port* for MQTT Broker, default 1883.) |
-| `mqttPrefix` | Here set the *Prefix* for *Topic* or leave empty.) |
+| `mqttHost` | Here set the *IP Address* or *Hostname* for MQTT Broker. |
+| `mqttPort` | Here set the *Port* for MQTT Broker, default 1883. |
+| `mqttPrefix` | Here set the *Prefix* for *Topic* or leave empty. |
 | `mqttAuth` | If enabled, MQTT Broker will use authorization credentials. |
 | `mqttUser` | Here set the MQTT Broker user. |
 | `mqttPasswd` | Here set the MQTT Broker password. |
@@ -156,6 +157,7 @@ This plugin is based upon the official documentation for communicating with and 
             "disableLogInfo": false,
             "disableLogDeviceInfo": false,
             "infoButtonCommand": "MNINF",
+            "refreshInterval": 5,
             "enableMqtt": false,
             "mqttHost": "192.168.1.33",
             "mqttPort": 1883,
@@ -211,6 +213,7 @@ This plugin is based upon the official documentation for communicating with and 
             "disableLogInfo": false,
             "disableLogDeviceInfo": false,
             "infoButtonCommand": "MNINF",
+            "refreshInterval": 5,
             "enableMqtt": false,
             "mqttHost": "192.168.1.33",
             "mqttPort": 1883,
@@ -266,6 +269,7 @@ This plugin is based upon the official documentation for communicating with and 
             "disableLogInfo": false,
             "disableLogDeviceInfo": false,
             "infoButtonCommand": "MNINF",
+            "refreshInterval": 5,
             "enableMqtt": false,
             "mqttHost": "192.168.1.33",
             "mqttPort": 1883,
@@ -303,6 +307,7 @@ This plugin is based upon the official documentation for communicating with and 
             "enableDebugMode": false,
             "disableLogInfo": false,
             "disableLogDeviceInfo": false,
+            "refreshInterval": 5,
             "infoButtonCommand": "MNINF",
             "enableMqtt": false,
             "mqttHost": "192.168.1.33",

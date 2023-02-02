@@ -1,9 +1,9 @@
 'use strict';
 const axios = require('axios');
-const parseString = require('xml2js').parseStringPromise;
 const EventEmitter = require('events');
-const CONSTANS = require('./constans.json');
+const parseString = require('xml2js').parseStringPromise;
 
+const CONSTANS = require('./constans.json');
 const SOUND_MODE_STATUS = `<?xml version="1.0" encoding="utf-8"?>
             <tx>
               <cmd id="1">${CONSTANS.BodyXml.GetSurroundModeStatus}</cmd>
@@ -15,6 +15,7 @@ const CONFIG_XML = {
     }
 };
 
+let i = 0
 class DENON extends EventEmitter {
     constructor(config) {
         super();
@@ -42,7 +43,7 @@ class DENON extends EventEmitter {
         this.power = false;
         this.reference = '';
         this.volume = 0;
-        this.mute = true;
+        this.mute = false;
         this.devInfo = '';
 
         this.on('checkDeviceInfo', async () => {
@@ -69,6 +70,8 @@ class DENON extends EventEmitter {
                 this.checkStateOnFirstRun = true;
                 this.emit('connected', devInfo);
                 this.emit('deviceInfo', manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion);
+
+                await new Promise(resolve => setTimeout(resolve, 1000));
                 this.emit('checkState');
             } catch (error) {
                 this.emit('error', `Info error: ${error}, reconnect in 15s.`)
@@ -83,7 +86,7 @@ class DENON extends EventEmitter {
                     const devState = parseDeviceState.item;
                     const debug = debugLog ? this.emit('debug', `State: ${JSON.stringify(devState, null, 2)}`) : false;
 
-                    const checkSoundMode = zoneControl === 3;
+                    const checkSoundMode = zoneControl === 3 ? true : false;
                     const deviceSoundMode = checkSoundMode ? await this.axiosInstancePost(CONSTANS.ApiUrls.AppCommand, CONFIG_XML) : false;
                     const parseDeviceSoundMode = checkSoundMode ? await parseString(deviceSoundMode.data) : false;
                     const debug1 = checkSoundMode && debugLog ? this.emit('debug', `Sound mode: ${JSON.stringify(parseDeviceSoundMode, null, 2)}`) : false;
@@ -94,16 +97,12 @@ class DENON extends EventEmitter {
                     const volume = parseFloat(devState.MasterVolume[0].value[0]) >= -79.5 ? parseInt(devState.MasterVolume[0].value[0]) + 80 : this.volume;
                     const mute = power ? (devState.Mute[0].value[0] == 'on') : true;
 
-                    if (!this.checkStateOnFirstRun && power === this.power && reference === this.reference && volume === this.volume && mute === this.mute) {
-                        this.checkState();
-                        return;
-                    };
-
+                    this.checkStateOnFirstRun = false;
                     this.power = power;
                     this.reference = reference;
                     this.volume = volume;
                     this.mute = mute;
-                    this.checkStateOnFirstRun = false;
+
                     this.emit('stateChanged', power, reference, volume, mute);
                     const mqtt = mqttEnabled ? this.emit('mqtt', 'Info', JSON.stringify(this.devInfo, null, 2)) : false;
                     const mqtt1 = mqttEnabled ? this.emit('mqtt', 'State', JSON.stringify(devState, null, 2)) : false;
