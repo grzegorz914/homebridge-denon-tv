@@ -109,7 +109,7 @@ class DENON extends EventEmitter {
                     const surroundMode = {
                         'surround': soundMode
                     }
-                    const emitMgtt = checkSoundMode ? this.emit('mqtt', 'Sound Mode', JSON.stringify(surroundMode, null, 2)) : false;
+                    const emitMgtt = mqttEnabled && checkSoundMode ? this.emit('mqtt', 'Sound Mode', JSON.stringify(surroundMode, null, 2)) : false;
                     this.checkState();
                 } catch (error) {
                     this.emit('error', `State error: ${error}, reconnect in 15s.`);
