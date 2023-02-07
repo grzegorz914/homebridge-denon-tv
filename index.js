@@ -892,14 +892,14 @@ class denonTvDevice {
 		};
 
 		//prepare inputs switch button ervices
+		this.inputSwitchButtonServices = [];
 		const inputsSwitchesButtons = this.inputsSwitchesButtons;
 		const inputsSwitchesButtonsCount = inputsSwitchesButtons.length;
-		const availableInputsSwitchesButtonsCount = 80 - maxInputsCount;
+		const availableInputsSwitchesButtonsCount = 80 - this.inputsReference.length;
 		const maxInputsSwitchesButtonsCount = availableInputsSwitchesButtonsCount > 0 ? (availableInputsSwitchesButtonsCount > inputsSwitchesButtonsCount ? inputsSwitchesButtonsCount : availableInputsSwitchesButtonsCount) : 0;
 		if (!this.getInputsFromDevice) {
 			if (maxInputsSwitchesButtonsCount > 0) {
 				this.log.debug('prepareSwitchsService');
-				this.inputSwitchButtonServices = [];
 				for (let i = 0; i < maxInputsSwitchesButtonsCount; i++) {
 					//get input index
 					const index = inputsSwitchesButtons[i];
@@ -943,14 +943,14 @@ class denonTvDevice {
 		};
 
 		//prepare sonsor services
+		this.sensorInputsServices = [];
 		const sensorInputs = this.sensorInputs;
 		const sensorInputsCount = sensorInputs.length;
-		const availableSensorInputsCount = 80 - maxInputsCount;
+		const availableSensorInputsCount = 80 - this.inputsReference.length;
 		const maxSensorInputsCount = availableSensorInputsCount > 0 ? (availableSensorInputsCount > sensorInputsCount ? sensorInputsCount : availableSensorInputsCount) : 0;
 		if (this.getInputsFromDevice) {
 			if (maxSensorInputsCount > 0) {
 				this.log.debug('prepareInputSensorServices');
-				this.sensorInputsServices = [];
 				for (let i = 0; i < maxSensorInputsCount; i++) {
 					//get sensor
 					const sensorInput = sensorInputs[i];
@@ -988,7 +988,7 @@ class denonTvDevice {
 			//check available buttons and possible count (max 80)
 			const buttons = this.buttons;
 			const buttonsCount = buttons.length;
-			const maxbuttonsCount = this.getInputsFromDevice ? this.sensorInputsServices : this.inputSwitchButtonServices;
+			const maxbuttonsCount = this.getInputsFromDevice ? this.inputsReference.length + this.sensorInputsServices.length : this.inputsReference.length + this.inputSwitchButtonServices.length;
 			const availableButtonsCount = 80 - (maxInputsCount + maxbuttonsCount);
 			const maxButtonsCount = availableButtonsCount > 0 ? (availableButtonsCount > buttonsCount ? buttonsCount : availableButtonsCount) : 0;
 			if (maxButtonsCount > 0) {
