@@ -70,7 +70,7 @@
         "USB",
         "APPLICATION"
     ],
-    "SoundMode": {
+    "SoundModeConversion": {
         "MOVIE": "MOVIE",
         "MUSIC": "MUSIC",
         "GAME": "GAME",
@@ -190,5 +190,19 @@
         "VIRTUAL": "VIRTUAL",
         "LEFT": "LEFT",
         "RIGHT": "RIGHT"
+    },
+    "InputConversion": {
+        "TV AUDIO": "TV",
+        "CBL/SAT": "SAT/CBL",
+        "INTERNET RADIO": "IRADIO",
+        "AIRPLAY": "NET",
+        "NETWORK": "NET",
+        "BLU-RAY": "BD",
+        "MEDIA PLAYER": "MPLAY",
+        "IPOD/USB": "USB/IPOD",
+        "QUICK SELECT1": "QUICK1",
+        "QUICK SELECT2": "QUICK2",
+        "QUICK SELECT3": "QUICK3",
+        "QUICK SELECT4": "QUICK4"
     }
 }

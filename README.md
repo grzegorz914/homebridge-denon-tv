@@ -79,19 +79,19 @@ This plugin is based upon the official documentation for communicating with and 
 | `inputs.name` | Here set *Input Name* which You want expose to the *Homebridge/HomeKit*. |
 | `inputs.reference` | Choose from available inputs, the inputs that should be published to and appear in HomeKit app in the device tile as inputs list |
 | `inputs.mode` | Choose from available inputs mode. |
-| `inputs.displayType` | Here select display type in HomeKit app, possible `None`, `Button`, `Switch`, `Motion Sensor`, `Occupancy Sensor`, `Contact Sensor`.|
+| `inputs.displayType` | Here select display type in HomeKit app, possible `None`, `Button`, `Switch`.|
 | `buttonsMainZone.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. |
 | `buttonsMainZone.reference` | Here choice function for additional control button for Main Zone. |
-| `buttonsMainZone.displayType` | Here select display type in HomeKit app, possible `Button`, `Switch`.|
+| `buttonsMainZone.displayType` | Here select display type in HomeKit app, possible `None`, `Button`, `Switch`.|
 | `buttonsZone2.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. |
 | `buttonsZone2.reference` | Here choice function for additional control button for Zone 2. |
-| `buttonsZone2.displayType` | Here select display type in HomeKit app, possible `Button`, `Switch`.|
+| `buttonsZone2.displayType` | Here select display type in HomeKit app, possible `None`, `Button`, `Switch`.|
 | `buttonsZone3.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. |
 | `buttonsZone3.reference` | Here choice function for additional control button for Zone 3. |
-| `buttonsZone3.displayType` | Here select display type in HomeKit app, possible `Button`, `Switch`.|
+| `buttonsZone3.displayType` | Here select display type in HomeKit app, possible `None`, `Button`, `Switch`.|
 | `surrounds.name` | Here set *Surround Mode Name* which You want expose to the *Homebridge/HomeKit*. |
 | `surrounds.reference` | Here choice *Surround Mode*, the mode that should be published to and appear in HomeKit app in the extra tile as Surrounds List. |
-| `surrounds.displayType` | Here select display type in HomeKit app, possible `None`, `Button`, `Switch`, `Motion Sensor`, `Occupancy Sensor`, `Contact Sensor`.|
+| `surrounds.displayType` | Here select display type in HomeKit app, possible `None`, `Button`, `Switch`.|
 | `enableDebugMode` | If enabled, deep log will be present in homebridge console. |
 | `disableLogInfo` | If enabled, disable log info, all values and state will not be displayed in Homebridge log console. |
 | `disableLogDeviceInfo` | If enabled, add ability to disable log device info by every connections device to the network. |
@@ -105,6 +105,8 @@ This plugin is based upon the official documentation for communicating with and 
 | `mqttPasswd` | Here set the MQTT Broker password. |
 | `mqttDebug` | If enabled, deep log will be present in homebridge console for MQTT. |
 | `AV Surround Mode` | This extra Accessory will control all functions of Main Zone except (Inputs and Buttons). |
+| `Display Type Inputs/Buttons` | -1 - `None`, 0 - `Button`, 1 - `Switch`.|
+| `Display Type Sensors` | -1 - `None`, 0 - `Motion Sensor`, 1 - `Occupancy Sensor`, 2 - `Contact Sensor`.|
 
 
 ```json
@@ -150,7 +152,7 @@ This plugin is based upon the official documentation for communicating with and 
                 {
                     "name": "POWER ON",
                     "reference": "ZMON",
-					"displayType": 0
+					"displayType": -1
                 }
             ],
             "enableDebugMode": false,
@@ -206,7 +208,7 @@ This plugin is based upon the official documentation for communicating with and 
                 {
                     "name": "POWER ON",
                     "reference": "Z2ON",
-					"displayType": 0
+					"displayType": -1
                 }
             ],
             "enableDebugMode": false,
@@ -262,7 +264,7 @@ This plugin is based upon the official documentation for communicating with and 
                 {
                     "name": "POWER ON",
                     "reference": "Z3ON",
-					"displayType": 0
+					"displayType": -1
                 }
             ],
             "enableDebugMode": false,

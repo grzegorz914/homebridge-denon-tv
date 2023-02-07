@@ -57,7 +57,7 @@
                         {
                             "name": "POWER ON",
                             "reference": "ZMON",
-                            "displayType": 0
+                            "displayType": -1
                         }
                     ],
                     "enableDebugMode": false,
@@ -113,7 +113,7 @@
                         {
                             "name": "POWER ON",
                             "reference": "Z2ON",
-                            "displayType": 0
+                            "displayType": -1
                         }
                     ],
                     "enableDebugMode": false,
@@ -169,7 +169,7 @@
                         {
                             "name": "POWER ON",
                             "reference": "Z3ON",
-                            "displayType": 0
+                            "displayType": -1
                         }
                     ],
                     "enableDebugMode": false,
