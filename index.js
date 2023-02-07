@@ -212,7 +212,22 @@ class denonTvDevice {
 				try {
 					const inputsArr = [];
 					if (this.getInputsFromDevice && this.zoneControl <= 2) {
+						const referencesArr = [];
 						const deviceInputs = devInfo.DeviceZoneCapabilities[this.zoneControl].InputSource[0].List[0].Source;
+						for (const input of deviceInputs) {
+							const name = input.DefaultName[0];
+							const referencesArray = Object.keys(CONSTANS.InputConversion)
+							const reference = referencesArray.includes((input.FuncName[0]).toUpperCase()) ? CONSTANS.InputConversion[(input.FuncName[0]).toUpperCase()] : (input.FuncName[0]).toUpperCase();
+							const inputsObj = {
+								'name': name,
+								'reference': reference,
+								'mode': 'SI',
+								"displayType": -1
+							}
+							inputsArr.push(inputsObj);
+							referencesArr.push(reference);
+						};
+
 						const deviceSchortcuts = devInfo.DeviceZoneCapabilities[this.zoneControl].ShortcutControl[0].EntryList[0].Shortcut;
 						for (const input of deviceSchortcuts) {
 							const category = input.Category[0];
@@ -225,7 +240,9 @@ class denonTvDevice {
 								'mode': ['', '', '', 'MS', 'SI'][category],
 								"displayType": -1
 							}
-							const push = category === '4' ? inputsArr.push(inputsObj) : false;
+
+							const existedInput = referencesArr.includes(reference);
+							const push = category === '4' && !existedInput ? inputsArr.push(inputsObj) : false;
 						};
 					};
 
