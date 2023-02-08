@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Note - after update to 3.15.x need remove the accessory frome Home app and add it again.
 
+## [3.23.0] - (08.02.2023)
+## Changes
+- added possibility to disable log device connect error
+- config.schema updated
+
 ## [3.22.0] - (07.02.2023)
 ## Changes
 - added possibility load inputs from device (release)

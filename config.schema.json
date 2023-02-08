@@ -239,6 +239,13 @@
               "description": "This disable log device info by every connections device to the network.",
               "required": false
             },
+            "disableLogConnectError": {
+              "title": "Disable Log Connect Error",
+              "type": "boolean",
+              "default": false,
+              "description": "This disable logging device connect error.",
+              "required": false
+            },
             "enableDebugMode": {
               "title": "Debug",
               "type": "boolean",
@@ -3665,6 +3672,7 @@
             "devices[].enableDebugMode",
             "devices[].disableLogInfo",
             "devices[].disableLogDeviceInfo",
+            "devices[].disableLogConnectError",
             "devices[].masterPower",
             "devices[].masterVolume",
             "devices[].masterMute",

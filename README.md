@@ -90,6 +90,7 @@ This plugin is based upon the official documentation for communicating with and 
 | `enableDebugMode` | If enabled, deep log will be present in homebridge console. |
 | `disableLogInfo` | If enabled, disable log info, all values and state will not be displayed in Homebridge log console. |
 | `disableLogDeviceInfo` | If enabled, add ability to disable log device info by every connections device to the network. |
+| `disableLogConnectError` | If enabled, disable logging device connect error. |
 | `masterPower` | If enabled, then the Power switch for that zone (typically you would only use this for the Main Zone) will turn the entire receiver `ON` or `OFF/STANDBY` rather than just the zone itself |
 | `masterVolume`| If enabled, then the Volume for that zone (typically you would only use this for the Main Zone) will set the entire receiver `UP` or `DOWN` rather than just the zone itself |
 | `masterMute`| If enabled, then the Mute switch for that zone (typically you would only use this for the Main Zone) will muted the entire receiver `ON` or `OFF` rather than just the zone itself |
@@ -158,6 +159,7 @@ This plugin is based upon the official documentation for communicating with and 
             "enableDebugMode": false,
             "disableLogInfo": false,
             "disableLogDeviceInfo": false,
+            "disableLogConnectError": false,
             "infoButtonCommand": "MNINF",
             "refreshInterval": 5,
             "enableMqtt": false,
@@ -214,6 +216,7 @@ This plugin is based upon the official documentation for communicating with and 
             "enableDebugMode": false,
             "disableLogInfo": false,
             "disableLogDeviceInfo": false,
+            "disableLogConnectError": false,
             "infoButtonCommand": "MNINF",
             "refreshInterval": 5,
             "enableMqtt": false,
@@ -270,6 +273,7 @@ This plugin is based upon the official documentation for communicating with and 
             "enableDebugMode": false,
             "disableLogInfo": false,
             "disableLogDeviceInfo": false,
+            "disableLogConnectError": false,
             "infoButtonCommand": "MNINF",
             "refreshInterval": 5,
             "enableMqtt": false,
@@ -309,6 +313,7 @@ This plugin is based upon the official documentation for communicating with and 
             "enableDebugMode": false,
             "disableLogInfo": false,
             "disableLogDeviceInfo": false,
+            "disableLogConnectError": false,
             "refreshInterval": 5,
             "infoButtonCommand": "MNINF",
             "enableMqtt": false,

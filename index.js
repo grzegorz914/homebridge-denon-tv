@@ -78,6 +78,7 @@ class denonTvDevice {
 		this.sensorInputs = config.sensorInputs || [];
 		this.disableLogInfo = config.disableLogInfo || false;
 		this.disableLogDeviceInfo = config.disableLogDeviceInfo || false;
+		this.disableLogConnectError = config.disableLogConnectError || false;
 		this.enableDebugMode = config.enableDebugMode || false;
 		this.getInputsFromDevice = config.getInputsFromDevice || false;
 		this.inputs = config.inputs || [];
@@ -171,6 +172,7 @@ class denonTvDevice {
 			host: this.host,
 			port: this.port,
 			debugLog: this.enableDebugMode,
+			disableLogConnectError: this.disableLogConnectError,
 			zoneControl: this.zoneControl,
 			refreshInterval: this.refreshInterval,
 			mqttEnabled: this.mqttEnabled
@@ -346,8 +348,8 @@ class denonTvDevice {
 				}
 
 				if (!this.getInputsFromDevice && this.inputSwitchButtonServices) {
-					const switchServicesCount = this.inputSwitchButtonServices.length;
-					for (let i = 0; i < switchServicesCount; i++) {
+					const switchButtonServicesCount = this.inputSwitchButtonServices.length;
+					for (let i = 0; i < switchButtonServicesCount; i++) {
 						const index = this.inputsSwitchesButtons[i];
 						const state = power ? (this.inputsReference[index] === reference) : false;
 						const displayType = this.inputsDisplayType[index];

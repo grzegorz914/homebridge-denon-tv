@@ -22,6 +22,7 @@ class DENON extends EventEmitter {
         const host = config.host;
         const port = config.port;
         const debugLog = config.debugLog;
+        const disableLogConnectError = config.disableLogConnectError;
         const zoneControl = config.zoneControl;
         const mqttEnabled = config.mqttEnabled;
         this.refreshInterval = config.refreshInterval;
@@ -74,7 +75,7 @@ class DENON extends EventEmitter {
                 await new Promise(resolve => setTimeout(resolve, 1000));
                 this.emit('checkState');
             } catch (error) {
-                this.emit('error', `Info error: ${error}, reconnect in 15s.`)
+                const debug = disableLogConnectError ? false : this.emit('error', `Info error: ${error}, reconnect in 15s.`)
                 this.checkDeviceInfo();
             };
         })
@@ -110,7 +111,7 @@ class DENON extends EventEmitter {
                     const mqtt2 = mqttEnabled && zoneControl === 3 ? this.emit('mqtt', 'Sound Mode', JSON.stringify({ 'surround': zoneControl === 3 ? reference : '' }, null, 2)) : false;
                     this.checkState();
                 } catch (error) {
-                    this.emit('error', `State error: ${error}, reconnect in 15s.`);
+                    const debug = disableLogConnectError ? false : this.emit('error', `State error: ${error}, reconnect in 15s.`);
                     const firstRun = this.checkStateOnFirstRun ? this.checkDeviceInfo() : this.emit('disconnect');
                 };
             })
@@ -139,7 +140,7 @@ class DENON extends EventEmitter {
                 await this.axiosInstance(apiUrl);
                 resolve(true);
             } catch (error) {
-                this.emit('error', `Send command error: ${error}`);
+                this.emit('error', error);
                 reject(error);
             };
         });
