@@ -192,7 +192,15 @@ class denonTvDevice {
 					if (!fs.existsSync(this.devInfoFile)) {
 						await fsPromises.writeFile(this.devInfoFile, '');
 					}
-					await fsPromises.writeFile(this.devInfoFile, JSON.stringify(devInfo, null, 2));
+
+					//save device info to the file
+					try {
+						const devInfo1 = JSON.stringify(devInfo, null, 2);
+						const writeDevInfo = await fsPromises.writeFile(this.devInfoFile, devInfo1);
+						const debug = this.enableDebugMode ? this.log(`Device: ${this.host} ${this.name}, saved device info: ${devInfo1}`) : false;
+					} catch (error) {
+						this.log.error(`Device: ${this.host} ${this.name}, save device info error: ${error}`);
+					};
 				}
 
 				// Create inputs file if it doesn't exist
@@ -251,7 +259,7 @@ class denonTvDevice {
 					const allInputsArr = this.zoneControl <= 2 ? (this.getInputsFromDevice ? inputsArr : this.inputs) : this.soundModes;
 					const inputs = JSON.stringify(allInputsArr, null, 2);
 					const writeInputs = await fsPromises.writeFile(this.inputsFile, inputs);
-					const debug = this.enableDebugMode ? this.log(`Device: ${this.host} ${this.name}, save ${this.zoneControl <= 2 ? 'Inputs' : 'Sound Modes'} succesful: ${inputs}`) : false;
+					const debug = this.enableDebugMode ? this.log(`Device: ${this.host} ${this.name}, saved ${this.zoneControl <= 2 ? 'Inputs' : 'Sound Modes'}: ${inputs}`) : false;
 				} catch (error) {
 					this.log.error(`Device: ${this.host} ${this.name}, save ${this.zoneControl <= 2 ? 'Inputs' : 'Sound Modes'} error: ${error}`);
 				};
@@ -260,7 +268,6 @@ class denonTvDevice {
 			};
 		})
 			.on('deviceInfo', (manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion) => {
-
 				if (!this.disableLogDeviceInfo) {
 					this.log(`-------- ${this.name} --------`);
 					this.log(`Manufacturer: ${manufacturer}`);
@@ -818,13 +825,13 @@ class denonTvDevice {
 		//prepare input service
 		this.log.debug('prepareInputsService');
 		const savedInputs = fs.readFileSync(this.inputsFile).length > 0 ? JSON.parse(fs.readFileSync(this.inputsFile)) : (this.zoneControl <= 2 ? this.inputs : this.soundModes);
-		const debug = this.enableDebugMode ? this.log(`Device: ${this.host} ${this.name}, read saved ${this.zoneControl <= 2 ? 'Input' : 'Sound Mode'}, successful: ${JSON.stringify(savedInputs, null, 2)}`) : false;
+		const debug = this.enableDebugMode ? this.log(`Device: ${this.host} ${this.name}, read saved ${this.zoneControl <= 2 ? 'Inputs' : 'Sound Modes'}: ${JSON.stringify(savedInputs, null, 2)}`) : false;
 
 		const savedInputsNames = fs.readFileSync(this.inputsNamesFile).length > 0 ? JSON.parse(fs.readFileSync(this.inputsNamesFile)) : {};
-		const debug1 = this.enableDebugMode ? this.log(`Device: ${this.host} ${this.name}, read saved custom ${this.zoneControl <= 2 ? 'Input' : 'Sound Mode'}, Names successful: ${JSON.stringify(savedInputsNames, null, 2)}`) : false;
+		const debug1 = this.enableDebugMode ? this.log(`Device: ${this.host} ${this.name}, read saved ${this.zoneControl <= 2 ? 'Inputs' : 'Sound Modes'} names: ${JSON.stringify(savedInputsNames, null, 2)}`) : false;
 
 		const savedInputsTargetVisibility = fs.readFileSync(this.inputsTargetVisibilityFile).length > 0 ? JSON.parse(fs.readFileSync(this.inputsTargetVisibilityFile)) : {};
-		const debug2 = this.enableDebugMode ? this.log(`Device: ${this.host} ${this.name}, read saved ${this.zoneControl <= 2 ? 'Input' : 'Sound Mode'}, Target Visibility successful: ${JSON.stringify(savedInputsTargetVisibility, null, 2)}`) : false;
+		const debug2 = this.enableDebugMode ? this.log(`Device: ${this.host} ${this.name}, read saved ${this.zoneControl <= 2 ? 'Inputs' : 'Sound Modes'}, Target Visibility states: ${JSON.stringify(savedInputsTargetVisibility, null, 2)}`) : false;
 
 		//check available inputs and possible count (max 80)
 		const inputs = savedInputs;
@@ -877,9 +884,9 @@ class denonTvDevice {
 						const newCustomName = JSON.stringify(savedInputsNames, null, 2);
 
 						const writeNewCustomName = nameIdentifier ? await fsPromises.writeFile(this.inputsNamesFile, newCustomName) : false;
-						const logInfo = this.disableLogInfo ? false : this.log(`Device: ${this.host} ${accessoryName}, new ${zoneControl <= 2 ? 'Input' : 'Sound Mode'} name saved successful, name: ${name}, reference: ${inputReference}`);
+						const logInfo = this.disableLogInfo ? false : this.log(`Device: ${this.host} ${accessoryName}, saved new ${zoneControl <= 2 ? 'Input' : 'Sound Mode'} name: ${name}, reference: ${inputReference}`);
 					} catch (error) {
-						this.log.error(`Device: ${this.host} ${accessoryName}, new Input name saved failed, error: ${error}`);
+						this.log.error(`Device: ${this.host} ${accessoryName}, new Input name save error: ${error}`);
 					}
 				});
 
@@ -892,10 +899,10 @@ class denonTvDevice {
 						const newTargetVisibility = JSON.stringify(savedInputsTargetVisibility, null, 2);
 
 						const writeNewTargetVisibility = targetVisibilityIdentifier ? await fsPromises.writeFile(this.inputsTargetVisibilityFile, newTargetVisibility) : false;
-						const logInfo = this.disableLogInfo ? false : this.log(`Device: ${this.host} ${accessoryName}, new ${zoneControl <= 2 ? 'Input' : 'Sound Mode'}: ${inputName}, saved target visibility state: ${state ? 'HIDEN' : 'SHOWN'}`);
+						const logInfo = this.disableLogInfo ? false : this.log(`Device: ${this.host} ${accessoryName}, saved new ${zoneControl <= 2 ? 'Input' : 'Sound Mode'}: ${inputName}, target visibility state: ${state ? 'HIDEN' : 'SHOWN'}`);
 						inputService.setCharacteristic(Characteristic.CurrentVisibilityState, state);
 					} catch (error) {
-						this.log.error(`Device: ${this.host} ${accessoryName}, saved target visibility state error: ${error}`);
+						this.log.error(`Device: ${this.host} ${accessoryName}, new target visibility state save error: ${error}`);
 					}
 				});
 

@@ -54,7 +54,7 @@ class DENON extends EventEmitter {
                 const devInfo = parseDeviceInfo.Device_Info;
                 const debug = debugLog ? this.emit('debug', `Info: ${JSON.stringify(devInfo, null, 2)}`) : false;
 
-                const manufacturer = ['Denon', 'Marantz'][devInfo.BrandCode[0]] || 'Marantz';
+                const manufacturer = ['Denon', 'Marantz'][devInfo.BrandCode[0]] || 'Denon/Marantz';
                 const modelName = devInfo.ModelName[0] || 'undefined';
                 const serialNumber = devInfo.MacAddress[0] || false;
                 const firmwareRevision = devInfo.UpgradeVersion[0] || 'undefined';
