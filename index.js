@@ -931,39 +931,41 @@ class denonTvDevice {
 					const index = inputsSwitchesButtons[i];
 
 					//get name		
-					const inputName = this.inputsName[index];
+					const inputName = this.inputsName[index] || 'Not set';
 
 					//get reference
-					const inputReference = this.inputsReference[index];
+					const inputReference = this.inputsReference[index] || 'Not set';
 
 					//get mode
 					const inputMode = (zoneControl <= 2) ? this.inputsMode[index] : 'MS';
 
 					//get display type
-					const inputDisplayType = this.inputsDisplayType[index];
+					const inputDisplayType = this.inputsDisplayType[index] || -1;
 
-					const serviceType = [Service.Outlet, Service.Switch][inputDisplayType];
-					const characteristicType = [Characteristic.On, Characteristic.On][inputDisplayType];
-					const inputSwitchButtonService = new serviceType(`${this.sZoneName} ${inputName}`, `Switch ${i}`);
-					inputSwitchButtonService.getCharacteristic(characteristicType)
-						.onGet(async () => {
-							const state = this.power ? (this.reference === inputReference) : false;
-							return state;
-						})
-						.onSet(async (state) => {
-							try {
-								const zone = [inputMode, 'Z2', 'Z3', inputMode][zoneControl];
-								const reference = zone + inputReference;
+					if (inputDisplayType >= 0) {
+						const serviceType = [Service.Outlet, Service.Switch][inputDisplayType];
+						const characteristicType = [Characteristic.On, Characteristic.On][inputDisplayType];
+						const inputSwitchButtonService = new serviceType(`${this.sZoneName} ${inputName}`, `Switch ${i}`);
+						inputSwitchButtonService.getCharacteristic(characteristicType)
+							.onGet(async () => {
+								const state = this.power ? (this.reference === inputReference) : false;
+								return state;
+							})
+							.onSet(async (state) => {
+								try {
+									const zone = [inputMode, 'Z2', 'Z3', inputMode][zoneControl];
+									const reference = zone + inputReference;
 
-								const setSwitchInput = (state && this.power) ? await this.denon.send(CONSTANS.ApiUrls.iPhoneDirect + reference) : false;
-								const logInfo = this.disableLogInfo ? false : this.log(`Device: ${this.host} ${accessoryName}, set new ${zoneControl <= 2 ? 'Input' : 'Sound Mode'} successful, name: ${inputName}, reference: ${inputReference}`);
-							} catch (error) {
-								this.log.error(`Device: ${this.host} ${accessoryName}, can not set new ${zoneControl <= 2 ? 'Input' : 'Sound Mode'}. Might be due to a wrong settings in config, error: ${error}`);
-							};
-						});
+									const setSwitchInput = (state && this.power) ? await this.denon.send(CONSTANS.ApiUrls.iPhoneDirect + reference) : false;
+									const logInfo = this.disableLogInfo ? false : this.log(`Device: ${this.host} ${accessoryName}, set new ${zoneControl <= 2 ? 'Input' : 'Sound Mode'} successful, name: ${inputName}, reference: ${inputReference}`);
+								} catch (error) {
+									this.log.error(`Device: ${this.host} ${accessoryName}, can not set new ${zoneControl <= 2 ? 'Input' : 'Sound Mode'}. Might be due to a wrong settings in config, error: ${error}`);
+								};
+							});
 
-					this.inputSwitchButtonServices.push(inputSwitchButtonService);
-					accessory.addService(this.inputSwitchButtonServices[i]);
+						this.inputSwitchButtonServices.push(inputSwitchButtonService);
+						accessory.addService(this.inputSwitchButtonServices[i]);
+					}
 				}
 			};
 		};
@@ -982,10 +984,10 @@ class denonTvDevice {
 					const sensorInput = sensorInputs[i];
 
 					//get name		
-					const sensorInputName = sensorInput.name || 'Not set in config';
+					const sensorInputName = sensorInput.name || 'Not set';
 
 					//get reference
-					const sensorInputReference = sensorInput.reference || 'Not set in config';
+					const sensorInputReference = sensorInput.reference || 'Not set';
 
 					//get display type
 					const sensorInputDisplayType = sensorInput.displayType || -1;
@@ -1021,10 +1023,10 @@ class denonTvDevice {
 				this.log.debug('prepareButtonsService');
 				for (const button of buttons) {
 					//get button name
-					const buttonName = button.name || 'Not set in config';
+					const buttonName = button.name || 'Not set';
 
 					//get button reference
-					const buttonReference = button.reference || 'Not set in config'
+					const buttonReference = button.reference || 'Not set'
 
 					//get button display type
 					const buttonDisplayType = button.displayType || -1;
