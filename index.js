@@ -833,7 +833,7 @@ class denonTvDevice {
 		const savedInputsTargetVisibility = fs.readFileSync(this.inputsTargetVisibilityFile).length > 0 ? JSON.parse(fs.readFileSync(this.inputsTargetVisibilityFile)) : {};
 		const debug2 = this.enableDebugMode ? this.log(`Device: ${this.host} ${this.name}, read saved ${this.zoneControl <= 2 ? 'Inputs' : 'Sound Modes'}, Target Visibility states: ${JSON.stringify(savedInputsTargetVisibility, null, 2)}`) : false;
 
-		//check available inputs and possible count (max 80)
+		//check possible inputs and possible count (max 80)
 		const inputs = savedInputs;
 		const inputsCount = inputs.length;
 		const maxInputsCount = inputsCount < 80 ? inputsCount : 80;
@@ -921,8 +921,8 @@ class denonTvDevice {
 		this.inputSwitchButtonServices = [];
 		const inputsSwitchesButtons = this.inputsSwitchesButtons;
 		const inputsSwitchesButtonsCount = inputsSwitchesButtons.length;
-		const availableInputsSwitchesButtonsCount = 80 - this.inputsReference.length;
-		const maxInputsSwitchesButtonsCount = availableInputsSwitchesButtonsCount > 0 ? (availableInputsSwitchesButtonsCount > inputsSwitchesButtonsCount ? inputsSwitchesButtonsCount : availableInputsSwitchesButtonsCount) : 0;
+		const possibleInputsSwitchesButtonsCount = 80 - this.inputsReference.length;
+		const maxInputsSwitchesButtonsCount = possibleInputsSwitchesButtonsCount >= inputsSwitchesButtonsCount ? inputsSwitchesButtonsCount : possibleInputsSwitchesButtonsCount;
 		if (!this.getInputsFromDevice) {
 			if (maxInputsSwitchesButtonsCount > 0) {
 				this.log.debug('prepareSwitchsService');
@@ -940,7 +940,7 @@ class denonTvDevice {
 					const inputMode = (zoneControl <= 2) ? this.inputsMode[index] : 'MS';
 
 					//get display type
-					const inputDisplayType = this.inputsDisplayType[index] || -1;
+					const inputDisplayType = this.inputsDisplayType[index] >= 0 ? this.inputsDisplayType[index] : -1;
 
 					if (inputDisplayType >= 0) {
 						const serviceType = [Service.Outlet, Service.Switch][inputDisplayType];
@@ -974,8 +974,8 @@ class denonTvDevice {
 		this.sensorInputsServices = [];
 		const sensorInputs = this.sensorInputs;
 		const sensorInputsCount = sensorInputs.length;
-		const availableSensorInputsCount = 80 - this.inputsReference.length;
-		const maxSensorInputsCount = availableSensorInputsCount > 0 ? (availableSensorInputsCount > sensorInputsCount ? sensorInputsCount : availableSensorInputsCount) : 0;
+		const possibleSensorInputsCount = 80 - this.inputsReference.length;
+		const maxSensorInputsCount = possibleSensorInputsCount >= sensorInputsCount ? sensorInputsCount : possibleSensorInputsCount;
 		if (this.getInputsFromDevice) {
 			if (maxSensorInputsCount > 0) {
 				this.log.debug('prepareInputSensorServices');
@@ -990,12 +990,12 @@ class denonTvDevice {
 					const sensorInputReference = sensorInput.reference || 'Not set';
 
 					//get display type
-					const sensorInputDisplayType = sensorInput.displayType || -1;
+					const sensorInputDisplayType = sensorInput.displayType >= 0 ? sensorInput.displayType : -1;
 
 					if (sensorInputDisplayType >= 0) {
 						const serviceType = [Service.MotionSensor, Service.OccupancySensor, Service.ContactSensor][sensorInputDisplayType];
 						const characteristicType = [Characteristic.MotionDetected, Characteristic.OccupancyDetected, Characteristic.ContactSensorState][sensorInputDisplayType];
-						const sensorInputService = new serviceType(`${accessoryName} ${sensorInputName}`, `Sensor ${sensorInputName}`);
+						const sensorInputService = new serviceType(`${accessoryName} ${sensorInputName}`, `Sensor ${i}`);
 						sensorInputService.getCharacteristic(characteristicType)
 							.onGet(async () => {
 								const state = this.power ? (this.reference === sensorInputReference) : false;
@@ -1013,15 +1013,18 @@ class denonTvDevice {
 
 		//prepare button services zone 0 to 2
 		if (zoneControl <= 2) {
-			//check available buttons and possible count (max 80)
+			this.buttonsServices = [];
 			const buttons = this.buttons;
 			const buttonsCount = buttons.length;
 			const maxbuttonsCount = this.getInputsFromDevice ? this.inputsReference.length + this.sensorInputsServices.length : this.inputsReference.length + this.inputSwitchButtonServices.length;
-			const availableButtonsCount = 80 - (maxInputsCount + maxbuttonsCount);
-			const maxButtonsCount = availableButtonsCount > 0 ? (availableButtonsCount > buttonsCount ? buttonsCount : availableButtonsCount) : 0;
+			const possibleButtonsCount = 80 - (maxInputsCount + maxbuttonsCount);
+			const maxButtonsCount = possibleButtonsCount >= buttonsCount ? buttonsCount : possibleButtonsCount;
 			if (maxButtonsCount > 0) {
-				this.log.debug('prepareButtonsService');
-				for (const button of buttons) {
+				this.log.debug('prepareInputsButtonService');
+				for (let i = 0; i < maxButtonsCount; i++) {
+					//get button
+					const button = buttons[i];
+
 					//get button name
 					const buttonName = button.name || 'Not set';
 
@@ -1029,11 +1032,11 @@ class denonTvDevice {
 					const buttonReference = button.reference || 'Not set'
 
 					//get button display type
-					const buttonDisplayType = button.displayType || -1;
+					const buttonDisplayType = button.displayType >= 0 ? button.displayType : -1;
 
 					if (buttonDisplayType >= 0) {
 						const serviceType = [Service.Outlet, Service.Switch][buttonDisplayType];
-						const buttonService = new serviceType(`${this.sZoneName} ${buttonName}`, `Button ${buttonName}`);
+						const buttonService = new serviceType(`${this.sZoneName} ${buttonName}`, `Button ${i}`);
 						buttonService.getCharacteristic(Characteristic.On)
 							.onGet(async () => {
 								const state = false;
@@ -1050,7 +1053,8 @@ class denonTvDevice {
 									this.log.error(`Device: ${this.host} ${accessoryName}, can not set new ${zoneControl <= 2 ? 'Input' : 'Sound Mode'}. Might be due to a wrong settings in config, error: ${error}`);
 								};
 							});
-						accessory.addService(buttonService);
+						this.buttonsServices.push(buttonService);
+						accessory.addService(this.buttonsServices[i]);
 					}
 				};
 			}
