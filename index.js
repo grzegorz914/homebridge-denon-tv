@@ -223,8 +223,8 @@ class denonTvDevice {
 					const inputsArr = [];
 					if (this.getInputsFromDevice && this.zoneControl <= 2) {
 						const referencesArr = [];
-						const deviceInputs = devInfo.DeviceZoneCapabilities[this.zoneControl].InputSource[0].List[0].Source;
 						const inputConversionArray = Object.keys(CONSTANS.InputConversion);
+						const deviceInputs = devInfo.DeviceZoneCapabilities[this.zoneControl].InputSource[0].List[0].Source;
 						for (const input of deviceInputs) {
 							const name = input.DefaultName[0];
 							const inputReference = (input.FuncName[0]).toUpperCase();
@@ -244,8 +244,7 @@ class denonTvDevice {
 							const category = input.Category[0];
 							const name = input.DispName[0];
 							const inputReference = (input.FuncName[0]).toUpperCase();
-							const referencesArray = Object.keys(CONSTANS.InputConversion)
-							const reference = referencesArray.includes(inputReference) ? CONSTANS.InputConversion[inputReference] : inputReference;
+							const reference = inputConversionArray.includes(inputReference) ? CONSTANS.InputConversion[inputReference] : inputReference;
 							const inputsObj = {
 								'name': name,
 								'reference': reference,
