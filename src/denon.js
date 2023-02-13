@@ -95,7 +95,7 @@ class DENON extends EventEmitter {
                     const mute = power ? (devState.Mute[0].value[0] == 'on') : true;
 
                     const conversionArray = zoneControl <= 2 ? Object.keys(CONSTANS.InputConversion) : Object.keys(CONSTANS.SoundModeConversion);
-                    const reference = zoneControl <= 2 ? conversionArray.includes(devState.InputFuncSelect[0].value[0]) ? CONSTANS.InputConversion[(devState.InputFuncSelect[0].value[0])] : (devState.InputFuncSelect[0].value[0]).toUpperCase()
+                    const reference = zoneControl <= 2 ? conversionArray.includes(devState.InputFuncSelect[0].value[0]) ? CONSTANS.InputConversion[devState.InputFuncSelect[0].value[0]] : (devState.InputFuncSelect[0].value[0]).toUpperCase()
                         : conversionArray.includes((parseDeviceSoundMode.rx.cmd[0].surround[0]).replace(/[^a-zA-Z0-9]/g, '').toUpperCase()) ? CONSTANS.SoundModeConversion[(parseDeviceSoundMode.rx.cmd[0].surround[0]).replace(/[^a-zA-Z0-9]/g, '').toUpperCase()] : (parseDeviceSoundMode.rx.cmd[0].surround[0]).replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
 
                     this.checkStateOnFirstRun = false;
