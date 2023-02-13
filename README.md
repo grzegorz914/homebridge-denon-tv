@@ -67,26 +67,26 @@ This plugin is based upon the official documentation for communicating with and 
 | `inputs.name` | Here set *Input Name* which You want expose to the *Homebridge/HomeKit*. |
 | `inputs.reference` | Choose from available inputs, the inputs that should be published to and appear in HomeKit app in the device tile as inputs list |
 | `inputs.mode` | Choose from available inputs mode. |
-| `inputs.displayType` | Here select display type in HomeKit app, possible `None`, `Outlet`, `Switch`.|
+| `inputs.displayType` | Here select display type in HomeKit app, possible `None/Disabled`, `Outlet`, `Switch`.|
 | `buttonsMainZone.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. |
 | `buttonsMainZone.reference` | Here choice function for additional control button for Main Zone. |
-| `buttonsMainZone.displayType` | Here select display type in HomeKit app, possible `None`, `Outlet`, `Switch`.|
+| `buttonsMainZone.displayType` | Here select display type in HomeKit app, possible `None/Disabled`, `Outlet`, `Switch`.|
 | `buttonsZone2.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. |
 | `buttonsZone2.reference` | Here choice function for additional control button for Zone 2. |
-| `buttonsZone2.displayType` | Here select display type in HomeKit app, possible `None`, `Outlet`, `Switch`.|
+| `buttonsZone2.displayType` | Here select display type in HomeKit app, possible `None/Disabled`, `Outlet`, `Switch`.|
 | `buttonsZone3.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. |
 | `buttonsZone3.reference` | Here choice function for additional control button for Zone 3. |
-| `buttonsZone3.displayType` | Here select display type in HomeKit app, possible `None`, `Outlet`, `Switch`.|
+| `buttonsZone3.displayType` | Here select display type in HomeKit app, possible `None/Disabled`, `Outlet`, `Switch`.|
 | `sensorPower`| If enabled, then the Power will be exposed as a `Motion Sensor` (active on Power ON) to use with automations. |
 | `sensorVolume`| If enabled, then the Volume will be exposed as a `Motion Sensor` (active on every Volume change) to use with automations. |
 | `sensorMute`| If enabled, then the Mute will be exposed as a `Motion Sensor` (active on Mute ON) to use with automations. |
 | `sensorInput`| If enabled, then the Input will be exposed as a `Motion Sensor` (active on every Input change) to use with automations. |
 | `sensorInputs.name` | Here set own *Name* which You want expose to the *Homebridge/HomeKit* for this sensor. |
 | `sensorInputs.reference` | Here set *Reference* like `CBL/SAT`, `GAME` to be exposed as sensor (active on switch to this Input). | 
-| `sensorInputs.displayType` | Here select sensor type to be exposed in HomeKit app, possible `None`, `Motion Sensor`, `Occupancy Sensor`, `Contact Sensor`. |
+| `sensorInputs.displayType` | Here select sensor type to be exposed in HomeKit app, possible `None/Disabled`, `Motion Sensor`, `Occupancy Sensor`, `Contact Sensor`. |
 | `surrounds.name` | Here set *Surround Mode Name* which You want expose to the *Homebridge/HomeKit*. |
 | `surrounds.reference` | Here choice *Surround Mode*, the mode that should be published to and appear in HomeKit app in the extra tile as Surrounds List. |
-| `surrounds.displayType` | Here select display type in HomeKit app, possible `None`, `Outlet`, `Switch`.|
+| `surrounds.displayType` | Here select display type in HomeKit app, possible `None/Disabled`, `Outlet`, `Switch`.|
 | `enableDebugMode` | If enabled, deep log will be present in homebridge console. |
 | `disableLogInfo` | If enabled, disable log info, all values and state will not be displayed in Homebridge log console. |
 | `disableLogDeviceInfo` | If enabled, add ability to disable log device info by every connections device to the network. |
@@ -94,7 +94,7 @@ This plugin is based upon the official documentation for communicating with and 
 | `masterPower` | If enabled, then the Power switch for that zone (typically you would only use this for the Main Zone) will turn the entire receiver `ON` or `OFF/STANDBY` rather than just the zone itself |
 | `masterVolume`| If enabled, then the Volume for that zone (typically you would only use this for the Main Zone) will set the entire receiver `UP` or `DOWN` rather than just the zone itself |
 | `masterMute`| If enabled, then the Mute switch for that zone (typically you would only use this for the Main Zone) will muted the entire receiver `ON` or `OFF` rather than just the zone itself |
-| `volumeControl` | Here choice what a additional volume control mode You want to use (None, Lightbulb, Fan). |
+| `volumeControl` | Here choice what a additional volume control mode You want to use (`None/Disabled`, `Lightbulb`, `Fan`). |
 | `infoButtonCommand` | Here select the function of `I` button in RC app. |
 | `refreshInterval` | Here set the data refresh interval. |
 | `enableMqtt` | If enabled, MQTT Broker will start automatically and publish all awailable PV installation data. |
@@ -106,8 +106,9 @@ This plugin is based upon the official documentation for communicating with and 
 | `mqttPasswd` | Here set the MQTT Broker password. |
 | `mqttDebug` | If enabled, deep log will be present in homebridge console for MQTT. |
 | `AV Surround Mode` | This extra Accessory will control all functions of Main Zone except (Inputs and Buttons). |
-| `Display Type Inputs/Buttons` | -1 - `None`, 0 - `Outlet`, 1 - `Switch`.|
-| `Display Type Sensors` | -1 - `None`, 0 - `Motion Sensor`, 1 - `Occupancy Sensor`, 2 - `Contact Sensor`.|
+| `Volume Control` | -1 - `None/Disabled`, 0 - `Slider`, 1 - `Fan`.|
+| `Display Type Inputs/Buttons` | -1 - `None/Disabled`, 0 - `Outlet`, 1 - `Switch`.|
+| `Display Type Sensors` | -1 - `None/Disabled`, 0 - `Motion Sensor`, 1 - `Occupancy Sensor`, 2 - `Contact Sensor`.|
 
 
 ```json
@@ -119,21 +120,6 @@ This plugin is based upon the official documentation for communicating with and 
             "host": "192.168.1.5",
             "port": 8080,
             "zoneControl": 0,
-            "volumeControl": 0,
-            "masterPower": false,
-            "masterVolume": false,
-            "masterMute": false,
-            "sensorPower": false,
-            "sensorVolume": false,
-            "sensorMute": false,
-            "sensorInput": false,
-            "sensorInputs": [
-                {
-                    "name": "Tuner Sat",
-                    "reference": "CBL/SAT",
-                    "displayType": -1
-                }
-            ],
             "getInputsFromDevice": false,
             "inputs": [
                 {
@@ -156,30 +142,6 @@ This plugin is based upon the official documentation for communicating with and 
 					"displayType": -1
                 }
             ],
-            "enableDebugMode": false,
-            "disableLogInfo": false,
-            "disableLogDeviceInfo": false,
-            "disableLogConnectError": false,
-            "infoButtonCommand": "MNINF",
-            "refreshInterval": 5,
-            "enableMqtt": false,
-            "mqttHost": "192.168.1.33",
-            "mqttPort": 1883,
-            "mqttPrefix": "home/denon",
-            "mqttAuth": false,
-            "mqttUser": "user",
-            "mqttPass": "password",
-            "mqttDebug": false
-        },
-        {
-            "name": "AV Zone 1",
-            "host": "192.168.1.5",
-            "port": 8080,
-            "zoneControl": 1,
-            "volumeControl": 0,
-            "masterPower": false,
-            "masterVolume": false,
-            "masterMute": false,
             "sensorPower": false,
             "sensorVolume": false,
             "sensorMute": false,
@@ -191,6 +153,30 @@ This plugin is based upon the official documentation for communicating with and 
                     "displayType": -1
                 }
             ],
+            "enableDebugMode": false,
+            "disableLogInfo": false,
+            "disableLogDeviceInfo": false,
+            "disableLogConnectError": false,
+            "masterPower": false,
+            "masterVolume": false,
+            "masterMute": false,
+            "infoButtonCommand": "MNINF",
+            "volumeControl": 0,
+            "refreshInterval": 5,
+            "enableMqtt": false,
+            "mqttDebug": false,
+            "mqttHost": "192.168.1.33",
+            "mqttPort": 1883,
+            "mqttPrefix": "home/denon",
+            "mqttAuth": false,
+            "mqttUser": "user",
+            "mqttPass": "password"
+        },
+        {
+            "name": "AV Zone 1",
+            "host": "192.168.1.5",
+            "port": 8080,
+            "zoneControl": 1,
             "getInputsFromDevice": false,
             "inputs": [
                 {
@@ -213,30 +199,6 @@ This plugin is based upon the official documentation for communicating with and 
 					"displayType": -1
                 }
             ],
-            "enableDebugMode": false,
-            "disableLogInfo": false,
-            "disableLogDeviceInfo": false,
-            "disableLogConnectError": false,
-            "infoButtonCommand": "MNINF",
-            "refreshInterval": 5,
-            "enableMqtt": false,
-            "mqttHost": "192.168.1.33",
-            "mqttPort": 1883,
-            "mqttPrefix": "home/denon",
-            "mqttAuth": false,
-            "mqttUser": "user",
-            "mqttPass": "password",
-            "mqttDebug": false
-        },
-        {
-            "name": "AV Zone 2",
-            "host": "192.168.1.5",
-            "port": 8080,
-            "zoneControl": 2,
-            "volumeControl": 0,
-            "masterPower": false,
-            "masterVolume": false,
-            "masterMute": false,
             "sensorPower": false,
             "sensorVolume": false,
             "sensorMute": false,
@@ -248,6 +210,30 @@ This plugin is based upon the official documentation for communicating with and 
                     "displayType": -1
                 }
             ],
+            "enableDebugMode": false,
+            "disableLogInfo": false,
+            "disableLogDeviceInfo": false,
+            "disableLogConnectError": false,
+            "masterPower": false,
+            "masterVolume": false,
+            "masterMute": false,
+            "infoButtonCommand": "MNINF",
+            "volumeControl": 0,
+            "refreshInterval": 5,
+            "enableMqtt": false,
+            "mqttDebug": false,
+            "mqttHost": "192.168.1.33",
+            "mqttPort": 1883,
+            "mqttPrefix": "home/denon",
+            "mqttAuth": false,
+            "mqttUser": "user",
+            "mqttPass": "password"
+        },
+        {
+            "name": "AV Zone 2",
+            "host": "192.168.1.5",
+            "port": 8080,
+            "zoneControl": 2,
             "getInputsFromDevice": false,
             "inputs": [
                 {
@@ -270,34 +256,41 @@ This plugin is based upon the official documentation for communicating with and 
 					"displayType": -1
                 }
             ],
+            "sensorPower": false,
+            "sensorVolume": false,
+            "sensorMute": false,
+            "sensorInput": false,
+            "sensorInputs": [
+                {
+                    "name": "Tuner Sat",
+                    "reference": "CBL/SAT",
+                    "displayType": -1
+                }
+            ],
             "enableDebugMode": false,
             "disableLogInfo": false,
             "disableLogDeviceInfo": false,
             "disableLogConnectError": false,
+            "masterPower": false,
+            "masterVolume": false,
+            "masterMute": false,
             "infoButtonCommand": "MNINF",
+            "volumeControl": 0,
             "refreshInterval": 5,
             "enableMqtt": false,
+            "mqttDebug": false,
             "mqttHost": "192.168.1.33",
             "mqttPort": 1883,
             "mqttPrefix": "home/denon",
             "mqttAuth": false,
             "mqttUser": "user",
-            "mqttPass": "password",
-            "mqttDebug": false
+            "mqttPass": "password"
         },
         {
             "name": "AV Surround Mode",
             "host": "192.168.1.5",
             "port": 8080,
             "zoneControl": 3,
-            "volumeControl": 0,
-            "masterPower": false,
-            "masterVolume": false,
-            "masterMute": false,
-            "sensorPower": false,
-            "sensorVolume": false,
-            "sensorMute": false,
-            "sensorInput": false,
             "surrounds": [
                 {
                     "name": "MCH Stereo",
@@ -310,20 +303,28 @@ This plugin is based upon the official documentation for communicating with and 
 					"displayType": -1
                 }
             ],
+            "sensorPower": false,
+            "sensorVolume": false,
+            "sensorMute": false,
+            "sensorInput": false,
             "enableDebugMode": false,
             "disableLogInfo": false,
             "disableLogDeviceInfo": false,
             "disableLogConnectError": false,
-            "refreshInterval": 5,
+            "masterPower": false,
+            "masterVolume": false,
+            "masterMute": false,
             "infoButtonCommand": "MNINF",
+            "volumeControl": 0,
+            "refreshInterval": 5,
             "enableMqtt": false,
+            "mqttDebug": false,
             "mqttHost": "192.168.1.33",
             "mqttPort": 1883,
             "mqttPrefix": "home/denon",
             "mqttAuth": false,
             "mqttUser": "user",
-            "mqttPass": "password",
-            "mqttDebug": false
+            "mqttPass": "password"
         }
     ]
 }

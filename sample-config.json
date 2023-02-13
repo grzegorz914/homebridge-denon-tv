@@ -23,21 +23,6 @@
                     "host": "192.168.1.5",
                     "port": 8080,
                     "zoneControl": 0,
-                    "volumeControl": 0,
-                    "masterPower": false,
-                    "masterVolume": false,
-                    "masterMute": false,
-                    "sensorPower": false,
-                    "sensorVolume": false,
-                    "sensorMute": false,
-                    "sensorInput": false,
-                    "sensorInputs": [
-                        {
-                            "name": "Tuner Sat",
-                            "reference": "CBL/SAT",
-                            "displayType": -1
-                        }
-                    ],
                     "getInputsFromDevice": false,
                     "inputs": [
                         {
@@ -60,30 +45,6 @@
                             "displayType": -1
                         }
                     ],
-                    "enableDebugMode": false,
-                    "disableLogInfo": false,
-                    "disableLogDeviceInfo": false,
-                    "disableLogConnectError": false,
-                    "infoButtonCommand": "MNINF",
-                    "refreshInterval": 5,
-                    "enableMqtt": false,
-                    "mqttHost": "192.168.1.33",
-                    "mqttPort": 1883,
-                    "mqttPrefix": "home/denon",
-                    "mqttAuth": false,
-                    "mqttUser": "user",
-                    "mqttPass": "password",
-                    "mqttDebug": false
-                },
-                {
-                    "name": "AV Zone 1",
-                    "host": "192.168.1.5",
-                    "port": 8080,
-                    "zoneControl": 1,
-                    "volumeControl": 0,
-                    "masterPower": false,
-                    "masterVolume": false,
-                    "masterMute": false,
                     "sensorPower": false,
                     "sensorVolume": false,
                     "sensorMute": false,
@@ -95,6 +56,30 @@
                             "displayType": -1
                         }
                     ],
+                    "enableDebugMode": false,
+                    "disableLogInfo": false,
+                    "disableLogDeviceInfo": false,
+                    "disableLogConnectError": false,
+                    "masterPower": false,
+                    "masterVolume": false,
+                    "masterMute": false,
+                    "infoButtonCommand": "MNINF",
+                    "volumeControl": 0,
+                    "refreshInterval": 5,
+                    "enableMqtt": false,
+                    "mqttDebug": false,
+                    "mqttHost": "192.168.1.33",
+                    "mqttPort": 1883,
+                    "mqttPrefix": "home/denon",
+                    "mqttAuth": false,
+                    "mqttUser": "user",
+                    "mqttPass": "password"
+                },
+                {
+                    "name": "AV Zone 1",
+                    "host": "192.168.1.5",
+                    "port": 8080,
+                    "zoneControl": 1,
                     "getInputsFromDevice": false,
                     "inputs": [
                         {
@@ -117,30 +102,6 @@
                             "displayType": -1
                         }
                     ],
-                    "enableDebugMode": false,
-                    "disableLogInfo": false,
-                    "disableLogDeviceInfo": false,
-                    "disableLogConnectError": false,
-                    "infoButtonCommand": "MNINF",
-                    "refreshInterval": 5,
-                    "enableMqtt": false,
-                    "mqttHost": "192.168.1.33",
-                    "mqttPort": 1883,
-                    "mqttPrefix": "home/denon",
-                    "mqttAuth": false,
-                    "mqttUser": "user",
-                    "mqttPass": "password",
-                    "mqttDebug": false
-                },
-                {
-                    "name": "AV Zone 2",
-                    "host": "192.168.1.5",
-                    "port": 8080,
-                    "zoneControl": 2,
-                    "volumeControl": 0,
-                    "masterPower": false,
-                    "masterVolume": false,
-                    "masterMute": false,
                     "sensorPower": false,
                     "sensorVolume": false,
                     "sensorMute": false,
@@ -152,6 +113,30 @@
                             "displayType": -1
                         }
                     ],
+                    "enableDebugMode": false,
+                    "disableLogInfo": false,
+                    "disableLogDeviceInfo": false,
+                    "disableLogConnectError": false,
+                    "masterPower": false,
+                    "masterVolume": false,
+                    "masterMute": false,
+                    "infoButtonCommand": "MNINF",
+                    "volumeControl": 0,
+                    "refreshInterval": 5,
+                    "enableMqtt": false,
+                    "mqttDebug": false,
+                    "mqttHost": "192.168.1.33",
+                    "mqttPort": 1883,
+                    "mqttPrefix": "home/denon",
+                    "mqttAuth": false,
+                    "mqttUser": "user",
+                    "mqttPass": "password"
+                },
+                {
+                    "name": "AV Zone 2",
+                    "host": "192.168.1.5",
+                    "port": 8080,
+                    "zoneControl": 2,
                     "getInputsFromDevice": false,
                     "inputs": [
                         {
@@ -174,34 +159,41 @@
                             "displayType": -1
                         }
                     ],
+                    "sensorPower": false,
+                    "sensorVolume": false,
+                    "sensorMute": false,
+                    "sensorInput": false,
+                    "sensorInputs": [
+                        {
+                            "name": "Tuner Sat",
+                            "reference": "CBL/SAT",
+                            "displayType": -1
+                        }
+                    ],
                     "enableDebugMode": false,
                     "disableLogInfo": false,
                     "disableLogDeviceInfo": false,
                     "disableLogConnectError": false,
+                    "masterPower": false,
+                    "masterVolume": false,
+                    "masterMute": false,
                     "infoButtonCommand": "MNINF",
+                    "volumeControl": 0,
                     "refreshInterval": 5,
                     "enableMqtt": false,
+                    "mqttDebug": false,
                     "mqttHost": "192.168.1.33",
                     "mqttPort": 1883,
                     "mqttPrefix": "home/denon",
                     "mqttAuth": false,
                     "mqttUser": "user",
-                    "mqttPass": "password",
-                    "mqttDebug": false
+                    "mqttPass": "password"
                 },
                 {
                     "name": "AV Surround Mode",
                     "host": "192.168.1.5",
                     "port": 8080,
                     "zoneControl": 3,
-                    "volumeControl": 0,
-                    "masterPower": false,
-                    "masterVolume": false,
-                    "masterMute": false,
-                    "sensorPower": false,
-                    "sensorVolume": false,
-                    "sensorMute": false,
-                    "sensorInput": false,
                     "surrounds": [
                         {
                             "name": "MCH Stereo",
@@ -214,20 +206,28 @@
                             "displayType": -1
                         }
                     ],
+                    "sensorPower": false,
+                    "sensorVolume": false,
+                    "sensorMute": false,
+                    "sensorInput": false,
                     "enableDebugMode": false,
                     "disableLogInfo": false,
                     "disableLogDeviceInfo": false,
                     "disableLogConnectError": false,
+                    "masterPower": false,
+                    "masterVolume": false,
+                    "masterMute": false,
                     "infoButtonCommand": "MNINF",
+                    "volumeControl": 0,
                     "refreshInterval": 5,
                     "enableMqtt": false,
+                    "mqttDebug": false,
                     "mqttHost": "192.168.1.33",
                     "mqttPort": 1883,
                     "mqttPrefix": "home/denon",
                     "mqttAuth": false,
                     "mqttUser": "user",
-                    "mqttPass": "password",
-                    "mqttDebug": false
+                    "mqttPass": "password"
                 }
             ]
         }

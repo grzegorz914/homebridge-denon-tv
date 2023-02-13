@@ -44,7 +44,6 @@ class DENON extends EventEmitter {
         this.power = false;
         this.reference = '';
         this.volume = 0;
-        this.mute = false;
         this.devInfo = '';
 
         this.on('checkDeviceInfo', async () => {
@@ -103,7 +102,6 @@ class DENON extends EventEmitter {
                     this.power = power;
                     this.reference = reference;
                     this.volume = volume;
-                    this.mute = mute;
 
                     this.emit('stateChanged', power, reference, volume, mute);
                     const mqtt = mqttEnabled ? this.emit('mqtt', 'Info', JSON.stringify(this.devInfo, null, 2)) : false;

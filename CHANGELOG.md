@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Note - after update to 3.15.x need remove the accessory frome Home app and add it again.
 
+## [3.24.0] - (13.02.2023)
+## Changes
+- standarize function of display type and volume control, now volume control -1 None/Disabled, 0 Slider, 1 Fan, please see in readme
+- config.schema updated
+- fix expose extra input tile in homekit app
+- other small fixes and improvements
+- cleanup
+
 ## [3.23.0] - (08.02.2023)
 ## Changes
 - added possibility to disable log device connect error
