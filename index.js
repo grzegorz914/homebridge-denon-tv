@@ -85,7 +85,7 @@ class denonTvDevice {
 		this.masterVolume = config.masterVolume || false;
 		this.masterMute = config.masterMute || false;
 		this.infoButtonCommand = config.infoButtonCommand || 'MNINF';
-		this.volumeControl = config.volumeControl || -1;
+		this.volumeControl = config.volumeControl >= 0 ? config.volumeControl : -1;
 		this.refreshInterval = config.refreshInterval || 5;
 		this.mqttEnabled = config.enableMqtt || false;
 		this.mqttDebug = config.mqttDebug || false;
