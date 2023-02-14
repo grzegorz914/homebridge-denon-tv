@@ -88,13 +88,13 @@ class denonTvDevice {
 		this.volumeControl = config.volumeControl || -1;
 		this.refreshInterval = config.refreshInterval || 5;
 		this.mqttEnabled = config.enableMqtt || false;
+		this.mqttDebug = config.mqttDebug || false;
 		this.mqttHost = config.mqttHost;
 		this.mqttPort = config.mqttPort || 1883;
 		this.mqttPrefix = config.mqttPrefix;
 		this.mqttAuth = config.mqttAuth || false;
 		this.mqttUser = config.mqttUser;
 		this.mqttPasswd = config.mqttPasswd;
-		this.mqttDebug = config.mqttDebug || false;
 
 		//get Device info
 		this.manufacturer = 'Denon/Marantz';

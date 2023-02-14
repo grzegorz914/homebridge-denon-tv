@@ -66,191 +66,6 @@
               ],
               "required": true
             },
-            "volumeControl": {
-              "title": "Volume Control Mode",
-              "type": "integer",
-              "description": "Here select what a volume control mode You want to use. If select *None/Disabled* only hardware buttons in RC app can be used to control volume.",
-              "oneOf": [
-                {
-                  "title": "None/Disabled",
-                  "enum": [
-                    -1
-                  ]
-                },
-                {
-                  "title": "Lightbulb",
-                  "enum": [
-                    0
-                  ]
-                },
-                {
-                  "title": "Fan",
-                  "enum": [
-                    1
-                  ]
-                }
-              ],
-              "required": true
-            },
-            "masterPower": {
-              "title": "Master Power Control",
-              "type": "boolean",
-              "default": false,
-              "description": "The power switch for that zone will turn the entire receiver *ON* or *OFF/STANDBY* rather than just the zone itself.",
-              "required": false
-            },
-            "masterVolume": {
-              "title": "Master Volume Control",
-              "type": "boolean",
-              "default": false,
-              "description": "The volume for that zone will set the entire receiver volume *UP* or *DOWN* rather than just the zone itself.",
-              "required": false
-            },
-            "masterMute": {
-              "title": "Master Mute Control",
-              "type": "boolean",
-              "default": false,
-              "description": "The mute switch for that zone will muted the entire receiver *ON* or *OFF* rather than just the zone itself.",
-              "required": false
-            },
-            "sensorPower": {
-              "title": "Power",
-              "type": "boolean",
-              "default": false,
-              "description": "This expose Power as a Contact Sensor (sensor active if power ON) to use with automations.",
-              "required": false
-            },
-            "sensorVolume": {
-              "title": "Volume",
-              "type": "boolean",
-              "default": false,
-              "description": "This expose Volume as a Contact Sensor (sensor active on every Volume change) to use with automations.",
-              "required": false
-            },
-            "sensorMute": {
-              "title": "Mute",
-              "type": "boolean",
-              "default": false,
-              "description": "This expose Mute as a Contact Sensor (sensor active if mute ON) to use with automations.",
-              "required": false
-            },
-            "sensorInput": {
-              "title": "Input",
-              "type": "boolean",
-              "default": false,
-              "description": "This expose Input as a Contact Sensor (sensor active on Input/Surround change) to use with automations.",
-              "required": false
-            },
-            "sensorInputs": {
-              "type": "array",
-              "items": {
-                "title": "Custom Inputs",
-                "type": "object",
-                "description": "Here create Input Sensors based on reference, sensor will active if switch to it.",
-                "properties": {
-                  "name": {
-                    "title": "Name",
-                    "type": "string",
-                    "placeholder": "Name",
-                    "description": "Here set Your own name for sensor.",
-                    "required": true
-                  },
-                  "reference": {
-                    "title": "Reference",
-                    "type": "string",
-                    "placeholder": "Input reference",
-                    "description": "Here set the Input reference (sensor active if switch to this Input).",
-                    "required": true
-                  },
-                  "displayType": {
-                    "title": "Type",
-                    "type": "integer",
-                    "oneOf": [
-                      {
-                        "title": "None/Disabled",
-                        "enum": [
-                          -1
-                        ]
-                      },
-                      {
-                        "title": "Motion Sensor",
-                        "enum": [
-                          0
-                        ]
-                      },
-                      {
-                        "title": "Occupancy Sensor",
-                        "enum": [
-                          1
-                        ]
-                      },
-                      {
-                        "title": "Contact Sensor",
-                        "enum": [
-                          2
-                        ]
-                      }
-                    ],
-                    "description": "Here select sensor type to be exposed in HomeKit app.",
-                    "required": true
-                  }
-                }
-              }
-            },
-            "infoButtonCommand": {
-              "title": "Info Button",
-              "type": "string",
-              "oneOf": [
-                {
-                  "title": "MENU",
-                  "enum": [
-                    "MNMEN ON"
-                  ]
-                },
-                {
-                  "title": "OPTION",
-                  "enum": [
-                    "MNOPT"
-                  ]
-                },
-                {
-                  "title": "INFO",
-                  "enum": [
-                    "MNINF"
-                  ]
-                }
-              ],
-              "description": "Here select the function of info button in RC.",
-              "required": true
-            },
-            "disableLogInfo": {
-              "title": "Disable Log Info",
-              "type": "boolean",
-              "default": false,
-              "description": "This disable logging values and states on every it change.",
-              "required": false
-            },
-            "disableLogDeviceInfo": {
-              "title": "Disable Log Device Info",
-              "type": "boolean",
-              "default": false,
-              "description": "This disable log device info by every connections device to the network.",
-              "required": false
-            },
-            "disableLogConnectError": {
-              "title": "Disable Log Connect Error",
-              "type": "boolean",
-              "default": false,
-              "description": "This disable logging device connect error.",
-              "required": false
-            },
-            "enableDebugMode": {
-              "title": "Debug",
-              "type": "boolean",
-              "default": false,
-              "description": "This enable debug mode.",
-              "required": false
-            },
             "getInputsFromDevice": {
               "title": "Load Inputs From Device",
               "type": "boolean",
@@ -3408,6 +3223,191 @@
                 }
               }
             },
+            "sensorPower": {
+              "title": "Power",
+              "type": "boolean",
+              "default": false,
+              "description": "This expose Power as a Contact Sensor (sensor active if power ON) to use with automations.",
+              "required": false
+            },
+            "sensorVolume": {
+              "title": "Volume",
+              "type": "boolean",
+              "default": false,
+              "description": "This expose Volume as a Contact Sensor (sensor active on every Volume change) to use with automations.",
+              "required": false
+            },
+            "sensorMute": {
+              "title": "Mute",
+              "type": "boolean",
+              "default": false,
+              "description": "This expose Mute as a Contact Sensor (sensor active if mute ON) to use with automations.",
+              "required": false
+            },
+            "sensorInput": {
+              "title": "Input",
+              "type": "boolean",
+              "default": false,
+              "description": "This expose Input as a Contact Sensor (sensor active on Input/Surround change) to use with automations.",
+              "required": false
+            },
+            "sensorInputs": {
+              "type": "array",
+              "items": {
+                "title": "Custom Inputs",
+                "type": "object",
+                "description": "Here create Input Sensors based on reference, sensor will active if switch to it.",
+                "properties": {
+                  "name": {
+                    "title": "Name",
+                    "type": "string",
+                    "placeholder": "Name",
+                    "description": "Here set Your own name for sensor.",
+                    "required": true
+                  },
+                  "reference": {
+                    "title": "Reference",
+                    "type": "string",
+                    "placeholder": "Input reference",
+                    "description": "Here set the Input reference (sensor active if switch to this Input).",
+                    "required": true
+                  },
+                  "displayType": {
+                    "title": "Type",
+                    "type": "integer",
+                    "oneOf": [
+                      {
+                        "title": "None/Disabled",
+                        "enum": [
+                          -1
+                        ]
+                      },
+                      {
+                        "title": "Motion Sensor",
+                        "enum": [
+                          0
+                        ]
+                      },
+                      {
+                        "title": "Occupancy Sensor",
+                        "enum": [
+                          1
+                        ]
+                      },
+                      {
+                        "title": "Contact Sensor",
+                        "enum": [
+                          2
+                        ]
+                      }
+                    ],
+                    "description": "Here select sensor type to be exposed in HomeKit app.",
+                    "required": true
+                  }
+                }
+              }
+            },
+            "enableDebugMode": {
+              "title": "Debug",
+              "type": "boolean",
+              "default": false,
+              "description": "This enable debug mode.",
+              "required": false
+            },
+            "disableLogInfo": {
+              "title": "Disable Log Info",
+              "type": "boolean",
+              "default": false,
+              "description": "This disable logging values and states on every it change.",
+              "required": false
+            },
+            "disableLogDeviceInfo": {
+              "title": "Disable Log Device Info",
+              "type": "boolean",
+              "default": false,
+              "description": "This disable log device info by every connections device to the network.",
+              "required": false
+            },
+            "disableLogConnectError": {
+              "title": "Disable Log Connect Error",
+              "type": "boolean",
+              "default": false,
+              "description": "This disable logging device connect error.",
+              "required": false
+            },
+            "masterPower": {
+              "title": "Master Power Control",
+              "type": "boolean",
+              "default": false,
+              "description": "The power switch for that zone will turn the entire receiver *ON* or *OFF/STANDBY* rather than just the zone itself.",
+              "required": false
+            },
+            "masterVolume": {
+              "title": "Master Volume Control",
+              "type": "boolean",
+              "default": false,
+              "description": "The volume for that zone will set the entire receiver volume *UP* or *DOWN* rather than just the zone itself.",
+              "required": false
+            },
+            "masterMute": {
+              "title": "Master Mute Control",
+              "type": "boolean",
+              "default": false,
+              "description": "The mute switch for that zone will muted the entire receiver *ON* or *OFF* rather than just the zone itself.",
+              "required": false
+            },
+            "infoButtonCommand": {
+              "title": "Info Button",
+              "type": "string",
+              "oneOf": [
+                {
+                  "title": "MENU",
+                  "enum": [
+                    "MNMEN ON"
+                  ]
+                },
+                {
+                  "title": "OPTION",
+                  "enum": [
+                    "MNOPT"
+                  ]
+                },
+                {
+                  "title": "INFO",
+                  "enum": [
+                    "MNINF"
+                  ]
+                }
+              ],
+              "description": "Here select the function of info button in RC.",
+              "required": true
+            },
+            "volumeControl": {
+              "title": "Volume Control Mode",
+              "type": "integer",
+              "description": "Here select what a volume control mode You want to use. If select *None/Disabled* only hardware buttons in RC app can be used to control volume.",
+              "oneOf": [
+                {
+                  "title": "None/Disabled",
+                  "enum": [
+                    -1
+                  ]
+                },
+                {
+                  "title": "Lightbulb",
+                  "enum": [
+                    0
+                  ]
+                },
+                {
+                  "title": "Fan",
+                  "enum": [
+                    1
+                  ]
+                }
+              ],
+              "required": true
+            },
             "refreshInterval": {
               "title": "Refresh interval (sec)",
               "type": "integer",
@@ -3423,6 +3423,16 @@
               "default": false,
               "required": false,
               "description": "This enable MQTT client."
+            },
+            "mqttDebug": {
+              "title": "Debug",
+              "type": "boolean",
+              "default": false,
+              "required": false,
+              "description": "This enable debug mode for MQTT.",
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].enableMqtt === true;"
+              }
             },
             "mqttHost": {
               "title": "IP/Hostname",
@@ -3483,16 +3493,6 @@
               "description": "Here set the password of MQTT Broker.",
               "condition": {
                 "functionBody": "return model.devices[arrayIndices].enableMqtt === true && model.devices[arrayIndices].mqttAuth === true;"
-              }
-            },
-            "mqttDebug": {
-              "title": "Debug",
-              "type": "boolean",
-              "default": false,
-              "required": false,
-              "description": "This enable debug mode for MQTT.",
-              "condition": {
-                "functionBody": "return model.devices[arrayIndices].enableMqtt === true;"
               }
             }
           }
