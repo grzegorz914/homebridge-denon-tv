@@ -899,7 +899,7 @@ class denonTvDevice {
 						const newCustomName = JSON.stringify(savedInputsNames, null, 2);
 
 						fs.writeFileSync(this.inputsNamesFile, newCustomName);
-						const logInfo = this.enableDebugMode ? false : this.log(`Device: ${this.host} ${accessoryName}, saved new ${zoneControl <= 2 ? 'Input' : 'Sound Mode'} name: ${name}, reference: ${inputReference}`);
+						const logDebug = this.enableDebugMode ? this.log(`Device: ${this.host} ${accessoryName}, saved new ${zoneControl <= 2 ? 'Input' : 'Sound Mode'} name: ${name}, reference: ${inputReference}`) : false;
 					} catch (error) {
 						this.log.error(`Device: ${this.host} ${accessoryName}, new Input name save error: ${error}`);
 					}
@@ -912,7 +912,7 @@ class denonTvDevice {
 						const newTargetVisibility = JSON.stringify(savedInputsTargetVisibility, null, 2);
 
 						fs.writeFileSync(this.inputsTargetVisibilityFile, newTargetVisibility);
-						const logInfo = this.enableDebugMode ? false : this.log(`Device: ${this.host} ${accessoryName}, saved new ${zoneControl <= 2 ? 'Input' : 'Sound Mode'}: ${inputName}, target visibility state: ${state ? 'HIDEN' : 'SHOWN'}`);
+						const logDebug = this.enableDebugMode ?  this.log(`Device: ${this.host} ${accessoryName}, saved new ${zoneControl <= 2 ? 'Input' : 'Sound Mode'}: ${inputName}, target visibility state: ${state ? 'HIDEN' : 'SHOWN'}`) : false;
 						inputService.setCharacteristic(Characteristic.CurrentVisibilityState, state);
 					} catch (error) {
 						this.log.error(`Device: ${this.host} ${accessoryName}, new target visibility state save error: ${error}`);
@@ -969,7 +969,7 @@ class denonTvDevice {
 									const reference = zone + inputReference;
 
 									const setSwitchInput = state && this.power ? await this.denon.send(CONSTANS.ApiUrls.iPhoneDirect + reference) : false;
-									const logInfo = this.enableDebugMode ? false : this.log(`Device: ${this.host} ${accessoryName}, set new ${zoneControl <= 2 ? 'Input' : 'Sound Mode'} successful, name: ${inputName}, reference: ${inputReference}`);
+									const logDebug = this.enableDebugMode ? this.log(`Device: ${this.host} ${accessoryName}, set new ${zoneControl <= 2 ? 'Input' : 'Sound Mode'} successful, name: ${inputName}, reference: ${inputReference}`) : false;
 								} catch (error) {
 									this.log.error(`Device: ${this.host} ${accessoryName}, can not set new ${zoneControl <= 2 ? 'Input' : 'Sound Mode'}. Might be due to a wrong settings in config, error: ${error}`);
 								};
@@ -1057,7 +1057,7 @@ class denonTvDevice {
 							.onSet(async (state) => {
 								try {
 									const setFunction = state && this.power ? await this.denon.send(CONSTANS.ApiUrls.iPhoneDirect + buttonReference) : false;
-									const logInfo = this.enableDebugMode ? false : this.log(`Device: ${this.host} ${accessoryName}, set Input successful, name: ${buttonName}, reference: ${buttonReference}`);
+									const logDebug = this.enableDebugMode ? this.log(`Device: ${this.host} ${accessoryName}, set Input successful, name: ${buttonName}, reference: ${buttonReference}`) : false;
 
 									await new Promise(resolve => setTimeout(resolve, 300));
 									const setChar = state && this.power ? buttonService.updateCharacteristic(Characteristic.On, false) : false;
