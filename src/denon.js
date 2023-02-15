@@ -44,6 +44,7 @@ class DENON extends EventEmitter {
         this.power = false;
         this.reference = '';
         this.volume = 0;
+        this.volumeControlType = '';
         this.devInfo = '';
 
         this.on('checkDeviceInfo', async () => {
@@ -68,10 +69,8 @@ class DENON extends EventEmitter {
                 }
 
                 this.checkStateOnFirstRun = true;
-                this.emit('connected', devInfo);
-                this.emit('deviceInfo', manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion);
-
-                await new Promise(resolve => setTimeout(resolve, 1000));
+                this.emit('deviceInfo', devInfo, manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion);
+                await new Promise(resolve => setTimeout(resolve, 2000));
                 this.emit('checkState');
             } catch (error) {
                 const debug = disableLogConnectError ? false : this.emit('error', `Info error: ${error}, reconnect in 15s.`)
@@ -92,6 +91,8 @@ class DENON extends EventEmitter {
 
                     const power = (devState.Power[0].value[0] === 'ON');
                     const volume = parseFloat(devState.MasterVolume[0].value[0]) >= -79.5 ? parseInt(devState.MasterVolume[0].value[0]) + 80 : this.volume;
+                    const volumeRelative = devState.MasterVolume[0].value[0];
+                    const volumeControlType = devState.VolumeDisplay[0].value[0];
                     const mute = power ? (devState.Mute[0].value[0] == 'on') : true;
 
                     const conversionArray = zoneControl <= 2 ? Object.keys(CONSTANS.InputConversion) : Object.keys(CONSTANS.SoundModeConversion);
@@ -102,8 +103,9 @@ class DENON extends EventEmitter {
                     this.power = power;
                     this.reference = reference;
                     this.volume = volume;
+                    this.volumeControlType = volumeControlType;
 
-                    this.emit('stateChanged', power, reference, volume, mute);
+                    this.emit('stateChanged', power, reference, volume, volumeControlType, mute);
                     const mqtt = mqttEnabled ? this.emit('mqtt', 'Info', JSON.stringify(this.devInfo, null, 2)) : false;
                     const mqtt1 = mqttEnabled ? this.emit('mqtt', 'State', JSON.stringify(devState, null, 2)) : false;
                     const mqtt2 = mqttEnabled && zoneControl === 3 ? this.emit('mqtt', 'Sound Mode', JSON.stringify({ 'surround': zoneControl === 3 ? reference : '' }, null, 2)) : false;
@@ -115,7 +117,7 @@ class DENON extends EventEmitter {
             })
             .on('disconnect', () => {
                 this.emit('disconnected', 'Disconnected.');
-                this.emit('stateChanged', false, this.reference, this.volume, true);
+                this.emit('stateChanged', false, this.reference, this.volume, this.volumeControlType, true);
                 this.checkDeviceInfo();
             });
 
