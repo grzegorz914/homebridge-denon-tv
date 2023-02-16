@@ -73,7 +73,7 @@ class DENON extends EventEmitter {
                 await new Promise(resolve => setTimeout(resolve, 2000));
                 this.emit('checkState');
             } catch (error) {
-                const debug = disableLogConnectError ? false : this.emit('error', `Info error: ${error}, reconnect in 15s.`)
+                const debug = disableLogConnectError ? false : this.emit('error', `Info error: ${error}, reconnect in 15s.`);
                 this.checkDeviceInfo();
             };
         })
@@ -137,6 +137,11 @@ class DENON extends EventEmitter {
     send(apiUrl) {
         return new Promise(async (resolve, reject) => {
             try {
+                if (!this.power) {
+                    reject(`current power state OFF, send command skipped.`);
+                    return;
+                };
+
                 await this.axiosInstance(apiUrl);
                 resolve(true);
             } catch (error) {
