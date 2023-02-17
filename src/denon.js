@@ -134,10 +134,10 @@ class DENON extends EventEmitter {
         this.emit('checkState');
     };
 
-    send(apiUrl) {
+    send(apiUrl, power) {
         return new Promise(async (resolve, reject) => {
             try {
-                if (!this.power) {
+                if (!this.power && !power) {
                     reject(`current power state OFF, send command skipped.`);
                     return;
                 };
