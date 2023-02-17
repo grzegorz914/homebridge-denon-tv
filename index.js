@@ -453,7 +453,7 @@ class denonTvDevice {
 					const masterControl = this.masterPower ? 4 : zoneControl;
 					const newState = [(state ? 'ZMON' : 'ZMOFF'), (state ? 'Z2ON' : 'Z2OFF'), (state ? 'Z3ON' : 'Z3OFF'), (state ? 'ZMON' : 'ZMOFF'), (state ? 'PWON' : 'PWSTANDBY')][masterControl];
 
-					await this.denon.send(CONSTANS.ApiUrls.iPhoneDirect + newState);
+					await this.denon.send(CONSTANS.ApiUrls.iPhoneDirect + newState, true);
 					const logInfo = this.disableLogInfo ? false : this.log(`Device: ${this.host} ${accessoryName}, set Power state successful, state${newState}`);
 				} catch (error) {
 					this.log.error(`Device: ${this.host} ${accessoryName}, can not set Power state error: ${error}`);
