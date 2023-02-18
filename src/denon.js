@@ -36,6 +36,7 @@ class DENON extends EventEmitter {
         this.reference = '';
         this.volume = 0;
         this.volumeControlType = '';
+        this.mute = false;
         this.pictureMode = 0;
         this.soundMode = '';
         this.devInfo = '';
@@ -85,12 +86,12 @@ class DENON extends EventEmitter {
                     const conversionArraySoundMode = Object.keys(CONSTANS.SoundModeConversion);
 
                     //get receiver status
-                    const power = (devState.Power[0].value[0] === 'ON');
-                    const volume = parseFloat(devState.MasterVolume[0].value[0]) >= -79.5 ? parseInt(devState.MasterVolume[0].value[0]) + 80 : this.volume;
-                    const volumeRelative = devState.MasterVolume[0].value[0];
-                    const volumeControlType = devState.VolumeDisplay[0].value[0];
-                    const mute = power ? (devState.Mute[0].value[0] == 'on') : true;
+                    const power = devState.Power[0].value[0] === 'ON';
                     const input = conversionArrayInputs.includes(devState.InputFuncSelect[0].value[0]) ? CONSTANS.InputConversion[devState.InputFuncSelect[0].value[0]] : (devState.InputFuncSelect[0].value[0]).toUpperCase();
+                    const volumeControlType = devState.VolumeDisplay[0].value[0];
+                    const volumeRelative = devState.MasterVolume[0].value[0];
+                    const volume = parseFloat(volumeRelative) >= -79.5 ? parseInt(volumeRelative) + 80 : this.volume;
+                    const mute = devState.Mute[0].value[0] === 'on';
 
                     //get picture mode
                     const devicePictureMode = power && zoneControl === 0 ? await this.axiosInstancePost(CONSTANS.ApiUrls.AppCommand, CONSTANS.BodyXml.GetPictureMode) : false;
@@ -113,6 +114,7 @@ class DENON extends EventEmitter {
                     this.reference = reference;
                     this.volume = volume;
                     this.volumeControlType = volumeControlType;
+                    this.mute = mute;
                     this.pictureMode = pictureMode;
                     this.soundMode = soundMode;
 
@@ -128,7 +130,7 @@ class DENON extends EventEmitter {
                 };
             })
             .on('disconnect', () => {
-                this.emit('stateChanged', false, this.reference, this.volume, this.volumeControlType, true, this.pictureMode);
+                this.emit('stateChanged', false, this.reference, this.volume, this.volumeControlType, this.mute, this.pictureMode);
                 this.emit('disconnected', 'Disconnected.');
                 this.checkDeviceInfo();
             });

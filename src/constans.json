@@ -41,18 +41,6 @@
         "GetAllZoneStereo": {
             "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetAllZoneStereo</cmd> </tx>"
         },
-        "GetDimmer": {
-            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetDimmer</cmd> </tx>"
-        },
-        "GetChannelIndicators": {
-            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetChannelIndicators</cmd> </tx>"
-        },
-        "GetVideoSelect": {
-            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetVideoSelect</cmd> </tx>"
-        },
-        "GetQuickSelectName": {
-            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetQuickSelectName</cmd> </tx>"
-        },
         "GetPowerStatus": {
             "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetPowerStatus</cmd> </tx>"
         },
@@ -64,6 +52,24 @@
         },
         "GetMuteStatus": {
             "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetMuteStatus</cmd> </tx>"
+        },
+        "GetPictureMode": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetPictureMode</cmd> </tx>"
+        },
+        "GetSurroundModeStatus": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetSurroundModeStatus</cmd> </tx>"
+        },
+        "GetDimmer": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetDimmer</cmd> </tx>"
+        },
+        "GetChannelIndicators": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetChannelIndicators</cmd> </tx>"
+        },
+        "GetVideoSelect": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetVideoSelect</cmd> </tx>"
+        },
+        "GetQuickSelectName": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetQuickSelectName</cmd> </tx>"
         },
         "GetAutoStandby": {
             "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetAutoStandby</cmd> </tx>"
@@ -82,12 +88,6 @@
         },
         "GetDeletedSource": {
             "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetDeletedSource</cmd> </tx>"
-        },
-        "GetPictureMode": {
-            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetPictureMode</cmd> </tx>"
-        },
-        "GetSurroundModeStatus": {
-            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetSurroundModeStatus</cmd> </tx>"
         }
     },
     "ZoneName": [
