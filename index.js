@@ -912,16 +912,16 @@ class denonTvDevice {
 					.onGet(async () => {
 						return inputName;
 					})
-					.onSet(async (name) => {
+					.onSet(async (value) => {
 						try {
-							savedInputsNames[inputReference] = name;
+							savedInputsNames[inputReference] = value;
 							const newCustomName = JSON.stringify(savedInputsNames, null, 2);
 
 							await fsPromises.writeFile(this.inputsNamesFile, newCustomName);
-							const logDebug = this.enableDebugMode ? this.log(`Device: ${this.host} ${accessoryName}, saved ${zoneControl <= 2 ? 'Input' : 'Sound Mode'} Name: ${name}, Reference: ${inputReference}`) : false;
+							const logDebug = this.enableDebugMode ? this.log(`Device: ${this.host} ${accessoryName}, saved ${zoneControl <= 2 ? 'Input' : 'Sound Mode'}, Name: ${value}, Reference: ${inputReference}`) : false;
 							inputService.setCharacteristic(Characteristic.Name, inputName);
 						} catch (error) {
-							this.log.error(`Device: ${this.host} ${accessoryName}, save Input name error: ${error}`);
+							this.log.error(`Device: ${this.host} ${accessoryName}, save Input Name error: ${error}`);
 						}
 					});
 
@@ -951,7 +951,7 @@ class denonTvDevice {
 				this.televisionService.addLinkedService(inputService);
 				accessory.addService(inputService);
 			} else {
-				this.log(`Device: ${this.host} ${accessoryName}, ${zoneControl <= 2 ? 'Inputs' : 'Sound Modes'}, name: ${inputName ? inputName : 'Missing'}, reference: ${inputReference ? inputReference : 'Missing'}, mode: ${inputMode ? inputMode : 'Missing'}.`);
+				this.log(`Device: ${this.host} ${accessoryName}, ${zoneControl <= 2 ? 'Inputs' : 'Sound Modes'}, Name: ${inputName ? inputName : 'Missing'}, Reference: ${inputReference ? inputReference : 'Missing'}, Mode: ${inputMode ? inputMode : 'Missing'}.`);
 
 			};
 		};
