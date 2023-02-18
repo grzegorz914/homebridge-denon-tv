@@ -2,20 +2,8 @@
 const axios = require('axios');
 const EventEmitter = require('events');
 const parseString = require('xml2js').parseStringPromise;
-
 const CONSTANS = require('./constans.json');
-const SOUND_MODE_STATUS = `<?xml version="1.0" encoding="utf-8"?>
-            <tx>
-              <cmd id="1">${CONSTANS.BodyXml.GetSurroundModeStatus}</cmd>
-            </tx>`;
-const CONFIG_XML = {
-    data: SOUND_MODE_STATUS,
-    headers: {
-        'Content-Type': 'text/xml'
-    }
-};
 
-let i = 0
 class DENON extends EventEmitter {
     constructor(config) {
         super();
@@ -45,6 +33,7 @@ class DENON extends EventEmitter {
         this.reference = '';
         this.volume = 0;
         this.volumeControlType = '';
+        this.pictureMode = 0;
         this.devInfo = '';
 
         this.on('checkDeviceInfo', async () => {
@@ -79,36 +68,51 @@ class DENON extends EventEmitter {
         })
             .on('checkState', async () => {
                 try {
+                    //get zones status
                     const zoneUrl = [CONSTANS.ApiUrls.MainZoneStatusLite, CONSTANS.ApiUrls.Zone2StatusLite, CONSTANS.ApiUrls.Zone3StatusLite, CONSTANS.ApiUrls.SoundModeStatus][zoneControl];
                     const deviceState = await this.axiosInstance(zoneUrl);
                     const parseDeviceState = await parseString(deviceState.data);
                     const devState = parseDeviceState.item;
                     const debug = debugLog ? this.emit('debug', `State: ${JSON.stringify(devState, null, 2)}`) : false;
 
-                    const deviceSoundMode = zoneControl === 3 ? await this.axiosInstancePost(CONSTANS.ApiUrls.AppCommand, CONFIG_XML) : false;
-                    const parseDeviceSoundMode = zoneControl === 3 ? await parseString(deviceSoundMode.data) : false;
-                    const debug1 = zoneControl === 3 && debugLog ? this.emit('debug', `Sound mode: ${JSON.stringify(parseDeviceSoundMode, null, 2)}`) : false;
+                    //conversion array
+                    const conversionArray = zoneControl <= 2 ? Object.keys(CONSTANS.InputConversion) : Object.keys(CONSTANS.SoundModeConversion);
 
+                    //get receiver status
                     const power = (devState.Power[0].value[0] === 'ON');
                     const volume = parseFloat(devState.MasterVolume[0].value[0]) >= -79.5 ? parseInt(devState.MasterVolume[0].value[0]) + 80 : this.volume;
                     const volumeRelative = devState.MasterVolume[0].value[0];
                     const volumeControlType = devState.VolumeDisplay[0].value[0];
                     const mute = power ? (devState.Mute[0].value[0] == 'on') : true;
+                    const input = conversionArray.includes(devState.InputFuncSelect[0].value[0]) ? CONSTANS.InputConversion[devState.InputFuncSelect[0].value[0]] : (devState.InputFuncSelect[0].value[0]).toUpperCase();
 
-                    const conversionArray = zoneControl <= 2 ? Object.keys(CONSTANS.InputConversion) : Object.keys(CONSTANS.SoundModeConversion);
-                    const reference = zoneControl <= 2 ? conversionArray.includes(devState.InputFuncSelect[0].value[0]) ? CONSTANS.InputConversion[devState.InputFuncSelect[0].value[0]] : (devState.InputFuncSelect[0].value[0]).toUpperCase()
-                        : conversionArray.includes((parseDeviceSoundMode.rx.cmd[0].surround[0]).replace(/[^a-zA-Z0-9]/g, '').toUpperCase()) ? CONSTANS.SoundModeConversion[(parseDeviceSoundMode.rx.cmd[0].surround[0]).replace(/[^a-zA-Z0-9]/g, '').toUpperCase()] : (parseDeviceSoundMode.rx.cmd[0].surround[0]).replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+                    //get picture mode
+                    const devicePictureMode = zoneControl === 0 ? await this.axiosInstancePost(CONSTANS.ApiUrls.AppCommand, CONSTANS.BodyXml.GetPictureModeStatus) : false;
+                    const parseDevicePictureMode = zoneControl === 0 ? await parseString(devicePictureMode.data) : false;
+                    const debug1 = debugLog && zoneControl === 0 ? this.emit('debug', `Picture mode: ${JSON.stringify(parseDevicePictureMode, null, 2)}`) : false;
+                    const pictureMode = zoneControl === 0 ? parseDevicePictureMode.rx.cmd[0].value[0] : 0;
+
+                    //get sound mode
+                    const deviceSoundMode = zoneControl === 0 || zoneControl === 3 ? await this.axiosInstancePost(CONSTANS.ApiUrls.AppCommand, CONSTANS.BodyXml.GetSurroundModeStatus) : false;
+                    const parseDeviceSoundMode = zoneControl === 0 || zoneControl === 3 ? await parseString(deviceSoundMode.data) : false;
+                    const debug2 = debugLog && (zoneControl === 0 || zoneControl === 3) ? this.emit('debug', `Sound mode: ${JSON.stringify(parseDeviceSoundMode, null, 2)}`) : false;
+                    const soundMode = zoneControl === 0 || zoneControl === 3 ? conversionArray.includes((parseDeviceSoundMode.rx.cmd[0].surround[0]).replace(/[^a-zA-Z0-9]/g, '').toUpperCase()) ? CONSTANS.SoundModeConversion[(parseDeviceSoundMode.rx.cmd[0].surround[0]).replace(/[^a-zA-Z0-9]/g, '').toUpperCase()] : (parseDeviceSoundMode.rx.cmd[0].surround[0]).replace(/[^a-zA-Z0-9]/g, '').toUpperCase() : false;
+
+                    //select reference
+                    const reference = zoneControl <= 2 ? input : soundMode;
 
                     this.checkStateOnFirstRun = false;
                     this.power = power;
                     this.reference = reference;
                     this.volume = volume;
                     this.volumeControlType = volumeControlType;
+                    this.pictureMode = pictureMode;
 
-                    this.emit('stateChanged', power, reference, volume, volumeControlType, mute);
+                    this.emit('stateChanged', power, reference, volume, volumeControlType, mute, pictureMode);
                     const mqtt = mqttEnabled ? this.emit('mqtt', 'Info', JSON.stringify(this.devInfo, null, 2)) : false;
                     const mqtt1 = mqttEnabled ? this.emit('mqtt', 'State', JSON.stringify(devState, null, 2)) : false;
-                    const mqtt2 = mqttEnabled && zoneControl === 3 ? this.emit('mqtt', 'Sound Mode', JSON.stringify({ 'surround': zoneControl === 3 ? reference : '' }, null, 2)) : false;
+                    const mqtt2 = mqttEnabled && zoneControl === 0 ? this.emit('mqtt', 'Picture', JSON.stringify({ 'Picture Mode': CONSTANS.PictureModesDenonNumber[pictureMode] }, null, 2)) : false;
+                    const mqtt3 = mqttEnabled && (zoneControl === 0 || zoneControl === 3) ? this.emit('mqtt', 'Surround', JSON.stringify({ 'Sound Mode': CONSTANS.SoundModeConversion[soundMode] }, null, 2)) : false;
                     this.checkState();
                 } catch (error) {
                     const debug = disableLogConnectError ? false : this.emit('error', `State error: ${error}, reconnect in 15s.`);
@@ -116,8 +120,8 @@ class DENON extends EventEmitter {
                 };
             })
             .on('disconnect', () => {
+                this.emit('stateChanged', false, this.reference, this.volume, this.volumeControlType, true, this.pictureMode);
                 this.emit('disconnected', 'Disconnected.');
-                this.emit('stateChanged', false, this.reference, this.volume, this.volumeControlType, true);
                 this.checkDeviceInfo();
             });
 
@@ -145,7 +149,6 @@ class DENON extends EventEmitter {
                 await this.axiosInstance(apiUrl);
                 resolve(true);
             } catch (error) {
-                this.emit('error', error);
                 reject(error);
             };
         });

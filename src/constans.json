@@ -23,28 +23,138 @@
         "CommandNetAudioPost": "/NetAudio/index.put.asp"
     },
     "BodyXml": {
-        "GetZoneName": "GetZoneName",
-        "GetAllZonePowerStatus": "GetAllZonePowerStatus",
-        "GetAllZoneSource": "GetAllZoneSource",
-        "GetAllZoneVolume": "GetAllZoneVolume",
-        "GetAllZoneMuteStatus": "GetAllZoneMuteStatus",
-        "GetAllZoneStereo": "GetAllZoneStereo",
-        "GetDimmer": "GetDimmer",
-        "GetChannelIndicators": "GetChannelIndicators",
-        "GetPictureMode": "GetPictureMode",
-        "GetVideoSelect": "GetVideoSelect",
-        "GetQuickSelectName": "GetQuickSelectName",
-        "GetPowerStatus": "GetPowerStatus",
-        "GetSourceStatus": "GetSourceStatus",
-        "GetVolumeLevel": "GetVolumeLevel",
-        "GetMuteStatus": "GetMuteStatus",
-        "GetAutoStandby": "GetAutoStandby",
-        "GetToneControl": "GetToneControl",
-        "GetSubwooferLevel": "GetSubwooferLevel",
-        "GetSurroundModeStatus": "GetSurroundModeStatus",
-        "GetNetAudioStatus": "GetNetAudioStatus",
-        "GetRenameSource": "GetRenameSource",
-        "GetDeletedSource": "GetDeletedSource"
+        "GetZoneName": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetZoneName</cmd> </tx>",
+            "Headers": {
+                "Content-Type": "text/xml"
+            }
+        },
+        "GetAllZonePowerStatus": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetAllZonePowerStatus</cmd> </tx>",
+            "Headers": {
+                "Content-Type": "text/xml"
+            }
+        },
+        "GetAllZoneSource": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetAllZoneSource</cmd> </tx>",
+            "Headers": {
+                "Content-Type": "text/xml"
+            }
+        },
+        "GetAllZoneVolume": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetAllZoneVolume</cmd> </tx>",
+            "Headers": {
+                "Content-Type": "text/xml"
+            }
+        },
+        "GetAllZoneMuteStatus": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetAllZoneMuteStatus</cmd> </tx>",
+            "Headers": {
+                "Content-Type": "text/xml"
+            }
+        },
+        "GetAllZoneStereo": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetAllZoneStereo</cmd> </tx>",
+            "Headers": {
+                "Content-Type": "text/xml"
+            }
+        },
+        "GetDimmer": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetDimmer</cmd> </tx>",
+            "Headers": {
+                "Content-Type": "text/xml"
+            }
+        },
+        "GetChannelIndicators": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetChannelIndicators</cmd> </tx>",
+            "Headers": {
+                "Content-Type": "text/xml"
+            }
+        },
+        "GetVideoSelect": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetVideoSelect</cmd> </tx>",
+            "Headers": {
+                "Content-Type": "text/xml"
+            }
+        },
+        "GetQuickSelectName": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetQuickSelectName</cmd> </tx>",
+            "Headers": {
+                "Content-Type": "text/xml"
+            }
+        },
+        "GetPowerStatus": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetPowerStatus</cmd> </tx>",
+            "Headers": {
+                "Content-Type": "text/xml"
+            }
+        },
+        "GetSourceStatus": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetSourceStatus</cmd> </tx>",
+            "Headers": {
+                "Content-Type": "text/xml"
+            }
+        },
+        "GetVolumeLevel": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetVolumeLevel</cmd> </tx>",
+            "Headers": {
+                "Content-Type": "text/xml"
+            }
+        },
+        "GetMuteStatus": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetMuteStatus</cmd> </tx>",
+            "Headers": {
+                "Content-Type": "text/xml"
+            }
+        },
+        "GetAutoStandby": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetAutoStandby</cmd> </tx>",
+            "Headers": {
+                "Content-Type": "text/xml"
+            }
+        },
+        "GetToneControl": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetToneControl</cmd> </tx>",
+            "Headers": {
+                "Content-Type": "text/xml"
+            }
+        },
+        "GetSubwooferLevel": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetSubwooferLevel</cmd> </tx>",
+            "Headers": {
+                "Content-Type": "text/xml"
+            }
+        },
+        "GetNetAudioStatus": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetNetAudioStatus</cmd> </tx>",
+            "Headers": {
+                "Content-Type": "text/xml"
+            }
+        },
+        "GetRenameSource": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetRenameSource</cmd> </tx>",
+            "Headers": {
+                "Content-Type": "text/xml"
+            }
+        },
+        "GetDeletedSource": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetDeletedSource</cmd> </tx>",
+            "Headers": {
+                "Content-Type": "text/xml"
+            }
+        },
+        "GetPictureModeStatus": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetPictureMode</cmd> </tx>",
+            "Headers": {
+                "Content-Type": "text/xml"
+            }
+        },
+        "GetSurroundModeStatus": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetSurroundModeStatus</cmd> </tx>",
+            "Headers": {
+                "Content-Type": "text/xml"
+            }
+        }
     },
     "ZoneName": [
         "Main Zone",
@@ -214,5 +324,35 @@
         "QUICK SELECT2": "QUICK2",
         "QUICK SELECT3": "QUICK3",
         "QUICK SELECT4": "QUICK4"
+    },
+    "PictureModesDenonString": {
+        "PVOFF": "OFF",
+        "PVSTD": "STANDARD",
+        "PVMOV": "MOVIE",
+        "PVVVD": "VIVID",
+        "PVSTM": "STREAM",
+        "PVDAY": "ISF DAY",
+        "PVNGT": "ISF NIGHT",
+        "PVCTM": "CUSTOM"
+    },
+    "PictureModesDenonNumber": {
+        "0": "OFF",
+        "1": "STANDARD",
+        "2": "MOVIE",
+        "3": "VIVID",
+        "4": "STREAM",
+        "5": "ISF DAY",
+        "6": "ISF NIGHT",
+        "7": "CUSTOM"
+    },
+    "PictureModesConversionToHomeKit": {
+        "0": 0,
+        "1": 1,
+        "2": 5,
+        "3": 4,
+        "4": 6,
+        "5": 2,
+        "6": 3,
+        "7": 7
     }
 }
