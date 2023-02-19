@@ -103,9 +103,10 @@ class DENON extends EventEmitter {
                     const conversionArraySoundMode = Object.keys(CONSTANS.SoundModeConversion);
 
                     //get receiver status
+                    const statusArray = Object.keys(devState);
                     const power = devState.Power[0].value[0] === 'ON';
                     const input = conversionArrayInputs.includes(devState.InputFuncSelect[0].value[0]) ? CONSTANS.InputConversion[devState.InputFuncSelect[0].value[0]] : (devState.InputFuncSelect[0].value[0]).toUpperCase();
-                    const volumeControlType = devState.VolumeDisplay[0].value[0];
+                    const volumeControlType = statusArray.includes('VolumeDisplay') ? devState.VolumeDisplay[0].value[0] : this.volumeControlType;
                     const volumeRelative = devState.MasterVolume[0].value[0];
                     const volume = parseFloat(volumeRelative) >= -79.5 ? parseInt(volumeRelative) + 80 : this.volume;
                     const mute = devState.Mute[0].value[0] === 'on';
