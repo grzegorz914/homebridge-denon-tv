@@ -129,6 +129,7 @@ class denonTvDevice {
 		this.mute = true;
 		this.mediaState = false;
 		this.inputIdentifier = 0;
+		this.supportPictureMode = false;
 		this.pictureMode = 0;
 		this.brightness = 0;
 		this.sensorVolumeState = false;
@@ -181,7 +182,7 @@ class denonTvDevice {
 			mqttEnabled: this.mqttEnabled
 		});
 
-		this.denon.on('deviceInfo', async (devInfo, manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion) => {
+		this.denon.on('deviceInfo', async (devInfo, manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion, supportPictureMode) => {
 			this.log(`Device: ${this.host} ${this.name}, Connected.`);
 
 			try {
@@ -220,6 +221,7 @@ class denonTvDevice {
 				this.modelName = modelName;
 				this.serialNumber = serialNumber;
 				this.firmwareRevision = firmwareRevision;
+				this.supportPictureMode = supportPictureMode;
 
 				//create pref directory and files if it doesn't exist
 				const object = JSON.stringify({});
@@ -369,10 +371,8 @@ class denonTvDevice {
 					for (let i = 0; i < switchButtonServicesCount; i++) {
 						const index = this.inputsSwitchesButtons[i];
 						const state = power ? (this.inputsReference[index] === reference) : false;
-						const displayType = this.inputsDisplayType[index];
-						const characteristicType = [Characteristic.On, Characteristic.On][displayType];
 						this.inputSwitchButtonServices[i]
-							.updateCharacteristic(characteristicType, state);
+							.updateCharacteristic(Characteristic.On, state);
 					}
 				}
 
@@ -621,47 +621,49 @@ class denonTvDevice {
 					};
 				});
 
-			this.televisionService.getCharacteristic(Characteristic.PictureMode)
-				.onGet(async () => {
-					const pictureMode = this.pictureMode;
-					const logInfo = this.disableLogInfo ? false : this.log(`Device: ${this.host} ${accessoryName}, Picture Mode: ${CONSTANS.PictureModesDenonNumber[pictureMode]}`);
-					return pictureMode;
-				})
-				.onSet(async (command) => {
-					try {
-						switch (command) {
-							case Characteristic.PictureMode.OTHER: //0 off
-								command = 'PVOFF';
-								break;
-							case Characteristic.PictureMode.STANDARD: //1 standard
-								command = 'PVSTD';
-								break;
-							case Characteristic.PictureMode.CALIBRATED: //5 isf day
-								command = 'PVDAY';
-								break;
-							case Characteristic.PictureMode.CALIBRATED_DARK: //6 isf night
-								command = 'PVNGT';
-								break;
-							case Characteristic.PictureMode.VIVID: //3 vivid
-								command = 'PVVVD';
-								break;
-							case Characteristic.PictureMode.GAME: //4 streaming
-								command = 'PVSTM';
-								break;
-							case Characteristic.PictureMode.COMPUTER: //2 movie
-								command = 'PVMOV';
-								break;
-							case Characteristic.PictureMode.CUSTOM: //7 custom
-								command = 'PVCTM';
-								break;
-						}
+			if (this.supportPictureMode) {
+				this.televisionService.getCharacteristic(Characteristic.PictureMode)
+					.onGet(async () => {
+						const pictureMode = this.pictureMode;
+						const logInfo = this.disableLogInfo ? false : this.log(`Device: ${this.host} ${accessoryName}, Picture Mode: ${CONSTANS.PictureModesDenonNumber[pictureMode]}`);
+						return pictureMode;
+					})
+					.onSet(async (command) => {
+						try {
+							switch (command) {
+								case Characteristic.PictureMode.OTHER: //0 off
+									command = 'PVOFF';
+									break;
+								case Characteristic.PictureMode.STANDARD: //1 standard
+									command = 'PVSTD';
+									break;
+								case Characteristic.PictureMode.CALIBRATED: //5 isf day
+									command = 'PVDAY';
+									break;
+								case Characteristic.PictureMode.CALIBRATED_DARK: //6 isf night
+									command = 'PVNGT';
+									break;
+								case Characteristic.PictureMode.VIVID: //3 vivid
+									command = 'PVVVD';
+									break;
+								case Characteristic.PictureMode.GAME: //4 streaming
+									command = 'PVSTM';
+									break;
+								case Characteristic.PictureMode.COMPUTER: //2 movie
+									command = 'PVMOV';
+									break;
+								case Characteristic.PictureMode.CUSTOM: //7 custom
+									command = 'PVCTM';
+									break;
+							}
 
-						await this.denon.send(CONSTANS.ApiUrls.iPhoneDirect + command);
-						const logInfo = this.disableLogInfo ? false : this.log(`Device: ${this.host} ${accessoryName}, set Picture Mode: ${CONSTANS.PictureModesDenonString[command]}`);
-					} catch (error) {
-						this.log.error(`Device: ${this.host} ${accessoryName}, set Picture Mode error: ${error}`);
-					};
-				});
+							await this.denon.send(CONSTANS.ApiUrls.iPhoneDirect + command);
+							const logInfo = this.disableLogInfo ? false : this.log(`Device: ${this.host} ${accessoryName}, set Picture Mode: ${CONSTANS.PictureModesDenonString[command]}`);
+						} catch (error) {
+							this.log.error(`Device: ${this.host} ${accessoryName}, set Picture Mode error: ${error}`);
+						};
+					});
+			};
 
 			this.televisionService.getCharacteristic(Characteristic.PowerModeSelection)
 				.onSet(async (command) => {
@@ -983,9 +985,8 @@ class denonTvDevice {
 					if (inputDisplayType >= 0) {
 						if (inputReference && inputName && inputMode) {
 							const serviceType = [Service.Outlet, Service.Switch][inputDisplayType];
-							const characteristicType = [Characteristic.On, Characteristic.On][inputDisplayType];
 							const inputSwitchButtonService = new serviceType(`${this.sZoneName} ${inputName}`, `Switch ${i}`);
-							inputSwitchButtonService.getCharacteristic(characteristicType)
+							inputSwitchButtonService.getCharacteristic(Characteristic.On)
 								.onGet(async () => {
 									const state = this.power ? (this.reference === inputReference) : false;
 									return state;
@@ -1093,7 +1094,7 @@ class denonTvDevice {
 										const logDebug = this.enableDebugMode ? this.log(`Device: ${this.host} ${accessoryName}, set Input Name: ${buttonName}, Reference: ${buttonReference}`) : false;
 
 										await new Promise(resolve => setTimeout(resolve, 300));
-										const setChar = state ? buttonService.updateCharacteristic(Characteristic.On, false) : false;
+										buttonService.updateCharacteristic(Characteristic.On, false);
 									} catch (error) {
 										this.log.error(`Device: ${this.host} ${accessoryName}, set ${zoneControl <= 2 ? 'Input' : 'Sound Mode'} error: ${error}`);
 									};

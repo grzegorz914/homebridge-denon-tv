@@ -48,6 +48,7 @@ class DENON extends EventEmitter {
                 const devInfo = parseDeviceInfo.Device_Info;
                 const debug = debugLog ? this.emit('debug', `Info: ${JSON.stringify(devInfo, null, 2)}`) : false;
 
+                //device info
                 const brandCode = devInfo.BrandCode[0] || 2;
                 const manufacturer = ['Denon', 'Marantz', 'Denon/Marantz'][brandCode];
                 const modelName = devInfo.ModelName[0] || 'AV Receiver';
@@ -55,7 +56,6 @@ class DENON extends EventEmitter {
                 const firmwareRevision = devInfo.UpgradeVersion[0] || 0;
                 const zones = devInfo.DeviceZones[0] || 0;
                 const apiVersion = devInfo.CommApiVers[0] || 0;
-                this.devInfo = devInfo;
 
                 if (!serialNumber) {
                     const debug1 = debugLog ? this.emit('debug', `Missing Serial Number: ${serialNumber}, reconnect in 15s.`) : false;
@@ -63,9 +63,24 @@ class DENON extends EventEmitter {
                     return;
                 }
 
-                this.checkStateOnFirstRun = true;
-                this.emit('deviceInfo', devInfo, manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion);
+                //setup
+                this.supportToneControl = devInfo.DeviceCapabilities[0].Setup[0].ToneControl[0].Control[0] === 1 || false;
+                this.supportSubwooferLevel = devInfo.DeviceCapabilities[0].Setup[0].SubwooferLevel[0].Control[0] === 1 || false;
+                this.supportChannelLevel = devInfo.DeviceCapabilities[0].Setup[0].ChannelLevel[0].Control[0] === 1 || false;
+                this.supportAllZoneStereo = devInfo.DeviceCapabilities[0].Setup[0].AllZoneStereo[0].Control[0] === 1 || false;
+                this.supportPictureMode = devInfo.DeviceCapabilities[0].Setup[0].PictureMode[0].Control[0] === 1 || false;
+                this.supportSoundMode = devInfo.DeviceCapabilities[0].Setup[0].SoundMode[0].Control[0] === 1 || false;
+
+                //operation
+                this.supportClock = devInfo.DeviceCapabilities[0].Operation[0].Clock[0].Control[0] === 1 || false;
+                this.supportAllZonePower = devInfo.DeviceCapabilities[0].Operation[0].AllZonePower[0].Control[0] === 1 || false;
+                this.supportAllZoneMute = devInfo.DeviceCapabilities[0].Operation[0].AllZoneMute[0].Control[0] === 1 || false;
+                this.supportFavorites = devInfo.DeviceCapabilities[0].Operation[0].Favorites[0].Control[0] === 1 || false;
+                this.devInfo = devInfo;
+
+                this.emit('deviceInfo', devInfo, manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion, this.supportPictureMode);
                 await new Promise(resolve => setTimeout(resolve, 2000));
+                this.checkStateOnFirstRun = true;
                 this.emit('checkState');
             } catch (error) {
                 const debug = disableLogConnectError ? false : this.emit('error', `Info error: ${error}, reconnect in 15s.`);
@@ -94,17 +109,16 @@ class DENON extends EventEmitter {
                     const mute = devState.Mute[0].value[0] === 'on';
 
                     //get picture mode
-                    const devicePictureMode = power && zoneControl === 0 ? await this.axiosInstancePost(CONSTANS.ApiUrls.AppCommand, CONSTANS.BodyXml.GetPictureMode) : false;
-                    const parseDevicePictureMode = power && zoneControl === 0 ? await parseString(devicePictureMode.data) : false;
-                    const debug1 = power && debugLog && zoneControl === 0 ? this.emit('debug', `Picture mode: ${JSON.stringify(parseDevicePictureMode, null, 2)}`) : false;
-                    const pictureStatus = power && zoneControl === 0 ? parseDevicePictureMode.rx.cmd[0].status[0] === 1 : false;
-                    const pictureMode = power && pictureStatus && zoneControl === 0 ? parseDevicePictureMode.rx.cmd[0].value[0] : this.pictureMode;
+                    const devicePictureMode = this.supportPictureMode && power && zoneControl === 0 ? await this.axiosInstancePost(CONSTANS.ApiUrls.AppCommand, CONSTANS.BodyXml.GetPictureMode) : false;
+                    const parseDevicePictureMode = this.supportPictureMode && power && zoneControl === 0 ? await parseString(devicePictureMode.data) : false;
+                    const debug1 = this.supportPictureMode && power && debugLog && zoneControl === 0 ? this.emit('debug', `Picture mode: ${JSON.stringify(parseDevicePictureMode, null, 2)}`) : false;
+                    const pictureMode = this.supportPictureMode && power && zoneControl === 0 ? parseDevicePictureMode.rx.cmd[0].value[0] : this.pictureMode;
 
                     //get sound mode
-                    const deviceSoundMode = power && (zoneControl === 0 || zoneControl === 3) ? await this.axiosInstancePost(CONSTANS.ApiUrls.AppCommand, CONSTANS.BodyXml.GetSurroundModeStatus) : false;
-                    const parseDeviceSoundMode = power && (zoneControl === 0 || zoneControl === 3) ? await parseString(deviceSoundMode.data) : false;
-                    const debug2 = power && debugLog && (zoneControl === 0 || zoneControl === 3) ? this.emit('debug', `Sound mode: ${JSON.stringify(parseDeviceSoundMode, null, 2)}`) : false;
-                    const soundMode = power && (zoneControl === 0 || zoneControl === 3) ? conversionArraySoundMode.includes((parseDeviceSoundMode.rx.cmd[0].surround[0]).replace(/[^a-zA-Z0-9]/g, '').toUpperCase()) ? CONSTANS.SoundModeConversion[(parseDeviceSoundMode.rx.cmd[0].surround[0]).replace(/[^a-zA-Z0-9]/g, '').toUpperCase()] : (parseDeviceSoundMode.rx.cmd[0].surround[0]).replace(/[^a-zA-Z0-9]/g, '').toUpperCase() : this.soundMode;
+                    const deviceSoundMode = this.supportSoundMode && power && (zoneControl === 0 || zoneControl === 3) ? await this.axiosInstancePost(CONSTANS.ApiUrls.AppCommand, CONSTANS.BodyXml.GetSurroundModeStatus) : false;
+                    const parseDeviceSoundMode = this.supportSoundMode && power && (zoneControl === 0 || zoneControl === 3) ? await parseString(deviceSoundMode.data) : false;
+                    const debug2 = this.supportSoundMode && power && debugLog && (zoneControl === 0 || zoneControl === 3) ? this.emit('debug', `Sound mode: ${JSON.stringify(parseDeviceSoundMode, null, 2)}`) : false;
+                    const soundMode = this.supportSoundMode && power && (zoneControl === 0 || zoneControl === 3) ? conversionArraySoundMode.includes((parseDeviceSoundMode.rx.cmd[0].surround[0]).replace(/[^a-zA-Z0-9]/g, '').toUpperCase()) ? CONSTANS.SoundModeConversion[(parseDeviceSoundMode.rx.cmd[0].surround[0]).replace(/[^a-zA-Z0-9]/g, '').toUpperCase()] : (parseDeviceSoundMode.rx.cmd[0].surround[0]).replace(/[^a-zA-Z0-9]/g, '').toUpperCase() : this.soundMode;
 
                     //select reference
                     const reference = zoneControl <= 2 ? input : soundMode;
@@ -121,8 +135,8 @@ class DENON extends EventEmitter {
                     this.emit('stateChanged', power, reference, volume, volumeControlType, mute, pictureMode);
                     const mqtt = mqttEnabled ? this.emit('mqtt', 'Info', JSON.stringify(this.devInfo, null, 2)) : false;
                     const mqtt1 = mqttEnabled ? this.emit('mqtt', 'State', JSON.stringify(devState, null, 2)) : false;
-                    const mqtt2 = mqttEnabled && power && zoneControl === 0 ? this.emit('mqtt', 'Picture', JSON.stringify({ 'Picture Mode': CONSTANS.PictureModesDenonNumber[pictureMode] }, null, 2)) : false;
-                    const mqtt3 = mqttEnabled && power && (zoneControl === 0 || zoneControl === 3) ? this.emit('mqtt', 'Surround', JSON.stringify({ 'Sound Mode': CONSTANS.SoundModeConversion[soundMode] }, null, 2)) : false;
+                    const mqtt2 = this.supportPictureMode && mqttEnabled && power && zoneControl === 0 ? this.emit('mqtt', 'Picture', JSON.stringify({ 'Picture Mode': CONSTANS.PictureModesDenonNumber[pictureMode] }, null, 2)) : false;
+                    const mqtt3 = this.supportSoundMode && mqttEnabled && power && (zoneControl === 0 || zoneControl === 3) ? this.emit('mqtt', 'Surround', JSON.stringify({ 'Sound Mode': CONSTANS.SoundModeConversion[soundMode] }, null, 2)) : false;
                     this.checkState();
                 } catch (error) {
                     const debug = disableLogConnectError ? false : this.emit('error', `State error: ${error}, reconnect in 15s.`);
