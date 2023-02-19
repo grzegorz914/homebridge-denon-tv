@@ -122,7 +122,7 @@ class DENON extends EventEmitter {
                     const input = conversionArrayInputs.includes(devState.InputFuncSelect[0].value[0]) ? CONSTANS.InputConversion[devState.InputFuncSelect[0].value[0]] : (devState.InputFuncSelect[0].value[0]).toUpperCase();
                     const volumeControlType = statusArray.includes('VolumeDisplay') ? devState.VolumeDisplay[0].value[0] : this.volumeControlType;
                     const volumeRelative = devState.MasterVolume[0].value[0];
-                    const volume = volumeRelative >= '-79.5' ? parseInt(volumeRelative) + 80 : this.volume;
+                    const volume = parseFloat(volumeRelative) >= -79.5 ? parseInt(volumeRelative) + 80 : this.volume;
                     const mute = devState.Mute[0].value[0] === 'on';
 
                     //get picture mode
