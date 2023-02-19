@@ -9,9 +9,9 @@ class DENON extends EventEmitter {
         super();
         const host = config.host;
         const port = config.port;
+        const zoneControl = config.zoneControl;
         const debugLog = config.debugLog;
         const disableLogConnectError = config.disableLogConnectError;
-        const zoneControl = config.zoneControl;
         const mqttEnabled = config.mqttEnabled;
         this.refreshInterval = config.refreshInterval;
 
@@ -48,7 +48,7 @@ class DENON extends EventEmitter {
                 const devInfo = parseDeviceInfo.Device_Info;
                 const debug = debugLog ? this.emit('debug', `Info: ${JSON.stringify(devInfo, null, 2)}`) : false;
 
-                const brandCode = devInfo.BrandCode[0] || 3;
+                const brandCode = devInfo.BrandCode[0] || 2;
                 const manufacturer = ['Denon', 'Marantz', 'Denon/Marantz'][brandCode];
                 const modelName = devInfo.ModelName[0] || 'AV Receiver';
                 const serialNumber = devInfo.MacAddress[0] || false;
