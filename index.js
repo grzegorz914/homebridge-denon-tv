@@ -919,7 +919,7 @@ class denonTvDevice {
 
 							await fsPromises.writeFile(this.inputsNamesFile, newCustomName);
 							const logDebug = this.enableDebugMode ? this.log(`Device: ${this.host} ${accessoryName}, saved ${zoneControl <= 2 ? 'Input' : 'Sound Mode'}, Name: ${value}, Reference: ${inputReference}`) : false;
-							inputService.setCharacteristic(Characteristic.Name, inputName);
+							inputService.setCharacteristic(Characteristic.Name, value);
 						} catch (error) {
 							this.log.error(`Device: ${this.host} ${accessoryName}, save Input Name error: ${error}`);
 						}
