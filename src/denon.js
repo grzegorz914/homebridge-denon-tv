@@ -79,21 +79,21 @@ class DENON extends EventEmitter {
                 this.supportFavorites = capabilitiesOperatonArray.includes('FavoriteStation') ? devInfo.DeviceCapabilities[0].Operation[0].FavoriteStation[0].Control[0] === '1' : false;
 
                 //zone capabilities
-                const checkZone = zoneControl === 3 ? 0 : zoneControl;
-                const zonesCapabilitiesArray = Object.keys(devInfo.DeviceZoneCapabilities[checkZone]);
-                this.supportShortcutControl = zonesCapabilitiesArray.includes('ShortcutControl') ? devInfo.DeviceZoneCapabilities[checkZone].ShortcutControl[0].Control[0] === '1' : false;
-                this.supportPower = zonesCapabilitiesArray.includes('Power') ? devInfo.DeviceZoneCapabilities[checkZone].Power[0].Control[0] === '1' : false;
-                this.supportVolume = zonesCapabilitiesArray.includes('Volume') ? devInfo.DeviceZoneCapabilities[checkZone].Volume[0].Control[0] === '1' : false;
-                this.supportMute = zonesCapabilitiesArray.includes('Mute') ? devInfo.DeviceZoneCapabilities[checkZone].Mute[0].Control[0] === '1' : false;
-                this.supportInputSource = capabilitiesSetupArray.includes('InputSource') ? devInfo.DeviceZoneCapabilities[checkZone].InputSource[0].Control[0] === '1' : false;
+                const checkZone = zoneControl <= 2 ? true : false;
+                const zoneCapabilitiesArray = checkZone ? Object.keys(devInfo.DeviceZoneCapabilities[zoneControl]) : false;
+                this.supportShortcutControl = checkZone && zoneCapabilitiesArray.includes('ShortcutControl') ? devInfo.DeviceZoneCapabilities[zoneControl].ShortcutControl[0].Control[0] === '1' : false;
+                this.supportPower = checkZone && zoneCapabilitiesArray.includes('Power') ? devInfo.DeviceZoneCapabilities[zoneControl].Power[0].Control[0] === '1' : false;
+                this.supportVolume = checkZone && zoneCapabilitiesArray.includes('Volume') ? devInfo.DeviceZoneCapabilities[zoneControl].Volume[0].Control[0] === '1' : false;
+                this.supportMute = checkZone && zoneCapabilitiesArray.includes('Mute') ? devInfo.DeviceZoneCapabilities[zoneControl].Mute[0].Control[0] === '1' : false;
+                this.supportInputSource = checkZone && zoneCapabilitiesArray.includes('InputSource') ? devInfo.DeviceZoneCapabilities[zoneControl].InputSource[0].Control[0] === '1' : false;
 
                 //setup
-                const zonesCapabilitiesSetupArray = Object.keys(devInfo.DeviceZoneCapabilities[checkZone].Setup[0]);
+                const zonesCapabilitiesSetupArray = checkZone ? Object.keys(devInfo.DeviceZoneCapabilities[zoneControl].Setup[0]) : false;
 
                 //operation
-                const zonesCapabilitiesOperationArray = Object.keys(devInfo.DeviceZoneCapabilities[checkZone].Operation[0]);
+                const zonesCapabilitiesOperationArray = checkZone ? Object.keys(devInfo.DeviceZoneCapabilities[zoneControl].Operation[0]) : false;
 
-                this.emit('deviceInfo', devInfo, manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion, this.supportPictureMode);
+                this.emit('deviceInfo', devInfo, manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion, this.supportPictureMode, this.supportShortcutControl, this.supportInputSource);
                 await new Promise(resolve => setTimeout(resolve, 2000));
                 this.checkStateOnFirstRun = true;
                 this.devInfo = devInfo;

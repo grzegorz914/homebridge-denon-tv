@@ -110,6 +110,7 @@ class denonTvDevice {
 		//setup variables
 		this.startPrepareAccessory = true;
 
+		this.services = [];
 		this.inputsReference = [];
 		this.inputsName = [];
 		this.inputsMode = [];
@@ -182,7 +183,7 @@ class denonTvDevice {
 			mqttEnabled: this.mqttEnabled
 		});
 
-		this.denon.on('deviceInfo', async (devInfo, manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion, supportPictureMode) => {
+		this.denon.on('deviceInfo', async (devInfo, manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion, supportPictureMode, supportShortcutControl, supportInputSource) => {
 			this.log(`Device: ${this.host} ${this.name}, Connected.`);
 
 			try {
@@ -263,43 +264,42 @@ class denonTvDevice {
 
 				//save inputs to the file
 				try {
+					const referenceConversionArray = Object.keys(CONSTANS.InputConversion);
 					const inputsArr = [];
-					if (this.getInputsFromDevice && this.zoneControl <= 2) {
-						const referencesArray = [];
-						const referenceConversionArray = Object.keys(CONSTANS.InputConversion);
-						const deviceInputs = devInfo.DeviceZoneCapabilities[this.zoneControl].InputSource[0].List[0].Source;
-						for (const input of deviceInputs) {
-							const name = input.DefaultName[0];
-							const inputReference = input.FuncName[0];
-							const reference = referenceConversionArray.includes(inputReference) ? CONSTANS.InputConversion[inputReference] : inputReference;
-							const inputsObj = {
-								'name': name,
-								'reference': reference,
-								'mode': 'SI',
-								"displayType": -1
-							}
-							inputsArr.push(inputsObj);
-							referencesArray.push(reference);
-						};
+					const referencesArray = [];
 
-						const deviceSchortcuts = devInfo.DeviceZoneCapabilities[this.zoneControl].ShortcutControl[0].EntryList[0].Shortcut;
-						for (const input of deviceSchortcuts) {
-							const category = input.Category[0];
-							const name = input.DispName[0];
-							const inputReference = input.FuncName[0];
-							const reference = referenceConversionArray.includes(inputReference) ? CONSTANS.InputConversion[inputReference] : inputReference;
-							const inputsObj = {
-								'name': name,
-								'reference': reference,
-								'mode': ['', '', '', 'MS', 'SI'][category],
-								"displayType": -1
-							}
-							const existedInput = referencesArray.includes(reference);
-							const push = category === '4' && !existedInput ? inputsArr.push(inputsObj) : false;
-						};
+					const deviceInputs = this.getInputsFromDevice && supportInputSource ? devInfo.DeviceZoneCapabilities[this.zoneControl].InputSource[0].List[0].Source : [];
+					for (const input of deviceInputs) {
+						const name = input.DefaultName[0];
+						const inputReference = input.FuncName[0];
+						const reference = referenceConversionArray.includes(inputReference) ? CONSTANS.InputConversion[inputReference] : inputReference;
+						const inputsObj = {
+							'name': name,
+							'reference': reference,
+							'mode': 'SI',
+							"displayType": -1
+						}
+						inputsArr.push(inputsObj);
+						referencesArray.push(reference);
 					};
 
-					const allInputsArr = this.zoneControl <= 2 ? (this.getInputsFromDevice ? inputsArr : this.inputs) : this.soundModes;
+					const deviceSchortcuts = this.getInputsFromDevice && supportShortcutControl ? devInfo.DeviceZoneCapabilities[this.zoneControl].ShortcutControl[0].EntryList[0].Shortcut : [];
+					for (const input of deviceSchortcuts) {
+						const category = input.Category[0];
+						const name = input.DispName[0];
+						const inputReference = input.FuncName[0];
+						const reference = referenceConversionArray.includes(inputReference) ? CONSTANS.InputConversion[inputReference] : inputReference;
+						const inputsObj = {
+							'name': name,
+							'reference': reference,
+							'mode': ['', '', '', 'MS', 'SI'][category],
+							"displayType": -1
+						}
+						const existedInput = referencesArray.includes(reference);
+						const push = category === '4' && !existedInput ? inputsArr.push(inputsObj) : false;
+					};
+
+					const allInputsArr = this.zoneControl <= 2 ? (this.getInputsFromDevice && supportInputSource ? inputsArr : this.inputs) : this.soundModes;
 					const inputs = JSON.stringify(allInputsArr, null, 2);
 					await fsPromises.writeFile(this.inputsFile, inputs);
 					const debug = this.enableDebugMode ? this.log(`Device: ${this.host} ${this.name}, saved ${this.zoneControl <= 2 ? 'Inputs' : 'Sound Modes'}: ${inputs}`) : false;
@@ -435,6 +435,7 @@ class denonTvDevice {
 			.setCharacteristic(Characteristic.Model, this.modelName)
 			.setCharacteristic(Characteristic.SerialNumber, this.serialNumber)
 			.setCharacteristic(Characteristic.FirmwareRevision, this.firmwareRevision);
+		this.services.push(this.informationService);
 
 
 		//prepare television service
@@ -684,6 +685,7 @@ class denonTvDevice {
 				});
 		};
 
+		this.services.push(this.televisionService);
 		accessory.addService(this.televisionService);
 
 		//prepare speaker service
@@ -763,8 +765,8 @@ class denonTvDevice {
 				};
 			});
 
+		this.services.push(this.tvSpeakerService);
 		accessory.addService(this.tvSpeakerService);
-
 
 		//prepare volume service
 		if (this.volumeControl >= 0) {
@@ -788,6 +790,7 @@ class denonTvDevice {
 						this.tvSpeakerService.setCharacteristic(Characteristic.Mute, !state);
 					});
 
+				this.services.push(this.volumeService);
 				accessory.addService(this.volumeService);
 			}
 
@@ -810,6 +813,7 @@ class denonTvDevice {
 						this.tvSpeakerService.setCharacteristic(Characteristic.Mute, !state);
 					});
 
+				this.services.push(this.volumeServiceFan);
 				accessory.addService(this.volumeServiceFan);
 			}
 		};
@@ -823,6 +827,8 @@ class denonTvDevice {
 					const state = this.power;
 					return state;
 				});
+
+			this.services.push(this.sensorPowerService);
 			accessory.addService(this.sensorPowerService);
 		};
 
@@ -834,6 +840,8 @@ class denonTvDevice {
 					const state = this.sensorVolumeState;
 					return state;
 				});
+
+			this.services.push(this.sensorVolumeService);
 			accessory.addService(this.sensorVolumeService);
 		};
 
@@ -845,6 +853,8 @@ class denonTvDevice {
 					const state = this.power ? this.mute : false;
 					return state;
 				});
+
+			this.services.push(this.sensorMuteService);
 			accessory.addService(this.sensorMuteService);
 		};
 
@@ -856,6 +866,8 @@ class denonTvDevice {
 					const state = this.sensorInputState;
 					return state;
 				});
+				
+			this.services.push(this.sensorInputService);
 			accessory.addService(this.sensorInputService);
 		};
 
@@ -873,7 +885,8 @@ class denonTvDevice {
 		//check possible inputs and possible count (max 80)
 		const inputs = savedInputs;
 		const inputsCount = inputs.length;
-		const maxInputsCount = inputsCount < 80 ? inputsCount : 80;
+		const possibleInputsCount = 90 - this.services.length;
+		const maxInputsCount = inputsCount >= possibleInputsCount ? possibleInputsCount : inputsCount;
 		for (let i = 0; i < maxInputsCount; i++) {
 			//get input
 			const input = inputs[i];
@@ -950,6 +963,7 @@ class denonTvDevice {
 				const pushInputSwitchIndex = inputDisplayType >= 0 ? this.inputsSwitchesButtons.push(i) : false;
 
 				this.televisionService.addLinkedService(inputService);
+				this.services.push(inputService);
 				accessory.addService(inputService);
 			} else {
 				this.log(`Device: ${this.host} ${accessoryName}, ${zoneControl <= 2 ? 'Inputs' : 'Sound Modes'}, Name: ${inputName ? inputName : 'Missing'}, Reference: ${inputReference ? inputReference : 'Missing'}, Mode: ${inputMode ? inputMode : 'Missing'}.`);
@@ -960,8 +974,8 @@ class denonTvDevice {
 		//prepare inputs switch button ervices
 		const inputsSwitchesButtons = this.inputsSwitchesButtons;
 		const inputsSwitchesButtonsCount = inputsSwitchesButtons.length;
-		const possibleInputsSwitchesButtonsCount = 80 - this.inputsReference.length;
-		const maxInputsSwitchesButtonsCount = possibleInputsSwitchesButtonsCount >= inputsSwitchesButtonsCount ? inputsSwitchesButtonsCount : possibleInputsSwitchesButtonsCount;
+		const possibleInputsSwitchesButtonsCount = 90 - this.services.length;
+		const maxInputsSwitchesButtonsCount = inputsSwitchesButtonsCount >= possibleInputsSwitchesButtonsCount ? possibleInputsSwitchesButtonsCount : inputsSwitchesButtonsCount;
 		if (!this.getInputsFromDevice) {
 			if (maxInputsSwitchesButtonsCount > 0) {
 				this.log.debug('prepareSwitchsService');
@@ -1003,6 +1017,7 @@ class denonTvDevice {
 								});
 
 							this.inputSwitchesButtonServices.push(inputSwitchButtonService);
+							this.services.push(inputSwitchButtonService);
 							accessory.addService(this.inputSwitchesButtonServices[i]);
 						} else {
 							this.log(`Device: ${this.host} ${accessoryName}, Button ${zoneControl <= 2 ? 'Inputs' : 'Sound Modes'}, Name: ${inputName ? inputName : 'Missing'}, Reference: ${inputReference ? inputReference : 'Missing'}, Mode: ${inputMode ? inputMode : 'Missing'}.`);
@@ -1015,8 +1030,8 @@ class denonTvDevice {
 		//prepare sonsor services
 		const sensorInputs = this.sensorInputs;
 		const sensorInputsCount = sensorInputs.length;
-		const possibleSensorInputsCount = 80 - this.inputsReference.length;
-		const maxSensorInputsCount = possibleSensorInputsCount >= sensorInputsCount ? sensorInputsCount : possibleSensorInputsCount;
+		const possibleSensorInputsCount = 90 - this.services.length;
+		const maxSensorInputsCount = sensorInputsCount >= possibleSensorInputsCount ? possibleSensorInputsCount : sensorInputsCount;
 		if (this.getInputsFromDevice) {
 			if (maxSensorInputsCount > 0) {
 				this.log.debug('prepareInputSensorServices');
@@ -1047,6 +1062,7 @@ class denonTvDevice {
 							this.sensorInputsReference.push(sensorInputReference);
 							this.sensorInputsDisplayType.push(sensorInputDisplayType);
 							this.sensorInputsServices.push(sensorInputService);
+							this.services.push(sensorInputService);
 							accessory.addService(this.sensorInputsServices[i]);
 						} else {
 							this.log(`Device: ${this.host} ${accessoryName}, Sensor ${zoneControl <= 2 ? 'Inputs' : 'Sound Modes'}, Name: ${sensorInputName ? sensorInputName : 'Missing'}, Reference: ${sensorInputReference ? sensorInputReference : 'Missing'}.`);
@@ -1060,9 +1076,8 @@ class denonTvDevice {
 		if (zoneControl <= 2) {
 			const buttons = this.buttons;
 			const buttonsCount = buttons.length;
-			const maxbuttonsCount = this.getInputsFromDevice ? this.inputsReference.length + this.sensorInputsServices.length : this.inputsReference.length + this.inputSwitchesButtonServices.length;
-			const possibleButtonsCount = 80 - (maxInputsCount + maxbuttonsCount);
-			const maxButtonsCount = possibleButtonsCount >= buttonsCount ? buttonsCount : possibleButtonsCount;
+			const possibleButtonsCount = 90 - this.services.length;
+			const maxButtonsCount = buttonsCount >= possibleButtonsCount ? possibleButtonsCount : buttonsCount;
 			if (maxButtonsCount > 0) {
 				this.log.debug('prepareInputsButtonService');
 				for (let i = 0; i < maxButtonsCount; i++) {
@@ -1099,6 +1114,7 @@ class denonTvDevice {
 									};
 								});
 							this.buttonsServices.push(buttonService);
+							this.services.push(buttonService);
 							accessory.addService(this.buttonsServices[i]);
 						} else {
 							this.log(`Device: ${this.host} ${accessoryName}, Button ${zoneControl <= 2 ? 'Inputs' : 'Sound Modes'}, Name: ${buttonName ? buttonName : 'Missing'}, Reference: ${buttonReference ? buttonReference : 'Missing'}.`);
