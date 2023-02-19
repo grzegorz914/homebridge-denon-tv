@@ -64,18 +64,20 @@ class DENON extends EventEmitter {
                 }
 
                 //setup
-                this.supportToneControl = devInfo.DeviceCapabilities[0].Setup[0].ToneControl[0].Control[0] === 1 || false;
-                this.supportSubwooferLevel = devInfo.DeviceCapabilities[0].Setup[0].SubwooferLevel[0].Control[0] === 1 || false;
-                this.supportChannelLevel = devInfo.DeviceCapabilities[0].Setup[0].ChannelLevel[0].Control[0] === 1 || false;
-                this.supportAllZoneStereo = devInfo.DeviceCapabilities[0].Setup[0].AllZoneStereo[0].Control[0] === 1 || false;
-                this.supportPictureMode = devInfo.DeviceCapabilities[0].Setup[0].PictureMode[0].Control[0] === 1 || false;
-                this.supportSoundMode = devInfo.DeviceCapabilities[0].Setup[0].SoundMode[0].Control[0] === 1 || false;
+                const setupArray = Object.keys(devInfo.DeviceCapabilities[0].Setup[0]);
+                this.supportToneControl = setupArray.includes('ToneControl') ? devInfo.DeviceCapabilities[0].Setup[0].ToneControl[0].Control[0] === 1 : false;
+                this.supportSubwooferLevel = setupArray.includes('SubwooferLevel') ? devInfo.DeviceCapabilities[0].Setup[0].SubwooferLevel[0].Control[0] === 1 : false;
+                this.supportChannelLevel = setupArray.includes('ChannelLevel') ? devInfo.DeviceCapabilities[0].Setup[0].ChannelLevel[0].Control[0] === 1 : false;
+                this.supportAllZoneStereo = setupArray.includes('AllZoneStereo') ? devInfo.DeviceCapabilities[0].Setup[0].AllZoneStereo[0].Control[0] === 1 : false;
+                this.supportPictureMode = setupArray.includes('PictureMode') ? devInfo.DeviceCapabilities[0].Setup[0].PictureMode[0].Control[0] === 1 : false;
+                this.supportSoundMode = setupArray.includes('SoundMode') ? devInfo.DeviceCapabilities[0].Setup[0].SoundMode[0].Control[0] === 1 : false;
 
                 //operation
-                this.supportClock = devInfo.DeviceCapabilities[0].Operation[0].Clock[0].Control[0] === 1 || false;
-                this.supportAllZonePower = devInfo.DeviceCapabilities[0].Operation[0].AllZonePower[0].Control[0] === 1 || false;
-                this.supportAllZoneMute = devInfo.DeviceCapabilities[0].Operation[0].AllZoneMute[0].Control[0] === 1 || false;
-                this.supportFavorites = devInfo.DeviceCapabilities[0].Operation[0].Favorites[0].Control[0] === 1 || false;
+                const operatonArray = Object.keys(devInfo.DeviceCapabilities[0].Operation[0]);
+                this.supportClock = operatonArray.includes('Clock') ? devInfo.DeviceCapabilities[0].Operation[0].Clock[0].Control[0] === 1 : false;
+                this.supportAllZonePower = operatonArray.includes('AllZonePower') ? devInfo.DeviceCapabilities[0].Operation[0].AllZonePower[0].Control[0] === 1 : false;
+                this.supportAllZoneMute = operatonArray.includes('AllZoneMute') ? devInfo.DeviceCapabilities[0].Operation[0].AllZoneMute[0].Control[0] === 1 : false;
+                this.supportFavorites = operatonArray.includes('Favorites') ? devInfo.DeviceCapabilities[0].Operation[0].Favorites[0].Control[0] === 1 : false;
                 this.devInfo = devInfo;
 
                 this.emit('deviceInfo', devInfo, manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion, this.supportPictureMode);
