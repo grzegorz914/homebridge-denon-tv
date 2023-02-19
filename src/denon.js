@@ -49,40 +49,56 @@ class DENON extends EventEmitter {
                 const debug = debugLog ? this.emit('debug', `Info: ${JSON.stringify(devInfo, null, 2)}`) : false;
 
                 //device info
-                const brandCode = devInfo.BrandCode[0] || 2;
+                const deviceInfoArray = Object.keys(devInfo);
+                const apiVersion = deviceInfoArray.includes('CommApiVers') ? devInfo.CommApiVers[0] : '000';
+                const brandCode = deviceInfoArray.includes('BrandCode') ? devInfo.BrandCode[0] : '2';
                 const manufacturer = ['Denon', 'Marantz', 'Denon/Marantz'][brandCode];
-                const modelName = devInfo.ModelName[0] || 'AV Receiver';
-                const serialNumber = devInfo.MacAddress[0] || false;
-                const firmwareRevision = devInfo.UpgradeVersion[0] || 0;
-                const zones = devInfo.DeviceZones[0] || 0;
-                const apiVersion = devInfo.CommApiVers[0] || 0;
+                const modelName = deviceInfoArray.includes('ModelName') ? devInfo.ModelName[0] : 'AV Receiver';
+                const serialNumber = deviceInfoArray.includes('MacAddress') ? devInfo.MacAddress[0] : false;
+                const firmwareRevision = deviceInfoArray.includes('UpgradeVersion') ? devInfo.UpgradeVersion[0] : '00';
+                const zones = deviceInfoArray.includes('DeviceZones') ? devInfo.DeviceZones[0] : '0';
 
                 if (!serialNumber) {
-                    const debug1 = debugLog ? this.emit('debug', `Missing Serial Number: ${serialNumber}, reconnect in 15s.`) : false;
+                    const debug1 = debugLog ? this.emit('debug', `Missing Serial Number, reconnect in 15s.`) : false;
                     this.checkDeviceInfo();
                     return;
                 }
 
-                //setup
-                const setupArray = Object.keys(devInfo.DeviceCapabilities[0].Setup[0]);
-                this.supportToneControl = setupArray.includes('ToneControl') ? devInfo.DeviceCapabilities[0].Setup[0].ToneControl[0].Control[0] === 1 : false;
-                this.supportSubwooferLevel = setupArray.includes('SubwooferLevel') ? devInfo.DeviceCapabilities[0].Setup[0].SubwooferLevel[0].Control[0] === 1 : false;
-                this.supportChannelLevel = setupArray.includes('ChannelLevel') ? devInfo.DeviceCapabilities[0].Setup[0].ChannelLevel[0].Control[0] === 1 : false;
-                this.supportAllZoneStereo = setupArray.includes('AllZoneStereo') ? devInfo.DeviceCapabilities[0].Setup[0].AllZoneStereo[0].Control[0] === 1 : false;
-                this.supportPictureMode = setupArray.includes('PictureMode') ? devInfo.DeviceCapabilities[0].Setup[0].PictureMode[0].Control[0] === 1 : false;
-                this.supportSoundMode = setupArray.includes('SoundMode') ? devInfo.DeviceCapabilities[0].Setup[0].SoundMode[0].Control[0] === 1 : false;
+                //device capabilities setup
+                const capabilitiesSetupArray = Object.keys(devInfo.DeviceCapabilities[0].Setup[0]);
+                this.supportToneControl = capabilitiesSetupArray.includes('ToneControl') ? devInfo.DeviceCapabilities[0].Setup[0].ToneControl[0].Control[0] === 1 : false;
+                this.supportSubwooferLevel = capabilitiesSetupArray.includes('SubwooferLevel') ? devInfo.DeviceCapabilities[0].Setup[0].SubwooferLevel[0].Control[0] === 1 : false;
+                this.supportChannelLevel = capabilitiesSetupArray.includes('ChannelLevel') ? devInfo.DeviceCapabilities[0].Setup[0].ChannelLevel[0].Control[0] === 1 : false;
+                this.supportAllZoneStereo = capabilitiesSetupArray.includes('AllZoneStereo') ? devInfo.DeviceCapabilities[0].Setup[0].AllZoneStereo[0].Control[0] === 1 : false;
+                this.supportPictureMode = capabilitiesSetupArray.includes('PictureMode') ? devInfo.DeviceCapabilities[0].Setup[0].PictureMode[0].Control[0] === 1 : false;
+                this.supportSoundMode = capabilitiesSetupArray.includes('SoundMode') ? devInfo.DeviceCapabilities[0].Setup[0].SoundMode[0].Control[0] === 1 : false;
 
                 //operation
-                const operatonArray = Object.keys(devInfo.DeviceCapabilities[0].Operation[0]);
-                this.supportClock = operatonArray.includes('Clock') ? devInfo.DeviceCapabilities[0].Operation[0].Clock[0].Control[0] === 1 : false;
-                this.supportAllZonePower = operatonArray.includes('AllZonePower') ? devInfo.DeviceCapabilities[0].Operation[0].AllZonePower[0].Control[0] === 1 : false;
-                this.supportAllZoneMute = operatonArray.includes('AllZoneMute') ? devInfo.DeviceCapabilities[0].Operation[0].AllZoneMute[0].Control[0] === 1 : false;
-                this.supportFavorites = operatonArray.includes('Favorites') ? devInfo.DeviceCapabilities[0].Operation[0].Favorites[0].Control[0] === 1 : false;
-                this.devInfo = devInfo;
+                const capabilitiesOperatonArray = Object.keys(devInfo.DeviceCapabilities[0].Operation[0]);
+                this.supportClock = capabilitiesOperatonArray.includes('Clock') ? devInfo.DeviceCapabilities[0].Operation[0].Clock[0].Control[0] === 1 : false;
+                this.supportAllZonePower = capabilitiesOperatonArray.includes('AllZonePower') ? devInfo.DeviceCapabilities[0].Operation[0].AllZonePower[0].Control[0] === 1 : false;
+                this.supportAllZoneMute = capabilitiesOperatonArray.includes('AllZoneMute') ? devInfo.DeviceCapabilities[0].Operation[0].AllZoneMute[0].Control[0] === 1 : false;
+                this.supportFavorites = capabilitiesOperatonArray.includes('Favorites') ? devInfo.DeviceCapabilities[0].Operation[0].Favorites[0].Control[0] === 1 : false;
+                this.supportFavorites = capabilitiesOperatonArray.includes('FavoriteStation') ? devInfo.DeviceCapabilities[0].Operation[0].FavoriteStation[0].Control[0] === 1 : false;
+
+                //zone capabilities
+                const zonesCapabilitiesArray = Object.keys(devInfo.DeviceZoneCapabilities[this.zoneControl]);
+                this.supportShortcutControl = zonesCapabilitiesArray.includes('ShortcutControl') ? devInfo.DeviceZoneCapabilities[this.zoneControl].ShortcutControl[0].Control[0] === 1 : false;
+                this.supportPower = zonesCapabilitiesArray.includes('Power') ? devInfo.DeviceZoneCapabilities[this.zoneControl].Power[0].Control[0] === 1 : false;
+                this.supportVolume = zonesCapabilitiesArray.includes('Volume') ? devInfo.DeviceZoneCapabilities[this.zoneControl].Volume[0].Control[0] === 1 : false;
+                this.supportMute = zonesCapabilitiesArray.includes('Mute') ? devInfo.DeviceZoneCapabilities[this.zoneControl].Mute[0].Control[0] === 1 : false;
+                this.supportInputSource = capabilitiesSetupArray.includes('InputSource') ? devInfo.DeviceCapabilities[0].Setup[0].InputSource[0].Control[0] === 1 : false;
+
+                //setup
+                const zonesCapabilitiesSetupArray = Object.keys(devInfo.DeviceZoneCapabilities[this.zoneControl].Setup[0]);
+
+                //operation
+                const zonesCapabilitiesOperationArray = Object.keys(devInfo.DeviceZoneCapabilities[this.zoneControl].Operation[0]);
 
                 this.emit('deviceInfo', devInfo, manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion, this.supportPictureMode);
                 await new Promise(resolve => setTimeout(resolve, 2000));
                 this.checkStateOnFirstRun = true;
+                this.devInfo = devInfo;
                 this.emit('checkState');
             } catch (error) {
                 const debug = disableLogConnectError ? false : this.emit('error', `Info error: ${error}, reconnect in 15s.`);

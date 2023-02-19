@@ -442,7 +442,6 @@ class denonTvDevice {
 		this.televisionService = new Service.Television(`${accessoryName} Television`, 'Television');
 		this.televisionService.getCharacteristic(Characteristic.ConfiguredName)
 			.onGet(async () => {
-				const logInfo = this.disableLogInfo ? false : this.log(`Device: ${this.host} ${accessoryName}.`);
 				return accessoryName;
 			})
 			.onSet(async (value) => {
