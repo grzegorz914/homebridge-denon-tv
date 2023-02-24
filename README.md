@@ -67,7 +67,7 @@ This plugin is based upon the official documentation for communicating with and 
 | `getFavoritesFromDevice` | If enabled, *Favorites* will be loaded to the inputs list if exist. |
 | `getQuickSelectFromDevice` | If enabled, *Quick Select* will be loaded to the inputs list if exist. |
 | `getSmartSelectFromDevice` | If enabled, *Smart Select* will be loaded to the inputs list if exist. |
-| `getShortcutsFromDevice` | If enabled, schortcuts like *Quick Select*, *Smart Select* will be loaded to the inputs list if exist. |
+| `getShortcutsFromDevice` | If enabled, *Schortcuts* will be loaded to the inputs list if exist. |
 | `inputs.name` | Here set *Input Name* which You want expose to the *Homebridge/HomeKit*. |
 | `inputs.reference` | Choose from available inputs, the inputs that should be published to and appear in HomeKit app in the device tile as inputs list |
 | `inputs.mode` | Choose from available inputs mode. |
