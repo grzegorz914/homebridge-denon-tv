@@ -4,7 +4,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Warning!!! - after update to 4.x.x the properties *buttonsMainZone*, *buttonsZone2* and *buttonsZone3* are changed to *buttons*. 
+## The properties *inputs.displayType* and *surrounds.displayType* are removed.
 ## Note - after update to 3.15.x need remove the accessory frome Home app and add it again.
+
+
+## [4.0.0] - (24.02.2023)
+## Changes
+- added possibility to create all possible functions to every zone using buttons and lather use it with automations and scenes
+- changed properties *buttonsMainZone*, *buttonsZone2* and *buttonsZone3* to *buttons*
+- removed properties *inputs.displayType* and *surrounds.displayType*
+- added possibility to load *Favorites* from device, only if AVR support it
+- added possibility to load *QuickSelect* from device, only if AVR support it
+- added possibility to load *SmartSelect* from device, only if AVR support it
+- added possibility to load *Shortcuts* like *Quick Select* and *Smart Select* from device, only if AVR support it
+- many button functions updated
+- config.schema updated
+- other small fixes and improvements
+- dependenies updated
+- cleanup
 
 ## [3.24.0] - (13.02.2023)
 ## Changes

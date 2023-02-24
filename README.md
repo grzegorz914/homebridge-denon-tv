@@ -15,7 +15,7 @@
 Homebridge plugin for Denon/Marantz AV Receivers series X/SR. 
 Tested with Denon AVR-X6300H and Marantz SR6013.
 
-This plugin is based upon the official documentation for communicating with and controlling these Denon and Marantz receivers, located here: [Denon Control Protocol 2020](http://assets.denon.com/_layouts/15/xlviewer.aspx?id=/DocumentMaster/us/DENON_FY20%20AVR_PROTOCOL_V03_03042020.xlsx)
+This plugin is based upon the official documentation for communicating with and controlling these Denon and Marantz receivers, located here: [Denon Control Protocol 2020](https://github.com/grzegorz914/homebridge-denon-tv/blob/main/src/Denon%20Control%20Protocol.xlsx)
 
 </span>
 
@@ -63,20 +63,19 @@ This plugin is based upon the official documentation for communicating with and 
 | `host` | Here set the *Hsostname or Address IP* of TV. |
 | `port` | Here set the API communication port, if `8080` is not working try to use port `80` which some receivers use alternatively. |
 | `zoneControl` | Selects which zone will be controlled by this section (`0` - Main Zone, `1` - Zone 2, `2` - Zone 3, `3` - Surround Mode) or choice from the configurations GUI |
-| `getInputsFromDevice` | This enable load inputs and quick select direct from device. |
+| `getInputsFromDevice` | If enabled, source *Inputs* will be loaded direct from device. |
+| `getFavoritesFromDevice` | If enabled, *Favorites* will be loaded to the inputs list if exist. |
+| `getQuickSelectFromDevice` | If enabled, *Quick Select* will be loaded to the inputs list if exist. |
+| `getSmartSelectFromDevice` | If enabled, *Smart Select* will be loaded to the inputs list if exist. |
+| `getShortcutsFromDevice` | If enabled, schortcuts like *Quick Select*, *Smart Select* will be loaded to the inputs list if exist. |
 | `inputs.name` | Here set *Input Name* which You want expose to the *Homebridge/HomeKit*. |
 | `inputs.reference` | Choose from available inputs, the inputs that should be published to and appear in HomeKit app in the device tile as inputs list |
 | `inputs.mode` | Choose from available inputs mode. |
-| `inputs.displayType` | Here select display type in HomeKit app, possible `None/Disabled`, `Outlet`, `Switch`.|
-| `buttonsMainZone.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. |
-| `buttonsMainZone.reference` | Here choice function for additional control button for Main Zone. |
-| `buttonsMainZone.displayType` | Here select display type in HomeKit app, possible `None/Disabled`, `Outlet`, `Switch`.|
-| `buttonsZone2.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. |
-| `buttonsZone2.reference` | Here choice function for additional control button for Zone 2. |
-| `buttonsZone2.displayType` | Here select display type in HomeKit app, possible `None/Disabled`, `Outlet`, `Switch`.|
-| `buttonsZone3.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. |
-| `buttonsZone3.reference` | Here choice function for additional control button for Zone 3. |
-| `buttonsZone3.displayType` | Here select display type in HomeKit app, possible `None/Disabled`, `Outlet`, `Switch`.|
+| `surrounds.name` | Here set *Surround Mode Name* which You want expose to the *Homebridge/HomeKit*. |
+| `surrounds.reference` | Here choice *Surround Mode*, the mode that should be published to and appear in HomeKit app in the extra tile as Surrounds List. |
+| `buttons.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. |
+| `buttons.reference` | Here choice function for additional control button for Main Zone. |
+| `buttons.displayType` | Here select display type in HomeKit app, possible `None/Disabled`, `Outlet`, `Switch`.|
 | `sensorPower`| If enabled, then the Power will be exposed as a `Motion Sensor` (active on Power ON) to use with automations. |
 | `sensorVolume`| If enabled, then the Volume will be exposed as a `Motion Sensor` (active on every Volume change) to use with automations. |
 | `sensorMute`| If enabled, then the Mute will be exposed as a `Motion Sensor` (active on Mute ON) to use with automations. |
@@ -84,9 +83,6 @@ This plugin is based upon the official documentation for communicating with and 
 | `sensorInputs.name` | Here set own *Name* which You want expose to the *Homebridge/HomeKit* for this sensor. |
 | `sensorInputs.reference` | Here set *Reference* like `CBL/SAT`, `GAME` to be exposed as sensor (active on switch to this Input). | 
 | `sensorInputs.displayType` | Here select sensor type to be exposed in HomeKit app, possible `None/Disabled`, `Motion Sensor`, `Occupancy Sensor`, `Contact Sensor`. |
-| `surrounds.name` | Here set *Surround Mode Name* which You want expose to the *Homebridge/HomeKit*. |
-| `surrounds.reference` | Here choice *Surround Mode*, the mode that should be published to and appear in HomeKit app in the extra tile as Surrounds List. |
-| `surrounds.displayType` | Here select display type in HomeKit app, possible `None/Disabled`, `Outlet`, `Switch`.|
 | `enableDebugMode` | If enabled, deep log will be present in homebridge console. |
 | `disableLogInfo` | If enabled, disable log info, all values and state will not be displayed in Homebridge log console. |
 | `disableLogDeviceInfo` | If enabled, add ability to disable log device info by every connections device to the network. |
@@ -98,16 +94,16 @@ This plugin is based upon the official documentation for communicating with and 
 | `infoButtonCommand` | Here select the function of `I` button in RC app. |
 | `refreshInterval` | Here set the data refresh interval. |
 | `enableMqtt` | If enabled, MQTT Broker will start automatically and publish all awailable PV installation data. |
+| `mqttDebug` | If enabled, deep log will be present in homebridge console for MQTT. |
 | `mqttHost` | Here set the *IP Address* or *Hostname* for MQTT Broker. |
 | `mqttPort` | Here set the *Port* for MQTT Broker, default 1883. |
 | `mqttPrefix` | Here set the *Prefix* for *Topic* or leave empty. |
 | `mqttAuth` | If enabled, MQTT Broker will use authorization credentials. |
 | `mqttUser` | Here set the MQTT Broker user. |
 | `mqttPasswd` | Here set the MQTT Broker password. |
-| `mqttDebug` | If enabled, deep log will be present in homebridge console for MQTT. |
 | `AV Surround Mode` | This extra Accessory will control all functions of Main Zone except (Inputs and Buttons). |
 | `Volume Control` | -1 - `None/Disabled`, 0 - `Slider`, 1 - `Fan`.|
-| `Display Type Inputs/Buttons` | -1 - `None/Disabled`, 0 - `Outlet`, 1 - `Switch`.|
+| `Display Type Buttons` | -1 - `None/Disabled`, 0 - `Outlet`, 1 - `Switch`.|
 | `Display Type Sensors` | -1 - `None/Disabled`, 0 - `Motion Sensor`, 1 - `Occupancy Sensor`, 2 - `Contact Sensor`.|
 
 
@@ -121,23 +117,30 @@ This plugin is based upon the official documentation for communicating with and 
             "port": 8080,
             "zoneControl": 0,
             "getInputsFromDevice": false,
+            "getFavoritesFromDevice": false,
+            "getQuickSelectFromDevice": false,
+            "getSmartSelectFromDevice": false,
+            "getShortcutsFromDevice": false,
             "inputs": [
                 {
                     "name": "Xbox One",
                     "reference": "GAME",
-                    "mode": "SI",
-					"displayType": -1
+                    "mode": "SI"
                 },
                 {
                     "name": "Television",
                     "reference": "TV",
-                    "mode": "SI",
-					"displayType": -1
+                    "mode": "SI"
                 }
             ],
-            "buttonsMainZone": [
+            "buttons": [
                 {
-                    "name": "POWER ON",
+                    "name": "MASTER POWER ON",
+                    "reference": "PWON",
+					"displayType": -1
+                },
+                {
+                    "name": "ZM POWER ON",
                     "reference": "ZMON",
 					"displayType": -1
                 }
@@ -178,23 +181,25 @@ This plugin is based upon the official documentation for communicating with and 
             "port": 8080,
             "zoneControl": 1,
             "getInputsFromDevice": false,
+            "getFavoritesFromDevice": false,
+            "getQuickSelectFromDevice": false,
+            "getSmartSelectFromDevice": false,
+            "getShortcutsFromDevice": false,
             "inputs": [
                 {
                     "name": "Xbox One",
                     "reference": "GAME",
-                    "mode": "SI",
-					"displayType": -1
+                    "mode": "SI"
                 },
                 {
                     "name": "Television",
                     "reference": "TV",
-                    "mode": "SI",
-					"displayType": -1
+                    "mode": "SI"
                 }
             ],
-            "buttonsZone2": [
+            "buttons": [
                 {
-                    "name": "POWER ON",
+                    "name": "Z2 POWER ON",
                     "reference": "Z2ON",
 					"displayType": -1
                 }
@@ -235,23 +240,25 @@ This plugin is based upon the official documentation for communicating with and 
             "port": 8080,
             "zoneControl": 2,
             "getInputsFromDevice": false,
+            "getFavoritesFromDevice": false,
+            "getQuickSelectFromDevice": false,
+            "getSmartSelectFromDevice": false,
+            "getShortcutsFromDevice": false,
             "inputs": [
                 {
                     "name": "Xbox One",
                     "reference": "GAME",
-                    "mode": "SI",
-					"displayType": -1
+                    "mode": "SI"
                 },
                 {
                     "name": "Television",
                     "reference": "TV",
-                    "mode": "SI",
-					"displayType": -1
+                    "mode": "SI"
                 }
             ],
-            "buttonsZone3": [
+            "buttons": [
                 {
-                    "name": "POWER ON",
+                    "name": "Z§ POWER ON",
                     "reference": "Z3ON",
 					"displayType": -1
                 }
@@ -294,12 +301,17 @@ This plugin is based upon the official documentation for communicating with and 
             "surrounds": [
                 {
                     "name": "MCH Stereo",
-                    "reference": "MCH STEREO",
-					"displayType": -1
+                    "reference": "MCH STEREO"
                 },
                 {
                     "name": "Stereo",
-                    "reference": "STEREO",
+                    "reference": "STEREO"
+                }
+            ],
+            "buttons": [
+                {
+                    "name": "MASTER POWER ON",
+                    "reference": "PWON",
 					"displayType": -1
                 }
             ],

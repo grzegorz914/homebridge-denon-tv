@@ -73,6 +73,46 @@
               "description": "This function get all available inputs and quick select options direct from device, manually configured inputs will be skipped.",
               "required": false
             },
+            "getFavoritesFromDevice": {
+              "title": "Load Favorites",
+              "type": "boolean",
+              "default": false,
+              "description": "If enabled, Favorites will be loaded to the inputs list if exist.",
+              "required": false,
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].getInputsFromDevice === true;"
+              }
+            },
+            "getQuickSelectFromDevice": {
+              "title": "Load Quick Select",
+              "type": "boolean",
+              "default": false,
+              "description": "If enabled, Quick Select will be loaded to the inputs list if exist.",
+              "required": false,
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].getInputsFromDevice === true;"
+              }
+            },
+            "getSmartSelectFromDevice": {
+              "title": "Load Smart Select",
+              "type": "boolean",
+              "default": false,
+              "description": "If enabled, Smart Select will be loaded to the inputs list if exist.",
+              "required": false,
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].getInputsFromDevice === true;"
+              }
+            },
+            "getShortcutsFromDevice": {
+              "title": "Load Schortcuts",
+              "type": "boolean",
+              "default": false,
+              "description": "If enabled, shortcuts like Quick Select, Smart Select will be loaded to the inputs list if exist.",
+              "required": false,
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].getInputsFromDevice === true;"
+              }
+            },
             "inputs": {
               "type": "array",
               "items": {
@@ -92,15 +132,9 @@
                     "description": "Here select input.",
                     "oneOf": [
                       {
-                        "title": "TV AUDIO",
+                        "title": "PHONO",
                         "enum": [
-                          "TV"
-                        ]
-                      },
-                      {
-                        "title": "8K",
-                        "enum": [
-                          "8K"
+                          "PHONO"
                         ]
                       },
                       {
@@ -116,21 +150,27 @@
                         ]
                       },
                       {
+                        "title": "BLU-RAY",
+                        "enum": [
+                          "BD"
+                        ]
+                      },
+                      {
+                        "title": "TV AUDIO",
+                        "enum": [
+                          "TV"
+                        ]
+                      },
+                      {
                         "title": "SAT/CBL",
                         "enum": [
                           "SAT/CBL"
                         ]
                       },
                       {
-                        "title": "CBL/SAT",
+                        "title": "MEDIA PLAYER",
                         "enum": [
-                          "CBL/SAT"
-                        ]
-                      },
-                      {
-                        "title": "BLU-RAY",
-                        "enum": [
-                          "BD"
+                          "MPLAY"
                         ]
                       },
                       {
@@ -143,6 +183,18 @@
                         "title": "GAME 2",
                         "enum": [
                           "GAME2"
+                        ]
+                      },
+                      {
+                        "title": "FM TUNER",
+                        "enum": [
+                          "TUNER"
+                        ]
+                      },
+                      {
+                        "title": "AUX",
+                        "enum": [
+                          "AUX"
                         ]
                       },
                       {
@@ -188,57 +240,21 @@
                         ]
                       },
                       {
+                        "title": "NETWORK/AIRPLAY/HEOS",
+                        "enum": [
+                          "NET"
+                        ]
+                      },
+                      {
                         "title": "BLUETOOTH",
                         "enum": [
                           "BT"
                         ]
                       },
                       {
-                        "title": "PHONO",
+                        "title": "8K",
                         "enum": [
-                          "PHONO"
-                        ]
-                      },
-                      {
-                        "title": "FM TUNER",
-                        "enum": [
-                          "TUNER"
-                        ]
-                      },
-                      {
-                        "title": "INTERNET RADIO",
-                        "enum": [
-                          "IRADIO"
-                        ]
-                      },
-                      {
-                        "title": "HD RADIO",
-                        "enum": [
-                          "HDRADIO"
-                        ]
-                      },
-                      {
-                        "title": "MEDIA PLAYER",
-                        "enum": [
-                          "MPLAY"
-                        ]
-                      },
-                      {
-                        "title": "MEDIA SERVER",
-                        "enum": [
-                          "SERVER"
-                        ]
-                      },
-                      {
-                        "title": "NETWORK/AIRPLAY",
-                        "enum": [
-                          "NET"
-                        ]
-                      },
-                      {
-                        "title": "ONLINE MIUSIC FAVORITES PLAY",
-                        "enum": [
-                          "FVP"
+                          "8K"
                         ]
                       },
                       {
@@ -260,9 +276,21 @@
                         ]
                       },
                       {
-                        "title": "iRADIO RECENT PLAY",
+                        "title": "INTERNET RADIO",
+                        "enum": [
+                          "IRADIO"
+                        ]
+                      },
+                      {
+                        "title": "INTERNET RADIO RECENT PLAY",
                         "enum": [
                           "IRP"
+                        ]
+                      },
+                      {
+                        "title": "MEDIA SERVER",
+                        "enum": [
+                          "SERVER"
                         ]
                       },
                       {
@@ -278,15 +306,27 @@
                         ]
                       },
                       {
-                        "title": "PANDORA",
+                        "title": "HD RADIO (NA Only)",
+                        "enum": [
+                          "HDRADIO"
+                        ]
+                      },
+                      {
+                        "title": "PANDORA (NA Only)",
                         "enum": [
                           "PANDORA"
                         ]
                       },
                       {
-                        "title": "SIRIUSXM (NA only)",
+                        "title": "SIRIUSXM (NA Only)",
                         "enum": [
                           "SIRIUSXM"
+                        ]
+                      },
+                      {
+                        "title": "ONLINE MIUSIC FAVORITES PLAY",
+                        "enum": [
+                          "FVP"
                         ]
                       },
                       {
@@ -449,32 +489,6 @@
                       }
                     ],
                     "required": true
-                  },
-                  "displayType": {
-                    "title": "Extra Input Tile Type",
-                    "type": "integer",
-                    "oneOf": [
-                      {
-                        "title": "None/Disabled",
-                        "enum": [
-                          -1
-                        ]
-                      },
-                      {
-                        "title": "Outlet",
-                        "enum": [
-                          0
-                        ]
-                      },
-                      {
-                        "title": "Switch",
-                        "enum": [
-                          1
-                        ]
-                      }
-                    ],
-                    "description": "Here select extra function/tile to be exposed in HomeKit app.",
-                    "required": true
                   }
                 }
               }
@@ -622,52 +636,14 @@
                         "enum": [
                           "VIRTUAL"
                         ]
-                      },
-                      {
-                        "title": "LEFT",
-                        "enum": [
-                          "LEFT"
-                        ]
-                      },
-                      {
-                        "title": "RIGHT",
-                        "enum": [
-                          "RIGHT"
-                        ]
                       }
                     ],
-                    "required": true
-                  },
-                  "displayType": {
-                    "title": "Extra Surround Tile Type",
-                    "type": "integer",
-                    "oneOf": [
-                      {
-                        "title": "None/Disabled",
-                        "enum": [
-                          -1
-                        ]
-                      },
-                      {
-                        "title": "Outlet",
-                        "enum": [
-                          0
-                        ]
-                      },
-                      {
-                        "title": "Switch",
-                        "enum": [
-                          1
-                        ]
-                      }
-                    ],
-                    "description": "Here select extra function/tile to be exposed in HomeKit app.",
                     "required": true
                   }
                 }
               }
             },
-            "buttonsMainZone": {
+            "buttons": {
               "type": "array",
               "items": {
                 "title": "Button",
@@ -686,27 +662,15 @@
                     "description": "Here select function.",
                     "oneOf": [
                       {
-                        "title": "POWER ON ALL",
+                        "title": "MASTER POWER ON",
                         "enum": [
                           "PWON"
                         ]
                       },
                       {
-                        "title": "POWER STANDBY ALL",
+                        "title": "MASTER POWER STANDBY",
                         "enum": [
                           "PWSTANDBY"
-                        ]
-                      },
-                      {
-                        "title": "POWER ON",
-                        "enum": [
-                          "ZMON"
-                        ]
-                      },
-                      {
-                        "title": "POWER OFF",
-                        "enum": [
-                          "ZMOFF"
                         ]
                       },
                       {
@@ -722,429 +686,957 @@
                         ]
                       },
                       {
-                        "title": "CHANNEL VOLUME FL UP",
-                        "enum": [
-                          "CVFL UP"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME FL Down",
-                        "enum": [
-                          "CVFL DOWN"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME FR UP",
-                        "enum": [
-                          "CVFR UP"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME FL DOWN",
-                        "enum": [
-                          "CVFR DOWN"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME C UP",
-                        "enum": [
-                          "CVC UP"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME C DOWN",
-                        "enum": [
-                          "CVC DOWN"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL SUBWOFER ON",
-                        "enum": [
-                          "CVSW ON"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL SUBWOFER OFF",
-                        "enum": [
-                          "CVSW OFF"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME SW UP",
-                        "enum": [
-                          "CVSW UP"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME SW DOWN",
-                        "enum": [
-                          "CVSW DOWN"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME SW2 UP",
-                        "enum": [
-                          "CVSW2 UP"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME SW2 DOWN",
-                        "enum": [
-                          "CVSW2 DOWN"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME SL UP",
-                        "enum": [
-                          "CVSL UP"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME SL DOWN",
-                        "enum": [
-                          "CVSL DOWN"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME SR UP",
-                        "enum": [
-                          "CVSR UP"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME SR DOWN",
-                        "enum": [
-                          "CVSR DOWN"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME SBL UP",
-                        "enum": [
-                          "CVSBL UP"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME SBL DOWN",
-                        "enum": [
-                          "CVSBL DOWN"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME SBR UP",
-                        "enum": [
-                          "CVSBR UP"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME SBR DOWN",
-                        "enum": [
-                          "CVSBR DOWN"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME SB UP",
-                        "enum": [
-                          "CVSB UP"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME SB DOWN",
-                        "enum": [
-                          "CVSB DOWN"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME FHL UP",
-                        "enum": [
-                          "CVFHL UP"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME FHL DOWN",
-                        "enum": [
-                          "CVFHL DOWN"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME FHR UP",
-                        "enum": [
-                          "CVFHR UP"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME FHR DOWN",
-                        "enum": [
-                          "CVFHR DOWN"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME FWL UP",
-                        "enum": [
-                          "CVFWL UP"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME FWL DOWN",
-                        "enum": [
-                          "CVFWL DOWN"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME FWR UP",
-                        "enum": [
-                          "CVFWR UP"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME FWR DOWN",
-                        "enum": [
-                          "CVFWR DOWN"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME TFL UP",
-                        "enum": [
-                          "CVTFL UP"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME TFL DOWN",
-                        "enum": [
-                          "CVTFL DOWN"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME TFR UP",
-                        "enum": [
-                          "CVTFR UP"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME TFR DOWN",
-                        "enum": [
-                          "CVTFR DOWN"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME TML UP",
-                        "enum": [
-                          "CVTML UP"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME TML DOWN",
-                        "enum": [
-                          "CVTML DOWN"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME TMR UP",
-                        "enum": [
-                          "CVTMR UP"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME TMR DOWN",
-                        "enum": [
-                          "CVTMR DOWN"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME TRL UP",
-                        "enum": [
-                          "CVTRL UP"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME TRL DOWN",
-                        "enum": [
-                          "CVTRL DOWN"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME TRR UP",
-                        "enum": [
-                          "CVTRR UP"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME TRR DOWN",
-                        "enum": [
-                          "CVTRR DOWN"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME RHL UP",
-                        "enum": [
-                          "CVRHL UP"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME RHL DOWN",
-                        "enum": [
-                          "CVRHL DOWN"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME RHR UP",
-                        "enum": [
-                          "CVRHR UP"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME RHR DOWN",
-                        "enum": [
-                          "CVRHR DOWN"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME FDL UP",
-                        "enum": [
-                          "CVFDL UP"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME FDL DOWN",
-                        "enum": [
-                          "CVFDL DOWN"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME FDR UP",
-                        "enum": [
-                          "CVFDR UP"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME FDR DOWN",
-                        "enum": [
-                          "CVFDR DOWN"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME SDL UP",
-                        "enum": [
-                          "CVSDL UP"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME SDL DOWN",
-                        "enum": [
-                          "CVSDL DOWN"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME SDR UP",
-                        "enum": [
-                          "CVSDR UP"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME SDR DOWN",
-                        "enum": [
-                          "CVSDR DOWN"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME BDL UP",
-                        "enum": [
-                          "CVBDL UP"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME BDL DOWN",
-                        "enum": [
-                          "CVBDL DOWN"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME BDR UP",
-                        "enum": [
-                          "CVBDR UP"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME BDR DOWN",
-                        "enum": [
-                          "CVBDR DOWN"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME SHL UP",
-                        "enum": [
-                          "CVSHL UP"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME SHL DOWN",
-                        "enum": [
-                          "CVSHL DOWN"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME SHR UP",
-                        "enum": [
-                          "CVSHR UP"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME SHR DOWN",
-                        "enum": [
-                          "CVSHR DOWN"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME TS UP",
-                        "enum": [
-                          "CVTS UP"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME TS DOWN",
-                        "enum": [
-                          "CVTS DOWN"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME CH UP",
-                        "enum": [
-                          "CVCH UP"
-                        ]
-                      },
-                      {
-                        "title": "CHANNEL VOLUME CH DOWN",
-                        "enum": [
-                          "CVCH DOWN"
-                        ]
-                      },
-                      {
-                        "title": "RESET ALL CHANNELS TO FACTORY DEFAULT",
-                        "enum": [
-                          "CVZRL"
-                        ]
-                      },
-                      {
-                        "title": "BALANCE LEFT",
-                        "enum": [
-                          "BLLEFT"
-                        ]
-                      },
-                      {
-                        "title": "BALANCE RIGHT",
-                        "enum": [
-                          "BLRIGHT"
-                        ]
-                      },
-                      {
-                        "title": "MUTE ON",
+                        "title": "MASTER MUTE ON",
                         "enum": [
                           "MUON"
                         ]
                       },
                       {
-                        "title": "MUTE OFF",
+                        "title": "MASTER MUTE OFF",
                         "enum": [
                           "MUOFF"
+                        ]
+                      },
+                      {
+                        "title": "ZM POWER ON",
+                        "enum": [
+                          "ZMON"
+                        ]
+                      },
+                      {
+                        "title": "ZM POWER OFF",
+                        "enum": [
+                          "ZMOFF"
+                        ]
+                      },
+                      {
+                        "title": "ZM AUTO STANDBY 30MIN",
+                        "enum": [
+                          "STBY30M"
+                        ]
+                      },
+                      {
+                        "title": "ZM AUTO STANDBY 60MIN",
+                        "enum": [
+                          "STBY60M"
+                        ]
+                      },
+                      {
+                        "title": "ZM AUTO STANDBY OFF",
+                        "enum": [
+                          "STBYOFF"
+                        ]
+                      },
+                      {
+                        "title": "ZM ECO MODE ON",
+                        "enum": [
+                          "ECOON"
+                        ]
+                      },
+                      {
+                        "title": "ZM ECO MODE AUTO",
+                        "enum": [
+                          "ECOAUTO"
+                        ]
+                      },
+                      {
+                        "title": "ZM ECO MODE OFF",
+                        "enum": [
+                          "ECOOFF"
+                        ]
+                      },
+                      {
+                        "title": "ZM SLEEP MODE OFF",
+                        "enum": [
+                          "SLPOFF"
+                        ]
+                      },
+                      {
+                        "title": "ZM INPUT PHONO",
+                        "enum": [
+                          "PHONO"
+                        ]
+                      },
+                      {
+                        "title": "ZM INPUT CD",
+                        "enum": [
+                          "CD"
+                        ]
+                      },
+                      {
+                        "title": "ZM INPUT DVD",
+                        "enum": [
+                          "DVD"
+                        ]
+                      },
+                      {
+                        "title": "ZM INPUT BLU-RAY",
+                        "enum": [
+                          "BD"
+                        ]
+                      },
+                      {
+                        "title": "ZM INPUT TV AUDIO",
+                        "enum": [
+                          "TV"
+                        ]
+                      },
+                      {
+                        "title": "ZM INPUT SAT/CBL",
+                        "enum": [
+                          "SAT/CBL"
+                        ]
+                      },
+                      {
+                        "title": "ZM INPUT MEDIA PLAYER",
+                        "enum": [
+                          "MPLAY"
+                        ]
+                      },
+                      {
+                        "title": "ZM INPUT GAME",
+                        "enum": [
+                          "GAME"
+                        ]
+                      },
+                      {
+                        "title": "ZM INPUT GAME 2",
+                        "enum": [
+                          "GAME2"
+                        ]
+                      },
+                      {
+                        "title": "ZM INPUT FM TUNER",
+                        "enum": [
+                          "TUNER"
+                        ]
+                      },
+                      {
+                        "title": "ZM INPUT HD RADIO (NA Only",
+                        "enum": [
+                          "HDRADIO"
+                        ]
+                      },
+                      {
+                        "title": "ZM PANDORA (NA Only)",
+                        "enum": [
+                          "PANDORA"
+                        ]
+                      },
+                      {
+                        "title": "ZM SIRIUSXM (NA Only)",
+                        "enum": [
+                          "SIRIUSXM"
+                        ]
+                      },
+                      {
+                        "title": "ZM INPUT AUX",
+                        "enum": [
+                          "AUX"
+                        ]
+                      },
+                      {
+                        "title": "ZM INPUT AUX 1",
+                        "enum": [
+                          "AUX1"
+                        ]
+                      },
+                      {
+                        "title": "ZM INPUT AUX 2",
+                        "enum": [
+                          "AUX2"
+                        ]
+                      },
+                      {
+                        "title": "ZM INPUT AUX 3",
+                        "enum": [
+                          "AUX3"
+                        ]
+                      },
+                      {
+                        "title": "ZM INPUT AUX 4",
+                        "enum": [
+                          "AUX4"
+                        ]
+                      },
+                      {
+                        "title": "ZM INPUT AUX 5",
+                        "enum": [
+                          "AUX5"
+                        ]
+                      },
+                      {
+                        "title": "ZM INPUT AUX 6",
+                        "enum": [
+                          "AUX6"
+                        ]
+                      },
+                      {
+                        "title": "ZM INPUT AUX 7",
+                        "enum": [
+                          "AUX7"
+                        ]
+                      },
+                      {
+                        "title": "ZM INPUT NETWORK/AIRPLAY/HEOS",
+                        "enum": [
+                          "NET"
+                        ]
+                      },
+                      {
+                        "title": "ZM INPUT BLUETOOTH",
+                        "enum": [
+                          "BT"
+                        ]
+                      },
+                      {
+                        "title": "ZM INPUT USB/IPOD",
+                        "enum": [
+                          "USB/IPOD"
+                        ]
+                      },
+                      {
+                        "title": "ZM INPUT USB START PLAYBACK",
+                        "enum": [
+                          "USB"
+                        ]
+                      },
+                      {
+                        "title": "ZM INPUT IPOD START PLAYBACK",
+                        "enum": [
+                          "IPD"
+                        ]
+                      },
+                      {
+                        "title": "ZM INPUT 8K",
+                        "enum": [
+                          "8K"
+                        ]
+                      },
+                      {
+                        "title": "ZM INPUT INTERNET RADIO",
+                        "enum": [
+                          "IRADIO"
+                        ]
+                      },
+                      {
+                        "title": "ZM INPUT INTERNET RADIO RECENT PLAY",
+                        "enum": [
+                          "IRP"
+                        ]
+                      },
+                      {
+                        "title": "ZM INPUT MEDIA SERVER",
+                        "enum": [
+                          "SERVER"
+                        ]
+                      },
+                      {
+                        "title": "ZM INPUT SPOTIFY",
+                        "enum": [
+                          "SPOTIFY"
+                        ]
+                      },
+                      {
+                        "title": "ZM INPUT LAST.FM",
+                        "enum": [
+                          "LASTFM"
+                        ]
+                      },
+                      {
+                        "title": "ZM INPUT ONLINE MIUSIC FAVORITES PLAY",
+                        "enum": [
+                          "FVP"
+                        ]
+                      },
+                      {
+                        "title": "ZM FAVORITE 1",
+                        "enum": [
+                          "FAVORITE1"
+                        ]
+                      },
+                      {
+                        "title": "ZM FAVORITE 2",
+                        "enum": [
+                          "FAVORITE2"
+                        ]
+                      },
+                      {
+                        "title": "ZM FAVORITE 3",
+                        "enum": [
+                          "FAVORITE3"
+                        ]
+                      },
+                      {
+                        "title": "ZM FAVORITE MEMORY 1",
+                        "enum": [
+                          "FAVORITE1 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "ZM FAVORITE MEMORY 2",
+                        "enum": [
+                          "FAVORITE2 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "ZM FAVORITE MEMORY 3",
+                        "enum": [
+                          "FAVORITE3 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "ZM QUICK SELECT 1",
+                        "enum": [
+                          "QUICK1"
+                        ]
+                      },
+                      {
+                        "title": "ZM QUICK SELECT 2",
+                        "enum": [
+                          "QUICK2"
+                        ]
+                      },
+                      {
+                        "title": "ZM QUICK SELECT 3",
+                        "enum": [
+                          "QUICK3"
+                        ]
+                      },
+                      {
+                        "title": "ZM QUICK SELECT 4",
+                        "enum": [
+                          "QUICK4"
+                        ]
+                      },
+                      {
+                        "title": "ZM QUICK SELECT 5",
+                        "enum": [
+                          "QUICK5"
+                        ]
+                      },
+                      {
+                        "title": "ZM QUICK SELECT MEMORY 1",
+                        "enum": [
+                          "QUICK1 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "ZM QUICK SELECT MEMORY 2",
+                        "enum": [
+                          "QUICK2 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "ZM QUICK SELECT MEMORY 3",
+                        "enum": [
+                          "QUICK3 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "ZM QUICK SELECT MEMORY 4",
+                        "enum": [
+                          "QUICK4 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "ZM QUICK SELECT MEMORY 5",
+                        "enum": [
+                          "QUICK5 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "ZM SMART SELECT 1",
+                        "enum": [
+                          "SMART1"
+                        ]
+                      },
+                      {
+                        "title": "ZM SMART SELECT 2",
+                        "enum": [
+                          "SMART2"
+                        ]
+                      },
+                      {
+                        "title": "ZM SMART SELECT 3",
+                        "enum": [
+                          "SMART3"
+                        ]
+                      },
+                      {
+                        "title": "ZM SMART SELECT 4",
+                        "enum": [
+                          "SMART4"
+                        ]
+                      },
+                      {
+                        "title": "ZM SMART SELECT 5",
+                        "enum": [
+                          "SMART5"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE MOVIE",
+                        "enum": [
+                          "MOVIE"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE MUSIC",
+                        "enum": [
+                          "MUSIC"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE GAME",
+                        "enum": [
+                          "GAME"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE DIRECT",
+                        "enum": [
+                          "DIRECT"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE PURE DIRECT",
+                        "enum": [
+                          "PURE DIRECT"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE STEREO",
+                        "enum": [
+                          "STEREO"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE AUTO",
+                        "enum": [
+                          "AUTO"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE DOLBY DIGITAL",
+                        "enum": [
+                          "DOLBY DIGITAL"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE DTS SURROUND",
+                        "enum": [
+                          "DTS SURROUND"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE AURO 3D",
+                        "enum": [
+                          "AURO3D"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE AURO 2D",
+                        "enum": [
+                          "AURO2DSURR"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE MCH STEREO",
+                        "enum": [
+                          "MCH STEREO"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE WIDE SCREEN",
+                        "enum": [
+                          "WIDE SCREEN"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE SUPER STADIUM",
+                        "enum": [
+                          "SUPER STADIUM"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE ROCK ARENA",
+                        "enum": [
+                          "ROCK ARENA"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE JAZZ CLUB",
+                        "enum": [
+                          "JAZZ CLUB"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE CLASSIC CONCERT",
+                        "enum": [
+                          "CLASSIC CONCERT"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE MONO MOVIE",
+                        "enum": [
+                          "MONO MOVIE"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE MATRIX",
+                        "enum": [
+                          "MATRIX"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE VIDEO GAME",
+                        "enum": [
+                          "VIDEO GAME"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE VIRTUAL",
+                        "enum": [
+                          "VIRTUAL"
+                        ]
+                      },
+                      {
+                        "title": "ZM NEXT SOUND MODE",
+                        "enum": [
+                          "LEFT"
+                        ]
+                      },
+                      {
+                        "title": "ZM PREVIOUS SOUND MODE",
+                        "enum": [
+                          "RIGHT"
+                        ]
+                      },
+                      {
+                        "title": "ALL ZONE STEREO ON",
+                        "enum": [
+                          "MNZST ON"
+                        ]
+                      },
+                      {
+                        "title": "ALL ZONE STEREO OFF",
+                        "enum": [
+                          "MNZST OFF"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME FL UP",
+                        "enum": [
+                          "CVFL UP"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME FL Down",
+                        "enum": [
+                          "CVFL DOWN"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME FR UP",
+                        "enum": [
+                          "CVFR UP"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME FL DOWN",
+                        "enum": [
+                          "CVFR DOWN"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME C UP",
+                        "enum": [
+                          "CVC UP"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME C DOWN",
+                        "enum": [
+                          "CVC DOWN"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL SUBWOFER ON",
+                        "enum": [
+                          "CVSW ON"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL SUBWOFER OFF",
+                        "enum": [
+                          "CVSW OFF"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME SW UP",
+                        "enum": [
+                          "CVSW UP"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME SW DOWN",
+                        "enum": [
+                          "CVSW DOWN"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME SW2 UP",
+                        "enum": [
+                          "CVSW2 UP"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME SW2 DOWN",
+                        "enum": [
+                          "CVSW2 DOWN"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME SL UP",
+                        "enum": [
+                          "CVSL UP"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME SL DOWN",
+                        "enum": [
+                          "CVSL DOWN"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME SR UP",
+                        "enum": [
+                          "CVSR UP"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME SR DOWN",
+                        "enum": [
+                          "CVSR DOWN"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME SBL UP",
+                        "enum": [
+                          "CVSBL UP"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME SBL DOWN",
+                        "enum": [
+                          "CVSBL DOWN"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME SBR UP",
+                        "enum": [
+                          "CVSBR UP"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME SBR DOWN",
+                        "enum": [
+                          "CVSBR DOWN"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME SB UP",
+                        "enum": [
+                          "CVSB UP"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME SB DOWN",
+                        "enum": [
+                          "CVSB DOWN"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME FHL UP",
+                        "enum": [
+                          "CVFHL UP"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME FHL DOWN",
+                        "enum": [
+                          "CVFHL DOWN"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME FHR UP",
+                        "enum": [
+                          "CVFHR UP"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME FHR DOWN",
+                        "enum": [
+                          "CVFHR DOWN"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME FWL UP",
+                        "enum": [
+                          "CVFWL UP"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME FWL DOWN",
+                        "enum": [
+                          "CVFWL DOWN"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME FWR UP",
+                        "enum": [
+                          "CVFWR UP"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME FWR DOWN",
+                        "enum": [
+                          "CVFWR DOWN"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME TFL UP",
+                        "enum": [
+                          "CVTFL UP"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME TFL DOWN",
+                        "enum": [
+                          "CVTFL DOWN"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME TFR UP",
+                        "enum": [
+                          "CVTFR UP"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME TFR DOWN",
+                        "enum": [
+                          "CVTFR DOWN"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME TML UP",
+                        "enum": [
+                          "CVTML UP"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME TML DOWN",
+                        "enum": [
+                          "CVTML DOWN"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME TMR UP",
+                        "enum": [
+                          "CVTMR UP"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME TMR DOWN",
+                        "enum": [
+                          "CVTMR DOWN"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME TRL UP",
+                        "enum": [
+                          "CVTRL UP"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME TRL DOWN",
+                        "enum": [
+                          "CVTRL DOWN"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME TRR UP",
+                        "enum": [
+                          "CVTRR UP"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME TRR DOWN",
+                        "enum": [
+                          "CVTRR DOWN"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME RHL UP",
+                        "enum": [
+                          "CVRHL UP"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME RHL DOWN",
+                        "enum": [
+                          "CVRHL DOWN"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME RHR UP",
+                        "enum": [
+                          "CVRHR UP"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME RHR DOWN",
+                        "enum": [
+                          "CVRHR DOWN"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME FDL UP",
+                        "enum": [
+                          "CVFDL UP"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME FDL DOWN",
+                        "enum": [
+                          "CVFDL DOWN"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME FDR UP",
+                        "enum": [
+                          "CVFDR UP"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME FDR DOWN",
+                        "enum": [
+                          "CVFDR DOWN"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME SDL UP",
+                        "enum": [
+                          "CVSDL UP"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME SDL DOWN",
+                        "enum": [
+                          "CVSDL DOWN"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME SDR UP",
+                        "enum": [
+                          "CVSDR UP"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME SDR DOWN",
+                        "enum": [
+                          "CVSDR DOWN"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME BDL UP",
+                        "enum": [
+                          "CVBDL UP"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME BDL DOWN",
+                        "enum": [
+                          "CVBDL DOWN"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME BDR UP",
+                        "enum": [
+                          "CVBDR UP"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME BDR DOWN",
+                        "enum": [
+                          "CVBDR DOWN"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME SHL UP",
+                        "enum": [
+                          "CVSHL UP"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME SHL DOWN",
+                        "enum": [
+                          "CVSHL DOWN"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME SHR UP",
+                        "enum": [
+                          "CVSHR UP"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME SHR DOWN",
+                        "enum": [
+                          "CVSHR DOWN"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME TS UP",
+                        "enum": [
+                          "CVTS UP"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME TS DOWN",
+                        "enum": [
+                          "CVTS DOWN"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME CH UP",
+                        "enum": [
+                          "CVCH UP"
+                        ]
+                      },
+                      {
+                        "title": "ZM CHANNEL VOLUME CH DOWN",
+                        "enum": [
+                          "CVCH DOWN"
+                        ]
+                      },
+                      {
+                        "title": "ZM RESET ALL CHANNELS TO FACTORY DEFAULT",
+                        "enum": [
+                          "CVZRL"
+                        ]
+                      },
+                      {
+                        "title": "ZM BALANCE LEFT",
+                        "enum": [
+                          "BLLEFT"
+                        ]
+                      },
+                      {
+                        "title": "ZM BALANCE RIGHT",
+                        "enum": [
+                          "BLRIGHT"
                         ]
                       },
                       {
@@ -1304,198 +1796,6 @@
                         ]
                       },
                       {
-                        "title": "AUTO STANDBY 30MIN",
-                        "enum": [
-                          "STBY30M"
-                        ]
-                      },
-                      {
-                        "title": "AUTO STANDBY 60MIN",
-                        "enum": [
-                          "STBY60M"
-                        ]
-                      },
-                      {
-                        "title": "AUTO STANDBY OFF",
-                        "enum": [
-                          "STBYOFF"
-                        ]
-                      },
-                      {
-                        "title": "ECO MODE ON",
-                        "enum": [
-                          "ECOON"
-                        ]
-                      },
-                      {
-                        "title": "ECO MODE AUTO",
-                        "enum": [
-                          "ECOAUTO"
-                        ]
-                      },
-                      {
-                        "title": "ECO MODE OFF",
-                        "enum": [
-                          "ECOOFF"
-                        ]
-                      },
-                      {
-                        "title": "SLEEP MODE OFF",
-                        "enum": [
-                          "SLPOFF"
-                        ]
-                      },
-                      {
-                        "title": "ALL ZONE STEREO ON",
-                        "enum": [
-                          "MNZST ON"
-                        ]
-                      },
-                      {
-                        "title": "ALL ZONE STEREO OFF",
-                        "enum": [
-                          "MNZST OFF"
-                        ]
-                      },
-                      {
-                        "title": "SURROUND MODE MOVIE",
-                        "enum": [
-                          "MSMOVIE"
-                        ]
-                      },
-                      {
-                        "title": "SURROUND MODE MUSIC",
-                        "enum": [
-                          "MSMUSIC"
-                        ]
-                      },
-                      {
-                        "title": "SURROUND MODE GAME",
-                        "enum": [
-                          "MSGAME"
-                        ]
-                      },
-                      {
-                        "title": "SURROUND MODE DIRECT",
-                        "enum": [
-                          "MSDIRECT"
-                        ]
-                      },
-                      {
-                        "title": "SURROUND MODE PURE DIRECT",
-                        "enum": [
-                          "MSPURE DIRECT"
-                        ]
-                      },
-                      {
-                        "title": "SURROUND MODE STEREO",
-                        "enum": [
-                          "MSSTEREO"
-                        ]
-                      },
-                      {
-                        "title": "SURROUND MODE AUTO",
-                        "enum": [
-                          "MSAUTO"
-                        ]
-                      },
-                      {
-                        "title": "SURROUND MODE DOLBY DIGITAL",
-                        "enum": [
-                          "MSDOLBY DIGITAL"
-                        ]
-                      },
-                      {
-                        "title": "SURROUND MODE DTS SURROUND",
-                        "enum": [
-                          "MSDTS SURROUND"
-                        ]
-                      },
-                      {
-                        "title": "SURROUND MODE AURO 3D",
-                        "enum": [
-                          "MSAURO3D"
-                        ]
-                      },
-                      {
-                        "title": "SURROUND MODE AURO 2D",
-                        "enum": [
-                          "MSAURO2DSURR"
-                        ]
-                      },
-                      {
-                        "title": "SURROUND MODE MCH STEREO",
-                        "enum": [
-                          "MSMCH STEREO"
-                        ]
-                      },
-                      {
-                        "title": "SURROUND MODE WIDE SCREEN",
-                        "enum": [
-                          "MSWIDE SCREEN"
-                        ]
-                      },
-                      {
-                        "title": "SURROUND MODE SUPER STADIUM",
-                        "enum": [
-                          "MSSUPER STADIUM"
-                        ]
-                      },
-                      {
-                        "title": "SURROUND MODE ROCK ARENA",
-                        "enum": [
-                          "MSROCK ARENA"
-                        ]
-                      },
-                      {
-                        "title": "SURROUND MODE JAZZ CLUB",
-                        "enum": [
-                          "MSJAZZ CLUB"
-                        ]
-                      },
-                      {
-                        "title": "SURROUND MODE CLASSIC CONCERT",
-                        "enum": [
-                          "MSCLASSIC CONCERT"
-                        ]
-                      },
-                      {
-                        "title": "SURROUND MODE MONO MOVIE",
-                        "enum": [
-                          "MSMONO MOVIE"
-                        ]
-                      },
-                      {
-                        "title": "SURROUND MODE MATRIX",
-                        "enum": [
-                          "MSMATRIX"
-                        ]
-                      },
-                      {
-                        "title": "SURROUND MODE VIDEO GAME",
-                        "enum": [
-                          "MSVIDEO GAME"
-                        ]
-                      },
-                      {
-                        "title": "SURROUND MODE VIRTUAL",
-                        "enum": [
-                          "MSVIRTUAL"
-                        ]
-                      },
-                      {
-                        "title": "SURROUND MODE CHANGE UP",
-                        "enum": [
-                          "MSLEFT"
-                        ]
-                      },
-                      {
-                        "title": "SURROUND MODE CHANGE DOWN",
-                        "enum": [
-                          "MSRIGHT"
-                        ]
-                      },
-                      {
                         "title": "ASPECT RATIO 4:3",
                         "enum": [
                           "VSASPNRM"
@@ -1562,7 +1862,7 @@
                         ]
                       },
                       {
-                        "title": "HDMI RESOLUTION 4K 50/60Hz",
+                        "title": "HDMI RESOLUTION 4K 60/50Hz",
                         "enum": [
                           "VSSC4KF"
                         ]
@@ -1610,7 +1910,7 @@
                         ]
                       },
                       {
-                        "title": "HDMI RESOLUTION 4K 50/60Hz (HDMI)",
+                        "title": "HDMI RESOLUTION 4K 60/50Hz (HDMI)",
                         "enum": [
                           "VSSCH4KF"
                         ]
@@ -1664,7 +1964,7 @@
                         ]
                       },
                       {
-                        "title": "VIDEO PROCESSING MODE BYPAS",
+                        "title": "VIDEO PROCESSING MODE BYPASS",
                         "enum": [
                           "VSVPMBYP"
                         ]
@@ -1976,13 +2276,13 @@
                         ]
                       },
                       {
-                        "title": "NEUTRAL X ON",
+                        "title": "NEUTRAL:X ON",
                         "enum": [
                           "PSNEURAL ON"
                         ]
                       },
                       {
-                        "title": "NEUTRAL X OFF",
+                        "title": "NEUTRAL:X OFF",
                         "enum": [
                           "PSNEURAL OFF"
                         ]
@@ -2015,6 +2315,138 @@
                         "title": "IMAX AUDIO MANUAL",
                         "enum": [
                           "PSIMAXAUD MANUAL"
+                        ]
+                      },
+                      {
+                        "title": "IMAX HIGH PASS FILTER 40Hz",
+                        "enum": [
+                          "PSIMAXHPF 040"
+                        ]
+                      },
+                      {
+                        "title": "IMAX HIGH PASS FILTER 60Hz",
+                        "enum": [
+                          "PSIMAXHPF 060"
+                        ]
+                      },
+                      {
+                        "title": "IMAX HIGH PASS FILTER 70Hz",
+                        "enum": [
+                          "PSIMAXHPF 070"
+                        ]
+                      },
+                      {
+                        "title": "IMAX HIGH PASS FILTER 80Hz",
+                        "enum": [
+                          "PSIMAXHPF 080"
+                        ]
+                      },
+                      {
+                        "title": "IMAX HIGH PASS FILTER 90Hz",
+                        "enum": [
+                          "PSIMAXHPF 090"
+                        ]
+                      },
+                      {
+                        "title": "IMAX HIGH PASS FILTER 100Hz",
+                        "enum": [
+                          "PSIMAXHPF 100"
+                        ]
+                      },
+                      {
+                        "title": "IMAX HIGH PASS FILTER 110Hz",
+                        "enum": [
+                          "PSIMAXHPF 110"
+                        ]
+                      },
+                      {
+                        "title": "IMAX HIGH PASS FILTER 120Hz",
+                        "enum": [
+                          "PSIMAXHPF 120"
+                        ]
+                      },
+                      {
+                        "title": "IMAX HIGH PASS FILTER 150Hz",
+                        "enum": [
+                          "PSIMAXHPF 150"
+                        ]
+                      },
+                      {
+                        "title": "IMAX HIGH PASS FILTER 180Hz",
+                        "enum": [
+                          "PSIMAXHPF 180"
+                        ]
+                      },
+                      {
+                        "title": "IMAX HIGH PASS FILTER 200Hz",
+                        "enum": [
+                          "PSIMAXHPF 200"
+                        ]
+                      },
+                      {
+                        "title": "IMAX HIGH PASS FILTER 250Hz",
+                        "enum": [
+                          "PSIMAXHPF 250"
+                        ]
+                      },
+                      {
+                        "title": "IMAX LOW PASS FILTER 70Hz",
+                        "enum": [
+                          "PSIMAXLPF 070"
+                        ]
+                      },
+                      {
+                        "title": "IMAX LOW PASS FILTER 80Hz",
+                        "enum": [
+                          "PSIMAXLPF 080"
+                        ]
+                      },
+                      {
+                        "title": "IMAX LOW PASS FILTER 90Hz",
+                        "enum": [
+                          "PSIMAXLPF 090"
+                        ]
+                      },
+                      {
+                        "title": "IMAX LOW PASS FILTER 100Hz",
+                        "enum": [
+                          "PSIMAXLPF 100"
+                        ]
+                      },
+                      {
+                        "title": "IMAX LOW PASS FILTER 110Hz",
+                        "enum": [
+                          "PSIMAXLPF 110"
+                        ]
+                      },
+                      {
+                        "title": "IMAX LOW PASS FILTER 120Hz",
+                        "enum": [
+                          "PSIMAXLPF 120"
+                        ]
+                      },
+                      {
+                        "title": "IMAX LOW PASS FILTER 150Hz",
+                        "enum": [
+                          "PSIMAXLPF 150"
+                        ]
+                      },
+                      {
+                        "title": "IMAX LOW PASS FILTER 180Hz",
+                        "enum": [
+                          "PSIMAXLPF 180"
+                        ]
+                      },
+                      {
+                        "title": "IMAX LOW PASS FILTER 200Hz",
+                        "enum": [
+                          "PSIMAXLPF 200"
+                        ]
+                      },
+                      {
+                        "title": "IMAX LOW PASS FILTER 250Hz",
+                        "enum": [
+                          "PSIMAXLPF 250"
                         ]
                       },
                       {
@@ -2150,6 +2582,48 @@
                         ]
                       },
                       {
+                        "title": "AUDYSSEY LFC CONTAINMENT AMOUNT 1",
+                        "enum": [
+                          "PSCNTAMT 01"
+                        ]
+                      },
+                      {
+                        "title": "AUDYSSEY LFC CONTAINMENT AMOUNT 2",
+                        "enum": [
+                          "PSCNTAMT 02"
+                        ]
+                      },
+                      {
+                        "title": "AUDYSSEY LFC CONTAINMENT AMOUNT 3",
+                        "enum": [
+                          "PSCNTAMT 03"
+                        ]
+                      },
+                      {
+                        "title": "AUDYSSEY LFC CONTAINMENT AMOUNT 4",
+                        "enum": [
+                          "PSCNTAMT 04"
+                        ]
+                      },
+                      {
+                        "title": "AUDYSSEY LFC CONTAINMENT AMOUNT 5",
+                        "enum": [
+                          "PSCNTAMT 05"
+                        ]
+                      },
+                      {
+                        "title": "AUDYSSEY LFC CONTAINMENT AMOUNT 6",
+                        "enum": [
+                          "PSCNTAMT 06"
+                        ]
+                      },
+                      {
+                        "title": "AUDYSSEY LFC CONTAINMENT AMOUNT 7",
+                        "enum": [
+                          "PSCNTAMT 07"
+                        ]
+                      },
+                      {
                         "title": "GRAPHIC EQ ON",
                         "enum": [
                           "PSGEQ ON"
@@ -2225,6 +2699,96 @@
                         "title": "EFFECT DOWN",
                         "enum": [
                           "PSEFF DOWN"
+                        ]
+                      },
+                      {
+                        "title": "EFFECT 1dB",
+                        "enum": [
+                          "PSEFF 01"
+                        ]
+                      },
+                      {
+                        "title": "EFFECT 2dB",
+                        "enum": [
+                          "PSEFF 02"
+                        ]
+                      },
+                      {
+                        "title": "EFFECT 3dB",
+                        "enum": [
+                          "PSEFF 03"
+                        ]
+                      },
+                      {
+                        "title": "EFFECT 4dB",
+                        "enum": [
+                          "PSEFF 04"
+                        ]
+                      },
+                      {
+                        "title": "EFFECT 5dB",
+                        "enum": [
+                          "PSEFF 05"
+                        ]
+                      },
+                      {
+                        "title": "EFFECT 6dB",
+                        "enum": [
+                          "PSEFF 06"
+                        ]
+                      },
+                      {
+                        "title": "EFFECT 7dB",
+                        "enum": [
+                          "PSEFF 07"
+                        ]
+                      },
+                      {
+                        "title": "EFFECT 8dB",
+                        "enum": [
+                          "PSEFF 08"
+                        ]
+                      },
+                      {
+                        "title": "EFFECT 9dB",
+                        "enum": [
+                          "PSEFF 09"
+                        ]
+                      },
+                      {
+                        "title": "EFFECT 10dB",
+                        "enum": [
+                          "PSEFF 10"
+                        ]
+                      },
+                      {
+                        "title": "EFFECT 11dB",
+                        "enum": [
+                          "PSEFF 11"
+                        ]
+                      },
+                      {
+                        "title": "EFFECT 12dB",
+                        "enum": [
+                          "PSEFF 12"
+                        ]
+                      },
+                      {
+                        "title": "EFFECT 13dB",
+                        "enum": [
+                          "PSEFF 13"
+                        ]
+                      },
+                      {
+                        "title": "EFFECT 14dB",
+                        "enum": [
+                          "PSEFF 14"
+                        ]
+                      },
+                      {
+                        "title": "EFFECT 15dB",
+                        "enum": [
+                          "PSEFF 15"
                         ]
                       },
                       {
@@ -2504,13 +3068,13 @@
                         ]
                       },
                       {
-                        "title": "ENTER",
+                        "title": "CURSOR ENTER",
                         "enum": [
                           "MNENT"
                         ]
                       },
                       {
-                        "title": "RETURN",
+                        "title": "CURSOR RETURN",
                         "enum": [
                           "MNRTN"
                         ]
@@ -2528,15 +3092,21 @@
                         ]
                       },
                       {
-                        "title": "OPTION",
+                        "title": "MENU OPTION",
                         "enum": [
                           "MNOPT"
                         ]
                       },
                       {
-                        "title": "INFO",
+                        "title": "MENU INFO",
                         "enum": [
                           "MNINF"
+                        ]
+                      },
+                      {
+                        "title": "MENU CHANNEL LEVEL ADJUST",
+                        "enum": [
+                          "MNCHL"
                         ]
                       },
                       {
@@ -2576,12 +3146,6 @@
                         ]
                       },
                       {
-                        "title": "CHANNEL LEVEL ADJUST ON/OFF",
-                        "enum": [
-                          "MNCHL"
-                        ]
-                      },
-                      {
                         "title": "REMOTE CONTROL LOCK ON",
                         "enum": [
                           "SYREMOTE LOCK ON"
@@ -2594,19 +3158,19 @@
                         ]
                       },
                       {
-                        "title": "PANEL BUTTON(EXCEPT MASTER VOL.)CONTROL LOCK ON",
+                        "title": "REMOTE CONTROL OFF FOR PANEL BUTTON EXCEPT MASTER VOL.",
                         "enum": [
                           "SYPANEL LOCK ON"
                         ]
                       },
                       {
-                        "title": "PANEL BUTTON & MASTER VOL. CONTROL LOCK ON ",
+                        "title": "REMOTE CONTROL OFF FOR PANEL BUTTON & MASTER VOL. ",
                         "enum": [
                           "SYPANEL+V LOCK ON"
                         ]
                       },
                       {
-                        "title": "PANEL BUTTON & MASTER VOL. CONTROL LOCK OFF",
+                        "title": "REMOTE CONTROL ON FOR PANEL BUTTON & MASTER VOL.",
                         "enum": [
                           "SYPANEL LOCK OFF"
                         ]
@@ -2684,13 +3248,13 @@
                         ]
                       },
                       {
-                        "title": "TUNER CONTROL UP (ALSO DAB STATION)",
+                        "title": "TUNER CONTROL SEEK+ (ALSO DAB STATION)",
                         "enum": [
                           "TFANUP"
                         ]
                       },
                       {
-                        "title": "TUNER CONTROL DOWN (ALSO DAB STATION)",
+                        "title": "TUNER CONTROL SEEK- (ALSO DAB STATION)",
                         "enum": [
                           "TFANDOWN"
                         ]
@@ -2705,6 +3269,36 @@
                         "title": "TUNER PRESET CHANNEL DOWN",
                         "enum": [
                           "TPANDOWN"
+                        ]
+                      },
+                      {
+                        "title": "TUNER PRESET 1",
+                        "enum": [
+                          "TPAN01"
+                        ]
+                      },
+                      {
+                        "title": "TUNER PRESET 2",
+                        "enum": [
+                          "TPAN02"
+                        ]
+                      },
+                      {
+                        "title": "TUNER PRESET 3",
+                        "enum": [
+                          "TPAN03"
+                        ]
+                      },
+                      {
+                        "title": "TUNER PRESET 4",
+                        "enum": [
+                          "TPAN04"
+                        ]
+                      },
+                      {
+                        "title": "TUNER PRESET 5",
+                        "enum": [
+                          "TPAN06"
                         ]
                       },
                       {
@@ -2762,13 +3356,13 @@
                         ]
                       },
                       {
-                        "title": "TUNER DAB MODE AUTO",
+                        "title": "TUNER TUNING MODE AUTO (EXCEPT DAB)",
                         "enum": [
                           "TMANAUTO"
                         ]
                       },
                       {
-                        "title": "TUNER DAB MODE MANUAL",
+                        "title": "TUNER TUNING MODE MANUAL (EXCEPT DAB)",
                         "enum": [
                           "TMANMANUAL"
                         ]
@@ -2802,393 +3396,959 @@
                         "enum": [
                           "DAODR MLT"
                         ]
-                      }
-                    ],
-                    "required": true
-                  },
-                  "displayType": {
-                    "title": "Display Type",
-                    "type": "integer",
-                    "oneOf": [
-                      {
-                        "title": "None/Disabled",
-                        "enum": [
-                          -1
-                        ]
                       },
                       {
-                        "title": "Outlet",
-                        "enum": [
-                          0
-                        ]
-                      },
-                      {
-                        "title": "Switch",
-                        "enum": [
-                          1
-                        ]
-                      }
-                    ],
-                    "description": "Here select display type in HomeKit app.",
-                    "required": true
-                  }
-                }
-              }
-            },
-            "buttonsZone2": {
-              "type": "array",
-              "items": {
-                "title": "Button",
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "title": "Name",
-                    "type": "string",
-                    "placeholder": "Button name",
-                    "description": "Here set Your own name.",
-                    "required": false
-                  },
-                  "reference": {
-                    "title": "Function",
-                    "type": "string",
-                    "description": "Here select function.",
-                    "oneOf": [
-                      {
-                        "title": "POWER ON",
+                        "title": "Z2 POWER ON",
                         "enum": [
                           "Z2ON"
                         ]
                       },
                       {
-                        "title": "POWER OFF",
+                        "title": "Z2 POWER OFF",
                         "enum": [
                           "Z2OFF"
                         ]
                       },
                       {
-                        "title": "VOLUME UP",
+                        "title": "Z2 VOLUME UP",
                         "enum": [
                           "Z2UP"
                         ]
                       },
                       {
-                        "title": "VOLUME DOWN",
+                        "title": "ZZ2 VOLUME DOWN",
                         "enum": [
                           "Z2DOWN"
                         ]
                       },
                       {
-                        "title": "MUTE ON",
+                        "title": "Z2 MUTE ON",
                         "enum": [
                           "Z2MUON"
                         ]
                       },
                       {
-                        "title": "MUTE OFF",
+                        "title": "Z2 MUTE OFF",
                         "enum": [
                           "Z2MUOFF"
                         ]
                       },
                       {
-                        "title": "AUTO STANDBY 2H",
+                        "title": "Z2 INPUT SOURCE",
+                        "enum": [
+                          "Z2SOURCE"
+                        ]
+                      },
+                      {
+                        "title": "Z2 INPUT PHONO",
+                        "enum": [
+                          "Z2PHONO"
+                        ]
+                      },
+                      {
+                        "title": "Z2 INPUT CD",
+                        "enum": [
+                          "Z2CD"
+                        ]
+                      },
+                      {
+                        "title": "Z2 INPUT DVD",
+                        "enum": [
+                          "Z2DVD"
+                        ]
+                      },
+                      {
+                        "title": "Z2 INPUT BLU-RAY",
+                        "enum": [
+                          "Z2BD"
+                        ]
+                      },
+                      {
+                        "title": "Z2 INPUT TV AUDIO",
+                        "enum": [
+                          "Z2TV"
+                        ]
+                      },
+                      {
+                        "title": "Z2 INPUT SAT/CBL",
+                        "enum": [
+                          "Z2SAT/CBL"
+                        ]
+                      },
+                      {
+                        "title": "Z2 INPUT CBL/SAT",
+                        "enum": [
+                          "Z2CBL/SAT"
+                        ]
+                      },
+                      {
+                        "title": "Z2 INPUT MEDIA PLAYER",
+                        "enum": [
+                          "Z2MPLAY"
+                        ]
+                      },
+                      {
+                        "title": "Z2 INPUT GAME",
+                        "enum": [
+                          "Z2GAME"
+                        ]
+                      },
+                      {
+                        "title": "Z2 INPUT FM TUNER",
+                        "enum": [
+                          "Z2TUNER"
+                        ]
+                      },
+                      {
+                        "title": "Z2 INPUT HD RADIO (NA Only)",
+                        "enum": [
+                          "Z2HDRADIO"
+                        ]
+                      },
+                      {
+                        "title": "Z2 INPUT PANDORA (NA Only)",
+                        "enum": [
+                          "Z2PANDORA"
+                        ]
+                      },
+                      {
+                        "title": "Z2 INPUT SIRIUSXM (NA Only)",
+                        "enum": [
+                          "Z2SIRIUSXM"
+                        ]
+                      },
+                      {
+                        "title": "Z2 INPUT INTERNET RADIO",
+                        "enum": [
+                          "Z2IRADIO"
+                        ]
+                      },
+                      {
+                        "title": "Z2 INPUT MEDIA SERVER",
+                        "enum": [
+                          "Z2SERVER"
+                        ]
+                      },
+                      {
+                        "title": "Z2 INPUT FAVORITES",
+                        "enum": [
+                          "Z2FAVORITES"
+                        ]
+                      },
+                      {
+                        "title": "Z2 INPUT AUX",
+                        "enum": [
+                          "Z2AUX"
+                        ]
+                      },
+                      {
+                        "title": "Z2 INPUT AUX 1",
+                        "enum": [
+                          "Z2AUX1"
+                        ]
+                      },
+                      {
+                        "title": "Z2 INPUT AUX 2",
+                        "enum": [
+                          "Z2AUX2"
+                        ]
+                      },
+                      {
+                        "title": "Z2 INPUT AUX 3",
+                        "enum": [
+                          "Z2AUX3"
+                        ]
+                      },
+                      {
+                        "title": "Z2 INPUT AUX 4",
+                        "enum": [
+                          "Z2AUX4"
+                        ]
+                      },
+                      {
+                        "title": "Z2 INPUT AUX 5",
+                        "enum": [
+                          "Z2AUX5"
+                        ]
+                      },
+                      {
+                        "title": "Z2 INPUT AUX 6",
+                        "enum": [
+                          "Z2AUX6"
+                        ]
+                      },
+                      {
+                        "title": "Z2 INPUT AUX 7",
+                        "enum": [
+                          "Z2AUX7"
+                        ]
+                      },
+                      {
+                        "title": "Z2 INPUT NETWORK/AIRPLAY/HEOS",
+                        "enum": [
+                          "Z2NET"
+                        ]
+                      },
+                      {
+                        "title": "Z2 INPUT BLUETOOTH",
+                        "enum": [
+                          "Z2BT"
+                        ]
+                      },
+                      {
+                        "title": "Z2 MEDIA SERVER",
+                        "enum": [
+                          "Z2SERVER"
+                        ]
+                      },
+                      {
+                        "title": "Z2 SPOTIFY",
+                        "enum": [
+                          "Z2SPOTIFY"
+                        ]
+                      },
+                      {
+                        "title": "Z2 LAST.FM",
+                        "enum": [
+                          "Z2LASTFM"
+                        ]
+                      },
+                      {
+                        "title": "Z2 FAVORITE 1",
+                        "enum": [
+                          "Z2FAVORITE1"
+                        ]
+                      },
+                      {
+                        "title": "Z2 FAVORITE 2",
+                        "enum": [
+                          "Z2FAVORITE2"
+                        ]
+                      },
+                      {
+                        "title": "Z2 FAVORITE 3",
+                        "enum": [
+                          "Z2FAVORITE3"
+                        ]
+                      },
+                      {
+                        "title": "Z2 FAVORITE MEMORY 1",
+                        "enum": [
+                          "Z2FAVORITE1 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "Z2 FAVORITE MEMORY 2",
+                        "enum": [
+                          "Z2FAVORITE2 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "Z2 FAVORITE MEMORY 3",
+                        "enum": [
+                          "Z2FAVORITE3 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "Z2 QUICK SELECT 1",
+                        "enum": [
+                          "Z2QUICK1"
+                        ]
+                      },
+                      {
+                        "title": "Z2 QUICK SELECT 2",
+                        "enum": [
+                          "Z2QUICK2"
+                        ]
+                      },
+                      {
+                        "title": "Z2 QUICK SELECT 3",
+                        "enum": [
+                          "Z2QUICK3"
+                        ]
+                      },
+                      {
+                        "title": "Z2 QUICK SELECT 4",
+                        "enum": [
+                          "Z2QUICK4"
+                        ]
+                      },
+                      {
+                        "title": "Z2 QUICK SELECT 5",
+                        "enum": [
+                          "Z2QUICK5"
+                        ]
+                      },
+                      {
+                        "title": "Z2 QUICK SELECT MEMORY 1",
+                        "enum": [
+                          "Z2QUICK1 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "Z2 QUICK SELECT MEMORY 2",
+                        "enum": [
+                          "Z2QUICK2 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "Z2 QUICK SELECT MEMORY 3",
+                        "enum": [
+                          "Z2QUICK3 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "Z2 QUICK SELECT MEMORY 4",
+                        "enum": [
+                          "Z2QUICK4 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "Z2 QUICK SELECT MEMORY 5",
+                        "enum": [
+                          "Z2QUICK5 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "Z2 SMART SELECT 1",
+                        "enum": [
+                          "Z2SMART1"
+                        ]
+                      },
+                      {
+                        "title": "Z2 SMART SELECT 2",
+                        "enum": [
+                          "Z2SMART2"
+                        ]
+                      },
+                      {
+                        "title": "Z2 SMART SELECT 3",
+                        "enum": [
+                          "Z2SMART3"
+                        ]
+                      },
+                      {
+                        "title": "Z2 SMART SELECT 4",
+                        "enum": [
+                          "Z2SMART4"
+                        ]
+                      },
+                      {
+                        "title": "Z2 SMART SELECT 5",
+                        "enum": [
+                          "Z2SMART5"
+                        ]
+                      },
+                      {
+                        "title": "Z2 AUTO STANDBY 2H",
                         "enum": [
                           "Z2STBY2H"
                         ]
                       },
                       {
-                        "title": "AUTO STANDBY 4H",
+                        "title": "Z2 AUTO STANDBY 4H",
                         "enum": [
                           "Z2STBY4H"
                         ]
                       },
                       {
-                        "title": "AUTO STANDBY 8H",
+                        "title": "Z2 AUTO STANDBY 8H",
                         "enum": [
                           "Z2STBY8H"
                         ]
                       },
                       {
-                        "title": "AUTO STANDBY OFF",
+                        "title": "Z2 AUTO STANDBY OFF",
                         "enum": [
                           "Z2STBYOFF"
                         ]
                       },
                       {
-                        "title": "STEREO",
+                        "title": "Z2 SOUND MODE STEREO",
                         "enum": [
                           "Z2CSST"
                         ]
                       },
                       {
-                        "title": "MONO",
+                        "title": "Z2 SOUND MODE MONO",
                         "enum": [
                           "Z2CSMONO"
                         ]
                       },
                       {
-                        "title": "CHANNEL FRONT L VOLUME UP",
+                        "title": "Z2 CHANNEL FRONT L VOLUME UP",
                         "enum": [
                           "Z2CVFL UP"
                         ]
                       },
                       {
-                        "title": "CHANNEL FRONT L VOLUME DOWN",
+                        "title": "Z2 CHANNEL FRONT L VOLUME DOWN",
                         "enum": [
                           "Z2CVFL DOWN"
                         ]
                       },
                       {
-                        "title": "CHANNEL FRONT R VOLUME UP",
+                        "title": "Z2 CHANNEL FRONT R VOLUME UP",
                         "enum": [
                           "Z2CVFR UP"
                         ]
                       },
                       {
-                        "title": "CHANNEL FRONT R VOLUME DOWN",
+                        "title": "Z2 CHANNEL FRONT R VOLUME DOWN",
                         "enum": [
                           "Z2CVFR DOWN"
                         ]
                       },
                       {
-                        "title": "HIGH PASS FILTER ON",
+                        "title": "Z2 HIGH PASS FILTER ON",
                         "enum": [
                           "Z2HPFON"
                         ]
                       },
                       {
-                        "title": "HIGH PASS FILTER OFF",
+                        "title": "Z2 HIGH PASS FILTER OFF",
                         "enum": [
                           "Z2HPFOFF"
                         ]
                       },
                       {
-                        "title": "BASS UP",
+                        "title": "Z2 BASS UP",
                         "enum": [
                           "Z2PSBAS UP"
                         ]
                       },
                       {
-                        "title": "BASS DOWN",
+                        "title": "Z2 BASS DOWN",
                         "enum": [
                           "Z2PSBAS DOWN"
                         ]
                       },
                       {
-                        "title": "TREBLE UP",
+                        "title": "Z2 TREBLE UP",
                         "enum": [
                           "Z2PSTRE UP"
                         ]
                       },
                       {
-                        "title": "TREBLE DOWN",
+                        "title": "Z2 TREBLE DOWN",
                         "enum": [
                           "Z2PSTRE DOWN"
                         ]
                       },
                       {
-                        "title": "SLEEP OFF",
+                        "title": "Z2 SLEEP OFF",
                         "enum": [
-                          " Z2SLPOFF"
+                          "Z2SLPOFF"
                         ]
                       },
                       {
-                        "title": "HDMI AUDIO OUT THROUGH",
+                        "title": "Z2 SLEEP 10MIN",
+                        "enum": [
+                          "Z2SLP010"
+                        ]
+                      },
+                      {
+                        "title": "Z2 SLEEP 20MIN",
+                        "enum": [
+                          "Z3SLP020"
+                        ]
+                      },
+                      {
+                        "title": "Z2 SLEEP 30MIN",
+                        "enum": [
+                          "Z2SLP030"
+                        ]
+                      },
+                      {
+                        "title": "Z2 SLEEP 60MIN",
+                        "enum": [
+                          "Z2SLP060"
+                        ]
+                      },
+                      {
+                        "title": "Z2 SLEEP 120MIN",
+                        "enum": [
+                          "Z2SLP120"
+                        ]
+                      },
+                      {
+                        "title": "Z2 HDMI AUDIO OUT THROUGH",
                         "enum": [
                           "Z2HDA THR"
                         ]
                       },
                       {
-                        "title": "HDMI AUDIO OUT PCM",
+                        "title": "Z2 HDMI AUDIO OUT PCM",
                         "enum": [
                           "Z2HDA PCM"
                         ]
-                      }
-                    ],
-                    "required": true
-                  },
-                  "displayType": {
-                    "title": "Display Type",
-                    "type": "integer",
-                    "oneOf": [
-                      {
-                        "title": "None/Disabled",
-                        "enum": [
-                          -1
-                        ]
                       },
                       {
-                        "title": "Outlet",
-                        "enum": [
-                          0
-                        ]
-                      },
-                      {
-                        "title": "Switch",
-                        "enum": [
-                          1
-                        ]
-                      }
-                    ],
-                    "description": "Here select display type in HomeKit app.",
-                    "required": true
-                  }
-                }
-              }
-            },
-            "buttonsZone3": {
-              "type": "array",
-              "items": {
-                "title": "Button",
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "title": "Name",
-                    "type": "string",
-                    "placeholder": "Button name",
-                    "description": "Here set Your own name.",
-                    "required": false
-                  },
-                  "reference": {
-                    "title": "Function",
-                    "type": "string",
-                    "description": "Here select function.",
-                    "oneOf": [
-                      {
-                        "title": "POWER ON",
+                        "title": "Z3 POWER ON",
                         "enum": [
                           "Z3ON"
                         ]
                       },
                       {
-                        "title": "POWER OFF",
+                        "title": "Z3 POWER OFF",
                         "enum": [
                           "Z3OFF"
                         ]
                       },
                       {
-                        "title": "VOLUME UP",
+                        "title": "Z3 VOLUME UP",
                         "enum": [
                           "Z3UP"
                         ]
                       },
                       {
-                        "title": "VOLUME DOWN",
+                        "title": "Z3 VOLUME DOWN",
                         "enum": [
                           "Z3DOWN"
                         ]
                       },
                       {
-                        "title": "MUTE ON",
+                        "title": "Z3 MUTE ON",
                         "enum": [
                           "Z3MUON"
                         ]
                       },
                       {
-                        "title": "MUTE OFF",
+                        "title": "Z3 MUTE OFF",
                         "enum": [
                           "Z3MUOFF"
                         ]
                       },
                       {
-                        "title": "AUTO STANDBY 2H",
+                        "title": "Z3 INPUT SOURCE",
+                        "enum": [
+                          "Z3SOURCE"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT PHONO",
+                        "enum": [
+                          "Z3PHONO"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT CD",
+                        "enum": [
+                          "Z3CD"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT DVD",
+                        "enum": [
+                          "Z3DVD"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT BLU-RAY",
+                        "enum": [
+                          "Z3BD"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT TV AUDIO",
+                        "enum": [
+                          "Z3TV"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT SAT/CBL",
+                        "enum": [
+                          "Z3SAT/CBL"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT MEDIA PLAYER",
+                        "enum": [
+                          "Z3MPLAY"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT GAME",
+                        "enum": [
+                          "Z3GAME"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT FM TUNER",
+                        "enum": [
+                          "Z3TUNER"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT HD RADIO (NA Only)",
+                        "enum": [
+                          "Z3HDRADIO"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT PANDORA (NA Only)",
+                        "enum": [
+                          "Z3PANDORA"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT SIRIUSXM (NA Only)",
+                        "enum": [
+                          "Z3SIRIUSXM"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT INTERNET RADIO",
+                        "enum": [
+                          "Z3IRADIO"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT MEDIA SERVER",
+                        "enum": [
+                          "Z3SERVER"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT FAVORITES",
+                        "enum": [
+                          "Z3FAVORITES"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT AUX",
+                        "enum": [
+                          "Z3AUX"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT AUX 1",
+                        "enum": [
+                          "Z3AUX1"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT AUX 2",
+                        "enum": [
+                          "Z3AUX2"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT AUX 3",
+                        "enum": [
+                          "Z3AUX3"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT AUX 4",
+                        "enum": [
+                          "Z3AUX4"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT AUX 5",
+                        "enum": [
+                          "Z3AUX5"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT AUX 6",
+                        "enum": [
+                          "Z3AUX6"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT AUX 7",
+                        "enum": [
+                          "Z3AUX7"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT NETWORK/AIRPLAY/HEOS",
+                        "enum": [
+                          "Z3NET"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT BLUETOOTH",
+                        "enum": [
+                          "Z3BT"
+                        ]
+                      },
+                      {
+                        "title": "Z3 MEDIA SERVER",
+                        "enum": [
+                          "Z3SERVER"
+                        ]
+                      },
+                      {
+                        "title": "Z3 SPOTIFY",
+                        "enum": [
+                          "Z3SPOTIFY"
+                        ]
+                      },
+                      {
+                        "title": "Z3 LAST.FM",
+                        "enum": [
+                          "Z3LASTFM"
+                        ]
+                      },
+                      {
+                        "title": "Z3 FAVORITE 1",
+                        "enum": [
+                          "Z3FAVORITE1"
+                        ]
+                      },
+                      {
+                        "title": "Z3 FAVORITE 2",
+                        "enum": [
+                          "Z3FAVORITE2"
+                        ]
+                      },
+                      {
+                        "title": "Z3 FAVORITE 3",
+                        "enum": [
+                          "Z3FAVORITE3"
+                        ]
+                      },
+                      {
+                        "title": "Z3 FAVORITE MEMORY 1",
+                        "enum": [
+                          "Z3FAVORITE1 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "Z3 FAVORITE MEMORY 2",
+                        "enum": [
+                          "Z3FAVORITE2 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "Z3 FAVORITE MEMORY 3",
+                        "enum": [
+                          "Z3FAVORITE3 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "Z3 QUICK SELECT 1",
+                        "enum": [
+                          "Z3QUICK1"
+                        ]
+                      },
+                      {
+                        "title": "Z3 QUICK SELECT 2",
+                        "enum": [
+                          "Z3QUICK2"
+                        ]
+                      },
+                      {
+                        "title": "Z3 QUICK SELECT 3",
+                        "enum": [
+                          "Z3QUICK3"
+                        ]
+                      },
+                      {
+                        "title": "Z3 QUICK SELECT 4",
+                        "enum": [
+                          "Z3QUICK4"
+                        ]
+                      },
+                      {
+                        "title": "Z3 QUICK SELECT 5",
+                        "enum": [
+                          "Z3QUICK5"
+                        ]
+                      },
+                      {
+                        "title": "Z3 QUICK SELECT MEMORY 1",
+                        "enum": [
+                          "Z3QUICK1 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "Z3 QUICK SELECT MEMORY 2",
+                        "enum": [
+                          "Z3QUICK2 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "Z3 QUICK SELECT MEMORY 3",
+                        "enum": [
+                          "Z3QUICK3 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "Z3 QUICK SELECT MEMORY 4",
+                        "enum": [
+                          "Z3QUICK4 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "Z3 QUICK SELECT MEMORY 5",
+                        "enum": [
+                          "Z3QUICK5 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "Z3 SMART SELECT 1",
+                        "enum": [
+                          "Z3SMART1"
+                        ]
+                      },
+                      {
+                        "title": "Z3 SMART SELECT 2",
+                        "enum": [
+                          "Z3SMART2"
+                        ]
+                      },
+                      {
+                        "title": "Z3 SMART SELECT 3",
+                        "enum": [
+                          "Z3SMART3"
+                        ]
+                      },
+                      {
+                        "title": "Z3 SMART SELECT 4",
+                        "enum": [
+                          "Z3SMART4"
+                        ]
+                      },
+                      {
+                        "title": "Z3 SMART SELECT 5",
+                        "enum": [
+                          "Z3SMART5"
+                        ]
+                      },
+                      {
+                        "title": "Z3 AUTO STANDBY 2H",
                         "enum": [
                           "Z3STBY2H"
                         ]
                       },
                       {
-                        "title": "AUTO STANDBY 4H",
+                        "title": "Z3 AUTO STANDBY 4H",
                         "enum": [
                           "Z3STBY4H"
                         ]
                       },
                       {
-                        "title": "AUTO STANDBY 8H",
+                        "title": "Z3 AUTO STANDBY 8H",
                         "enum": [
                           "Z3STBY8H"
                         ]
                       },
                       {
-                        "title": "AUTO STANDBY OFF",
+                        "title": "Z3 AUTO STANDBY OFF",
                         "enum": [
                           "Z3STBYOFF"
                         ]
                       },
                       {
-                        "title": "STEREO",
+                        "title": "Z3 SOUND MODE STEREO",
                         "enum": [
                           "Z3CSST"
                         ]
                       },
                       {
-                        "title": "MONO",
+                        "title": "Z3 SOUND MODE MONO",
                         "enum": [
                           "Z3CSMONO"
                         ]
                       },
                       {
-                        "title": "CHANNEL FRONT L VOLUME UP",
+                        "title": "Z3 CHANNEL FRONT L VOLUME UP",
                         "enum": [
                           "Z3CVFL UP"
                         ]
                       },
                       {
-                        "title": "CHANNEL FRONT L VOLUME DOWN",
+                        "title": "Z3 CHANNEL FRONT L VOLUME DOWN",
                         "enum": [
                           "Z3CVFL DOWN"
                         ]
                       },
                       {
-                        "title": "CHANNEL FRONT R VOLUME UP",
+                        "title": "Z3 CHANNEL FRONT R VOLUME UP",
                         "enum": [
                           "Z3CVFR UP"
                         ]
                       },
                       {
-                        "title": "CHANNEL FRONT R VOLUME DOWN",
+                        "title": "Z3 CHANNEL FRONT R VOLUME DOWN",
                         "enum": [
                           "Z3CVFR DOWN"
                         ]
                       },
                       {
-                        "title": "HIGH PASS FILTER ON",
+                        "title": "Z3 HIGH PASS FILTER ON",
                         "enum": [
                           "Z3HPFON"
                         ]
                       },
                       {
-                        "title": "HIGH PASS FILTER OFF",
+                        "title": "Z3 HIGH PASS FILTER OFF",
                         "enum": [
                           "Z3HPFOFF"
                         ]
                       },
                       {
-                        "title": "BASS UP",
+                        "title": "Z3 BASS UP",
                         "enum": [
                           "Z3PSBAS UP"
                         ]
                       },
                       {
-                        "title": "BASS DOWN",
+                        "title": "Z3 BASS DOWN",
                         "enum": [
                           "Z3PSBAS DOWN"
                         ]
                       },
                       {
-                        "title": "TREBLE UP",
+                        "title": "Z3 TREBLE UP",
                         "enum": [
                           "Z3PSTRE UP"
                         ]
                       },
                       {
-                        "title": "TREBLE DOWN",
+                        "title": "Z3 TREBLE DOWN",
                         "enum": [
                           "Z3PSTRE DOWN"
                         ]
                       },
                       {
-                        "title": "SLEEP OFF",
+                        "title": "Z3 SLEEP OFF",
                         "enum": [
                           "Z3SLPOFF"
+                        ]
+                      },
+                      {
+                        "title": "Z3 SLEEP 10MIN",
+                        "enum": [
+                          "Z3SLP010"
+                        ]
+                      },
+                      {
+                        "title": "Z3 SLEEP 20MIN",
+                        "enum": [
+                          "Z3SLP020"
+                        ]
+                      },
+                      {
+                        "title": "Z3 SLEEP 30MIN",
+                        "enum": [
+                          "Z3SLP030"
+                        ]
+                      },
+                      {
+                        "title": "Z3 SLEEP 60MIN",
+                        "enum": [
+                          "Z3SLP060"
+                        ]
+                      },
+                      {
+                        "title": "Z3 SLEEP 120MIN",
+                        "enum": [
+                          "Z3SLP120"
                         ]
                       }
                     ],
@@ -3518,6 +4678,10 @@
           "expanded": false,
           "items": [
             "devices[].getInputsFromDevice",
+            "devices[].getFavoritesFromDevice",
+            "devices[].getQuickSelectFromDevice",
+            "devices[].getSmartSelectFromDevice",
+            "devices[].getShortcutsFromDevice",
             {
               "key": "devices[].inputs",
               "type": "tabarray",
@@ -3525,8 +4689,7 @@
               "items": [
                 "devices[].inputs[].name",
                 "devices[].inputs[].reference",
-                "devices[].inputs[].mode",
-                "devices[].inputs[].displayType"
+                "devices[].inputs[].mode"
               ],
               "condition": {
                 "functionBody": "return model.devices[arrayIndices].getInputsFromDevice === false;"
@@ -3550,8 +4713,7 @@
               "title": "{{ value.name || 'new surround' }}",
               "items": [
                 "devices[].surrounds[].name",
-                "devices[].surrounds[].reference",
-                "devices[].surrounds[].displayType"
+                "devices[].surrounds[].reference"
               ]
             }
           ],
@@ -3567,63 +4729,16 @@
           "expanded": false,
           "items": [
             {
-              "key": "devices[].buttonsMainZone",
+              "key": "devices[].buttons",
               "type": "tabarray",
               "title": "{{ value.name || 'new button' }}",
               "items": [
-                "devices[].buttonsMainZone[].name",
-                "devices[].buttonsMainZone[].reference",
-                "devices[].buttonsMainZone[].displayType"
+                "devices[].buttons[].name",
+                "devices[].buttons[].reference",
+                "devices[].buttons[].displayType"
               ]
             }
-          ],
-          "condition": {
-            "functionBody": "return model.devices[arrayIndices].zoneControl === 0;"
-          }
-        },
-        {
-          "key": "devices[]",
-          "type": "section",
-          "title": "Buttons",
-          "expandable": true,
-          "expanded": false,
-          "items": [
-            {
-              "key": "devices[].buttonsZone2",
-              "type": "tabarray",
-              "title": "{{ value.name || 'new button' }}",
-              "items": [
-                "devices[].buttonsZone2[].name",
-                "devices[].buttonsZone2[].reference",
-                "devices[].buttonsZone2[].displayType"
-              ]
-            }
-          ],
-          "condition": {
-            "functionBody": "return model.devices[arrayIndices].zoneControl === 1;"
-          }
-        },
-        {
-          "key": "devices[]",
-          "type": "section",
-          "title": "Buttons",
-          "expandable": true,
-          "expanded": false,
-          "items": [
-            {
-              "key": "devices[].buttonsZone3",
-              "type": "tabarray",
-              "title": "{{ value.name || 'new button' }}",
-              "items": [
-                "devices[].buttonsZone3[].name",
-                "devices[].buttonsZone3[].reference",
-                "devices[].buttonsZone3[].displayType"
-              ]
-            }
-          ],
-          "condition": {
-            "functionBody": "return model.devices[arrayIndices].zoneControl === 2;"
-          }
+          ]
         },
         {
           "key": "devices[]",
@@ -3653,10 +4768,7 @@
                     "devices[].sensorInputs[].displayType"
                   ]
                 }
-              ],
-              "condition": {
-                "functionBody": "return model.devices[arrayIndices].getInputsFromDevice === true;"
-              }
+              ]
             }
           ]
         },

@@ -24,23 +24,30 @@
                     "port": 8080,
                     "zoneControl": 0,
                     "getInputsFromDevice": false,
+                    "getFavoritesFromDevice": false,
+                    "getQuickSelectFromDevice": false,
+                    "getSmartSelectFromDevice": false,
+                    "getShortcutsFromDevice": false,
                     "inputs": [
                         {
                             "name": "Xbox One",
                             "reference": "GAME",
-                            "mode": "SI",
-                            "displayType": -1
+                            "mode": "SI"
                         },
                         {
                             "name": "Television",
                             "reference": "TV",
-                            "mode": "SI",
-                            "displayType": -1
+                            "mode": "SI"
                         }
                     ],
-                    "buttonsMainZone": [
+                    "buttons": [
                         {
-                            "name": "POWER ON",
+                            "name": "MASTER POWER ON",
+                            "reference": "PWON",
+                            "displayType": -1
+                        },
+                        {
+                            "name": "ZM POWER ON",
                             "reference": "ZMON",
                             "displayType": -1
                         }
@@ -81,23 +88,25 @@
                     "port": 8080,
                     "zoneControl": 1,
                     "getInputsFromDevice": false,
+                    "getFavoritesFromDevice": false,
+                    "getQuickSelectFromDevice": false,
+                    "getSmartSelectFromDevice": false,
+                    "getShortcutsFromDevice": false,
                     "inputs": [
                         {
                             "name": "Xbox One",
                             "reference": "GAME",
-                            "mode": "SI",
-                            "displayType": -1
+                            "mode": "SI"
                         },
                         {
                             "name": "Television",
                             "reference": "TV",
-                            "mode": "SI",
-                            "displayType": -1
+                            "mode": "SI"
                         }
                     ],
-                    "buttonsZone2": [
+                    "buttons": [
                         {
-                            "name": "POWER ON",
+                            "name": "Z2 POWER ON",
                             "reference": "Z2ON",
                             "displayType": -1
                         }
@@ -138,23 +147,25 @@
                     "port": 8080,
                     "zoneControl": 2,
                     "getInputsFromDevice": false,
+                    "getFavoritesFromDevice": false,
+                    "getQuickSelectFromDevice": false,
+                    "getSmartSelectFromDevice": false,
+                    "getShortcutsFromDevice": false,
                     "inputs": [
                         {
                             "name": "Xbox One",
                             "reference": "GAME",
-                            "mode": "SI",
-                            "displayType": -1
+                            "mode": "SI"
                         },
                         {
                             "name": "Television",
                             "reference": "TV",
-                            "mode": "SI",
-                            "displayType": -1
+                            "mode": "SI"
                         }
                     ],
-                    "buttonsZone3": [
+                    "buttons": [
                         {
-                            "name": "POWER ON",
+                            "name": "Z§ POWER ON",
                             "reference": "Z3ON",
                             "displayType": -1
                         }
@@ -197,12 +208,17 @@
                     "surrounds": [
                         {
                             "name": "MCH Stereo",
-                            "reference": "MCH STEREO",
-                            "displayType": -1
+                            "reference": "MCH STEREO"
                         },
                         {
                             "name": "Stereo",
-                            "reference": "STEREO",
+                            "reference": "STEREO"
+                        }
+                    ],
+                    "buttons": [
+                        {
+                            "name": "MASTER POWER ON",
+                            "reference": "PWON",
                             "displayType": -1
                         }
                     ],
