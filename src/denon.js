@@ -55,76 +55,82 @@ class DENON extends EventEmitter {
                 const firmwareRevision = deviceInfoKeys.includes('UpgradeVersion') ? devInfo.UpgradeVersion[0] : '00';
                 const zones = deviceInfoKeys.includes('DeviceZones') ? parseInt(devInfo.DeviceZones[0]) : 1;
 
-                //check correc zone control
-                const checkZone = zoneControl < zones ? true : false;
-                const checkZoneNr = zoneControl < zones ? zoneControl : zones - 1;
-
                 //device capabilities
                 const capabilitiesSupport = deviceInfoKeys.includes('DeviceCapabilities');
-                const capabilitiesSetupKeys = capabilitiesSupport ? Object.keys(devInfo.DeviceCapabilities[0]) : [];
+                const capabilities = capabilitiesSupport ? Object.keys(devInfo.DeviceCapabilities[0]) : [];
+                const capabilitiesKeys = capabilitiesSupport ? Object.keys(capabilities) : [];
 
                 //setup
-                const capabilitiesSetupSupport = capabilitiesSetupKeys.includes('Setup');
-                this.supportTone = capabilitiesSetupSupport && capabilitiesSetupKeys.includes('ToneControl') ? devInfo.DeviceCapabilities[0].Setup[0].ToneControl[0].Control[0] === '1' : false;
-                this.supportSubwooferLevel = capabilitiesSetupSupport && capabilitiesSetupKeys.includes('SubwooferLevel') ? devInfo.DeviceCapabilities[0].Setup[0].SubwooferLevel[0].Control[0] === '1' : false;
-                this.supportChannelLevel = capabilitiesSetupSupport && capabilitiesSetupKeys.includes('ChannelLevel') ? devInfo.DeviceCapabilities[0].Setup[0].ChannelLevel[0].Control[0] === '1' : false;
-                this.supportAllZoneStereo = capabilitiesSetupSupport && capabilitiesSetupKeys.includes('AllZoneStereo') ? devInfo.DeviceCapabilities[0].Setup[0].AllZoneStereo[0].Control[0] === '1' : false;
-                this.supportPictureMode = capabilitiesSetupSupport && capabilitiesSetupKeys.includes('PictureMode') ? devInfo.DeviceCapabilities[0].Setup[0].PictureMode[0].Control[0] === '1' : false;
-                this.supportSoundMode = capabilitiesSetupSupport && capabilitiesSetupKeys.includes('SoundMode') ? devInfo.DeviceCapabilities[0].Setup[0].SoundMode[0].Control[0] === '1' : false
+                const capabilitiesSetupSupport = capabilitiesSupport && capabilitiesKeys.includes('Setup');
+                const capabilitiesSetup = capabilitiesSetupSupport ? devInfo.DeviceCapabilities[0].Setup[0] : [];
+                const capabilitiesSetupKeys = capabilitiesSetupSupport ? Object.keys(capabilitiesSetup) : [];
+                this.supportTone = capabilitiesSetupSupport && capabilitiesSetupKeys.includes('ToneControl') ? capabilitiesSetup.ToneControl[0].Control[0] === '1' : false;
+                this.supportSubwooferLevel = capabilitiesSetupSupport && capabilitiesSetupKeys.includes('SubwooferLevel') ? capabilitiesSetup.SubwooferLevel[0].Control[0] === '1' : false;
+                this.supportChannelLevel = capabilitiesSetupSupport && capabilitiesSetupKeys.includes('ChannelLevel') ? capabilitiesSetup.ChannelLevel[0].Control[0] === '1' : false;
+                this.supportAllZoneStereo = capabilitiesSetupSupport && capabilitiesSetupKeys.includes('AllZoneStereo') ? capabilitiesSetup.AllZoneStereo[0].Control[0] === '1' : false;
+                this.supportPictureMode = capabilitiesSetupSupport && capabilitiesSetupKeys.includes('PictureMode') ? capabilitiesSetup.PictureMode[0].Control[0] === '1' : false;
+                this.supportSoundMode = capabilitiesSetupSupport && capabilitiesSetupKeys.includes('SoundMode') ? capabilitiesSetup.SoundMode[0].Control[0] === '1' : false
 
                 //operation
-                const capabilitiesOperationKeys = capabilitiesSupport ? Object.keys(devInfo.DeviceCapabilities[0]) : [];
-                const capabilitiesOperationSupport = capabilitiesOperationKeys.includes('Operation');
-                this.supportClock = capabilitiesOperationSupport & capabilitiesOperationKeys.includes('Clock') ? devInfo.DeviceCapabilities[0].Operation[0].Clock[0].Control[0] === '1' : false;
-                this.supportAllZonePower = capabilitiesOperationSupport & capabilitiesOperationKeys.includes('AllZonePower') ? devInfo.DeviceCapabilities[0].Operation[0].AllZonePower[0].Control[0] === '1' : false;
-                this.supportAllZoneMute = capabilitiesOperationSupport & capabilitiesOperationKeys.includes('AllZoneMute') ? devInfo.DeviceCapabilities[0].Operation[0].AllZoneMute[0].Control[0] === '1' : false;
-                this.supportFavorites = capabilitiesOperationSupport & capabilitiesOperationKeys.includes('Favorites') ? devInfo.DeviceCapabilities[0].Operation[0].Favorites[0].Control[0] === '1' : false;
-                this.supportFavoriteStation = capabilitiesOperationSupport & capabilitiesOperationKeys.includes('FavoriteStation') ? devInfo.DeviceCapabilities[0].Operation[0].Operation[0].FavoriteStation[0].Control[0] === '1' : false;
+                const capabilitiesOperationSupport = capabilitiesSupport && capabilitiesKeys.includes('Operation');
+                const capabilitiesOperation = capabilitiesOperationSupport ? devInfo.DeviceCapabilities[0].Operation[0] : [];
+                const capabilitiesOperationKeys = capabilitiesOperationSupport ? Object.keys(capabilitiesOperation) : [];
+                this.supportClock = capabilitiesOperationSupport & capabilitiesOperationKeys.includes('Clock') ? capabilitiesOperation.Clock[0].Control[0] === '1' : false;
+                this.supportAllZonePower = capabilitiesOperationSupport & capabilitiesOperationKeys.includes('AllZonePower') ? capabilitiesOperation.AllZonePower[0].Control[0] === '1' : false;
+                this.supportAllZoneMute = capabilitiesOperationSupport & capabilitiesOperationKeys.includes('AllZoneMute') ? capabilitiesOperation.AllZoneMute[0].Control[0] === '1' : false;
+                this.supportFavorites = capabilitiesOperationSupport & capabilitiesOperationKeys.includes('Favorites') ? capabilitiesOperation.Favorites[0].Control[0] === '1' : false;
+                this.supportFavoriteStation = capabilitiesOperationSupport & capabilitiesOperationKeys.includes('FavoriteStation') ? capabilitiesOperation.FavoriteStation[0].Control[0] === '1' : false;
 
                 //zone capabilities
+                const checkZone = zoneControl < zones ? true : false;
+                const checkZoneNr = zoneControl < zones ? zoneControl : zones - 1;
                 const zoneCapabilitiesSupport = checkZone ? deviceInfoKeys.includes('DeviceZoneCapabilities') : false;
-                const zoneCapabilitiesKeys = zoneCapabilitiesSupport ? Object.keys(devInfo.DeviceZoneCapabilities[checkZoneNr]) : [];
+                const zoneCapabilities = zoneCapabilitiesSupport ? devInfo.DeviceZoneCapabilities[checkZoneNr] : [];
+                const zoneCapabilitiesKeys = zoneCapabilitiesSupport ? Object.keys(zoneCapabilities) : [];
 
                 //zone
-                this.supportShortcut = zoneCapabilitiesKeys.includes('ShortcutControl') ? devInfo.DeviceZoneCapabilities[checkZoneNr].ShortcutControl[0].Control[0] === '1' : false;
-                this.supportPower = zoneCapabilitiesKeys.includes('Power') ? devInfo.DeviceZoneCapabilities[checkZoneNr].Power[0].Control[0] === '1' : false;
-                this.supportVolume = zoneCapabilitiesKeys.includes('Volume') ? devInfo.DeviceZoneCapabilities[checkZoneNr].Volume[0].Control[0] === '1' : false;
-                this.supportMute = zoneCapabilitiesKeys.includes('Mute') ? devInfo.DeviceZoneCapabilities[checkZoneNr].Mute[0].Control[0] === '1' : false;
-                this.supportInputSource = zoneCapabilitiesKeys.includes('InputSource') ? devInfo.DeviceZoneCapabilities[checkZoneNr].InputSource[0].Control[0] === '1' : false;
+                this.supportShortcut = zoneCapabilitiesKeys.includes('ShortcutControl') ? zoneCapabilities.ShortcutControl[0].Control[0] === '1' : false;
+                this.supportPower = zoneCapabilitiesKeys.includes('Power') ? zoneCapabilities.Power[0].Control[0] === '1' : false;
+                this.supportVolume = zoneCapabilitiesKeys.includes('Volume') ? zoneCapabilities.Volume[0].Control[0] === '1' : false;
+                this.supportMute = zoneCapabilitiesKeys.includes('Mute') ? zoneCapabilities.Mute[0].Control[0] === '1' : false;
+                this.supportInputSource = zoneCapabilitiesKeys.includes('InputSource') ? zoneCapabilities.InputSource[0].Control[0] === '1' : false;
 
                 //surround mode Marantz M-CR611
-                this.supportSurroundMode = zoneCapabilitiesKeys.includes('SurroundMode') ? devInfo.DeviceZoneCapabilities[checkZoneNr].SurroundMode[0].Control[0] === '1' : false;
+                this.supportSurroundMode = zoneCapabilitiesKeys.includes('SurroundMode') ? zoneCapabilities.SurroundMode[0].Control[0] === '1' : false;
 
                 //setup
-                const zoneCapabilitiesSetupSupport = zoneCapabilitiesKeys.includes('Setup');
-                const zonescapabilitiesSetupKeys = zoneCapabilitiesSetupSupport ? Object.keys(devInfo.DeviceZoneCapabilities[checkZoneNr].Setup[0]) : [];
-                this.supportRestorer = zonescapabilitiesSetupKeys.includes('Restorer') ? devInfo.DeviceZoneCapabilities[checkZoneNr].Setup[0].Restorer[0].Control[0] === '1' : false;
-                this.supportToneControl = zonescapabilitiesSetupKeys.includes('ToneControl') ? devInfo.DeviceZoneCapabilities[checkZoneNr].Setup[0].ToneControl[0].Control[0] === '1' : false;
+                const zoneCapabilitiesSetupSupport = zoneCapabilitiesSupport && zoneCapabilitiesKeys.includes('Setup');
+                const zoneCapabilitiesSetup = zoneCapabilitiesSetupSupport ? devInfo.DeviceZoneCapabilities[checkZoneNr].Setup[0] : [];
+                const zonescapabilitiesSetupKeys = zoneCapabilitiesSetupSupport ? Object.keys(zoneCapabilitiesSetup) : [];
+                this.supportRestorer = zonescapabilitiesSetupKeys.includes('Restorer') ? zoneCapabilitiesSetup.Restorer[0].Control[0] === '1' : false;
+                this.supportToneControl = zonescapabilitiesSetupKeys.includes('ToneControl') ? zoneCapabilitiesSetup.ToneControl[0].Control[0] === '1' : false;
 
                 //operation
-                const zoneCapabilitiesOperationSupport = zoneCapabilitiesKeys.includes('Operation');
-                const zoneCapabilitiesOperationKeys = zoneCapabilitiesOperationSupport ? Object.keys(devInfo.DeviceZoneCapabilities[checkZoneNr].Operation[0]) : [];
-                this.supportCursor = zoneCapabilitiesOperationKeys.includes('Cursor') ? devInfo.DeviceZoneCapabilities[checkZoneNr].Operation[0].Cursor[0].Control[0] === '1' : false;
-                this.supportQuickSelect = zoneCapabilitiesOperationKeys.includes('QuickSelect') ? devInfo.DeviceZoneCapabilities[checkZoneNr].Operation[0].QuickSelect[0].Control[0] === '1' : false;
-                this.supportSmartSelect = zoneCapabilitiesOperationKeys.includes('SmartSelect') ? devInfo.DeviceZoneCapabilities[checkZoneNr].Operation[0].SmartSelect[0].Control[0] === '1' : false;
-                this.supportTunerOperation = zoneCapabilitiesOperationKeys.includes('TunerOperation') ? devInfo.DeviceZoneCapabilities[checkZoneNr].Operation[0].TunerOperation[0].Control[0] === '1' : false;
-                this.supportBdOperation = zoneCapabilitiesOperationKeys.includes('BdOperation') ? devInfo.DeviceZoneCapabilities[checkZoneNr].Operation[0].BdOperation[0].Control[0] === '1' : false;
-                this.supportCdOperation = zoneCapabilitiesOperationKeys.includes('CdOperation') ? devInfo.DeviceZoneCapabilities[checkZoneNr].Operation[0].CdOperation[0].Control[0] === '1' : false;
-                this.supportBuildInCdOperation = zoneCapabilitiesOperationKeys.includes('BuildInCdOperation') ? devInfo.DeviceZoneCapabilities[checkZoneNr].Operation[0].BuildInCdOperation[0].Control[0] === '1' : false;
-                this.supportPartyZone = zoneCapabilitiesOperationKeys.includes('PartyZone') ? devInfo.DeviceZoneCapabilities[checkZoneNr].Operation[0].PartyZone[0].Capability[0] === '1' : false;
+                const zoneCapabilitiesOperationSupport = zoneCapabilitiesSupport && zoneCapabilitiesKeys.includes('Operation');
+                const zoneCapabilitiesOperation = zoneCapabilitiesOperationSupport ? devInfo.DeviceZoneCapabilities[checkZoneNr].Operation[0] : [];
+                const zoneCapabilitiesOperationKeys = zoneCapabilitiesOperationSupport ? Object.keys(zoneCapabilitiesOperation) : [];
+                this.supportCursor = zoneCapabilitiesOperationKeys.includes('Cursor') ? zoneCapabilitiesOperation.Cursor[0].Control[0] === '1' : false;
+                this.supportQuickSelect = zoneCapabilitiesOperationKeys.includes('QuickSelect') ? zoneCapabilitiesOperation.QuickSelect[0].Control[0] === '1' : false;
+                this.supportSmartSelect = zoneCapabilitiesOperationKeys.includes('SmartSelect') ? zoneCapabilitiesOperation.SmartSelect[0].Control[0] === '1' : false;
+                this.supportTunerOperation = zoneCapabilitiesOperationKeys.includes('TunerOperation') ? zoneCapabilitiesOperation.TunerOperation[0].Control[0] === '1' : false;
+                this.supportBdOperation = zoneCapabilitiesOperationKeys.includes('BdOperation') ? zoneCapabilitiesOperation.BdOperation[0].Control[0] === '1' : false;
+                this.supportCdOperation = zoneCapabilitiesOperationKeys.includes('CdOperation') ? zoneCapabilitiesOperation.CdOperation[0].Control[0] === '1' : false;
+                this.supportBuildInCdOperation = zoneCapabilitiesOperationKeys.includes('BuildInCdOperation') ? zoneCapabilitiesOperation.BuildInCdOperation[0].Control[0] === '1' : false;
+                this.supportPartyZone = zoneCapabilitiesOperationKeys.includes('PartyZone') ? zoneCapabilitiesOperation.PartyZone[0].Capability[0] === '1' : false;
 
                 //net usb Marantz M-CR611
-                const netUsbSupport = zoneCapabilitiesKeys.includes('NetUsb');
-                const netUsbKeys = netUsbSupport ? Object.keys(devInfo.DeviceZoneCapabilities[checkZoneNr].NetUsb[0]) : [];
-                this.supportInternetRadio = netUsbKeys.includes('InternetRadio') ? devInfo.DeviceZoneCapabilities[checkZoneNr].NetUsb[0].InternetRadio[0].Control[0] === '1' : false;
-                this.supportMediaServer = netUsbKeys.includes('MediaServer') ? devInfo.DeviceZoneCapabilities[checkZoneNr].NetUsb[0].MediaServer[0].Control[0] === '1' : false;
-                this.supportiPod = netUsbKeys.includes('iPod') ? devInfo.DeviceZoneCapabilities[checkZoneNr].NetUsb[0].iPod[0].Control[0] === '1' : false;
-                this.supportUsb = netUsbKeys.includes('USB') ? devInfo.DeviceZoneCapabilities[checkZoneNr].NetUsb[0].USB[0].Control[0] === '1' : false;
-                this.supportUsb2 = netUsbKeys.includes('USB2') ? devInfo.DeviceZoneCapabilities[checkZoneNr].NetUsb[0].USB2[0].Control[0] === '1' : false;
-                this.supportSpotifyConnect = netUsbKeys.includes('SpotifyConnect') ? devInfo.DeviceZoneCapabilities[checkZoneNr].NetUsb[0].SpotifyConnect[0].Control[0] === '1' : false;
+                const zoneCapabilitiesNetUsbSupport = zoneCapabilitiesSupport && zoneCapabilitiesKeys.includes('NetUsb');
+                const zoneCapabilitiesNetUsb = zoneCapabilitiesNetUsbSupport ? devInfo.DeviceZoneCapabilities[checkZoneNr].NetUsb[0] : [];
+                const zoneCapabilitiesNetUsbKeys = zoneCapabilitiesNetUsbSupport ? Object.keys(zoneCapabilitiesNetUsb) : [];
+                this.supportInternetRadio = zoneCapabilitiesNetUsbKeys.includes('InternetRadio') ? zoneCapabilitiesNetUsb.InternetRadio[0].Control[0] === '1' : false;
+                this.supportMediaServer = zoneCapabilitiesNetUsbKeys.includes('MediaServer') ? zoneCapabilitiesNetUsb.MediaServer[0].Control[0] === '1' : false;
+                this.supportiPod = zoneCapabilitiesNetUsbKeys.includes('iPod') ? zoneCapabilitiesNetUsb.iPod[0].Control[0] === '1' : false;
+                this.supportUsb = zoneCapabilitiesNetUsbKeys.includes('USB') ? zoneCapabilitiesNetUsb.USB[0].Control[0] === '1' : false;
+                this.supportUsb2 = zoneCapabilitiesNetUsbKeys.includes('USB2') ? zoneCapabilitiesNetUsb.USB2[0].Control[0] === '1' : false;
+                this.supportSpotifyConnect = zoneCapabilitiesNetUsbKeys.includes('SpotifyConnect') ? zoneCapabilitiesNetUsb.SpotifyConnect[0].Control[0] === '1' : false;
 
                 //ipod player Marantz M-CR611
-                const iPodPlayerSupport = zoneCapabilitiesKeys.includes('iPodPlayer') ? devInfo.DeviceZoneCapabilities[checkZoneNr].iPodPlayer[0].Control[0] === '1' : false;
+                this.iPodPlayerSupport = zoneCapabilitiesKeys.includes('iPodPlayer') ? zoneCapabilities.iPodPlayer[0].Control[0] === '1' : false;
 
                 if (!serialNumber) {
                     const debug1 = debugLog ? this.emit('debug', `Missing Serial Number, reconnect in 15s.`) : false;
