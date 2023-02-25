@@ -107,7 +107,7 @@
               "title": "Load Schortcuts",
               "type": "boolean",
               "default": false,
-              "description": "If enabled, shortcuts like Quick Select, Smart Select will be loaded to the inputs list if exist.",
+              "description": "If enabled,*Sshortcuts* will be loaded to the inputs list if exist.",
               "required": false,
               "condition": {
                 "functionBody": "return model.devices[arrayIndices].getInputsFromDevice === true;"
