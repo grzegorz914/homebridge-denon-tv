@@ -13,7 +13,7 @@
 [![GitHub issues](https://img.shields.io/github/issues/grzegorz914/homebridge-denon-tv.svg)](https://github.com/grzegorz914/homebridge-denon-tv/issues)
 
 Homebridge plugin for Denon/Marantz AV Receivers series X/SR. 
-Tested with Denon AVR-X6300H and Marantz SR6013.
+Tested with Denon AVR-X6300H, Marantz SR6013, Marantz M-CR611.
 
 This plugin is based upon the official documentation for communicating with and controlling these Denon and Marantz receivers, located here: [Denon Control Protocol 2020](https://github.com/grzegorz914/homebridge-denon-tv/blob/main/src/Denon%20Control%20Protocol.xlsx)
 
