@@ -50,6 +50,9 @@ class DENON extends EventEmitter {
                 const apiVersion = deviceInfoKeys.includes('CommApiVers') ? devInfo.CommApiVers[0] : '000';
                 const brandCode = deviceInfoKeys.includes('BrandCode') ? devInfo.BrandCode[0] : '2';
                 const manufacturer = ['Denon', 'Marantz', 'Denon/Marantz'][brandCode];
+                const productCategory = deviceInfoKeys.includes('ProductCategory') ? devInfo.ProductCategory[0] : '00';
+                const categoryName = deviceInfoKeys.includes('CategoryName') ? devInfo.ProductCategory[0] : 'Unknown';
+                const manualModelName = deviceInfoKeys.includes('ManualModelName') ? devInfo.ManualModelName[0] : 'Unknown';
                 const modelName = deviceInfoKeys.includes('ModelName') ? devInfo.ModelName[0] : 'AV Receiver';
                 const serialNumber = deviceInfoKeys.includes('MacAddress') ? devInfo.MacAddress[0] : false;
                 const firmwareRevision = deviceInfoKeys.includes('UpgradeVersion') ? devInfo.UpgradeVersion[0] : '00';
@@ -57,8 +60,13 @@ class DENON extends EventEmitter {
 
                 //device capabilities
                 const capabilitiesSupport = deviceInfoKeys.includes('DeviceCapabilities');
-                const capabilities = capabilitiesSupport ? Object.keys(devInfo.DeviceCapabilities[0]) : [];
+                const capabilities = capabilitiesSupport ? devInfo.DeviceCapabilities[0] : [];
                 const capabilitiesKeys = capabilitiesSupport ? Object.keys(capabilities) : [];
+
+                //menu
+                const capabilitiesMenuSupport = capabilitiesSupport && capabilitiesKeys.includes('Menu');
+                const capabilitiesMenu = capabilitiesMenuSupport ? devInfo.DeviceCapabilities[0].Menu[0] : [];
+                const capabilitiesMenuKeys = capabilitiesMenuSupport ? Object.keys(capabilitiesMenu) : [];
 
                 //setup
                 const capabilitiesSetupSupport = capabilitiesSupport && capabilitiesKeys.includes('Setup');
