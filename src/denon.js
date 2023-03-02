@@ -247,12 +247,6 @@ class DENON extends EventEmitter {
     send(command) {
         return new Promise(async (resolve, reject) => {
             try {
-                const powerCommand = ['PWON', 'ZMON', 'Z2ON', 'Z3ON', 'STBY', 'SLP'].some(el => command.includes(el));
-                if (!this.power && !powerCommand) {
-                    reject(`power OFF, send command skipped.`);
-                    return;
-                };
-
                 await this.axiosInstance(CONSTANS.ApiUrls.iPhoneDirect + command);
                 await new Promise(resolve => setTimeout(resolve, 750));
                 resolve();
