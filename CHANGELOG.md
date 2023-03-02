@@ -8,6 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## The properties *inputs.displayType* and *surrounds.displayType* are removed.
 ## Note - after update to 3.15.x need remove the accessory frome Home app and add it again.
 
+## [4.1.0] - (02.03.2023)
+## Note - after update to 4.1.x buttons need to be configure again using config UI.
+## Changes
+- closes [#166](https://github.com/grzegorz914/homebridge-denon-tv/issues/166)
+- added support for old AVR like AVR-3311CI and other old models which work on port 80
+- added support for old AVR to read Inputs and its Names from device
+- added many new inputs and functions
+- prevent HB crash if for some reason prepare accessory fail
+- config.schema updated
+- code cleanup
+
 
 ## [4.0.0] - (24.02.2023)
 ## Changes

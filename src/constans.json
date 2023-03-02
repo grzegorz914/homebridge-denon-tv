@@ -18,9 +18,7 @@
         "AppCommand300": "/goform/AppCommand0300.xml",
         "NetAudioStatus": "/goform/formNetAudio_StatusXml.xml",
         "HdTunerStatus": "/goform/formTuner_HdXml.xml",
-        "NetAudioCommandPost": "/NetAudio/index.put.asp",
-        "GetSoundMode": "/goform/formiPhoneAppDirect.xml?MS?",
-        "CommandNetAudioPost": "/NetAudio/index.put.asp"
+        "NetAudioCommandPost": "/NetAudio/index.put.asp"
     },
     "BodyXml": {
         "GetZoneName": {
@@ -88,6 +86,74 @@
         },
         "GetDeletedSource": {
             "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetDeletedSource</cmd> </tx>"
+        }
+    },
+    "BodyXml300": {
+        "GetZoneName": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='3'>GetZoneName</cmd> </tx>"
+        },
+        "GetAllZonePowerStatus": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='3'>GetAllZonePowerStatus</cmd> </tx>"
+        },
+        "GetAllZoneSource": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='3'>GetAllZoneSource</cmd> </tx>"
+        },
+        "GetAllZoneVolume": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='3'>GetAllZoneVolume</cmd> </tx>"
+        },
+        "GetAllZoneMuteStatus": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='3'>GetAllZoneMuteStatus</cmd> </tx>"
+        },
+        "GetAllZoneStereo": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='3'>GetAllZoneStereo</cmd> </tx>"
+        },
+        "GetPowerStatus": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='3'>GetPowerStatus</cmd> </tx>"
+        },
+        "GetSourceStatus": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='3'>GetSourceStatus</cmd> </tx>"
+        },
+        "GetVolumeLevel": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='3'>GetVolumeLevel</cmd> </tx>"
+        },
+        "GetMuteStatus": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='3'>GetMuteStatus</cmd> </tx>"
+        },
+        "GetPictureMode": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='3'>GetPictureMode</cmd> </tx>"
+        },
+        "GetSurroundModeStatus": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='3'>GetSurroundModeStatus</cmd> </tx>"
+        },
+        "GetDimmer": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='3'>GetDimmer</cmd> </tx>"
+        },
+        "GetChannelIndicators": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='3'>GetChannelIndicators</cmd> </tx>"
+        },
+        "GetVideoSelect": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='3'>GetVideoSelect</cmd> </tx>"
+        },
+        "GetQuickSelectName": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='3'>GetQuickSelectName</cmd> </tx>"
+        },
+        "GetAutoStandby": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='3'>GetAutoStandby</cmd> </tx>"
+        },
+        "GetToneControl": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='3'>GetToneControl</cmd> </tx>"
+        },
+        "GetSubwooferLevel": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='3'>GetSubwooferLevel</cmd> </tx>"
+        },
+        "GetNetAudioStatus": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='3'>GetNetAudioStatus</cmd> </tx>"
+        },
+        "GetRenameSource": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='3'>GetRenameSource</cmd> </tx>"
+        },
+        "GetDeletedSource": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='3'>GetDeletedSource</cmd> </tx>"
         }
     },
     "ZoneName": [
@@ -270,7 +336,12 @@
         "Smart Select2": "SMART2",
         "Smart Select3": "SMART3",
         "Smart Select4": "SMART4",
-        "Smart Select5": "SMART5"
+        "Smart Select5": "SMART5",
+        "Smart Select1 Mode Memory": "SMART1 MEMORY",
+        "Smart Select2 Mode Memory": "SMART2 MEMORY",
+        "Smart Select3 Mode Memory": "SMART3 MEMORY",
+        "Smart Select4 Mode Memory": "SMART4 MEMORY",
+        "Smart Select5 Mode Memory": "SMART5 MEMORY"
     },
     "PictureModesDenon": {
         "Off": "OFF",

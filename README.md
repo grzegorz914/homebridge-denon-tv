@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/main/homebridge-denon-tv.png" width="540"></a>
+  <a href="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/main/graphics/homebridge-denon-tv.png" width="540"></a>
 </p>
 
 <span align="center">
@@ -13,9 +13,7 @@
 [![GitHub issues](https://img.shields.io/github/issues/grzegorz914/homebridge-denon-tv.svg)](https://github.com/grzegorz914/homebridge-denon-tv/issues)
 
 Homebridge plugin for Denon/Marantz AV Receivers series X/SR. 
-Tested with Denon AVR-X6300H, Marantz SR6013, Marantz M-CR611.
-
-This plugin is based upon the official documentation for communicating with and controlling these Denon and Marantz receivers, located here: [Denon Control Protocol 2020](https://github.com/grzegorz914/homebridge-denon-tv/blob/main/src/Denon%20Control%20Protocol.xlsx)
+Tested with Denon AVR-X6300H, Denon AVR-X2700H, Denon AVR-3311CI, Marantz SR8012, Marantz SR6013, Marantz M-CR611.
 
 </span>
 
@@ -38,6 +36,7 @@ This plugin is based upon the official documentation for communicating with and 
 * Siri can be used for all functions, some times need create legacy buttons/switches/sensors.
 * Automations can be used for all functions, some times need create legacy buttons/switches/sensors.
 * MQTT publisch topic *Info*, *State* *Picture* and *Surround* as payload JSON data.
+* This plugin is based upon the official documentation: [Denon Control Protocol 2020](https://github.com/grzegorz914/homebridge-denon-tv/blob/main/src/Denon%20Control%20Protocol.xlsx)
 
 <p align="left">
   <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/main/graphics/homekit.png" width="382"></a> 
@@ -48,9 +47,8 @@ This plugin is based upon the official documentation for communicating with and 
 ### Configuration
 * First enable [Network Contorl Denon/Marantz](https://manuals.denon.com/avrx6300h/na/en/HJWMSYmehwmguq.php).
 * Run this plugin as a [Child Bridge](https://github.com/homebridge/homebridge/wiki/Child-Bridges) (Highly Recommended), this prevent crash Homebridge if plugin crashes.
-* Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-config-ui-x/wiki) to configure this plugin (Highly Recommended). 
-* The sample configuration can be edited and used manually as an alternative. 
-* See the `sample-config.json` file example or copy the example below into your config.json file, making the apporpriate changes before saving it. 
+* Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-config-ui-x/wiki) to configure this plugin. 
+* See the `sample-config.json` file example or copy the example making the apporpriate changes before saving it. 
 * Be sure to always make a backup copy of your config.json file before making any changes to it.
 
 <p align="left">
@@ -60,14 +58,13 @@ This plugin is based upon the official documentation for communicating with and 
 | Key | Description |
 | --- | --- |
 | `name` | Here set the accessory *Name* to be displayed in *Homebridge/HomeKit*. |
-| `host` | Here set the *Hsostname or Address IP* of TV. |
+| `host` | Here set the *Hsostname or Address IP* of AVR. |
 | `port` | Here set the API communication port, if `8080` is not working try to use port `80` which some receivers use alternatively. |
-| `zoneControl` | Selects which zone will be controlled by this section (`0` - Main Zone, `1` - Zone 2, `2` - Zone 3, `3` - Surround Mode) or choice from the configurations GUI |
+| `zoneControl` | Selects which zone will be controlled by this section `0 - Main Zone`, `1 - Zone 2`, `2 - Zone 3`, `3 - Surround Mode`. |
+| `supportOldAvr` | This enable support for old AVR like AVR-3311CI. |
 | `getInputsFromDevice` | If enabled, source *Inputs* will be loaded direct from device. |
 | `getFavoritesFromDevice` | If enabled, *Favorites* will be loaded to the inputs list if exist. |
-| `getQuickSelectFromDevice` | If enabled, *Quick Select* will be loaded to the inputs list if exist. |
-| `getSmartSelectFromDevice` | If enabled, *Smart Select* will be loaded to the inputs list if exist. |
-| `getShortcutsFromDevice` | If enabled, *Schortcuts* will be loaded to the inputs list if exist. |
+| `getQuickSmartSelectFromDevice` | If enabled, *Quick/Smart Select* will be loaded to the inputs list if exist. |
 | `inputs.name` | Here set *Input Name* which You want expose to the *Homebridge/HomeKit*. |
 | `inputs.reference` | Choose from available inputs, the inputs that should be published to and appear in HomeKit app in the device tile as inputs list |
 | `inputs.mode` | Choose from available inputs mode. |
@@ -75,14 +72,14 @@ This plugin is based upon the official documentation for communicating with and 
 | `surrounds.reference` | Here choice *Surround Mode*, the mode that should be published to and appear in HomeKit app in the extra tile as Surrounds List. |
 | `buttons.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. |
 | `buttons.reference` | Here choice function for additional control button for Main Zone. |
-| `buttons.displayType` | Here select display type in HomeKit app, possible `None/Disabled`, `Outlet`, `Switch`.|
-| `sensorPower`| If enabled, then the Power will be exposed as a `Motion Sensor` (active on Power ON) to use with automations. |
-| `sensorVolume`| If enabled, then the Volume will be exposed as a `Motion Sensor` (active on every Volume change) to use with automations. |
-| `sensorMute`| If enabled, then the Mute will be exposed as a `Motion Sensor` (active on Mute ON) to use with automations. |
-| `sensorInput`| If enabled, then the Input will be exposed as a `Motion Sensor` (active on every Input change) to use with automations. |
+| `buttons.displayType` | Here select display type in HomeKit app, possible `-1 - None/Disabled`, `0 - Outlet`, `1 - Switch`.|
+| `sensorPower`| If enabled, then the Power will be exposed as a `Contact Sensor` to use with automations. |
+| `sensorVolume`| If enabled, then the Volume will be exposed as a `Contact Sensor` to use with automations. |
+| `sensorMute`| If enabled, then the Mute will be exposed as a `Contact Sensor` to use with automations. |
+| `sensorInput`| If enabled, then the Input will be exposed as a `Contact Sensor` to use with automations. |
 | `sensorInputs.name` | Here set own *Name* which You want expose to the *Homebridge/HomeKit* for this sensor. |
-| `sensorInputs.reference` | Here set *Reference* like `CBL/SAT`, `GAME` to be exposed as sensor (active on switch to this Input). | 
-| `sensorInputs.displayType` | Here select sensor type to be exposed in HomeKit app, possible `None/Disabled`, `Motion Sensor`, `Occupancy Sensor`, `Contact Sensor`. |
+| `sensorInputs.reference` | Here set *Reference* like `CBL/SAT`, `GAME` to be exposed as `Contact Sensor` active on switch to this Input. | 
+| `sensorInputs.displayType` | Here select sensor type to be exposed in HomeKit app, `-1 - None/Disabled`, `0 - Motion Sensor`, `1 - Occupancy Sensor`, `2 - Contact Sensor`. |
 | `enableDebugMode` | If enabled, deep log will be present in homebridge console. |
 | `disableLogInfo` | If enabled, disable log info, all values and state will not be displayed in Homebridge log console. |
 | `disableLogDeviceInfo` | If enabled, add ability to disable log device info by every connections device to the network. |
@@ -90,7 +87,7 @@ This plugin is based upon the official documentation for communicating with and 
 | `masterPower` | If enabled, then the Power switch for that zone (typically you would only use this for the Main Zone) will turn the entire receiver `ON` or `OFF/STANDBY` rather than just the zone itself |
 | `masterVolume`| If enabled, then the Volume for that zone (typically you would only use this for the Main Zone) will set the entire receiver `UP` or `DOWN` rather than just the zone itself |
 | `masterMute`| If enabled, then the Mute switch for that zone (typically you would only use this for the Main Zone) will muted the entire receiver `ON` or `OFF` rather than just the zone itself |
-| `volumeControl` | Here choice what a additional volume control mode You want to use (`None/Disabled`, `Lightbulb`, `Fan`). |
+| `volumeControl` | Here choice what a additional volume control mode You want to use (`-1 - None/Disabled`, `0 - Lightbulb`, `1 - Fan`). |
 | `infoButtonCommand` | Here select the function of `I` button in RC app. |
 | `refreshInterval` | Here set the data refresh interval. |
 | `enableMqtt` | If enabled, MQTT Broker will start automatically and publish all awailable PV installation data. |
@@ -101,243 +98,4 @@ This plugin is based upon the official documentation for communicating with and 
 | `mqttAuth` | If enabled, MQTT Broker will use authorization credentials. |
 | `mqttUser` | Here set the MQTT Broker user. |
 | `mqttPasswd` | Here set the MQTT Broker password. |
-| `AV Surround Mode` | This extra Accessory will control all functions of Main Zone except (Inputs and Buttons). |
-| `Volume Control` | -1 - `None/Disabled`, 0 - `Slider`, 1 - `Fan`.|
-| `Display Type Buttons` | -1 - `None/Disabled`, 0 - `Outlet`, 1 - `Switch`.|
-| `Display Type Sensors` | -1 - `None/Disabled`, 0 - `Motion Sensor`, 1 - `Occupancy Sensor`, 2 - `Contact Sensor`.|
-
-
-```json
-{
-    "platform": "DenonTv",
-    "devices": [
-        {
-            "name": "AV Main Zone",
-            "host": "192.168.1.5",
-            "port": 8080,
-            "zoneControl": 0,
-            "getInputsFromDevice": false,
-            "getFavoritesFromDevice": false,
-            "getQuickSelectFromDevice": false,
-            "getSmartSelectFromDevice": false,
-            "getShortcutsFromDevice": false,
-            "inputs": [
-                {
-                    "name": "Xbox One",
-                    "reference": "GAME",
-                    "mode": "SI"
-                },
-                {
-                    "name": "Television",
-                    "reference": "TV",
-                    "mode": "SI"
-                }
-            ],
-            "buttons": [
-                {
-                    "name": "MASTER POWER ON",
-                    "reference": "PWON",
-					"displayType": -1
-                },
-                {
-                    "name": "ZM POWER ON",
-                    "reference": "ZMON",
-					"displayType": -1
-                }
-            ],
-            "sensorPower": false,
-            "sensorVolume": false,
-            "sensorMute": false,
-            "sensorInput": false,
-            "sensorInputs": [
-                {
-                    "name": "Tuner Sat",
-                    "reference": "CBL/SAT",
-                    "displayType": -1
-                }
-            ],
-            "enableDebugMode": false,
-            "disableLogInfo": false,
-            "disableLogDeviceInfo": false,
-            "disableLogConnectError": false,
-            "masterPower": false,
-            "masterVolume": false,
-            "masterMute": false,
-            "infoButtonCommand": "MNINF",
-            "volumeControl": 0,
-            "refreshInterval": 5,
-            "enableMqtt": false,
-            "mqttDebug": false,
-            "mqttHost": "192.168.1.33",
-            "mqttPort": 1883,
-            "mqttPrefix": "home/denon",
-            "mqttAuth": false,
-            "mqttUser": "user",
-            "mqttPass": "password"
-        },
-        {
-            "name": "AV Zone 1",
-            "host": "192.168.1.5",
-            "port": 8080,
-            "zoneControl": 1,
-            "getInputsFromDevice": false,
-            "getFavoritesFromDevice": false,
-            "getQuickSelectFromDevice": false,
-            "getSmartSelectFromDevice": false,
-            "getShortcutsFromDevice": false,
-            "inputs": [
-                {
-                    "name": "Xbox One",
-                    "reference": "GAME",
-                    "mode": "SI"
-                },
-                {
-                    "name": "Television",
-                    "reference": "TV",
-                    "mode": "SI"
-                }
-            ],
-            "buttons": [
-                {
-                    "name": "Z2 POWER ON",
-                    "reference": "Z2ON",
-					"displayType": -1
-                }
-            ],
-            "sensorPower": false,
-            "sensorVolume": false,
-            "sensorMute": false,
-            "sensorInput": false,
-            "sensorInputs": [
-                {
-                    "name": "Tuner Sat",
-                    "reference": "CBL/SAT",
-                    "displayType": -1
-                }
-            ],
-            "enableDebugMode": false,
-            "disableLogInfo": false,
-            "disableLogDeviceInfo": false,
-            "disableLogConnectError": false,
-            "masterPower": false,
-            "masterVolume": false,
-            "masterMute": false,
-            "infoButtonCommand": "MNINF",
-            "volumeControl": 0,
-            "refreshInterval": 5,
-            "enableMqtt": false,
-            "mqttDebug": false,
-            "mqttHost": "192.168.1.33",
-            "mqttPort": 1883,
-            "mqttPrefix": "home/denon",
-            "mqttAuth": false,
-            "mqttUser": "user",
-            "mqttPass": "password"
-        },
-        {
-            "name": "AV Zone 2",
-            "host": "192.168.1.5",
-            "port": 8080,
-            "zoneControl": 2,
-            "getInputsFromDevice": false,
-            "getFavoritesFromDevice": false,
-            "getQuickSelectFromDevice": false,
-            "getSmartSelectFromDevice": false,
-            "getShortcutsFromDevice": false,
-            "inputs": [
-                {
-                    "name": "Xbox One",
-                    "reference": "GAME",
-                    "mode": "SI"
-                },
-                {
-                    "name": "Television",
-                    "reference": "TV",
-                    "mode": "SI"
-                }
-            ],
-            "buttons": [
-                {
-                    "name": "Z§ POWER ON",
-                    "reference": "Z3ON",
-					"displayType": -1
-                }
-            ],
-            "sensorPower": false,
-            "sensorVolume": false,
-            "sensorMute": false,
-            "sensorInput": false,
-            "sensorInputs": [
-                {
-                    "name": "Tuner Sat",
-                    "reference": "CBL/SAT",
-                    "displayType": -1
-                }
-            ],
-            "enableDebugMode": false,
-            "disableLogInfo": false,
-            "disableLogDeviceInfo": false,
-            "disableLogConnectError": false,
-            "masterPower": false,
-            "masterVolume": false,
-            "masterMute": false,
-            "infoButtonCommand": "MNINF",
-            "volumeControl": 0,
-            "refreshInterval": 5,
-            "enableMqtt": false,
-            "mqttDebug": false,
-            "mqttHost": "192.168.1.33",
-            "mqttPort": 1883,
-            "mqttPrefix": "home/denon",
-            "mqttAuth": false,
-            "mqttUser": "user",
-            "mqttPass": "password"
-        },
-        {
-            "name": "AV Surround Mode",
-            "host": "192.168.1.5",
-            "port": 8080,
-            "zoneControl": 3,
-            "surrounds": [
-                {
-                    "name": "MCH Stereo",
-                    "reference": "MCH STEREO"
-                },
-                {
-                    "name": "Stereo",
-                    "reference": "STEREO"
-                }
-            ],
-            "buttons": [
-                {
-                    "name": "MASTER POWER ON",
-                    "reference": "PWON",
-					"displayType": -1
-                }
-            ],
-            "sensorPower": false,
-            "sensorVolume": false,
-            "sensorMute": false,
-            "sensorInput": false,
-            "enableDebugMode": false,
-            "disableLogInfo": false,
-            "disableLogDeviceInfo": false,
-            "disableLogConnectError": false,
-            "masterPower": false,
-            "masterVolume": false,
-            "masterMute": false,
-            "infoButtonCommand": "MNINF",
-            "volumeControl": 0,
-            "refreshInterval": 5,
-            "enableMqtt": false,
-            "mqttDebug": false,
-            "mqttHost": "192.168.1.33",
-            "mqttPort": 1883,
-            "mqttPrefix": "home/denon",
-            "mqttAuth": false,
-            "mqttUser": "user",
-            "mqttPass": "password"
-        }
-    ]
-}
-```
+| `AV Surround Mode` | This extra Accessory will control all functions of Main Zone except (Inputs). |

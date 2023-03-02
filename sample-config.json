@@ -23,11 +23,10 @@
                     "host": "192.168.1.5",
                     "port": 8080,
                     "zoneControl": 0,
+                    "supportOldAvr": false,
                     "getInputsFromDevice": false,
                     "getFavoritesFromDevice": false,
-                    "getQuickSelectFromDevice": false,
-                    "getSmartSelectFromDevice": false,
-                    "getShortcutsFromDevice": false,
+                    "getQuickSmartSelectFromDevice": false,
                     "inputs": [
                         {
                             "name": "Xbox One",
@@ -43,12 +42,12 @@
                     "buttons": [
                         {
                             "name": "MASTER POWER ON",
-                            "reference": "PWON",
+                            "reference": "0PWON",
                             "displayType": -1
                         },
                         {
                             "name": "ZM POWER ON",
-                            "reference": "ZMON",
+                            "reference": "0ZMON",
                             "displayType": -1
                         }
                     ],
@@ -87,11 +86,10 @@
                     "host": "192.168.1.5",
                     "port": 8080,
                     "zoneControl": 1,
+                    "supportOldAvr": false,
                     "getInputsFromDevice": false,
                     "getFavoritesFromDevice": false,
-                    "getQuickSelectFromDevice": false,
-                    "getSmartSelectFromDevice": false,
-                    "getShortcutsFromDevice": false,
+                    "getQuickSmartSelectFromDevice": false,
                     "inputs": [
                         {
                             "name": "Xbox One",
@@ -107,7 +105,7 @@
                     "buttons": [
                         {
                             "name": "Z2 POWER ON",
-                            "reference": "Z2ON",
+                            "reference": "1ON",
                             "displayType": -1
                         }
                     ],
@@ -146,11 +144,10 @@
                     "host": "192.168.1.5",
                     "port": 8080,
                     "zoneControl": 2,
+                    "supportOldAvr": false,
                     "getInputsFromDevice": false,
                     "getFavoritesFromDevice": false,
-                    "getQuickSelectFromDevice": false,
-                    "getSmartSelectFromDevice": false,
-                    "getShortcutsFromDevice": false,
+                    "getQuickSmartSelectFromDevice": false,
                     "inputs": [
                         {
                             "name": "Xbox One",
@@ -165,8 +162,8 @@
                     ],
                     "buttons": [
                         {
-                            "name": "Z§ POWER ON",
-                            "reference": "Z3ON",
+                            "name": "Z3 POWER ON",
+                            "reference": "1ON",
                             "displayType": -1
                         }
                     ],
@@ -218,7 +215,7 @@
                     "buttons": [
                         {
                             "name": "MASTER POWER ON",
-                            "reference": "PWON",
+                            "reference": "0PWON",
                             "displayType": -1
                         }
                     ],
