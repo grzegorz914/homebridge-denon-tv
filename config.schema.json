@@ -4291,9 +4291,15 @@
                         ]
                       },
                       {
-                        "title": "Z2/Z3 SMART SELECTMEMORY 4",
+                        "title": "Z2/Z3 SMART SELECT MEMORY 4",
                         "enum": [
                           "1SMART4 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "Z2/Z3 SMART SELECT MEMORY 5",
+                        "enum": [
+                          "1SMART5 MEMORY"
                         ]
                       },
                       {
