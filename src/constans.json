@@ -1,6 +1,7 @@
 {
     "ApiUrls": {
         "UPNP": ":60006/upnp/desc/aios_device/aios_device.xml",
+        "Description": ":8080/description.xml",
         "DeviceInfo": "/goform/Deviceinfo.xml",
         "MainZone": "/goform/formMainZone_MainZoneXml.xml",
         "MainZoneStatus": "/goform/formMainZone_MainZoneXmlStatus.xml",
@@ -12,13 +13,15 @@
         "Zone4Status": "/goform/forZone4_Zone4XmlStatus.xml",
         "Zone4StatusLite": "/goform/formZone4_Zone4XmlStatusLite.xml",
         "SoundModeStatus": "/goform/formMainZone_MainZoneXmlStatusLite.xml",
-        "TunerStatus": "/goform/formTuner_TunerXml.xml",
         "iPhoneDirect": "/goform/formiPhoneAppDirect.xml?",
         "AppCommand": "/goform/AppCommand.xml",
         "AppCommand300": "/goform/AppCommand0300.xml",
-        "NetAudioStatus": "/goform/formNetAudio_StatusXml.xml",
+        "TunerStatus": "/goform/formTuner_TunerXml.xml",
         "HdTunerStatus": "/goform/formTuner_HdXml.xml",
-        "NetAudioCommandPost": "/NetAudio/index.put.asp"
+        "NetAudioStatus": "/goform/formNetAudio_StatusXml.xml",
+        "NetAudioAlbum": "/img/album%20art_S.png",
+        "NetAudioArt": "/NetAudio/art.asp-jpg?{time}",
+        "NetAudioPost": "/NetAudio/index.put.asp"
     },
     "BodyXml": {
         "GetZoneName": {
