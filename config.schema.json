@@ -66,13 +66,6 @@
               ],
               "required": true
             },
-            "supportOldAvr": {
-              "title": "Support old AVR",
-              "type": "boolean",
-              "default": false,
-              "description": "If enabled, old AVR like AVR-3311CI will be supported.",
-              "required": false
-            },
             "getInputsFromDevice": {
               "title": "Load Inputs From Device",
               "type": "boolean",
@@ -87,7 +80,7 @@
               "description": "If enabled, all Favorites will be loaded direct from device, only if exist.",
               "required": false,
               "condition": {
-                "functionBody": "return model.devices[arrayIndices].supportOldAvr === false && model.devices[arrayIndices].getInputsFromDevice === true;"
+                "functionBody": "return  model.devices[arrayIndices].getInputsFromDevice == true;"
               }
             },
             "getQuickSmartSelectFromDevice": {
@@ -97,7 +90,7 @@
               "description": "If enabled, all Quick/Smart Select will be loaded direct from device, only if exist.",
               "required": false,
               "condition": {
-                "functionBody": "return model.devices[arrayIndices].supportOldAvr === false && model.devices[arrayIndices].getInputsFromDevice === true;"
+                "functionBody": "return model.devices[arrayIndices].getInputsFromDevice == true;"
               }
             },
             "inputs": {
@@ -604,6 +597,9 @@
                     "required": true
                   }
                 }
+              },
+              "condition": {
+                "functionBody": "return  model.devices[arrayIndices].getInputsFromDevice == false;"
               }
             },
             "surrounds": {
@@ -759,7 +755,7 @@
             "buttons": {
               "type": "array",
               "items": {
-                "title": "Button",
+                "title": "Buttons",
                 "type": "object",
                 "properties": {
                   "name": {
@@ -767,7 +763,7 @@
                     "type": "string",
                     "placeholder": "Button name",
                     "description": "Here set Your own name.",
-                    "required": false
+                    "required": true
                   },
                   "reference": {
                     "title": "Function",
@@ -4518,6 +4514,13 @@
               "description": "This disable logging device connect error.",
               "required": false
             },
+            "supportOldAvr": {
+              "title": "Support old AVR",
+              "type": "boolean",
+              "default": false,
+              "description": "If enabled, old AVR like AVR-3311CI will be supported.",
+              "required": false
+            },
             "masterPower": {
               "title": "Master Power Control",
               "type": "boolean",
@@ -4711,10 +4714,7 @@
                 "devices[].inputs[].name",
                 "devices[].inputs[].reference",
                 "devices[].inputs[].mode"
-              ],
-              "condition": {
-                "functionBody": "return model.devices[arrayIndices].getInputsFromDevice === false;"
-              }
+              ]
             }
           ],
           "condition": {
