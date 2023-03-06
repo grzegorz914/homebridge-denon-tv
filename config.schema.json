@@ -768,7 +768,6 @@
                   "reference": {
                     "title": "Function",
                     "type": "string",
-                    "description": "Here select function.",
                     "oneOf": [
                       {
                         "title": "MASTER POWER ON",
@@ -4371,6 +4370,7 @@
                         ]
                       }
                     ],
+                    "description": "Here select function.",
                     "required": true
                   },
                   "displayType": {
@@ -4433,7 +4433,7 @@
             "sensorInputs": {
               "type": "array",
               "items": {
-                "title": "Custom Inputs",
+                "title": "Inputs",
                 "type": "object",
                 "description": "Here create sensors based on Input reference (active if switch to it).",
                 "properties": {

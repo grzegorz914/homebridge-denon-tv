@@ -4,10 +4,10 @@ const fs = require('fs');
 const fsPromises = fs.promises;
 const Mqtt = require('./src/mqtt.js');
 const Denon = require('./src/denon.js');
+const CONSTANS = require('./src/constans.json');
 
 const PLUGIN_NAME = 'homebridge-denon-tv';
 const PLATFORM_NAME = 'DenonTv';
-const CONSTANS = require('./src/constans.json');
 
 let Accessory, Characteristic, Service, Categories, UUID;
 
@@ -17,10 +17,10 @@ module.exports = (api) => {
 	Service = api.hap.Service;
 	Categories = api.hap.Categories;
 	UUID = api.hap.uuid;
-	api.registerPlatform(PLUGIN_NAME, PLATFORM_NAME, denonTvPlatform, true);
+	api.registerPlatform(PLUGIN_NAME, PLATFORM_NAME, DENONPLATFORM, true);
 };
 
-class denonTvPlatform {
+class DENONPLATFORM {
 	constructor(log, config, api) {
 		// only load if configured
 		if (!config || !Array.isArray(config.devices)) {
@@ -39,7 +39,7 @@ class denonTvPlatform {
 					this.log.warn('Device name, host or port missing!');
 					return;
 				}
-				new denonTvDevice(this.log, device, this.api);
+				new DENONDEVICE(this.log, this.api, device);
 			}
 		});
 	}
@@ -55,10 +55,9 @@ class denonTvPlatform {
 	}
 }
 
-class denonTvDevice {
-	constructor(log, config, api) {
+class DENONDEVICE {
+	constructor(log, api, config) {
 		this.log = log;
-		this.config = config;
 		this.api = api;
 
 		//device configuration
@@ -1000,7 +999,7 @@ class denonTvDevice {
 				//prepare sonsor services
 				const sensorInputs = this.sensorInputs;
 				const sensorInputsCount = sensorInputs.length;
-				const possibleSensorInputsCount = 90 - this.services.length;
+				const possibleSensorInputsCount = 99 - this.services.length;
 				const maxSensorInputsCount = sensorInputsCount >= possibleSensorInputsCount ? possibleSensorInputsCount : sensorInputsCount;
 				if (maxSensorInputsCount > 0) {
 					this.log.debug('prepareInputSensorServices');
@@ -1043,7 +1042,7 @@ class denonTvDevice {
 				//prepare buttons services
 				const buttons = this.buttons;
 				const buttonsCount = buttons.length;
-				const possibleButtonsCount = 90 - this.services.length;
+				const possibleButtonsCount = 99 - this.services.length;
 				const maxButtonsCount = buttonsCount >= possibleButtonsCount ? possibleButtonsCount : buttonsCount;
 				if (maxButtonsCount > 0) {
 					this.log.debug('prepareInputsButtonService');
@@ -1069,18 +1068,18 @@ class denonTvDevice {
 										const state = false;
 										return state;
 									})
-									.onSet(async (state) => {
+									.onSet(async () => {
 										try {
 											const mode = parseInt(buttonReference.charAt(0)); //0 - All/Maiz Zone, 1 - Zone 2/3, 2 - Only Z2
 											const command = buttonReference.substring(1);
 											const zonePrefix = ['', 'Z2', 'Z3', ''][zoneControl];
 											const reference = [`${command}`, `${zonePrefix}${command}`, `Z2${command}`][mode];
-											const set = state ? await this.denon.send(reference) : false;
+											await this.denon.send(reference);
+											buttonService.updateCharacteristic(Characteristic.On, false);
 											const logDebug = this.enableDebugMode ? this.log(`Device: ${this.host} ${accessoryName}, set Button Name: ${buttonName}, Reference: ${reference}`) : false;
-											buttonService.updateCharacteristic(Characteristic.On, false);
 										} catch (error) {
-											this.log.error(`Device: ${this.host} ${accessoryName}, set Button error: ${error}`);
 											buttonService.updateCharacteristic(Characteristic.On, false);
+											this.log.error(`Device: ${this.host} ${accessoryName}, set Button error: ${error}`);
 										};
 									});
 
