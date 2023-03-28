@@ -1,4 +1,6 @@
 {
+    "PlatformName": "DenonTv",
+    "PluginName": "homebridge-denon-tv",
     "ApiUrls": {
         "UPNP": ":60006/upnp/desc/aios_device/aios_device.xml",
         "Description": ":8080/description.xml",
