@@ -1,5 +1,4 @@
 'use strict';
-const path = require('path');
 const fs = require('fs');
 const fsPromises = fs.promises;
 const EventEmitter = require('events');
@@ -9,7 +8,7 @@ const CONSTANS = require('./constans.json');
 let Accessory, Characteristic, Service, Categories, UUID;
 
 class DenonDevice extends EventEmitter {
-    constructor(api, config) {
+    constructor(api, prefDir, config) {
         super();
 
         Accessory = api.platformAccessory;
@@ -84,11 +83,10 @@ class DenonDevice extends EventEmitter {
         this.sensorVolumeState = false;
         this.sensorInputState = false;
 
-        this.prefDir = path.join(api.user.storagePath(), 'denonTv');
-        this.devInfoFile = `${this.prefDir}/devInfo_${this.host.split('.').join('')}`;
-        this.inputsFile = `${this.prefDir}/inputs_${this.sZoneName}${this.host.split('.').join('')}`;
-        this.inputsNamesFile = `${this.prefDir}/inputsNames_${this.sZoneName}${this.host.split('.').join('')}`;
-        this.inputsTargetVisibilityFile = `${this.prefDir}/inputsTargetVisibility_${this.sZoneName}${this.host.split('.').join('')}`;
+        this.devInfoFile = `${prefDir}/devInfo_${this.host.split('.').join('')}`;
+        this.inputsFile = `${prefDir}/inputs_${this.sZoneName}${this.host.split('.').join('')}`;
+        this.inputsNamesFile = `${prefDir}/inputsNames_${this.sZoneName}${this.host.split('.').join('')}`;
+        this.inputsTargetVisibilityFile = `${prefDir}/inputsTargetVisibility_${this.sZoneName}${this.host.split('.').join('')}`;
 
         //mqtt client
         if (this.mqttEnabled) {
@@ -170,22 +168,11 @@ class DenonDevice extends EventEmitter {
                 const object = JSON.stringify({});
                 const array = JSON.stringify([]);
 
-                if (!fs.existsSync(this.prefDir)) {
-                    await fsPromises.mkdir(this.prefDir);
+                //check if files exist if not then create it
+                if (!fs.existsSync(this.devInfoFile) && this.zoneControl === 0) {
+                    await fsPromises.writeFile(this.devInfoFile, object);
                 }
 
-                //save device info to the file
-                if (this.zoneControl === 0) {
-                    try {
-                        const info = JSON.stringify(devInfo, null, 2);
-                        await fsPromises.writeFile(this.devInfoFile, info);
-                        const debug = this.enableDebugMode ? this.emit('message', `saved device info: ${info}`) : false;
-                    } catch (error) {
-                        this.emit('error', `save device info error: ${error}`);
-                    };
-                }
-
-                //create inputs file if it doesn't exist
                 if (!fs.existsSync(this.inputsFile)) {
                     await fsPromises.writeFile(this.inputsFile, array);
                 }
@@ -198,6 +185,17 @@ class DenonDevice extends EventEmitter {
                 //create inputs target visibility file if it doesn't exist
                 if (!fs.existsSync(this.inputsTargetVisibilityFile)) {
                     await fsPromises.writeFile(this.inputsTargetVisibilityFile, object);
+                }
+
+                //save device info to the file
+                if (this.zoneControl === 0) {
+                    try {
+                        const info = JSON.stringify(devInfo, null, 2);
+                        await fsPromises.writeFile(this.devInfoFile, info);
+                        const debug = this.enableDebugMode ? this.emit('message', `saved device info: ${info}`) : false;
+                    } catch (error) {
+                        this.emit('error', `save device info error: ${error}`);
+                    };
                 }
 
                 //save inputs fav and shortcuts to the file
