@@ -164,25 +164,18 @@ class DenonDevice extends EventEmitter {
                 this.firmwareRevision = firmwareRevision;
                 this.supportPictureMode = supportPictureMode;
 
-                //create pref directory and files if it doesn't exist
+                // Create files if it doesn't exist
                 const object = JSON.stringify({});
                 const array = JSON.stringify([]);
-
-                //check if files exist if not then create it
                 if (!fs.existsSync(this.devInfoFile) && this.zoneControl === 0) {
                     await fsPromises.writeFile(this.devInfoFile, object);
                 }
-
                 if (!fs.existsSync(this.inputsFile)) {
                     await fsPromises.writeFile(this.inputsFile, array);
                 }
-
-                //create inputs names file if it doesn't exist
                 if (!fs.existsSync(this.inputsNamesFile)) {
                     await fsPromises.writeFile(this.inputsNamesFile, object);
                 }
-
-                //create inputs target visibility file if it doesn't exist
                 if (!fs.existsSync(this.inputsTargetVisibilityFile)) {
                     await fsPromises.writeFile(this.inputsTargetVisibilityFile, object);
                 }
