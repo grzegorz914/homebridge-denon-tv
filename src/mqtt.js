@@ -35,14 +35,14 @@ class MQTTCLIENT extends EventEmitter {
 
     async send(topic, message) {
         if (!this.isConnected) {
-            const emitDebug = this.mqttDebug ? this.emit('debug', `MQTT client not connected.`) : false;
+            const debug = this.mqttDebug ? this.emit('debug', `MQTT client not connected.`) : false;
             return
         };
 
         try {
             const fullTopic = `${this.mqttPrefix}/${topic}`;
             await this.mqttClient.publish(fullTopic, message);
-            const emitDebug = this.mqttDebug ? this.emit('debug', `MQTT publish: ${fullTopic}: ${message}`) : false;
+            const debug = this.mqttDebug ? this.emit('debug', `MQTT publish: ${fullTopic}: ${message}`) : false;
         } catch (error) {
             this.emit('error', `MQTT Publish error: ${error}`);
         };
