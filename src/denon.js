@@ -53,7 +53,7 @@ class DENON extends EventEmitter {
                 const deviceInfo = await this.axiosInstance(deviceUrl);
                 const parseDeviceInfo = parseString.parse(deviceInfo.data);
                 const devInfo = supportOldAvr ? parseDeviceInfo.item : parseDeviceInfo.Device_Info;
-                const debug = !debugLog ? this.emit('debug', `Info: ${JSON.stringify(devInfo, null, 2)}`) : false;
+                const debug = debugLog ? this.emit('debug', `Info: ${JSON.stringify(devInfo, null, 2)}`) : false;
 
                 //device info
                 const deviceInfoKeys = Object.keys(devInfo);
