@@ -200,8 +200,8 @@ class DenonDevice extends EventEmitter {
                     const referencesArray = [];
 
                     //old AVR
-                    const inputsReferenceOldAvr = this.supportOldAvr ? devInfo.InputFuncList[0].value : [];
-                    const inputsNameOldAvr = this.supportOldAvr ? devInfo.RenameSource[0].value : [];
+                    const inputsReferenceOldAvr = this.supportOldAvr ? devInfo.InputFuncList.value : [];
+                    const inputsNameOldAvr = this.supportOldAvr ? devInfo.RenameSource.value : [];
                     const inputsReferenceOldAvrCount = inputsReferenceOldAvr.length;
                     for (let i = 0; i < inputsReferenceOldAvrCount; i++) {
                         const renamedInput = inputsNameOldAvr[i].trim();
@@ -218,10 +218,10 @@ class DenonDevice extends EventEmitter {
                     }
 
                     //new AVR-X
-                    const deviceInputs = this.getInputsFromDevice && supportInputSource ? devInfo.DeviceZoneCapabilities[this.zoneControl].InputSource[0].List[0].Source : [];
+                    const deviceInputs = this.getInputsFromDevice && supportInputSource ? devInfo.DeviceZoneCapabilities[this.zoneControl].InputSource.List.Source : [];
                     for (const input of deviceInputs) {
-                        const inputName = input.DefaultName[0];
-                        const inputReference = input.FuncName[0];
+                        const inputName = input.DefaultName;
+                        const inputReference = input.FuncName;
                         const reference = referenceConversionKeys.includes(inputReference) ? CONSTANS.InputConversion[inputReference] : inputReference;
                         const obj = {
                             'name': inputName,
@@ -232,11 +232,11 @@ class DenonDevice extends EventEmitter {
                         referencesArray.push(reference);
                     };
 
-                    const deviceSchortcuts = this.getInputsFromDevice && supportShortcut ? devInfo.DeviceZoneCapabilities[this.zoneControl].ShortcutControl[0].EntryList[0].Shortcut : [];
+                    const deviceSchortcuts = this.getInputsFromDevice && supportShortcut ? devInfo.DeviceZoneCapabilities[this.zoneControl].ShortcutControl.EntryList.Shortcut : [];
                     for (const shortcut of deviceSchortcuts) {
-                        const category = shortcut.Category[0]; //3 Quick/Smart Select, 4 Inputs
-                        const shortcutName = shortcut.DispName[0];
-                        const shortcutReference = shortcut.FuncName[0];
+                        const category = shortcut.Category; //3 Quick/Smart Select, 4 Inputs
+                        const shortcutName = shortcut.DispName;
+                        const shortcutReference = shortcut.FuncName;
                         const reference = referenceConversionKeys.includes(shortcutReference) ? CONSTANS.InputConversion[shortcutReference] : shortcutReference;
                         const obj = {
                             'name': shortcutName,
@@ -247,10 +247,10 @@ class DenonDevice extends EventEmitter {
                         const push = !existedInArray && category === '4' ? inputsArr.push(obj) : false;
                     };
 
-                    const deviceFavorites = this.getFavoritesFromDevice && supportFavorites ? devInfo.DeviceCapabilities[0].Operation[0].Favorites : [];
+                    const deviceFavorites = this.getFavoritesFromDevice && supportFavorites ? devInfo.DeviceCapabilities.Operation.Favorites : [];
                     for (const favorite of deviceFavorites) {
-                        const favoriteName = favorite.DispName[0];
-                        const favoriteReference = favorite.FuncName[0];
+                        const favoriteName = favorite.DispName;
+                        const favoriteReference = favorite.FuncName;
                         const reference = referenceConversionKeys.includes(favoriteReference) ? CONSTANS.InputConversion[favoriteReference] : favoriteReference;
                         const obj = {
                             'name': favoriteName,
@@ -261,12 +261,12 @@ class DenonDevice extends EventEmitter {
                         const push = !existedInArray ? inputsArr.push(obj) : false;
                     };
 
-                    const deviceQuickSmartSelect = this.getQuickSmartSelectFromDevice && supportQuickSmartSelect ? devInfo.DeviceZoneCapabilities[this.zoneControl].Operation[0].QuickSelect[0] : [];
-                    const quickSelectCount = this.getQuickSmartSelectFromDevice && supportQuickSmartSelect ? deviceQuickSmartSelect.MaxQuickSelect[0] : 0;
+                    const deviceQuickSmartSelect = this.getQuickSmartSelectFromDevice && supportQuickSmartSelect ? devInfo.DeviceZoneCapabilities[this.zoneControl].Operation.QuickSelect : [];
+                    const quickSelectCount = this.getQuickSmartSelectFromDevice && supportQuickSmartSelect ? deviceQuickSmartSelect.MaxQuickSelect : 0;
                     for (let i = 0; i < quickSelectCount; i++) {
                         const quickSelect = deviceQuickSmartSelect[`QuickSelect${i + 1}`];
-                        const quickSelectName = quickSelect[0].Name[0];
-                        const quickSelectReference = quickSelect[0].FuncName[0];
+                        const quickSelectName = quickSelect.Name;
+                        const quickSelectReference = quickSelect.FuncName;
                         const reference = referenceConversionKeys.includes(quickSelectReference) ? CONSTANS.InputConversion[quickSelectReference] : quickSelectReference;
                         const obj = {
                             'name': quickSelectName,
