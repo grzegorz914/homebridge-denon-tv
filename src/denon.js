@@ -44,7 +44,7 @@ class DENON extends EventEmitter {
         this.mute = false;
         this.pictureMode = 0;
         this.soundMode = '';
-        this.devInfo = {};
+        const object = {};
 
         this.on('checkDeviceInfo', async () => {
             try {
@@ -69,17 +69,17 @@ class DENON extends EventEmitter {
 
                 //device capabilities
                 const capabilitiesSupport = deviceInfoKeys.includes('DeviceCapabilities');
-                const capabilities = capabilitiesSupport ? devInfo.DeviceCapabilities : [];
+                const capabilities = capabilitiesSupport ? devInfo.DeviceCapabilities : object;
                 const capabilitiesKeys = capabilitiesSupport ? Object.keys(capabilities) : [];
 
                 //menu
                 const capabilitiesMenuSupport = capabilitiesSupport && capabilitiesKeys.includes('Menu');
-                const capabilitiesMenu = capabilitiesMenuSupport ? devInfo.DeviceCapabilities.Menu : [];
+                const capabilitiesMenu = capabilitiesMenuSupport ? devInfo.DeviceCapabilities.Menu : object;
                 const capabilitiesMenuKeys = capabilitiesMenuSupport ? Object.keys(capabilitiesMenu) : [];
 
                 //setup
                 const capabilitiesSetupSupport = capabilitiesSupport && capabilitiesKeys.includes('Setup');
-                const capabilitiesSetup = capabilitiesSetupSupport ? devInfo.DeviceCapabilities.Setup : [];
+                const capabilitiesSetup = capabilitiesSetupSupport ? devInfo.DeviceCapabilities.Setup : object;
                 const capabilitiesSetupKeys = capabilitiesSetupSupport ? Object.keys(capabilitiesSetup) : [];
                 const supportPartyMode = capabilitiesSetupSupport && capabilitiesSetupKeys.includes('PartyMode') ? capabilitiesSetup.PartyMode.Control === 1 : false;
                 const supportTone = capabilitiesSetupSupport && capabilitiesSetupKeys.includes('ToneControl') ? capabilitiesSetup.ToneControl.Control === 1 : false;
@@ -91,7 +91,7 @@ class DENON extends EventEmitter {
 
                 //operation
                 const capabilitiesOperationSupport = capabilitiesSupport && capabilitiesKeys.includes('Operation');
-                const capabilitiesOperation = capabilitiesOperationSupport ? devInfo.DeviceCapabilities.Operation : [];
+                const capabilitiesOperation = capabilitiesOperationSupport ? devInfo.DeviceCapabilities.Operation : object;
                 const capabilitiesOperationKeys = capabilitiesOperationSupport ? Object.keys(capabilitiesOperation) : [];
                 const supportClock = capabilitiesOperationSupport & capabilitiesOperationKeys.includes('Clock') ? capabilitiesOperation.Clock.Control === 1 : false;
                 const supportAllZonePower = capabilitiesOperationSupport & capabilitiesOperationKeys.includes('AllZonePower') ? capabilitiesOperation.AllZonePower.Control === 1 : false;
@@ -103,7 +103,9 @@ class DENON extends EventEmitter {
                 const checkZone = zoneControl < zones ? true : false;
                 const checkZoneNr = zoneControl < zones ? zoneControl : zones - 1;
                 const zoneCapabilitiesSupport = checkZone ? deviceInfoKeys.includes('DeviceZoneCapabilities') : false;
-                const zoneCapabilities = zoneCapabilitiesSupport ? devInfo.DeviceZoneCapabilities[checkZoneNr] : [];
+
+                const checkZoneIsArray = zoneCapabilitiesSupport && Array.isArray(devInfo.DeviceZoneCapabilities) ? true : false;
+                const zoneCapabilities = zoneCapabilitiesSupport ? checkZoneIsArray ? devInfo.DeviceZoneCapabilities[checkZoneNr] : [devInfo.DeviceZoneCapabilities] : object;
                 const zoneCapabilitiesKeys = zoneCapabilitiesSupport ? Object.keys(zoneCapabilities) : [];
 
                 //zone
@@ -115,17 +117,18 @@ class DENON extends EventEmitter {
 
                 //surround mode Marantz M-CR611
                 const supportSurroundMode = zoneCapabilitiesKeys.includes('SurroundMode') ? zoneCapabilities.SurroundMode.Control === 1 : false;
+                const supportiPodPlayer = zoneCapabilitiesKeys.includes('iPodPlayer') ? zoneCapabilities.iPodPlayer.Control === 1 : false;
 
                 //setup
                 const zoneCapabilitiesSetupSupport = zoneCapabilitiesSupport && zoneCapabilitiesKeys.includes('Setup');
-                const zoneCapabilitiesSetup = zoneCapabilitiesSetupSupport ? devInfo.DeviceZoneCapabilities[checkZoneNr].Setup : [];
-                const zonescapabilitiesSetupKeys = zoneCapabilitiesSetupSupport ? Object.keys(zoneCapabilitiesSetup) : [];
-                const supportRestorer = zonescapabilitiesSetupKeys.includes('Restorer') ? zoneCapabilitiesSetup.Restorer.Control === 1 : false;
-                const supportToneControl = zonescapabilitiesSetupKeys.includes('ToneControl') ? zoneCapabilitiesSetup.ToneControl.Control === 1 : false;
+                const zoneCapabilitiesSetup = zoneCapabilitiesSetupSupport ? devInfo.DeviceZoneCapabilities[checkZoneNr].Setup : object;
+                const zonesCapabilitiesSetupKeys = zoneCapabilitiesSetupSupport ? Object.keys(zoneCapabilitiesSetup) : [];
+                const supportRestorer = zonesCapabilitiesSetupKeys.includes('Restorer') ? zoneCapabilitiesSetup.Restorer.Control === 1 : false;
+                const supportToneControl = zonesCapabilitiesSetupKeys.includes('ToneControl') ? zoneCapabilitiesSetup.ToneControl.Control === 1 : false;
 
                 //operation
                 const zoneCapabilitiesOperationSupport = zoneCapabilitiesSupport && zoneCapabilitiesKeys.includes('Operation');
-                const zoneCapabilitiesOperation = zoneCapabilitiesOperationSupport ? devInfo.DeviceZoneCapabilities[checkZoneNr].Operation : [];
+                const zoneCapabilitiesOperation = zoneCapabilitiesOperationSupport ? devInfo.DeviceZoneCapabilities[checkZoneNr].Operation : object;
                 const zoneCapabilitiesOperationKeys = zoneCapabilitiesOperationSupport ? Object.keys(zoneCapabilitiesOperation) : [];
                 const supportCursor = zoneCapabilitiesOperationKeys.includes('Cursor') ? zoneCapabilitiesOperation.Cursor.Control === 1 : false;
                 const supportQuickSmartSelect = zoneCapabilitiesOperationKeys.includes('QuickSelect') ? zoneCapabilitiesOperation.QuickSelect.Control === 1 : false;
@@ -138,7 +141,7 @@ class DENON extends EventEmitter {
 
                 //net usb Marantz M-CR611
                 const zoneCapabilitiesNetUsbSupport = zoneCapabilitiesSupport && zoneCapabilitiesKeys.includes('NetUsb');
-                const zoneCapabilitiesNetUsb = zoneCapabilitiesNetUsbSupport ? devInfo.DeviceZoneCapabilities[checkZoneNr].NetUsb : [];
+                const zoneCapabilitiesNetUsb = zoneCapabilitiesNetUsbSupport ? devInfo.DeviceZoneCapabilities[checkZoneNr].NetUsb : object;
                 const zoneCapabilitiesNetUsbKeys = zoneCapabilitiesNetUsbSupport ? Object.keys(zoneCapabilitiesNetUsb) : [];
                 const supportInternetRadio = zoneCapabilitiesNetUsbKeys.includes('InternetRadio') ? zoneCapabilitiesNetUsb.InternetRadio.Control === 1 : false;
                 const supportMediaServer = zoneCapabilitiesNetUsbKeys.includes('MediaServer') ? zoneCapabilitiesNetUsb.MediaServer.Control === 1 : false;
@@ -147,9 +150,7 @@ class DENON extends EventEmitter {
                 const supportUsb2 = zoneCapabilitiesNetUsbKeys.includes('USB2') ? zoneCapabilitiesNetUsb.USB2.Control === 1 : false;
                 const supportSpotifyConnect = zoneCapabilitiesNetUsbKeys.includes('SpotifyConnect') ? zoneCapabilitiesNetUsb.SpotifyConnect.Control === 1 : false;
 
-                //ipod player Marantz M-CR611
-                const supportiPodPlayer = zoneCapabilitiesKeys.includes('iPodPlayer') ? zoneCapabilities.iPodPlayer.Control === 1 : false;
-
+                //check seriaql number
                 if (!serialNumber) {
                     const debug1 = debugLog ? this.emit('debug', `Missing Serial Number, reconnect in 15s.`) : false;
                     this.checkDeviceInfo();
