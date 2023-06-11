@@ -708,13 +708,8 @@ class DenonDevice extends EventEmitter {
                     })
                     .onSet(async (value) => {
                         try {
+                            value = (value === 0 || value === 100) ? this.volume : (value < 10 ? `0${value}` : value);
                             const masterControl = this.masterVolume ? 0 : zoneControl;
-                            if (value === 0 || value === 100) {
-                                value = this.volume < 10 ? `0${this.volume}` : this.volume;
-                            } else if (value < 10) {
-                                value = `0${volume}`;
-                            }
-
                             const volume = [`MV${value}`, `Z2${value}`, `Z3${value}`, `MV${value}`][masterControl];
                             await this.denon.send(volume);
                             const info = this.disableLogInfo ? false : this.emit('message', `set Volume: ${value - 80}`);
