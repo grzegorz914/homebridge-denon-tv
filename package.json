@@ -30,7 +30,7 @@
   "dependencies": {
     "async-mqtt": "^2.6.3",
     "axios": "^1.4.0",
-    "fast-xml-parser": "^4.2.5"
+    "fast-xml-parser": "^4.2.6"
   },
   "keywords": [
     "homebridge",
