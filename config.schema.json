@@ -598,6 +598,9 @@
                     "required": true
                   }
                 }
+              },
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].getInputsFromDevice === false;"
               }
             },
             "surrounds": {
@@ -4712,10 +4715,7 @@
                 "devices[].inputs[].name",
                 "devices[].inputs[].reference",
                 "devices[].inputs[].mode"
-              ],
-              "condition": {
-                "functionBody": "return model.devices[arrayIndices].getInputsFromDevice === false;"
-              }
+              ]
             }
           ],
           "condition": {
