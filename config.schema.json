@@ -9,9 +9,9 @@
     "type": "object",
     "properties": {
       "devices": {
+        "title": "Devices",
         "type": "array",
         "items": {
-          "title": "Device",
           "type": "object",
           "properties": {
             "name": {
