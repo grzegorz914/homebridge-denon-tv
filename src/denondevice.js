@@ -2,6 +2,7 @@
 const fs = require('fs');
 const fsPromises = fs.promises;
 const EventEmitter = require('events');
+const RestFul = require('./restful.js');
 const Mqtt = require('./mqtt.js');
 const Denon = require('./denon.js');
 const CONSTANS = require('./constans.json');
@@ -44,6 +45,9 @@ class DenonDevice extends EventEmitter {
         this.infoButtonCommand = config.infoButtonCommand || 'MNINF';
         this.volumeControl = config.volumeControl >= 0 ? config.volumeControl : -1;
         this.refreshInterval = config.refreshInterval || 5;
+        this.restFulEnabled = config.enableRestFul || false;
+        this.restFulPort = config.restFulPort || 3000;
+        this.restFulDebug = config.restFulDebug || false;
         this.mqttEnabled = config.enableMqtt || false;
         this.mqttDebug = config.mqttDebug || false;
         this.mqttHost = config.mqttHost;
@@ -60,6 +64,7 @@ class DenonDevice extends EventEmitter {
 
         //setup variables
         this.startPrepareAccessory = true;
+        this.restFulConnected = false;
         this.mqttConnected = false;
         this.services = [];
         this.inputsReference = [];
@@ -89,12 +94,31 @@ class DenonDevice extends EventEmitter {
         this.inputsNamesFile = `${prefDir}/inputsNames_${this.sZoneName}${this.host.split('.').join('')}`;
         this.inputsTargetVisibilityFile = `${prefDir}/inputsTargetVisibility_${this.sZoneName}${this.host.split('.').join('')}`;
 
-        //mqtt client
+        //RESTFul server
+        if (this.restFulEnabled) {
+            this.restFul = new RestFul({
+                port: this.restFulPort,
+                debug: this.restFulDebug
+            });
+
+            this.restFul.on('connected', (message) => {
+                this.emit('message', `${message}`);
+                this.restFulConnected = true;
+            })
+                .on('error', (error) => {
+                    this.emit('error', error);
+                })
+                .on('debug', (debug) => {
+                    this.emit('debug', debug);
+                });
+        }
+
+        //MQTT client
         if (this.mqttEnabled) {
             this.mqtt = new Mqtt({
                 host: this.mqttHost,
                 port: this.mqttPort,
-                prefix: `${this.mqttPrefi}/${this.name}`,
+                prefix: `${this.mqttPrefix}/${this.name}`,
                 auth: this.mqttAuth,
                 user: this.mqttUser,
                 passwd: this.mqttPasswd,
@@ -122,6 +146,7 @@ class DenonDevice extends EventEmitter {
             disableLogConnectError: this.disableLogConnectError,
             zoneControl: this.zoneControl,
             refreshInterval: this.refreshInterval,
+            restFulEnabled: this.restFulEnabled,
             mqttEnabled: this.mqttEnabled
         });
 
@@ -382,6 +407,9 @@ class DenonDevice extends EventEmitter {
             })
             .on('error', (error) => {
                 this.emit('error', error);
+            })
+            .on('restFul', (path, data) => {
+                const restFul = this.restFulConnected ? this.restFul.update(path, data) : false;
             })
             .on('mqtt', (topic, message) => {
                 const mqtt = this.mqttConnected ? this.mqtt.send(topic, message) : false;

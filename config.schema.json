@@ -4604,6 +4604,33 @@
               "description": "Here set the background data refresh interval.",
               "required": true
             },
+            "enableRestFul": {
+              "title": "Enable",
+              "type": "boolean",
+              "default": false,
+              "required": false,
+              "description": "This enable RESTful server."
+            },
+            "restFulDebug": {
+              "title": "Debug",
+              "type": "boolean",
+              "default": false,
+              "required": false,
+              "description": "This enable debug mode for RESTFul.",
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].enableRestFul === true;"
+              }
+            },
+            "restFulPort": {
+              "title": "Port",
+              "type": "integer",
+              "placeholder": 3000,
+              "required": true,
+              "description": "Here set the listening Port for RESTful server, every zone need own port.",
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].enableRestFul === true;"
+              }
+            },
             "enableMqtt": {
               "title": "Enable",
               "type": "boolean",
@@ -4812,6 +4839,18 @@
             "devices[].infoButtonCommand",
             "devices[].volumeControl",
             "devices[].refreshInterval"
+          ]
+        },
+        {
+          "key": "devices[]",
+          "type": "section",
+          "title": "RESTful",
+          "expandable": true,
+          "expanded": false,
+          "items": [
+            "devices[].enableRestFul",
+            "devices[].restFulDebug",
+            "devices[].restFulPort"
           ]
         },
         {

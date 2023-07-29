@@ -35,8 +35,15 @@ Tested with Denon AVR-X6300H, Denon AVR-X2700H, Denon AVR-3311CI, Marantz SR8012
 * Digital Input Modes can be controlled by creating separate tile in the buttons section.
 * Siri can be used for all functions, some times need create legacy buttons/switches/sensors.
 * Automations can be used for all functions, some times need create legacy buttons/switches/sensors.
-* MQTT publisch topic *Info*, *State* *Picture* and *Surround* as payload JSON data.
 * This plugin is based upon the official documentation: [Denon Control Protocol 2020](https://github.com/grzegorz914/homebridge-denon-tv/blob/main/src/Denon%20Control%20Protocol.xlsx)
+* RESTful server:
+  * Request: `http//homebridge_ip_address:port/path`.
+  * Path: `info`, `state`, `picture`, `surround`.
+  * Respone as JSON data.
+* MQTT client:
+  * Topic: `Info`, `State`, `Picture`, `Surround`.
+  * Publish as JSON data.
+
 
 <p align="left">
   <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/main/graphics/homekit.png" width="382"></a> 
@@ -90,6 +97,9 @@ Tested with Denon AVR-X6300H, Denon AVR-X2700H, Denon AVR-3311CI, Marantz SR8012
 | `volumeControl` | Here choice what a additional volume control mode You want to use (`-1 - None/Disabled`, `0 - Lightbulb`, `1 - Fan`). |
 | `infoButtonCommand` | Here select the function of `I` button in RC app. |
 | `refreshInterval` | Here set the data refresh interval. |
+| `enableRestFul` | If enabled, RESTful server will start automatically and respond to any path request. |
+| `restFulPort` | Here set the listening `Port` for RESTful server, every zone need own port. |
+| `restFulDebug` | If enabled, deep log will be present in homebridge console for RESTFul server. |
 | `enableMqtt` | If enabled, MQTT Broker will start automatically and publish all awailable PV installation data. |
 | `mqttDebug` | If enabled, deep log will be present in homebridge console for MQTT. |
 | `mqttHost` | Here set the *IP Address* or *Hostname* for MQTT Broker. |

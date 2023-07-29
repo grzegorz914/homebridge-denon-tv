@@ -13,6 +13,7 @@ class DENON extends EventEmitter {
         const zoneControl = config.zoneControl;
         const debugLog = config.debugLog;
         const disableLogConnectError = config.disableLogConnectError;
+        const restFulEnabled = config.restFulEnabled;
         const mqttEnabled = config.mqttEnabled;
         this.refreshInterval = config.refreshInterval;
 
@@ -157,8 +158,15 @@ class DENON extends EventEmitter {
                     return;
                 }
 
+
                 this.emit('deviceInfo', devInfo, manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion, supportPictureMode, supportFavorites, supportShortcut, supportInputSource, supportQuickSmartSelect);
-                const mqtt = mqttEnabled ? this.emit('mqtt', 'Info', JSON.stringify(devInfo, null, 2)) : false;
+
+                //restFul
+                const restFul = restFulEnabled ? this.emit('restFul', 'info', devInfo) : false;
+
+                //mqtt
+                const mqtt = mqttEnabled ? this.emit('mqtt', 'Info', devInfo) : false;
+
                 await new Promise(resolve => setTimeout(resolve, 2000));
                 this.supportPictureMode = supportPictureMode;
                 this.supportSoundMode = supportSoundMode;
@@ -225,9 +233,16 @@ class DENON extends EventEmitter {
                     this.soundMode = soundMode;
 
                     this.emit('stateChanged', power, reference, volume, volumeDisplay, mute, pictureMode);
-                    const mqtt1 = mqttEnabled ? this.emit('mqtt', 'State', JSON.stringify(devState, null, 2)) : false;
-                    const mqtt2 = mqttEnabled && checkPictureMode ? this.emit('mqtt', 'Picture', JSON.stringify({ 'Picture Mode': CONSTANS.PictureModesDenonNumber[pictureMode] }, null, 2)) : false;
-                    const mqtt3 = mqttEnabled && checkSoundeMode ? this.emit('mqtt', 'Surround', JSON.stringify({ 'Sound Mode': CONSTANS.SoundModeConversion[soundMode] }, null, 2)) : false;
+
+                    //restFul
+                    const restFul = restFulEnabled ? this.emit('restFul', 'state', devState) : false;
+                    const restFul1 = restFulEnabled && checkPictureMode ? this.emit('restFul', 'picture', { 'Picture Mode': CONSTANS.PictureModesDenonNumber[pictureMode] }) : false;
+                    const restFul2 = restFulEnabled && checkSoundeMode ? this.emit('restFul', 'surround', { 'Sound Mode': CONSTANS.SoundModeConversion[soundMode] }) : false;
+
+                    //mqtt
+                    const mqtt1 = mqttEnabled ? this.emit('mqtt', 'State', devState) : false;
+                    const mqtt2 = mqttEnabled && checkPictureMode ? this.emit('mqtt', 'Picture', { 'Picture Mode': CONSTANS.PictureModesDenonNumber[pictureMode] }) : false;
+                    const mqtt3 = mqttEnabled && checkSoundeMode ? this.emit('mqtt', 'Surround', { 'Sound Mode': CONSTANS.SoundModeConversion[soundMode] }) : false;
                     this.checkState();
                 } catch (error) {
                     const debug = disableLogConnectError ? false : this.emit('error', `State error: ${error}, reconnect in 15s.`);
