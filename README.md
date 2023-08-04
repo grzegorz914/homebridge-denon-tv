@@ -65,7 +65,7 @@ Tested with Denon AVR-X6300H, Denon AVR-X2700H, Denon AVR-3311CI, Marantz SR8012
 | Key | Description |
 | --- | --- |
 | `name` | Here set the accessory *Name* to be displayed in *Homebridge/HomeKit*. |
-| `host` | Here set the *Hsostname or Address IP* of AVR. |
+| `host` | Here set the *Hostname or Address IP* of AVR. |
 | `port` | Here set the API communication port, if `8080` is not working try to use port `80` which some receivers use alternatively. |
 | `zoneControl` | Selects which zone will be controlled by this section `0 - Main Zone`, `1 - Zone 2`, `2 - Zone 3`, `3 - Surround Mode`. |
 | `supportOldAvr` | This enable support for old AVR like AVR-3311CI. |
