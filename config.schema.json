@@ -2823,7 +2823,7 @@
                         ]
                       },
                       {
-                        "title": "ZM DYNAMIC EQ 15db",
+                        "title": "ZM DYNAMIC EQ OFFSET 15dB",
                         "enum": [
                           "0PSREFLEV 15"
                         ]
