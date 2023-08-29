@@ -4828,17 +4828,36 @@
           "expandable": true,
           "expanded": false,
           "items": [
-            "devices[].supportOldAvr",
-            "devices[].enableDebugMode",
-            "devices[].disableLogInfo",
-            "devices[].disableLogDeviceInfo",
-            "devices[].disableLogConnectError",
-            "devices[].masterPower",
-            "devices[].masterVolume",
-            "devices[].masterMute",
-            "devices[].infoButtonCommand",
-            "devices[].volumeControl",
-            "devices[].refreshInterval"
+            {
+              "key": "devices[]",
+              "type": "tabarray",
+              "title": "{{ value.title }}",
+              "items": [
+                {
+                  "key": "devices[]",
+                  "title": "Device",
+                  "items": [
+                    "devices[].supportOldAvr",
+                    "devices[].masterPower",
+                    "devices[].masterVolume",
+                    "devices[].masterMute",
+                    "devices[].infoButtonCommand",
+                    "devices[].volumeControl",
+                    "devices[].refreshInterval"
+                  ]
+                },
+                {
+                  "key": "devices[]",
+                  "title": "System",
+                  "items": [
+                    "devices[].enableDebugMode",
+                    "devices[].disableLogInfo",
+                    "devices[].disableLogDeviceInfo",
+                    "devices[].disableLogConnectError"
+                  ]
+                }
+              ]
+            }
           ]
         },
         {
