@@ -101,11 +101,12 @@ Tested with Denon AVR-X6300H, Denon AVR-X2700H, Denon AVR-3311CI, Marantz SR8012
 | `restFulPort` | Here set the listening `Port` for RESTful server, every zone need own port. |
 | `restFulDebug` | If enabled, deep log will be present in homebridge console for RESTFul server. |
 | `enableMqtt` | If enabled, MQTT Broker will start automatically and publish all awailable PV installation data. |
-| `mqttDebug` | If enabled, deep log will be present in homebridge console for MQTT. |
-| `mqttHost` | Here set the *IP Address* or *Hostname* for MQTT Broker. |
-| `mqttPort` | Here set the *Port* for MQTT Broker, default 1883. |
-| `mqttPrefix` | Here set the *Prefix* for *Topic* or leave empty. |
+| `mqttHost` | Here set the `IP Address` or `Hostname` for MQTT Broker. |
+| `mqttPort` | Here set the `Port` for MQTT Broker, default 1883. |
+| `mqttClientId` | Here optional set the `Client Id` of MQTT Broker. |
+| `mqttPrefix` | Here set the `Prefix` for `Topic` or leave empty. |
 | `mqttAuth` | If enabled, MQTT Broker will use authorization credentials. |
 | `mqttUser` | Here set the MQTT Broker user. |
 | `mqttPasswd` | Here set the MQTT Broker password. |
+| `mqttDebug` | If enabled, deep log will be present in homebridge console for MQTT. |
 | `AV Surround Mode` | This extra Accessory will control all functions of Main Zone except (Inputs). |

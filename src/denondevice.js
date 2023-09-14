@@ -49,13 +49,14 @@ class DenonDevice extends EventEmitter {
         this.restFulPort = config.restFulPort || 3000;
         this.restFulDebug = config.restFulDebug || false;
         this.mqttEnabled = config.enableMqtt || false;
-        this.mqttDebug = config.mqttDebug || false;
         this.mqttHost = config.mqttHost;
         this.mqttPort = config.mqttPort || 1883;
+        this.mqttClientId = config.mqttClientId || `mqtt_${Math.random().toString(16).slice(3)}`;
         this.mqttPrefix = config.mqttPrefix;
         this.mqttAuth = config.mqttAuth || false;
         this.mqttUser = config.mqttUser;
         this.mqttPasswd = config.mqttPasswd;
+        this.mqttDebug = config.mqttDebug || false;
 
         //zones
         this.zoneName = CONSTANS.ZoneName[this.zoneControl];
@@ -118,10 +119,10 @@ class DenonDevice extends EventEmitter {
             this.mqtt = new Mqtt({
                 host: this.mqttHost,
                 port: this.mqttPort,
-                prefix: `${this.mqttPrefix}/${this.name}`,
-                auth: this.mqttAuth,
+                clientId: this.mqttClientId,
                 user: this.mqttUser,
                 passwd: this.mqttPasswd,
+                prefix: `${this.mqttPrefix}/${this.name}`,
                 debug: this.mqttDebug
             });
 
