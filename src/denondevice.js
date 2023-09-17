@@ -503,6 +503,10 @@ class DenonDevice extends EventEmitter {
                             const zone = [inputMode, 'Z2', 'Z3', inputMode][zoneControl];
                             const reference = zone + inputReference;
 
+                            if (!this.power) {
+                                await new Promise(resolve => setTimeout(resolve, 3000));
+                            }
+
                             await this.denon.send(reference);
                             const info = this.disableLogInfo ? false : this.emit('message', `set ${this.inputSurround} Name: ${inputName}, Reference: ${inputReference}`);
                         } catch (error) {
