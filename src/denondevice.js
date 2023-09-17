@@ -481,7 +481,7 @@ class DenonDevice extends EventEmitter {
                             const powerState = [(state ? 'ZMON' : 'ZMOFF'), (state ? 'Z2ON' : 'Z2OFF'), (state ? 'Z3ON' : 'Z3OFF'), (state ? 'ZMON' : 'ZMOFF'), (state ? 'PWON' : 'PWSTANDBY')][masterControl];
 
                             const setPower = state != this.power ? await this.denon.send(powerState) : false;
-                            const info = this.disableLogInfo && (state != this.power) ? false : this.emit('message', `set Power: ${powerState}`);
+                            const info = this.disableLogInfo || (state === this.power) ? false : this.emit('message', `set Power: ${powerState}`);
                         } catch (error) {
                             this.emit('error', `set Power error: ${error}`);
                         };
@@ -505,17 +505,8 @@ class DenonDevice extends EventEmitter {
 
                             switch (this.power) {
                                 case false:
-                                    this.inputSet = false;
-
-                                    setInterval(async () => {
-                                        if (this.inputSet) {
-                                            return;
-                                        }
-
-                                        const setInput = this.power ? await this.denon.send(reference) : false;
-                                        this.inputSet = this.power;
-                                        const info = this.disableLogInfo || !this.power ? false : this.emit('message', `set ${this.inputSurround} Name: ${inputName}, Reference: ${inputReference}`);
-                                    }, 3000);
+                                    await new Promise(resolve => setTimeout(resolve, 3000));
+                                    this.televisionService.setCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
                                     break;
                                 case true:
                                     await this.denon.send(reference);
