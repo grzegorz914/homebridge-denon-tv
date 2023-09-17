@@ -516,7 +516,7 @@ class DenonDevice extends EventEmitter {
                                         const setInput = this.power ? await this.denon.send(reference) : false;
                                         this.inputSet = this.power;
                                         const info = this.disableLogInfo || this.firstRun || !this.power ? false : this.emit('message', `set ${this.inputSurround} Name: ${inputName}, Reference: ${inputReference}`);
-                                    }, 2000);
+                                    }, 3000);
                                     break;
                                 case true:
                                     await this.denon.send(reference);
