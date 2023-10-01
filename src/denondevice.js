@@ -800,7 +800,7 @@ class DenonDevice extends EventEmitter {
                     const inputReference = input.reference;
 
                     //get name		
-                    const inputName = savedInputsNames[inputReference] || input.name;
+                    const inputName = savedInputsNames[inputReference] ?? input.name;
 
                     //get mode
                     const inputMode = zoneControl <= 2 ? input.mode : 'MS';
@@ -812,7 +812,7 @@ class DenonDevice extends EventEmitter {
                     const isConfigured = 1;
 
                     //get visibility state
-                    const currentVisibility = savedInputsTargetVisibility[inputReference] || 0;
+                    const currentVisibility = savedInputsTargetVisibility[inputReference] ?? 0;
 
                     if (inputReference && inputName && inputMode) {
                         const inputService = new Service.InputSource(inputName, `${this.inputSurround} ${i}`);
@@ -824,9 +824,6 @@ class DenonDevice extends EventEmitter {
                             .setCharacteristic(Characteristic.CurrentVisibilityState, currentVisibility)
 
                         inputService.getCharacteristic(Characteristic.ConfiguredName)
-                            .onGet(async () => {
-                                return inputName;
-                            })
                             .onSet(async (value) => {
                                 try {
                                     savedInputsNames[inputReference] = value;
