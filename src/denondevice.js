@@ -90,10 +90,29 @@ class DenonDevice extends EventEmitter {
         this.sensorVolumeState = false;
         this.sensorInputState = false;
 
-        this.devInfoFile = `${prefDir}/devInfo_${this.host.split('.').join('')}`;
-        this.inputsFile = `${prefDir}/inputs_${this.sZoneName}${this.host.split('.').join('')}`;
-        this.inputsNamesFile = `${prefDir}/inputsNames_${this.sZoneName}${this.host.split('.').join('')}`;
-        this.inputsTargetVisibilityFile = `${prefDir}/inputsTargetVisibility_${this.sZoneName}${this.host.split('.').join('')}`;
+        //check files exists, if not then create it
+        const postFix = `${this.sZoneName}${this.host.split('.').join('')}`
+        this.devInfoFile = `${prefDir}/devInfo_${postFix}`;
+        this.inputsFile = `${prefDir}/inputs_${postFix}`;
+        this.inputsNamesFile = `${prefDir}/inputsNames_${postFix}`;
+        this.inputsTargetVisibilityFile = `${prefDir}/inputsTargetVisibility_${postFix}`;
+
+        try {
+            const files = [
+                this.devInfoFile,
+                this.inputsFile,
+                this.inputsNamesFile,
+                this.inputsTargetVisibilityFile,
+            ];
+
+            files.forEach((file) => {
+                if (!fs.existsSync(file)) {
+                    fs.writeFileSync(file, ' ');
+                }
+            });
+        } catch (error) {
+            this.emit('error', `prepare files error: ${error}`);
+        }
 
         //RESTFul server
         if (this.restFulEnabled) {
@@ -191,22 +210,6 @@ class DenonDevice extends EventEmitter {
                 this.serialNumber = serialNumber;
                 this.firmwareRevision = firmwareRevision;
                 this.supportPictureMode = supportPictureMode;
-
-                // Create files if it doesn't exist
-                const object = JSON.stringify({});
-                const array = JSON.stringify([]);
-                if (!fs.existsSync(this.devInfoFile) && this.zoneControl === 0) {
-                    await fsPromises.writeFile(this.devInfoFile, object);
-                }
-                if (!fs.existsSync(this.inputsFile)) {
-                    await fsPromises.writeFile(this.inputsFile, array);
-                }
-                if (!fs.existsSync(this.inputsNamesFile)) {
-                    await fsPromises.writeFile(this.inputsNamesFile, object);
-                }
-                if (!fs.existsSync(this.inputsTargetVisibilityFile)) {
-                    await fsPromises.writeFile(this.inputsTargetVisibilityFile, object);
-                }
 
                 //save device info to the file
                 if (this.zoneControl === 0) {
@@ -315,15 +318,20 @@ class DenonDevice extends EventEmitter {
             };
         })
             .on('stateChanged', async (power, reference, volume, volumeControlType, mute, pictureMode) => {
-                const inputIdentifier = this.inputsReference.includes(reference) ? this.inputsReference.findIndex(index => index === reference) : this.inputIdentifier;
+                const inputIdentifier = this.inputsReference.includes(reference) ? this.inputsReference.findIndex(index => index === reference) : undefined;
                 mute = power ? mute : true;
                 pictureMode = CONSTANS.PictureModesConversionToHomeKit[pictureMode];
 
                 if (this.televisionService) {
                     this.televisionService
                         .updateCharacteristic(Characteristic.Active, power)
-                        .updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier)
                         .updateCharacteristic(Characteristic.PictureMode, pictureMode);
+                }
+
+                if (this.televisionService && inputIdentifier !== undefined) {
+                    this.televisionService
+                        .updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier)
+                    this.inputIdentifier = inputIdentifier;
                 }
 
                 if (this.tvSpeakerService) {
@@ -368,6 +376,7 @@ class DenonDevice extends EventEmitter {
                     this.sensorInputService
                         .updateCharacteristic(Characteristic.ContactSensorState, state)
                     this.sensorInputState = state;
+                    this.inputIdentifier = inputIdentifier;
                 }
 
                 if (this.sensorInputsServices) {
@@ -387,7 +396,6 @@ class DenonDevice extends EventEmitter {
                 this.volumeControlType = volumeControlType;
                 this.mute = mute;
                 this.pictureMode = pictureMode;
-                this.inputIdentifier = inputIdentifier;
 
                 //start prepare accessory
                 if (this.startPrepareAccessory) {
@@ -476,12 +484,16 @@ class DenonDevice extends EventEmitter {
                         return state;
                     })
                     .onSet(async (state) => {
+                        if (this.power == state) {
+                            return;
+                        }
+
                         try {
                             const masterControl = this.masterPower ? 4 : zoneControl;
                             const powerState = [(state ? 'ZMON' : 'ZMOFF'), (state ? 'Z2ON' : 'Z2OFF'), (state ? 'Z3ON' : 'Z3OFF'), (state ? 'ZMON' : 'ZMOFF'), (state ? 'PWON' : 'PWSTANDBY')][masterControl];
 
-                            const setPower = state != this.power ? await this.denon.send(powerState) : false;
-                            const info = this.disableLogInfo || (state === this.power) ? false : this.emit('message', `set Power: ${powerState}`);
+                            await this.denon.send(powerState);
+                            const info = this.disableLogInfo ? false : this.emit('message', `set Power: ${powerState}`);
                         } catch (error) {
                             this.emit('error', `set Power error: ${error}`);
                         };
