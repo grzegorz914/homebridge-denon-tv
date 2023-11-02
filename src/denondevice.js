@@ -861,6 +861,11 @@ class DenonDevice extends EventEmitter {
                                 return inputName;
                             })
                             .onSet(async (value) => {
+                                const valueExist = value === this.savedInputsNames[inputReference];
+                                if (valueExist) {
+                                    return;
+                                }
+
                                 try {
                                     this.savedInputsNames[inputReference] = value;
                                     const newCustomName = JSON.stringify(this.savedInputsNames, null, 2);
@@ -879,6 +884,11 @@ class DenonDevice extends EventEmitter {
                                 return targetVisibility;
                             })
                             .onSet(async (state) => {
+                                const stateExist = state === this.savedInputsTargetVisibility[inputReference];
+                                if (stateExist) {
+                                    return;
+                                };
+
                                 try {
                                     this.savedInputsTargetVisibility[inputReference] = state;
                                     const newTargetVisibility = JSON.stringify(this.savedInputsTargetVisibility, null, 2);
