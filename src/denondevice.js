@@ -51,7 +51,7 @@ class DenonDevice extends EventEmitter {
         this.mqttEnabled = config.enableMqtt || false;
         this.mqttHost = config.mqttHost;
         this.mqttPort = config.mqttPort || 1883;
-        this.mqttClientId = config.mqttClientId || `mqtt_${Math.random().toString(16).slice(3)}`;
+        this.mqttClientId = config.mqttClientId || `denon_${Math.random().toString(16).slice(3)}`;
         this.mqttPrefix = config.mqttPrefix;
         this.mqttAuth = config.mqttAuth || false;
         this.mqttUser = config.mqttUser;
@@ -848,7 +848,7 @@ class DenonDevice extends EventEmitter {
                     const targetVisibility = currentVisibility;
 
                     if (inputReference && inputName && inputMode) {
-                        const inputService = new Service.InputSource(inputName, `${this.inputSurround} ${i}`);
+                        const inputService = new Service.InputSource(`${inputName} ${i}`, `${this.inputSurround} ${i}`);
                         inputService
                             .setCharacteristic(Characteristic.Identifier, i)
                             .setCharacteristic(Characteristic.Name, inputName)
