@@ -1067,7 +1067,7 @@ class DenonDevice extends EventEmitter {
                                 this.sensorInputsDisplayType.push(sensorInputDisplayType);
                                 this.sensorInputsServices.push(sensorInputService);
                                 this.allServices.push(sensorInputService);
-                                accessory.addService(this.sensorInputsServices[i]);
+                                accessory.addService(sensorInputService);
                             } else {
                                 this.emit('message', `Sensor Name: ${sensorInputName ? sensorInputName : 'Missing'}, Reference: ${sensorInputReference ? sensorInputReference : 'Missing'}.`);
                             };
@@ -1123,7 +1123,7 @@ class DenonDevice extends EventEmitter {
 
                                 this.buttonsServices.push(buttonService);
                                 this.allServices.push(buttonService);
-                                accessory.addService(this.buttonsServices[i]);
+                                accessory.addService(buttonService);
                             } else {
                                 this.emit('message', `Button Name: ${buttonName ? buttonName : 'Missing'}, Reference: ${buttonReference ? buttonReference : 'Missing'}.`);
                             };
