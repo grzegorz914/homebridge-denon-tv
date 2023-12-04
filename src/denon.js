@@ -17,7 +17,7 @@ class DENON extends EventEmitter {
         const mqttEnabled = config.mqttEnabled;
         this.refreshInterval = config.refreshInterval;
 
-        const baseUrl = (`http://${host}:${port}`);
+        const baseUrl = `http://${host}:${port}`;
         this.axiosInstance = axios.create({
             method: 'GET',
             baseURL: baseUrl,
