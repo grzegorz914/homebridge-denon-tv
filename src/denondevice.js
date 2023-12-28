@@ -482,30 +482,9 @@ class DenonDevice extends EventEmitter {
                 //prepare television service
                 const debug2 = !this.enableDebugMode ? false : this.emit('debug', `Prepare television service`);
                 this.televisionService = new Service.Television(`${accessoryName} Television`, 'Television');
-                this.televisionService.getCharacteristic(Characteristic.ConfiguredName)
-                    .onGet(async () => {
-                        return accessoryName;
-                    })
-                    .onSet(async (value) => {
-                        try {
-                            this.name = value;
-                            const info = this.disableLogInfo ? false : this.emit('message', `set Accessory Name: ${value}`);
-                        } catch (error) {
-                            this.emit('error', `set Brightness error: ${error}`);
-                        };
-                    });
-                this.televisionService.getCharacteristic(Characteristic.SleepDiscoveryMode)
-                    .onGet(async () => {
-                        const state = 1; //not discoverable, alvays discoverable
-                        return state;
-                    })
-                    .onSet(async (state) => {
-                        try {
-                            const info = this.disableLogInfo ? false : this.emit('message', `set Discovery Mode: ${state ? 'Always Discoverable' : 'Not Discoverable'}`);
-                        } catch (error) {
-                            this.emit('error', `set Discovery Mode error: ${error}`);
-                        };
-                    });
+                this.televisionService.setCharacteristic(Characteristic.ConfiguredName, accessoryName)
+                    .setCharacteristic(Characteristic.SleepDiscoveryMode, 1);
+
                 this.televisionService.getCharacteristic(Characteristic.Active)
                     .onGet(async () => {
                         const state = this.power;
@@ -824,6 +803,7 @@ class DenonDevice extends EventEmitter {
                 const inputsCount = inputs.length;
                 const possibleInputsCount = 90 - this.allServices.length;
                 const maxInputsCount = inputsCount >= possibleInputsCount ? possibleInputsCount : inputsCount;
+                inputs.sort((a, b) => a.name.localeCompare(b.name));
                 for (let i = 0; i < maxInputsCount; i++) {
                     //get input
                     const input = inputs[i];
@@ -831,8 +811,9 @@ class DenonDevice extends EventEmitter {
                     //get reference
                     const inputReference = input.reference;
 
-                    //get name		
-                    const inputName = this.savedInputsNames[inputReference] ?? input.name;
+                    //get name
+                    const name = input.name ?? 'Input';
+                    const inputName = this.savedInputsNames[inputReference] ?? name;
 
                     //get mode
                     const inputMode = zoneControl <= 2 ? input.mode : 'MS';
