@@ -6,7 +6,7 @@ const RestFul = require('./restful.js');
 const Mqtt = require('./mqtt.js');
 const Denon = require('./denon.js');
 const CONSTANS = require('./constans.json');
-let Accessory, Characteristic, Service, Categories, UUID;
+let Accessory, Characteristic, Service, Categories, Encode, UUID;
 
 class DenonDevice extends EventEmitter {
     constructor(api, prefDir, config) {
@@ -16,6 +16,7 @@ class DenonDevice extends EventEmitter {
         Characteristic = api.hap.Characteristic;
         Service = api.hap.Service;
         Categories = api.hap.Categories;
+        Encode = api.hap.encode;
         UUID = api.hap.uuid;
 
         //device configuration
@@ -71,6 +72,7 @@ class DenonDevice extends EventEmitter {
         this.inputsReference = [];
         this.inputsName = [];
         this.inputsMode = [];
+        this.displayOrder = [];
 
         this.sensorInputsReference = [];
         this.sensorInputsDisplayType = [];
@@ -432,6 +434,10 @@ class DenonDevice extends EventEmitter {
                         const accessory = await this.prepareAccessory();
                         this.emit('publishAccessory', accessory);
                         this.startPrepareAccessory = false;
+
+                        if (this.televisionService) {
+                            this.televisionService.updateCharacteristic(Characteristic.DisplayOrder, Encode(1, this.displayOrder).toString('base64'));
+                        }
                     } catch (error) {
                         this.emit('error', `prepare accessory error: ${error}`);
                     };
@@ -883,6 +889,7 @@ class DenonDevice extends EventEmitter {
                                 }
                             });
 
+                        this.displayOrder.push(i + 1);
                         this.inputsName.push(inputName);
                         this.inputsReference.push(inputReference);
                         this.inputsMode.push(inputMode);
