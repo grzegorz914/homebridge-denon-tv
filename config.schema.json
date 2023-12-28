@@ -9,10 +9,10 @@
     "type": "object",
     "properties": {
       "devices": {
-        "title": "Devices",
         "type": "array",
         "items": {
           "type": "object",
+          "title": "Device",
           "properties": {
             "name": {
               "title": "Name",
@@ -757,7 +757,7 @@
             "buttons": {
               "type": "array",
               "items": {
-                "title": "Buttons",
+                "title": "Button",
                 "type": "object",
                 "properties": {
                   "name": {
@@ -4435,7 +4435,7 @@
             "sensorInputs": {
               "type": "array",
               "items": {
-                "title": "Inputs",
+                "title": "Input",
                 "type": "object",
                 "description": "Here create sensors based on Input reference (active if switch to it).",
                 "properties": {
@@ -4729,7 +4729,7 @@
     {
       "key": "devices",
       "type": "tabarray",
-      "title": "{{ value.name || 'new device' }}",
+      "title": "{{ value.name || 'device' }}",
       "items": [
         "devices[].name",
         "devices[].host",
@@ -4748,7 +4748,7 @@
             {
               "key": "devices[].inputs",
               "type": "tabarray",
-              "title": "{{ value.name || 'new input' }}",
+              "title": "{{ value.name || 'input' }}",
               "items": [
                 "devices[].inputs[].name",
                 "devices[].inputs[].reference",
@@ -4770,7 +4770,7 @@
             {
               "key": "devices[].surrounds",
               "type": "tabarray",
-              "title": "{{ value.name || 'new surround' }}",
+              "title": "{{ value.name || 'surround' }}",
               "items": [
                 "devices[].surrounds[].name",
                 "devices[].surrounds[].reference"
@@ -4791,7 +4791,7 @@
             {
               "key": "devices[].buttons",
               "type": "tabarray",
-              "title": "{{ value.name || 'new button' }}",
+              "title": "{{ value.name || 'button' }}",
               "items": [
                 "devices[].buttons[].name",
                 "devices[].buttons[].reference",
@@ -4830,7 +4830,7 @@
                         {
                           "key": "devices[].sensorInputs",
                           "type": "tabarray",
-                          "title": "{{ value.name || 'new sensor' }}",
+                          "title": "{{ value.name || 'sensor' }}",
                           "items": [
                             "devices[].sensorInputs[].name",
                             "devices[].sensorInputs[].reference",
