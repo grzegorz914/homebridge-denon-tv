@@ -27,6 +27,7 @@
                     "getInputsFromDevice": false,
                     "getFavoritesFromDevice": false,
                     "getQuickSmartSelectFromDevice": false,
+                    "inputsDisplayOrder": 0,
                     "inputs": [
                         {
                             "name": "Xbox One",

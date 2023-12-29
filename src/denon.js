@@ -37,7 +37,7 @@ class DENON extends EventEmitter {
         };
         const parseString = new XMLParser(options);
 
-        this.checkStateOnFirstRun = false;
+        this.startPrepareAccessory = true;
         this.power = false;
         this.reference = '';
         this.volume = 0;
@@ -170,7 +170,6 @@ class DENON extends EventEmitter {
                 await new Promise(resolve => setTimeout(resolve, 2000));
                 this.supportPictureMode = supportPictureMode;
                 this.supportSoundMode = supportSoundMode;
-                this.checkStateOnFirstRun = true;
                 this.emit('checkState');
             } catch (error) {
                 const debug = disableLogConnectError ? false : this.emit('error', `Info error: ${error}, reconnect in 15s.`);
@@ -217,13 +216,6 @@ class DENON extends EventEmitter {
                     //select reference
                     const reference = zoneControl <= 2 ? input : soundMode;
 
-                    //update only if value change
-                    if (!this.checkStateOnFirstRun && power === this.power && reference === this.reference && volume === this.volume && volumeDisplay === this.volumeDisplay && mute === this.mute && pictureMode === this.pictureMode && soundMode === this.soundMode) {
-                        this.checkState();
-                        return;
-                    };
-
-                    this.checkStateOnFirstRun = false;
                     this.power = power;
                     this.reference = reference;
                     this.volume = volume;
@@ -243,10 +235,14 @@ class DENON extends EventEmitter {
                     const mqtt1 = mqttEnabled ? this.emit('mqtt', 'State', devState) : false;
                     const mqtt2 = mqttEnabled && checkPictureMode ? this.emit('mqtt', 'Picture', { 'Picture Mode': CONSTANS.PictureModesDenonNumber[pictureMode] }) : false;
                     const mqtt3 = mqttEnabled && checkSoundeMode ? this.emit('mqtt', 'Surround', { 'Sound Mode': CONSTANS.SoundModeConversion[soundMode] }) : false;
+
+                    const prepareAccessory = this.startPrepareAccessory ? this.emit('prepareAccessory') : false;
+                    this.startPrepareAccessory = false;
+
                     this.checkState();
                 } catch (error) {
                     const debug = disableLogConnectError ? false : this.emit('error', `State error: ${error}, reconnect in 15s.`);
-                    const firstRun = this.checkStateOnFirstRun ? this.checkDeviceInfo() : this.emit('disconnect');
+                    this.checkState();
                 };
             })
             .on('disconnect', () => {

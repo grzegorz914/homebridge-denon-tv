@@ -72,6 +72,7 @@ Tested with Denon AVR-X6300H, Denon AVR-X2700H, Denon AVR-3311CI, Marantz SR8012
 | `getInputsFromDevice` | If enabled, source *Inputs* will be loaded direct from device. |
 | `getFavoritesFromDevice` | If enabled, *Favorites* will be loaded to the inputs list if exist. |
 | `getQuickSmartSelectFromDevice` | If enabled, *Quick/Smart Select* will be loaded to the inputs list if exist. |
+| `inputsDisplayOrder` | Here select display order of the inputs list, `None`, `Alphabetically Name`, `Alphabetically Reference`. |
 | `inputs.name` | Here set *Input Name* which You want expose to the *Homebridge/HomeKit*. |
 | `inputs.reference` | Choose from available inputs, the inputs that should be published to and appear in HomeKit app in the device tile as inputs list |
 | `inputs.mode` | Choose from available inputs mode. |
