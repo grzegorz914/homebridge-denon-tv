@@ -232,7 +232,7 @@ class DENON extends EventEmitter {
                     this.pictureMode = pictureMode;
                     this.soundMode = soundMode;
 
-                    //emit state
+                    //emit state changes
                     const emitConnected = !this.connected ? this.emit('message', `Connected.`) : false;
                     this.connected = true;
                     this.emit('stateChanged', power, reference, volume, volumeDisplay, mute, pictureMode);
