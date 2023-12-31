@@ -37,7 +37,9 @@ class DENON extends EventEmitter {
         };
         const parseString = new XMLParser(options);
 
+        this.connected = false;
         this.startPrepareAccessory = true;
+        this.emitDeviceInfo = true;
         this.power = false;
         this.reference = '';
         this.volume = 0;
@@ -158,8 +160,9 @@ class DENON extends EventEmitter {
                     return;
                 }
 
-
-                this.emit('deviceInfo', devInfo, manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion, supportPictureMode, supportFavorites, supportShortcut, supportInputSource, supportQuickSmartSelect);
+                //emit device info
+                const emitDeviceInfo = this.emitDeviceInfo ? this.emit('deviceInfo', devInfo, manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion, supportPictureMode, supportFavorites, supportShortcut, supportInputSource, supportQuickSmartSelect) : false;
+                this.emitDeviceInfo = false;
 
                 //restFul
                 const restFul = restFulEnabled ? this.emit('restFul', 'info', devInfo) : false;
@@ -167,9 +170,14 @@ class DENON extends EventEmitter {
                 //mqtt
                 const mqtt = mqttEnabled ? this.emit('mqtt', 'Info', devInfo) : false;
 
-                await new Promise(resolve => setTimeout(resolve, 2000));
                 this.supportPictureMode = supportPictureMode;
                 this.supportSoundMode = supportSoundMode;
+
+                //prepare accessory
+                const prepareAccessory = this.startPrepareAccessory ? this.emit('prepareAccessory') : false;
+                const awaitPrepareAccessory = this.startPrepareAccessory ? await new Promise(resolve => setTimeout(resolve, 3000)) : false;
+                this.startPrepareAccessory = false;
+
                 this.emit('checkState');
             } catch (error) {
                 const debug = disableLogConnectError ? false : this.emit('error', `Info error: ${error}, reconnect in 15s.`);
@@ -224,6 +232,9 @@ class DENON extends EventEmitter {
                     this.pictureMode = pictureMode;
                     this.soundMode = soundMode;
 
+                    //emit state
+                    const emitConnected = !this.connected ? this.emit('message', `Connected.`) : false;
+                    this.connected = true;
                     this.emit('stateChanged', power, reference, volume, volumeDisplay, mute, pictureMode);
 
                     //restFul
@@ -236,19 +247,17 @@ class DENON extends EventEmitter {
                     const mqtt2 = mqttEnabled && checkPictureMode ? this.emit('mqtt', 'Picture', { 'Picture Mode': CONSTANS.PictureModesDenonNumber[pictureMode] }) : false;
                     const mqtt3 = mqttEnabled && checkSoundeMode ? this.emit('mqtt', 'Surround', { 'Sound Mode': CONSTANS.SoundModeConversion[soundMode] }) : false;
 
-                    const prepareAccessory = this.startPrepareAccessory ? this.emit('prepareAccessory') : false;
-                    this.startPrepareAccessory = false;
-
                     this.checkState();
                 } catch (error) {
                     const debug = disableLogConnectError ? false : this.emit('error', `State error: ${error}, reconnect in 15s.`);
-                    this.checkState();
+                    this.emit('disconnect');
                 };
             })
             .on('disconnect', () => {
                 this.emit('stateChanged', false, this.reference, this.volume, this.volumeDisplay, this.mute, this.pictureMode);
                 this.emit('disconnected', 'Disconnected.');
-                this.checkDeviceInfo();
+                this.connected = false;
+                this.checkState();
             });
 
         this.emit('checkDeviceInfo');
@@ -267,7 +276,8 @@ class DENON extends EventEmitter {
     send(command) {
         return new Promise(async (resolve, reject) => {
             try {
-                await this.axiosInstance(CONSTANS.ApiUrls.iPhoneDirect + command);
+                const path = CONSTANS.ApiUrls.iPhoneDirect + command;
+                await this.axiosInstance(path);
                 await new Promise(resolve => setTimeout(resolve, 750));
                 resolve();
             } catch (error) {

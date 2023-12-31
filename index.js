@@ -21,14 +21,15 @@ class DenonPlatform {
 
 		api.on('didFinishLaunching', () => {
 			for (const device of config.devices) {
-				if (!device.name || !device.host || !device.port) {
-					log.warn('Device name, host or port missing!');
+				if (!device.name || !device.host || !device.port || !(device.zoneControl >= 0 && device.zoneControl <= 3)) {
+					log.warn(`Name: ${device.name ? 'OK' : device.name}, host: ${device.host ? 'OK' : device.host}, port: ${device.port ? 'OK' : device.port}, zone: ${(device.zoneControl >= 0 && device.zoneControl <= 3) ? 'OK' : device.zoneControl} ,n config wrong or missing.`);
 					return;
 				}
 				const debug = device.enableDebugMode ? log(`Device: ${device.host} ${device.name}, did finish launching.`) : false;
 
 				//denon device
-				const denonDevice = new DenonDevice(api, prefDir, device);
+				const zone = device.zoneControl;
+				const denonDevice = new DenonDevice(api, prefDir, zone, device);
 				denonDevice.on('publishAccessory', (accessory) => {
 					api.publishExternalAccessories(CONSTANS.PluginName, [accessory]);
 					const debug = device.enableDebugMode ? log(`Device: ${device.host} ${device.name}, published as external accessory.`) : false;

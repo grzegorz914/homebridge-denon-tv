@@ -173,6 +173,12 @@
         "Z3",
         "SM"
     ],
+    "ZoneInputSurroundName": [
+        "Input",
+        "Input",
+        "Input",
+        "Surround"
+    ],
     "InputSourceType": [
         "OTHER",
         "HOME_SCREEN",
