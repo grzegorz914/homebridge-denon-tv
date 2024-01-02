@@ -224,6 +224,12 @@ class DENON extends EventEmitter {
                     //select reference
                     const reference = zoneControl <= 2 ? input : soundMode;
 
+                    //update only if value change
+                    if (power === this.power && reference === this.reference && volume === this.volume && volumeDisplay === this.volumeDisplay && mute === this.mute && pictureMode === this.pictureMode && soundMode === this.soundMode) {
+                        this.checkState();
+                        return;
+                    };
+
                     this.power = power;
                     this.reference = reference;
                     this.volume = volume;

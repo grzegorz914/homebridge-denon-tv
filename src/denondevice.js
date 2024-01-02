@@ -83,7 +83,7 @@ class DenonDevice extends EventEmitter {
         this.volumeControlType = ';';
         this.mute = true;
         this.mediaState = false;
-        this.inputIdentifier = 0;
+        this.inputIdentifier = 1;
         this.supportPictureMode = false;
         this.pictureMode = 0;
         this.brightness = 0;
