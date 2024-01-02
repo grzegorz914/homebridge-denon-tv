@@ -44,12 +44,14 @@
                         {
                             "name": "MASTER POWER ON",
                             "reference": "0PWON",
-                            "displayType": -1
+                            "displayType": -1,
+                            "namePrefix": false
                         },
                         {
                             "name": "ZM POWER ON",
                             "reference": "0ZMON",
-                            "displayType": -1
+                            "displayType": -1,
+                            "namePrefix": false
                         }
                     ],
                     "sensorPower": false,
@@ -60,7 +62,8 @@
                         {
                             "name": "Tuner Sat",
                             "reference": "CBL/SAT",
-                            "displayType": -1
+                            "displayType": -1,
+                            "namePrefix": false
                         }
                     ],
                     "enableDebugMode": false,

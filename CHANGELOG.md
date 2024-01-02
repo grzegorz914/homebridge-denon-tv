@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## The properties *inputs.displayType* and *surrounds.displayType* are removed.
 ## Note - after update to 3.15.x need remove the accessory frome Home app and add it again.
 
+## [4.5.0] - (02.01.2024)
+## Changes
+- added possibility to disable prefix name for buttons and sensors [#215](https://github.com/grzegorz914/homebridge-denon-tv/issues/215)
+- config schema updated
+- cleanup
+
 ## [4.4.0] - (29.12.2023)
 ## Changes
 - added possibility to select display inputs order, possible by `None`, `Alphabetically Name`, `Alphabetically Reference`

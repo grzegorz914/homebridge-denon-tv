@@ -81,6 +81,7 @@ Tested with Denon AVR-X6300H, Denon AVR-X2700H, Denon AVR-3311CI, Marantz SR8012
 | `buttons.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. |
 | `buttons.reference` | Here choice function for additional control button for Main Zone. |
 | `buttons.displayType` | Here select display type in HomeKit app, possible `-1 - None/Disabled`, `0 - Outlet`, `1 - Switch`.|
+| `buttons.namePrefix` | Here enable/disable the accessory name as a prefix for button name.|
 | `sensorPower`| If enabled, then the Power will be exposed as a `Contact Sensor` to use with automations. |
 | `sensorVolume`| If enabled, then the Volume will be exposed as a `Contact Sensor` to use with automations. |
 | `sensorMute`| If enabled, then the Mute will be exposed as a `Contact Sensor` to use with automations. |
@@ -88,6 +89,7 @@ Tested with Denon AVR-X6300H, Denon AVR-X2700H, Denon AVR-3311CI, Marantz SR8012
 | `sensorInputs.name` | Here set own *Name* which You want expose to the *Homebridge/HomeKit* for this sensor. |
 | `sensorInputs.reference` | Here set *Reference* like `CBL/SAT`, `GAME` to be exposed as `Contact Sensor` active on switch to this Input. | 
 | `sensorInputs.displayType` | Here select sensor type to be exposed in HomeKit app, `-1 - None/Disabled`, `0 - Motion Sensor`, `1 - Occupancy Sensor`, `2 - Contact Sensor`. |
+| `sensorInputs.namePrefix` | Here enable/disable the accessory name as a prefix for sensor name.|
 | `enableDebugMode` | If enabled, deep log will be present in homebridge console. |
 | `disableLogInfo` | If enabled, disable log info, all values and state will not be displayed in Homebridge log console. |
 | `disableLogDeviceInfo` | If enabled, add ability to disable log device info by every connections device to the network. |
