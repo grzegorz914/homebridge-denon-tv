@@ -1049,7 +1049,7 @@ class DenonDevice extends EventEmitter {
                         //get display type
                         const sensorInputDisplayType = sensorInput.displayType >= 0 ? sensorInput.displayType : -1;
 
-                        //get button reference
+                        //get sensor name prefix
                         const namePrefix = sensorInput.namePrefix ?? false;
 
                         if (sensorInputDisplayType >= 0) {
@@ -1097,7 +1097,7 @@ class DenonDevice extends EventEmitter {
                         //get button display type
                         const buttonDisplayType = button.displayType >= 0 ? button.displayType : -1;
 
-                        //get button reference
+                        //get button name prefix
                         const namePrefix = button.namePrefix ?? false;
 
                         if (buttonDisplayType >= 0) {
