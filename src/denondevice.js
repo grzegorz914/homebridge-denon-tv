@@ -801,7 +801,7 @@ class DenonDevice extends EventEmitter {
                     //get input name
                     const name = input.name ?? `Input ${i + 1}`;
                     const savedInputsNames = this.savedInputsNames[input.reference] ?? false;
-                    const inputName = !savedInputsNames ? name : savedInputsNames;
+                    const inputName = savedInputsNames ? savedInputsNames : name;
                     input.name = inputName;
 
                     //get input reference
