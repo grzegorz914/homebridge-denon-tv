@@ -284,7 +284,6 @@ class DENON extends EventEmitter {
             try {
                 const path = CONSTANS.ApiUrls.iPhoneDirect + command;
                 await this.axiosInstance(path);
-                await new Promise(resolve => setTimeout(resolve, 750));
                 resolve();
             } catch (error) {
                 reject(error);
