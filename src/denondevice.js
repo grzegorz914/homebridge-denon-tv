@@ -389,8 +389,9 @@ class DenonDevice extends EventEmitter {
                 this.pictureMode = pictureMode;
 
                 if (!this.disableLogInfo) {
+                    const name = index !== -1 ? this.inputsConfigured[index].name : reference;
                     this.emit('message', `Power: ${power ? 'ON' : 'OFF'}`);
-                    this.emit('message', `${this.zoneInputSurroundName} Name: ${this.inputsConfigured[index].name}`);
+                    this.emit('message', `${this.zoneInputSurroundName} Name: ${name}`);
                     this.emit('message', `Reference: ${reference}`);
                     this.emit('message', `Volume: ${volume - 80}dB`);
                     this.emit('message', `Mute: ${mute ? 'ON' : 'OFF'}`);
