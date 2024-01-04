@@ -449,7 +449,7 @@ class DenonDevice extends EventEmitter {
     };
 
     displayOrder() {
-        return new Promise(async (resolve, reject) => {
+        return new Promise((resolve, reject) => {
             try {
                 switch (this.inputsDisplayOrder) {
                     case 0:
