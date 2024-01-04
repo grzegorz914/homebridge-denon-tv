@@ -390,7 +390,8 @@ class DenonDevice extends EventEmitter {
 
                 if (!this.disableLogInfo) {
                     this.emit('message', `Power: ${power ? 'ON' : 'OFF'}`);
-                    this.emit('message', `${this.zoneInputSurroundName} Name: ${this.inputsConfigured[index].name}, Reference: ${reference}`);
+                    this.emit('message', `${this.zoneInputSurroundName} Name: ${this.inputsConfigured[index].name}`);
+                    this.emit('message', `Reference: ${reference}`);
                     this.emit('message', `Volume: ${volume - 80} dB`);
                     this.emit('message', `Mute: ${mute ? 'ON' : 'OFF'}`);
                     this.emit('message', `Volume Control Type: ${volumeControlType}`);
@@ -403,7 +404,7 @@ class DenonDevice extends EventEmitter {
                     try {
                         const data = await fsPromises.readFile(this.inputsFile);
                         this.savedInputs = data.length > 0 ? JSON.parse(data) : (this.zone <= 2 ? this.inputs : this.surrounds);
-                        const debug = this.enableDebugMode ? this.emit('debug', `Read saved ${this.zoneInputSurroundName}: ${JSON.stringify(this.savedInputs, null, 2)}`) : false;
+                        const debug = !this.enableDebugMode ? alse : this.emit('debug', `Read saved ${this.zoneInputSurroundName}: ${JSON.stringify(this.savedInputs, null, 2)}`);
                     } catch (error) {
                         this.emit('error', `Read saved ${this.zoneInputSurroundName} error: ${error}`);
                     };
@@ -412,7 +413,7 @@ class DenonDevice extends EventEmitter {
                     try {
                         const data = await fsPromises.readFile(this.inputsNamesFile);
                         this.savedInputsNames = data.length > 0 ? JSON.parse(data) : {};
-                        const debug = this.enableDebugMode ? this.emit('debug', `Read saved ${this.zoneInputSurroundName} Names: ${JSON.stringify(this.savedInputsNames, null, 2)}`) : false;
+                        const debug = !this.enableDebugMode ? alse : this.emit('debug', `Read saved ${this.zoneInputSurroundName} Names: ${JSON.stringify(this.savedInputsNames, null, 2)}`);
                     } catch (error) {
                         this.emit('error', `Read saved ${this.zoneInputSurroundName} Names error: ${error}`);
                     };
@@ -421,7 +422,7 @@ class DenonDevice extends EventEmitter {
                     try {
                         const data = await fsPromises.readFile(this.inputsTargetVisibilityFile);
                         this.savedInputsTargetVisibility = data.length > 0 ? JSON.parse(data) : {};
-                        const debug = this.enableDebugMode ? this.emit('debug', `Read saved ${this.zoneInputSurroundName} Target Visibility: ${JSON.stringify(this.savedInputsTargetVisibility, null, 2)}`) : false;
+                        const debug = !this.enableDebugMode ? false : this.emit('debug', `Read saved ${this.zoneInputSurroundName} Target Visibility: ${JSON.stringify(this.savedInputsTargetVisibility, null, 2)}`);
                     } catch (error) {
                         this.emit('error', `Read saved ${this.zoneInputSurroundName} Target Visibility error: ${error}`);
                     };
@@ -476,7 +477,7 @@ class DenonDevice extends EventEmitter {
                         this.inputsConfigured.sort((a, b) => b.reference.localeCompare(a.reference));
                         break;
                 }
-                const debug = this.enableDebugMode ? this.emit('debug', `Inputs display order: ${JSON.stringify(this.inputsConfigured, null, 2)}`) : false;
+                const debug = !this.enableDebugMode ? false : this.emit('debug', `Inputs display order: ${JSON.stringify(this.inputsConfigured, null, 2)}`);
 
                 const displayOrder = this.inputsConfigured.map(input => input.identifier);
                 this.televisionService.setCharacteristic(Characteristic.DisplayOrder, Encode(1, displayOrder).toString('base64'));
