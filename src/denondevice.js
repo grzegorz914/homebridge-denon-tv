@@ -310,15 +310,15 @@ class DenonDevice extends EventEmitter {
                 const index = this.inputsConfigured.findIndex(input => input.reference === reference) ?? -1;
                 const inputIdentifier = index !== -1 ? this.inputsConfigured[index].identifier : this.inputIdentifier;
                 mute = power ? mute : true;
-                pictureMode = CONSTANS.PictureModesConversionToHomeKit[pictureMode];
+                const pictureModeHomeKit = CONSTANS.PictureModesConversionToHomeKit[pictureMode];
 
                 if (this.televisionService) {
                     this.televisionService
                         .updateCharacteristic(Characteristic.Active, power)
-                        .updateCharacteristic(Characteristic.PictureMode, pictureMode);
+                        .updateCharacteristic(Characteristic.PictureMode, pictureModeHomeKit);
                 }
 
-                if (this.televisionService && inputIdentifier !== -1) {
+                if (this.televisionService) {
                     this.televisionService
                         .updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier)
                 }
@@ -360,7 +360,7 @@ class DenonDevice extends EventEmitter {
                         .updateCharacteristic(Characteristic.ContactSensorState, state)
                 }
 
-                if (this.sensorInputService && inputIdentifier !== -1) {
+                if (this.sensorInputService) {
                     const state = power ? this.inputIdentifier !== inputIdentifier : false;
                     this.sensorInputService
                         .updateCharacteristic(Characteristic.ContactSensorState, state)
@@ -386,7 +386,7 @@ class DenonDevice extends EventEmitter {
                 this.volume = volume;
                 this.mute = mute;
                 this.volumeControlType = volumeControlType;
-                this.pictureMode = pictureMode;
+                this.pictureMode = pictureModeHomeKit;
 
                 if (!this.disableLogInfo) {
                     const name = index !== -1 ? this.inputsConfigured[index].name : reference;
