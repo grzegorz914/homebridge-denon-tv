@@ -1,4 +1,6 @@
 'use strict';
+const fs = require('fs');
+const fsPromises = fs.promises;
 const axios = require('axios');
 const EventEmitter = require('events');
 const { XMLParser, XMLBuilder, XMLValidator } = require('fast-xml-parser');
@@ -9,13 +11,29 @@ class DENON extends EventEmitter {
         super();
         const host = config.host;
         const port = config.port;
+        const zone = config.zone;
+        const inputs = config.inputs;
+        const surrounds = config.surrounds;
+        const devInfoFile = config.devInfoFile;
+        const inputsFile = config.inputsFile;
         const supportOldAvr = config.supportOldAvr;
-        const zoneControl = config.zoneControl;
+        const getInputsFromDevice = config.getInputsFromDevice;
+        const getFavoritesFromDevice = config.getFavoritesFromDevice;
+        const getQuickSmartSelectFromDevice = config.getQuickSmartSelectFromDevice;
         const debugLog = config.debugLog;
         const disableLogConnectError = config.disableLogConnectError;
+        const refreshInterval = config.refreshInterval;
         const restFulEnabled = config.restFulEnabled;
         const mqttEnabled = config.mqttEnabled;
-        this.refreshInterval = config.refreshInterval;
+
+        this.inputs = inputs;
+        this.surrounds = surrounds;
+        this.getInputsFromDevice = getInputsFromDevice;
+        this.getFavoritesFromDevice = getFavoritesFromDevice;
+        this.getQuickSmartSelectFromDevice = getQuickSmartSelectFromDevice;
+        this.debugLog = debugLog;
+        this.zoneInputSurroundName = CONSTANS.ZoneInputSurroundName[zone];
+        this.refreshInterval = refreshInterval;
 
         const baseUrl = `http://${host}:${port}`;
         this.axiosInstance = axios.create({
@@ -103,12 +121,12 @@ class DENON extends EventEmitter {
                 const supportFavoriteStation = capabilitiesOperationSupport & capabilitiesOperationKeys.includes('FavoriteStation') ? capabilitiesOperation.FavoriteStation.Control === 1 : false;
 
                 //zone capabilities
-                const checkZone = zoneControl < zones ? true : false;
-                const checkZoneNr = zoneControl < zones ? zoneControl : zones - 1;
+                const checkZone = zone < zones ? true : false;
+                const checkZoneNr = zone < zones ? zone : zones - 1;
                 const zoneCapabilitiesSupport = checkZone ? deviceInfoKeys.includes('DeviceZoneCapabilities') : false;
 
                 const checkZoneIsArray = zoneCapabilitiesSupport && Array.isArray(devInfo.DeviceZoneCapabilities) ? true : false;
-                const zoneCapabilities = zoneCapabilitiesSupport ? checkZoneIsArray ? devInfo.DeviceZoneCapabilities[checkZoneNr] : [devInfo.DeviceZoneCapabilities] : object;
+                const zoneCapabilities = zoneCapabilitiesSupport ? checkZoneIsArray ? devInfo.DeviceZoneCapabilities[checkZoneNr] : [devInfo.DeviceZoneCapabilities][checkZoneNr] : object;
                 const zoneCapabilitiesKeys = zoneCapabilitiesSupport ? Object.keys(zoneCapabilities) : [];
 
                 //zone
@@ -124,14 +142,14 @@ class DENON extends EventEmitter {
 
                 //setup
                 const zoneCapabilitiesSetupSupport = zoneCapabilitiesSupport && zoneCapabilitiesKeys.includes('Setup');
-                const zoneCapabilitiesSetup = zoneCapabilitiesSetupSupport ? devInfo.DeviceZoneCapabilities[checkZoneNr].Setup : object;
+                const zoneCapabilitiesSetup = zoneCapabilitiesSetupSupport ? zoneCapabilities.Setup : object;
                 const zonesCapabilitiesSetupKeys = zoneCapabilitiesSetupSupport ? Object.keys(zoneCapabilitiesSetup) : [];
                 const supportRestorer = zonesCapabilitiesSetupKeys.includes('Restorer') ? zoneCapabilitiesSetup.Restorer.Control === 1 : false;
                 const supportToneControl = zonesCapabilitiesSetupKeys.includes('ToneControl') ? zoneCapabilitiesSetup.ToneControl.Control === 1 : false;
 
                 //operation
                 const zoneCapabilitiesOperationSupport = zoneCapabilitiesSupport && zoneCapabilitiesKeys.includes('Operation');
-                const zoneCapabilitiesOperation = zoneCapabilitiesOperationSupport ? devInfo.DeviceZoneCapabilities[checkZoneNr].Operation : object;
+                const zoneCapabilitiesOperation = zoneCapabilitiesOperationSupport ? zoneCapabilities.Operation : object;
                 const zoneCapabilitiesOperationKeys = zoneCapabilitiesOperationSupport ? Object.keys(zoneCapabilitiesOperation) : [];
                 const supportCursor = zoneCapabilitiesOperationKeys.includes('Cursor') ? zoneCapabilitiesOperation.Cursor.Control === 1 : false;
                 const supportQuickSmartSelect = zoneCapabilitiesOperationKeys.includes('QuickSelect') ? zoneCapabilitiesOperation.QuickSelect.Control === 1 : false;
@@ -144,7 +162,7 @@ class DENON extends EventEmitter {
 
                 //net usb Marantz M-CR611
                 const zoneCapabilitiesNetUsbSupport = zoneCapabilitiesSupport && zoneCapabilitiesKeys.includes('NetUsb');
-                const zoneCapabilitiesNetUsb = zoneCapabilitiesNetUsbSupport ? devInfo.DeviceZoneCapabilities[checkZoneNr].NetUsb : object;
+                const zoneCapabilitiesNetUsb = zoneCapabilitiesNetUsbSupport ? zoneCapabilities.NetUsb : object;
                 const zoneCapabilitiesNetUsbKeys = zoneCapabilitiesNetUsbSupport ? Object.keys(zoneCapabilitiesNetUsb) : [];
                 const supportInternetRadio = zoneCapabilitiesNetUsbKeys.includes('InternetRadio') ? zoneCapabilitiesNetUsb.InternetRadio.Control === 1 : false;
                 const supportMediaServer = zoneCapabilitiesNetUsbKeys.includes('MediaServer') ? zoneCapabilitiesNetUsb.MediaServer.Control === 1 : false;
@@ -156,12 +174,18 @@ class DENON extends EventEmitter {
                 //check seriaql number
                 if (!serialNumber) {
                     const debug1 = debugLog ? this.emit('debug', `Missing Serial Number, reconnect in 15s.`) : false;
-                    this.checkDeviceInfo();
+                    this.checkDeviceInfo(devInfoFile);
                     return;
                 }
 
+                //save device info to the file
+                const saveDevInfo = zone === 0 ? await this.saveDevInfo(devInfoFile, devInfo) : false;
+
+                //save inputs to the file
+                await this.saveInputs(inputsFile, devInfo, zone, zoneCapabilities, supportFavorites, supportShortcut, supportInputSource, supportQuickSmartSelect);
+
                 //emit device info
-                const emitDeviceInfo = this.emitDeviceInfo ? this.emit('deviceInfo', devInfo, manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion, supportPictureMode, supportFavorites, supportShortcut, supportInputSource, supportQuickSmartSelect) : false;
+                const emitDeviceInfo = this.emitDeviceInfo ? this.emit('deviceInfo', manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion, supportPictureMode) : false;
                 this.emitDeviceInfo = false;
 
                 //restFul
@@ -175,7 +199,7 @@ class DENON extends EventEmitter {
 
                 //prepare accessory
                 const prepareAccessory = this.startPrepareAccessory ? this.emit('prepareAccessory') : false;
-                const awaitPrepareAccessory = this.startPrepareAccessory ? await new Promise(resolve => setTimeout(resolve, 3000)) : false;
+                const awaitPrepareAccessory = this.startPrepareAccessory ? await new Promise(resolve => setTimeout(resolve, 2500)) : false;
                 this.startPrepareAccessory = false;
 
                 this.emit('checkState');
@@ -187,7 +211,7 @@ class DENON extends EventEmitter {
             .on('checkState', async () => {
                 try {
                     //get zones status
-                    const zoneUrl = [CONSTANS.ApiUrls.MainZoneStatusLite, CONSTANS.ApiUrls.Zone2StatusLite, CONSTANS.ApiUrls.Zone3StatusLite, CONSTANS.ApiUrls.SoundModeStatus][zoneControl];
+                    const zoneUrl = [CONSTANS.ApiUrls.MainZoneStatusLite, CONSTANS.ApiUrls.Zone2StatusLite, CONSTANS.ApiUrls.Zone3StatusLite, CONSTANS.ApiUrls.SoundModeStatus][zone];
                     const deviceState = await this.axiosInstance(zoneUrl);
                     const parseDeviceState = parseString.parse(deviceState.data);
                     const devState = parseDeviceState.item;
@@ -207,14 +231,14 @@ class DENON extends EventEmitter {
                     const mute = devState.Mute.value === 'on';
 
                     //get picture mode
-                    const checkPictureMode = this.supportPictureMode && power && zoneControl === 0;
+                    const checkPictureMode = this.supportPictureMode && power && zone === 0;
                     const devicePictureMode = checkPictureMode ? await this.axiosInstancePost(CONSTANS.ApiUrls.AppCommand, CONSTANS.BodyXml.GetPictureMode) : false;
                     const parseDevicePictureMode = checkPictureMode ? parseString.parse(devicePictureMode.data) : false;
                     const debug1 = debugLog && checkPictureMode ? this.emit('debug', `Picture mode: ${JSON.stringify(parseDevicePictureMode, null, 2)}`) : false;
                     const pictureMode = checkPictureMode ? parseDevicePictureMode.rx.cmd.value : this.pictureMode;
 
                     //get sound mode
-                    const checkZone = zoneControl === 0 || zoneControl === 3;
+                    const checkZone = zone === 0 || zone === 3;
                     const checkSoundeMode = this.supportSoundMode && power && checkZone;
                     const deviceSoundMode = checkSoundeMode ? await this.axiosInstancePost(CONSTANS.ApiUrls.AppCommand, CONSTANS.BodyXml.GetSurroundModeStatus) : false;
                     const parseDeviceSoundMode = checkSoundeMode ? parseString.parse(deviceSoundMode.data) : false;
@@ -222,7 +246,7 @@ class DENON extends EventEmitter {
                     const soundMode = checkSoundeMode ? soundModesConcersionKeys.includes((parseDeviceSoundMode.rx.cmd.surround).replace(/[^a-zA-Z0-9]/g, '').toUpperCase()) ? CONSTANS.SoundModeConversion[(parseDeviceSoundMode.rx.cmd.surround).replace(/[^a-zA-Z0-9]/g, '').toUpperCase()] : (parseDeviceSoundMode.rx.cmd.surround).replace(/[^a-zA-Z0-9]/g, '').toUpperCase() : this.soundMode;
 
                     //select reference
-                    const reference = zoneControl <= 2 ? input : soundMode;
+                    const reference = zone <= 2 ? input : soundMode;
 
                     //update only if value change
                     if (power === this.power && reference === this.reference && volume === this.volume && volumeDisplay === this.volumeDisplay && mute === this.mute && pictureMode === this.pictureMode && soundMode === this.soundMode) {
@@ -277,6 +301,117 @@ class DENON extends EventEmitter {
     async checkState() {
         await new Promise(resolve => setTimeout(resolve, this.refreshInterval * 1000));
         this.emit('checkState');
+    };
+
+    saveDevInfo(path, devInfo) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const info = JSON.stringify(devInfo, null, 2);
+                await fsPromises.writeFile(path, info);
+                const debug = !this.debugLog ? false : this.emit('message', `saved device info: ${info}`);
+
+                resolve();
+            } catch (error) {
+                reject(error);
+            };
+        });
+    };
+
+    saveInputs(path, devInfo, zone, zoneCapabilities, supportFavorites, supportShortcut, supportInputSource, supportQuickSmartSelect) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const referenceConversionKeys = Object.keys(CONSTANS.InputConversion);
+                const inputsArr = [];
+                const referencesArray = [];
+
+                //old AVR
+                const inputsReferenceOldAvr = this.supportOldAvr ? devInfo.InputFuncList.value : [];
+                const inputsNameOldAvr = this.supportOldAvr ? devInfo.RenameSource.value : [];
+                const inputsReferenceOldAvrCount = inputsReferenceOldAvr.length;
+                for (let i = 0; i < inputsReferenceOldAvrCount; i++) {
+                    const renamedInput = inputsNameOldAvr[i].trim();
+                    const name = renamedInput !== '' ? inputsNameOldAvr[i] : inputsReferenceOldAvr[i];
+                    const inputReference = inputsReferenceOldAvr[i];
+                    const reference = referenceConversionKeys.includes(inputReference) ? CONSTANS.InputConversion[inputReference] : inputReference;
+                    const obj = {
+                        'name': name,
+                        'reference': reference,
+                        'mode': 'SI'
+                    }
+                    inputsArr.push(obj);
+                    referencesArray.push(reference);
+                }
+
+                //new AVR-X
+                const deviceInputs = this.getInputsFromDevice && supportInputSource ? zoneCapabilities.InputSource.List.Source : [];
+                for (const input of deviceInputs) {
+                    const inputName = input.DefaultName;
+                    const inputReference = input.FuncName;
+                    const reference = referenceConversionKeys.includes(inputReference) ? CONSTANS.InputConversion[inputReference] : inputReference;
+                    const obj = {
+                        'name': inputName,
+                        'reference': reference,
+                        'mode': 'SI'
+                    }
+                    inputsArr.push(obj);
+                    referencesArray.push(reference);
+                };
+
+                const deviceSchortcuts = this.getInputsFromDevice && supportShortcut ? zoneCapabilities.ShortcutControl.EntryList.Shortcut : [];
+                for (const shortcut of deviceSchortcuts) {
+                    const category = shortcut.Category; //3 Quick/Smart Select, 4 Inputs
+                    const shortcutName = shortcut.DispName;
+                    const shortcutReference = shortcut.FuncName;
+                    const reference = referenceConversionKeys.includes(shortcutReference) ? CONSTANS.InputConversion[shortcutReference] : shortcutReference;
+                    const obj = {
+                        'name': shortcutName,
+                        'reference': reference,
+                        'mode': ['', '', '', 'MS', 'SI'][category]
+                    }
+                    const existedInArray = referencesArray.includes(reference);
+                    const push = !existedInArray && category === '4' ? inputsArr.push(obj) : false;
+                };
+
+                const deviceFavorites = this.getFavoritesFromDevice && supportFavorites ? devInfo.DeviceCapabilities.Operation.Favorites : [];
+                for (const favorite of deviceFavorites) {
+                    const favoriteName = favorite.DispName;
+                    const favoriteReference = favorite.FuncName;
+                    const reference = referenceConversionKeys.includes(favoriteReference) ? CONSTANS.InputConversion[favoriteReference] : favoriteReference;
+                    const obj = {
+                        'name': favoriteName,
+                        'reference': reference,
+                        'mode': 'ZM'
+                    }
+                    const existedInArray = referencesArray.includes(reference);
+                    const push = !existedInArray ? inputsArr.push(obj) : false;
+                };
+
+                const deviceQuickSmartSelect = this.getQuickSmartSelectFromDevice && supportQuickSmartSelect ? zoneCapabilities.Operation.QuickSelect : [];
+                const quickSelectCount = this.getQuickSmartSelectFromDevice && supportQuickSmartSelect ? deviceQuickSmartSelect.MaxQuickSelect : 0;
+                for (let i = 0; i < quickSelectCount; i++) {
+                    const quickSelect = deviceQuickSmartSelect[`QuickSelect${i + 1}`];
+                    const quickSelectName = quickSelect.Name;
+                    const quickSelectReference = quickSelect.FuncName;
+                    const reference = referenceConversionKeys.includes(quickSelectReference) ? CONSTANS.InputConversion[quickSelectReference] : quickSelectReference;
+                    const obj = {
+                        'name': quickSelectName,
+                        'reference': reference,
+                        'mode': 'MS'
+                    }
+                    const existedInArray = referencesArray.includes(reference);
+                    const push = !existedInArray ? inputsArr.push(obj) : false;
+                };
+
+                const allInputsArr = zone <= 2 ? this.getInputsFromDevice ? inputsArr : this.inputs : this.surrounds;
+                const inputs = JSON.stringify(allInputsArr, null, 2);
+                await fsPromises.writeFile(path, inputs);
+                const debug = !this.debugLog ? false : this.emit('message', `saved ${this.zoneInputSurroundName}: ${inputs}`);
+
+                resolve()
+            } catch (error) {
+                reject(error);
+            }
+        });
     };
 
     send(command) {

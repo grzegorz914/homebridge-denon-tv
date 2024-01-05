@@ -160,151 +160,51 @@ class DenonDevice extends EventEmitter {
         this.denon = new Denon({
             host: this.host,
             port: this.port,
+            zone: this.zone,
+            inputs: this.inputs,
+            surrounds: this.surrounds,
+            devInfoFile: this.devInfoFile,
+            inputsFile: this.inputsFile,
             supportOldAvr: this.supportOldAvr,
+            getInputsFromDevice: this.getInputsFromDevice,
+            getFavoritesFromDevice: this.getFavoritesFromDevice,
+            getQuickSmartSelectFromDevice: this.getQuickSmartSelectFromDevice,
             debugLog: this.enableDebugMode,
             disableLogConnectError: this.disableLogConnectError,
-            zoneControl: this.zone,
             refreshInterval: this.refreshInterval,
             restFulEnabled: this.restFulEnabled,
             mqttEnabled: this.mqttEnabled
         });
 
-        this.denon.on('deviceInfo', async (devInfo, manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion, supportPictureMode, supportFavorites, supportShortcut, supportInputSource, supportQuickSmartSelect) => {
-            try {
-                if (!this.disableLogDeviceInfo) {
-                    this.emit('devInfo', `-------- ${this.name} --------`);
-                    this.emit('devInfo', `Manufacturer: ${manufacturer}`);
-                    this.emit('devInfo', `Model: ${modelName}`);
-                    if (this.zone === 0) {
-                        this.emit('devInfo', `Zones: ${zones}`);
-                        this.emit('devInfo', `Control: Main Zone`);
-                        this.emit('devInfo', `Firmware: ${firmwareRevision}`);
-                        this.emit('devInfo', `Api version: ${apiVersion}`);
-                        this.emit('devInfo', `Serialnr: ${serialNumber}`);
-                    }
-                    if (this.zone === 1) {
-                        this.emit('devInfo', `Control: Zone 2`);
-                    }
-                    if (this.zone === 2) {
-                        this.emit('devInfo', `Control: Zone 3`);
-                    }
-                    if (this.zone === 3) {
-                        this.emit('devInfo', `Control: Sound Modes`);
-                    }
-                    this.emit('devInfo', `----------------------------------`);
-                }
-
-                this.manufacturer = manufacturer;
-                this.modelName = modelName;
-                this.serialNumber = serialNumber;
-                this.firmwareRevision = firmwareRevision;
-                this.supportPictureMode = supportPictureMode;
-
-                //save device info to the file
+        this.denon.on('deviceInfo', (manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion, supportPictureMode) => {
+            if (!this.disableLogDeviceInfo) {
+                this.emit('devInfo', `-------- ${this.name} --------`);
+                this.emit('devInfo', `Manufacturer: ${manufacturer}`);
+                this.emit('devInfo', `Model: ${modelName}`);
                 if (this.zone === 0) {
-                    try {
-                        const info = JSON.stringify(devInfo, null, 2);
-                        await fsPromises.writeFile(this.devInfoFile, info);
-                        const debug = this.enableDebugMode ? this.emit('message', `saved device info: ${info}`) : false;
-                    } catch (error) {
-                        this.emit('error', `save device info error: ${error}`);
-                    };
+                    this.emit('devInfo', `Zones: ${zones}`);
+                    this.emit('devInfo', `Control: Main Zone`);
+                    this.emit('devInfo', `Firmware: ${firmwareRevision}`);
+                    this.emit('devInfo', `Api version: ${apiVersion}`);
+                    this.emit('devInfo', `Serialnr: ${serialNumber}`);
                 }
-
-                //save inputs fav and shortcuts to the file
-                try {
-                    const referenceConversionKeys = Object.keys(CONSTANS.InputConversion);
-                    const inputsArr = [];
-                    const referencesArray = [];
-
-                    //old AVR
-                    const inputsReferenceOldAvr = this.supportOldAvr ? devInfo.InputFuncList.value : [];
-                    const inputsNameOldAvr = this.supportOldAvr ? devInfo.RenameSource.value : [];
-                    const inputsReferenceOldAvrCount = inputsReferenceOldAvr.length;
-                    for (let i = 0; i < inputsReferenceOldAvrCount; i++) {
-                        const renamedInput = inputsNameOldAvr[i].trim();
-                        const name = renamedInput !== '' ? inputsNameOldAvr[i] : inputsReferenceOldAvr[i];
-                        const inputReference = inputsReferenceOldAvr[i];
-                        const reference = referenceConversionKeys.includes(inputReference) ? CONSTANS.InputConversion[inputReference] : inputReference;
-                        const obj = {
-                            'name': name,
-                            'reference': reference,
-                            'mode': 'SI'
-                        }
-                        inputsArr.push(obj);
-                        referencesArray.push(reference);
-                    }
-
-                    //new AVR-X
-                    const deviceInputs = this.getInputsFromDevice && supportInputSource ? devInfo.DeviceZoneCapabilities[this.zone].InputSource.List.Source : [];
-                    for (const input of deviceInputs) {
-                        const inputName = input.DefaultName;
-                        const inputReference = input.FuncName;
-                        const reference = referenceConversionKeys.includes(inputReference) ? CONSTANS.InputConversion[inputReference] : inputReference;
-                        const obj = {
-                            'name': inputName,
-                            'reference': reference,
-                            'mode': 'SI'
-                        }
-                        inputsArr.push(obj);
-                        referencesArray.push(reference);
-                    };
-
-                    const deviceSchortcuts = this.getInputsFromDevice && supportShortcut ? devInfo.DeviceZoneCapabilities[this.zone].ShortcutControl.EntryList.Shortcut : [];
-                    for (const shortcut of deviceSchortcuts) {
-                        const category = shortcut.Category; //3 Quick/Smart Select, 4 Inputs
-                        const shortcutName = shortcut.DispName;
-                        const shortcutReference = shortcut.FuncName;
-                        const reference = referenceConversionKeys.includes(shortcutReference) ? CONSTANS.InputConversion[shortcutReference] : shortcutReference;
-                        const obj = {
-                            'name': shortcutName,
-                            'reference': reference,
-                            'mode': ['', '', '', 'MS', 'SI'][category]
-                        }
-                        const existedInArray = referencesArray.includes(reference);
-                        const push = !existedInArray && category === '4' ? inputsArr.push(obj) : false;
-                    };
-
-                    const deviceFavorites = this.getFavoritesFromDevice && supportFavorites ? devInfo.DeviceCapabilities.Operation.Favorites : [];
-                    for (const favorite of deviceFavorites) {
-                        const favoriteName = favorite.DispName;
-                        const favoriteReference = favorite.FuncName;
-                        const reference = referenceConversionKeys.includes(favoriteReference) ? CONSTANS.InputConversion[favoriteReference] : favoriteReference;
-                        const obj = {
-                            'name': favoriteName,
-                            'reference': reference,
-                            'mode': 'ZM'
-                        }
-                        const existedInArray = referencesArray.includes(reference);
-                        const push = !existedInArray ? inputsArr.push(obj) : false;
-                    };
-
-                    const deviceQuickSmartSelect = this.getQuickSmartSelectFromDevice && supportQuickSmartSelect ? devInfo.DeviceZoneCapabilities[this.zone].Operation.QuickSelect : [];
-                    const quickSelectCount = this.getQuickSmartSelectFromDevice && supportQuickSmartSelect ? deviceQuickSmartSelect.MaxQuickSelect : 0;
-                    for (let i = 0; i < quickSelectCount; i++) {
-                        const quickSelect = deviceQuickSmartSelect[`QuickSelect${i + 1}`];
-                        const quickSelectName = quickSelect.Name;
-                        const quickSelectReference = quickSelect.FuncName;
-                        const reference = referenceConversionKeys.includes(quickSelectReference) ? CONSTANS.InputConversion[quickSelectReference] : quickSelectReference;
-                        const obj = {
-                            'name': quickSelectName,
-                            'reference': reference,
-                            'mode': 'MS'
-                        }
-                        const existedInArray = referencesArray.includes(reference);
-                        const push = !existedInArray ? inputsArr.push(obj) : false;
-                    };
-
-                    const allInputsArr = this.zone <= 2 ? this.getInputsFromDevice ? inputsArr : this.inputs : this.surrounds;
-                    const inputs = JSON.stringify(allInputsArr, null, 2);
-                    await fsPromises.writeFile(this.inputsFile, inputs);
-                    const debug = this.enableDebugMode ? this.emit('message', `saved ${this.zoneInputSurroundName}: ${inputs}`) : false;
-                } catch (error) {
-                    this.emit('error', `save ${this.zoneInputSurroundName} error: ${error}`);
+                if (this.zone === 1) {
+                    this.emit('devInfo', `Control: Zone 2`);
                 }
-            } catch (error) {
-                this.emit('error', `create files error: ${error}`);
-            };
+                if (this.zone === 2) {
+                    this.emit('devInfo', `Control: Zone 3`);
+                }
+                if (this.zone === 3) {
+                    this.emit('devInfo', `Control: Sound Modes`);
+                }
+                this.emit('devInfo', `----------------------------------`);
+            }
+
+            this.manufacturer = manufacturer;
+            this.modelName = modelName;
+            this.serialNumber = serialNumber;
+            this.firmwareRevision = firmwareRevision;
+            this.supportPictureMode = supportPictureMode;
         })
             .on('stateChanged', (power, reference, volume, volumeControlType, mute, pictureMode) => {
                 const index = this.inputsConfigured.findIndex(input => input.reference === reference) ?? -1;
