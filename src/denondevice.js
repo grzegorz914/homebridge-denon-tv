@@ -60,23 +60,31 @@ class DenonDevice extends EventEmitter {
         this.mqttPasswd = config.mqttPasswd;
         this.mqttDebug = config.mqttDebug || false;
 
+        //external integrations
+        this.restFulConnected = false;
+        this.mqttConnected = false;
+
+        //services
+        this.allServices = [];
+        this.sensorsInputsServices = [];
+        this.buttonsServices = [];
+
         //zones
         this.zoneName = CONSTANS.ZoneName[zone];
         this.sZoneName = CONSTANS.ZoneNameShort[zone];
         this.zoneInputSurroundName = CONSTANS.ZoneInputSurroundName[zone];
 
-        //setup variables
-        this.restFulConnected = false;
-        this.mqttConnected = false;
-
-        //accessory services
-        this.allServices = [];
-        this.sensorsInputsServices = [];
-        this.buttonsServices = [];
-
         //inputs
         this.inputsConfigured = [];
         this.inputIdentifier = 1;
+
+        //sensors
+        this.sensorInputs = [];
+        this.sensorVolumeState = false;
+        this.sensorInputState = false;
+
+        //buttons
+        this.buttonsConfigured = [];
 
         //state variable
         this.power = false;
@@ -88,14 +96,6 @@ class DenonDevice extends EventEmitter {
         this.supportPictureMode = false;
         this.pictureMode = 0;
         this.brightness = 0;
-
-        //sensors variabl
-        this.sensorInputs = [];
-        this.sensorVolumeState = false;
-        this.sensorInputState = false;
-
-        //buttons variable
-        this.buttonsConfigured = [];
 
         //check files exists, if not then create it
         const postFix = `${this.sZoneName}${this.host.split('.').join('')}`
@@ -208,10 +208,10 @@ class DenonDevice extends EventEmitter {
                 this.emit('devInfo', `----------------------------------`);
             }
 
-            this.manufacturer = manufacturer;
-            this.modelName = modelName;
-            this.serialNumber = serialNumber;
-            this.firmwareRevision = firmwareRevision;
+            this.manufacturer = manufacturer || 'Manufacturer';
+            this.modelName = modelName || 'Model Name';
+            this.serialNumber = serialNumber || 'Serial Number';
+            this.firmwareRevision = firmwareRevision || 'Firmware Revision';
             this.supportPictureMode = supportPictureMode;
         })
             .on('stateChanged', (power, reference, volume, volumeControlType, mute, pictureMode) => {
