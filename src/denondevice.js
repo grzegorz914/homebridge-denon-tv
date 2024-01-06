@@ -313,7 +313,7 @@ class DenonDevice extends EventEmitter {
                     //read inputs names from file
                     try {
                         const data = await fsPromises.readFile(this.inputsNamesFile);
-                        this.savedInputsNames = data.length > 0 ? JSON.parse(data) : {};
+                        this.savedInputsNames = data.trim().length > 0 ? JSON.parse(data) : {};
                         const debug = !this.enableDebugMode ? false : this.emit('debug', `Read saved ${this.zoneInputSurroundName} Names: ${JSON.stringify(this.savedInputsNames, null, 2)}`);
                     } catch (error) {
                         this.emit('error', `Read saved ${this.zoneInputSurroundName} Names error: ${error}`);
@@ -322,7 +322,7 @@ class DenonDevice extends EventEmitter {
                     //read inputs visibility from file
                     try {
                         const data = await fsPromises.readFile(this.inputsTargetVisibilityFile);
-                        this.savedInputsTargetVisibility = data.length > 0 ? JSON.parse(data) : {};
+                        this.savedInputsTargetVisibility = data.trim().length > 0 ? JSON.parse(data) : {};
                         const debug = !this.enableDebugMode ? false : this.emit('debug', `Read saved ${this.zoneInputSurroundName} Target Visibility: ${JSON.stringify(this.savedInputsTargetVisibility, null, 2)}`);
                     } catch (error) {
                         this.emit('error', `Read saved ${this.zoneInputSurroundName} Target Visibility error: ${error}`);
