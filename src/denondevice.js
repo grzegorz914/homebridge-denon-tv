@@ -304,7 +304,7 @@ class DenonDevice extends EventEmitter {
                     //read inputs file
                     try {
                         const data = await fsPromises.readFile(this.inputsFile);
-                        this.savedInputs = data.length > 0 ? JSON.parse(data) : (this.zone <= 2 ? this.inputs : this.surrounds);
+                        this.savedInputs = data.toString().trim() !== '' ? JSON.parse(data) : (this.zone <= 2 ? this.inputs : this.surrounds);
                         const debug = !this.enableDebugMode ? false : this.emit('debug', `Read saved ${this.zoneInputSurroundName}: ${JSON.stringify(this.savedInputs, null, 2)}`);
                     } catch (error) {
                         this.emit('error', `Read saved ${this.zoneInputSurroundName} error: ${error}`);
@@ -313,7 +313,7 @@ class DenonDevice extends EventEmitter {
                     //read inputs names from file
                     try {
                         const data = await fsPromises.readFile(this.inputsNamesFile);
-                        this.savedInputsNames = data.length > 0 ? JSON.parse(data) : {};
+                        this.savedInputsNames = data.toString().trim() !== '' ? JSON.parse(data) : {};
                         const debug = !this.enableDebugMode ? false : this.emit('debug', `Read saved ${this.zoneInputSurroundName} Names: ${JSON.stringify(this.savedInputsNames, null, 2)}`);
                     } catch (error) {
                         this.emit('error', `Read saved ${this.zoneInputSurroundName} Names error: ${error}`);
@@ -322,7 +322,7 @@ class DenonDevice extends EventEmitter {
                     //read inputs visibility from file
                     try {
                         const data = await fsPromises.readFile(this.inputsTargetVisibilityFile);
-                        this.savedInputsTargetVisibility = data.length > 0 ? JSON.parse(data) : {};
+                        this.savedInputsTargetVisibility = data.toString().trim() !== '' ? JSON.parse(data) : {};
                         const debug = !this.enableDebugMode ? false : this.emit('debug', `Read saved ${this.zoneInputSurroundName} Target Visibility: ${JSON.stringify(this.savedInputsTargetVisibility, null, 2)}`);
                     } catch (error) {
                         this.emit('error', `Read saved ${this.zoneInputSurroundName} Target Visibility error: ${error}`);
