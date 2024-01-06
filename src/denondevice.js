@@ -69,25 +69,33 @@ class DenonDevice extends EventEmitter {
         this.restFulConnected = false;
         this.mqttConnected = false;
 
-        this.inputsConfigured = [];
-        this.sensorInputs = [];
-
+        //accessory services
         this.allServices = [];
         this.sensorsInputsServices = [];
         this.buttonsServices = [];
 
+        //inputs
+        this.inputsConfigured = [];
+        this.inputIdentifier = 1;
+
+        //state variable
         this.power = false;
         this.reference = '';
         this.volume = 0;
         this.volumeControlType = ';';
         this.mute = true;
         this.mediaState = false;
-        this.inputIdentifier = 1;
         this.supportPictureMode = false;
         this.pictureMode = 0;
         this.brightness = 0;
+
+        //sensors variabl
+        this.sensorInputs = [];
         this.sensorVolumeState = false;
         this.sensorInputState = false;
+
+        //buttons variable
+        this.buttonsConfigured = [];
 
         //check files exists, if not then create it
         const postFix = `${this.sZoneName}${this.host.split('.').join('')}`
@@ -1040,6 +1048,7 @@ class DenonDevice extends EventEmitter {
                                         };
                                     });
 
+                                this.buttonsConfigured.push(button);
                                 this.buttonsServices.push(buttonService);
                                 this.allServices.push(buttonService);
                                 accessory.addService(buttonService);
