@@ -77,16 +77,20 @@ class DENON extends EventEmitter {
 
                 //device info
                 const deviceInfoKeys = Object.keys(devInfo);
+                const deviceInfoVers = deviceInfoKeys.includes('DeviceInfoVers') ? devInfo.DeviceInfoVers : 0;
                 const apiVersion = deviceInfoKeys.includes('CommApiVers') ? devInfo.CommApiVers : '000';
+                const gen = deviceInfoKeys.includes('Gen') ? devInfo.Gen : 0;
                 const brandCode = deviceInfoKeys.includes('BrandCode') ? devInfo.BrandCode : 2;
                 const manufacturer = ['Denon', 'Marantz', 'Denon/Marantz'][brandCode];
                 const productCategory = deviceInfoKeys.includes('ProductCategory') ? devInfo.ProductCategory : '00';
                 const categoryName = deviceInfoKeys.includes('CategoryName') ? devInfo.ProductCategory : 'Unknown';
                 const manualModelName = deviceInfoKeys.includes('ManualModelName') ? devInfo.ManualModelName : 'Unknown';
+                const deliveryCode = deviceInfoKeys.includes('DeliveryCode') ? devInfo.DeliveryCode : 0;
                 const modelName = deviceInfoKeys.includes('ModelName') ? devInfo.ModelName : 'AV Receiver';
                 const serialNumber = deviceInfoKeys.includes('MacAddress') ? devInfo.MacAddress.toString() : supportOldAvr ? `1234567654321` : false;
                 const firmwareRevision = deviceInfoKeys.includes('UpgradeVersion') ? devInfo.UpgradeVersion.toString() : '00';
-                const zones = deviceInfoKeys.includes('DeviceZones') ? parseInt(devInfo.DeviceZones) : 1;
+                const reloadDeviceInfo = deviceInfoKeys.includes('ReloadDeviceInfo') ? devInfo.ReloadDeviceInfo : 0;
+                const deviceZones = deviceInfoKeys.includes('DeviceZones') ? devInfo.DeviceZones : 1;
 
                 //device capabilities
                 const capabilitiesSupport = deviceInfoKeys.includes('DeviceCapabilities');
@@ -110,6 +114,11 @@ class DENON extends EventEmitter {
                 const supportPictureMode = capabilitiesSetupSupport && capabilitiesSetupKeys.includes('PictureMode') ? capabilitiesSetup.PictureMode.Control === 1 : false;
                 const supportSoundMode = capabilitiesSetupSupport && capabilitiesSetupKeys.includes('SoundMode') ? capabilitiesSetup.SoundMode.Control === 1 : false
 
+                //net link
+                const capabilitiesNetLinkSupport = capabilitiesSupport && capabilitiesKeys.includes('NetLink');
+                const capabilitiesNetLink = capabilitiesNetLinkSupport ? devInfo.DeviceCapabilities.NetLink : object;
+                const capabilitiesNetLinkKeys = capabilitiesNetLinkSupport ? Object.keys(capabilitiesNetLink) : [];
+
                 //operation
                 const capabilitiesOperationSupport = capabilitiesSupport && capabilitiesKeys.includes('Operation');
                 const capabilitiesOperation = capabilitiesOperationSupport ? devInfo.DeviceCapabilities.Operation : object;
@@ -121,12 +130,8 @@ class DENON extends EventEmitter {
                 const supportFavoriteStation = capabilitiesOperationSupport & capabilitiesOperationKeys.includes('FavoriteStation') ? capabilitiesOperation.FavoriteStation.Control === 1 : false;
 
                 //zone capabilities
-                const checkZone = zone < zones ? true : false;
-                const checkZoneNr = zone < zones ? zone : zones - 1;
-                const zoneCapabilitiesSupport = checkZone ? deviceInfoKeys.includes('DeviceZoneCapabilities') : false;
-
-                const checkZoneIsArray = zoneCapabilitiesSupport && Array.isArray(devInfo.DeviceZoneCapabilities) ? true : false;
-                const zoneCapabilities = zoneCapabilitiesSupport ? checkZoneIsArray ? devInfo.DeviceZoneCapabilities[checkZoneNr] : [devInfo.DeviceZoneCapabilities][checkZoneNr] : object;
+                const zoneCapabilitiesSupport = zone <= 2 ? deviceInfoKeys.includes('DeviceZoneCapabilities') : false;
+                const zoneCapabilities = zoneCapabilitiesSupport ? Array.isArray(devInfo.DeviceZoneCapabilities) ? devInfo.DeviceZoneCapabilities[zone] : [devInfo.DeviceZoneCapabilities][0] : [];
                 const zoneCapabilitiesKeys = zoneCapabilitiesSupport ? Object.keys(zoneCapabilities) : [];
 
                 //zone
@@ -185,7 +190,7 @@ class DENON extends EventEmitter {
                 await this.saveInputs(inputsFile, devInfo, zone, zoneCapabilities, supportFavorites, supportShortcut, supportInputSource, supportQuickSmartSelect);
 
                 //emit device info
-                const emitDeviceInfo = this.emitDeviceInfo ? this.emit('deviceInfo', manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion, supportPictureMode) : false;
+                const emitDeviceInfo = this.emitDeviceInfo ? this.emit('deviceInfo', manufacturer, modelName, serialNumber, firmwareRevision, deviceZones, apiVersion, supportPictureMode) : false;
                 this.emitDeviceInfo = false;
 
                 //restFul

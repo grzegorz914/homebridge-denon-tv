@@ -184,13 +184,13 @@ class DenonDevice extends EventEmitter {
             mqttEnabled: this.mqttEnabled
         });
 
-        this.denon.on('deviceInfo', (manufacturer, modelName, serialNumber, firmwareRevision, zones, apiVersion, supportPictureMode) => {
+        this.denon.on('deviceInfo', (manufacturer, modelName, serialNumber, firmwareRevision, deviceZones, apiVersion, supportPictureMode) => {
             if (!this.disableLogDeviceInfo) {
                 this.emit('devInfo', `-------- ${this.name} --------`);
                 this.emit('devInfo', `Manufacturer: ${manufacturer}`);
                 this.emit('devInfo', `Model: ${modelName}`);
                 if (this.zone === 0) {
-                    this.emit('devInfo', `Zones: ${zones}`);
+                    this.emit('devInfo', `Zones: ${deviceZones}`);
                     this.emit('devInfo', `Control: Main Zone`);
                     this.emit('devInfo', `Firmware: ${firmwareRevision}`);
                     this.emit('devInfo', `Api version: ${apiVersion}`);
@@ -831,7 +831,7 @@ class DenonDevice extends EventEmitter {
                 };
 
                 if (this.inputsConfigured.length === 0) {
-                    this.emit('message', `No any inputs are configured, check your config and settings.`);
+                    this.emit('message', `No any input exposed, the accessory will not be published, check your inputs config or report this as issue.`);
                     return;
                 }
 
