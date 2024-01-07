@@ -60,6 +60,11 @@ class DenonDevice extends EventEmitter {
         this.mqttPasswd = config.mqttPasswd;
         this.mqttDebug = config.mqttDebug || false;
 
+        //zones
+        this.zoneName = CONSTANS.ZoneName[zone];
+        this.sZoneName = CONSTANS.ZoneNameShort[zone];
+        this.zoneInputSurroundName = CONSTANS.ZoneInputSurroundName[zone];
+
         //external integrations
         this.restFulConnected = false;
         this.mqttConnected = false;
@@ -69,17 +74,12 @@ class DenonDevice extends EventEmitter {
         this.sensorsInputsServices = [];
         this.buttonsServices = [];
 
-        //zones
-        this.zoneName = CONSTANS.ZoneName[zone];
-        this.sZoneName = CONSTANS.ZoneNameShort[zone];
-        this.zoneInputSurroundName = CONSTANS.ZoneInputSurroundName[zone];
-
         //inputs
         this.inputsConfigured = [];
         this.inputIdentifier = 1;
 
         //sensors
-        this.sensorInputsConfigured = [];
+        this.sensorsInputsConfigured = [];
         this.sensorVolumeState = false;
         this.sensorInputState = false;
 
@@ -276,17 +276,17 @@ class DenonDevice extends EventEmitter {
                 }
 
                 if (reference !== undefined) {
-                    this.reference = reference;
                     if (this.sensorsInputsServices) {
                         const servicesCount = this.sensorsInputsServices.length;
                         for (let i = 0; i < servicesCount; i++) {
-                            const state = power ? (this.sensorInputsConfigured[i].reference === reference) : false;
-                            const displayType = this.sensorInputsConfigured[i].displayType;
+                            const state = power ? (this.sensorsInputsConfigured[i].reference === reference) : false;
+                            const displayType = this.sensorsInputsConfigured[i].displayType;
                             const characteristicType = [Characteristic.MotionDetected, Characteristic.OccupancyDetected, Characteristic.ContactSensorState][displayType];
                             this.sensorsInputsServices[i]
                                 .updateCharacteristic(characteristicType, state);
                         }
                     }
+                    this.reference = reference;
                 }
 
                 this.inputIdentifier = inputIdentifier;
@@ -731,7 +731,7 @@ class DenonDevice extends EventEmitter {
                 accessory.addService(this.tvSpeakerService);
 
                 //prepare inputs service
-                const debug8 = !this.enableDebugMode ? false : this.emit('debug', `Prepare input services`);
+                const debug8 = !this.enableDebugMode ? false : this.emit('debug', `Prepare inputs services`);
 
                 //check possible inputs count (max 85)
                 const inputs = this.savedInputs;
@@ -956,7 +956,7 @@ class DenonDevice extends EventEmitter {
                 const possibleSensorInputsCount = 99 - this.allServices.length;
                 const maxSensorInputsCount = sensorInputsCount >= possibleSensorInputsCount ? possibleSensorInputsCount : sensorInputsCount;
                 if (maxSensorInputsCount > 0) {
-                    const debug = !this.enableDebugMode ? false : this.emit('debug', `Prepare inputs sensor service`);
+                    const debug = !this.enableDebugMode ? false : this.emit('debug', `Prepare inputs sensors services`);
                     for (let i = 0; i < maxSensorInputsCount; i++) {
                         //get sensor
                         const sensorInput = sensorInputs[i];
@@ -987,7 +987,7 @@ class DenonDevice extends EventEmitter {
                                         return state;
                                     });
 
-                                this.sensorInputsConfigured.push(sensorInput);
+                                this.sensorsInputsConfigured.push(sensorInput);
                                 this.sensorsInputsServices.push(sensorInputService);
                                 this.allServices.push(sensorInputService);
                                 accessory.addService(sensorInputService);
@@ -1004,7 +1004,7 @@ class DenonDevice extends EventEmitter {
                 const possibleButtonsCount = 99 - this.allServices.length;
                 const maxButtonsCount = buttonsCount >= possibleButtonsCount ? possibleButtonsCount : buttonsCount;
                 if (maxButtonsCount > 0) {
-                    const debug = !this.enableDebugMode ? false : this.emit('debug', `Prepare button service`);
+                    const debug = !this.enableDebugMode ? false : this.emit('debug', `Prepare buttons services`);
                     for (let i = 0; i < maxButtonsCount; i++) {
                         //get button
                         const button = buttons[i];

@@ -262,9 +262,10 @@ class DENON extends EventEmitter {
                     this.pictureMode = pictureMode;
                     this.soundMode = soundMode;
 
-                    //emit state changes
                     const emitConnected = !this.connected ? this.emit('message', `Connected.`) : false;
                     this.connected = true;
+
+                    //emit state changed
                     this.emit('stateChanged', power, reference, volume, volumeDisplay, mute, pictureMode);
 
                     //restFul
@@ -419,6 +420,8 @@ class DENON extends EventEmitter {
             try {
                 const path = CONSTANS.ApiUrls.iPhoneDirect + command;
                 await this.axiosInstance(path);
+
+                await new Promise(resolve => setTimeout(resolve, 250));
                 resolve();
             } catch (error) {
                 reject(error);

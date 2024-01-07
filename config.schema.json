@@ -4877,7 +4877,7 @@
                     "devices[].sensorMute",
                     "devices[].sensorInput",
                     {
-                      "key": "devices[]",
+                      "key": "devices[].sensorInputs",
                       "type": "section",
                       "title": "Custom Inputs",
                       "expandable": true,
