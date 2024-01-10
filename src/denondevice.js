@@ -830,11 +830,6 @@ class DenonDevice extends EventEmitter {
                     };
                 };
 
-                if (this.inputsConfigured.length === 0) {
-                    this.emit('message', `No any input exposed, the accessory will not be published, check your inputs config or report this as issue.`);
-                    return;
-                }
-
                 //prepare volume service
                 if (this.volumeControl >= 0) {
                     const debug = !this.enableDebugMode ? false : this.emit('debug', `Prepare volume service`);
