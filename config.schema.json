@@ -4648,6 +4648,9 @@
             "volumeControl": {
               "title": "Volume Control Mode",
               "type": "integer",
+              "minimum": -1,
+              "maximum": 1,
+              "default": -1,
               "description": "Here select what a volume control mode You want to use. If select *None/Disabled* only hardware buttons in RC app can be used to control volume.",
               "oneOf": [
                 {
