@@ -13,7 +13,7 @@
 [![GitHub issues](https://img.shields.io/github/issues/grzegorz914/homebridge-denon-tv.svg)](https://github.com/grzegorz914/homebridge-denon-tv/issues)
 
 Homebridge plugin for Denon/Marantz AV Receivers series X/SR. 
-Tested with Denon AVR-X6300H, Denon AVR-X2700H, Denon AVR-3311CI, Marantz SR8012, Marantz SR6013, Marantz M-CR611.
+Tested with Denon AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz SR8012, SR6013, M-CR611, PM7000N.
 
 </span>
 
@@ -68,7 +68,7 @@ Tested with Denon AVR-X6300H, Denon AVR-X2700H, Denon AVR-3311CI, Marantz SR8012
 | `host` | Here set the *Hostname or Address IP* of AVR. |
 | `port` | Here set the API communication port, if `8080` is not working try to use port `80` which some receivers use alternatively. |
 | `zoneControl` | Selects which zone will be controlled by this section `0 - Main Zone`, `1 - Zone 2`, `2 - Zone 3`, `3 - Surround Mode`. |
-| `supportOldAvr` | This enable support for old AVR like AVR-3311CI. |
+| `generation` | Here select generation of Your device, old `0 - AVR-3311CI`, middle `1 - AVR-X6300H`, new `2 - AVC-X4800H`. |
 | `getInputsFromDevice` | If enabled, source *Inputs* will be loaded direct from device. |
 | `getFavoritesFromDevice` | If enabled, *Favorites* will be loaded to the inputs list if exist. |
 | `getQuickSmartSelectFromDevice` | If enabled, *Quick/Smart Select* will be loaded to the inputs list if exist. |

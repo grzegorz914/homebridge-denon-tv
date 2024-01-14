@@ -9,7 +9,7 @@ const CONSTANS = require('./constans.json');
 let Accessory, Characteristic, Service, Categories, Encode, UUID;
 
 class DenonDevice extends EventEmitter {
-    constructor(api, prefDir, zone, config) {
+    constructor(api, prefDir, config) {
         super();
 
         Accessory = api.platformAccessory;
@@ -20,11 +20,11 @@ class DenonDevice extends EventEmitter {
         UUID = api.hap.uuid;
 
         //device configuration
-        this.zone = zone;
         this.name = config.name;
         this.host = config.host;
         this.port = config.port;
-        this.supportOldAvr = config.supportOldAvr || false;
+        this.generation = config.generation || 1;
+        this.zone = config.zoneControl || 0;
         this.getInputsFromDevice = config.getInputsFromDevice || false;
         this.getFavoritesFromDevice = this.getInputsFromDevice ? config.getFavoritesFromDevice : false;
         this.getQuickSmartSelectFromDevice = this.getInputsFromDevice ? config.getQuickSmartSelectFromDevice : false;
@@ -61,9 +61,9 @@ class DenonDevice extends EventEmitter {
         this.mqttDebug = config.mqttDebug || false;
 
         //zones
-        this.zoneName = CONSTANS.ZoneName[zone];
-        this.sZoneName = CONSTANS.ZoneNameShort[zone];
-        this.zoneInputSurroundName = CONSTANS.ZoneInputSurroundName[zone];
+        this.zoneName = CONSTANS.ZoneName[this.zone];
+        this.sZoneName = CONSTANS.ZoneNameShort[this.zone];
+        this.zoneInputSurroundName = CONSTANS.ZoneInputSurroundName[this.zone];
 
         //external integrations
         this.restFulConnected = false;
@@ -168,12 +168,12 @@ class DenonDevice extends EventEmitter {
         this.denon = new Denon({
             host: this.host,
             port: this.port,
+            generation: this.generation,
             zone: this.zone,
             inputs: this.inputs,
             surrounds: this.surrounds,
             devInfoFile: this.devInfoFile,
             inputsFile: this.inputsFile,
-            supportOldAvr: this.supportOldAvr,
             getInputsFromDevice: this.getInputsFromDevice,
             getFavoritesFromDevice: this.getFavoritesFromDevice,
             getQuickSmartSelectFromDevice: this.getQuickSmartSelectFromDevice,
@@ -336,7 +336,7 @@ class DenonDevice extends EventEmitter {
                         this.emit('error', `Read saved ${this.zoneInputSurroundName} Target Visibility error: ${error}`);
                     };
 
-                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    await new Promise(resolve => setTimeout(resolve, 1500));
                     const accessory = await this.prepareAccessory();
                     this.emit('publishAccessory', accessory);
 

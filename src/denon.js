@@ -1,6 +1,7 @@
 'use strict';
 const fs = require('fs');
 const fsPromises = fs.promises;
+const https = require('https');
 const axios = require('axios');
 const EventEmitter = require('events');
 const { XMLParser, XMLBuilder, XMLValidator } = require('fast-xml-parser');
@@ -11,12 +12,12 @@ class DENON extends EventEmitter {
         super();
         const host = config.host;
         const port = config.port;
+        const generation = config.generation;
         const zone = config.zone;
         const inputs = config.inputs;
         const surrounds = config.surrounds;
         const devInfoFile = config.devInfoFile;
         const inputsFile = config.inputsFile;
-        const supportOldAvr = config.supportOldAvr;
         const getInputsFromDevice = config.getInputsFromDevice;
         const getFavoritesFromDevice = config.getFavoritesFromDevice;
         const getQuickSmartSelectFromDevice = config.getQuickSmartSelectFromDevice;
@@ -25,6 +26,7 @@ class DENON extends EventEmitter {
         const refreshInterval = config.refreshInterval;
         const restFulEnabled = config.restFulEnabled;
         const mqttEnabled = config.mqttEnabled;
+        const deviceInfoUrl = generation === 0 ? CONSTANS.ApiUrls.MainZone : CONSTANS.ApiUrls.DeviceInfo;
 
         this.inputs = inputs;
         this.surrounds = surrounds;
@@ -36,13 +38,27 @@ class DENON extends EventEmitter {
         this.refreshInterval = refreshInterval;
 
         const baseUrl = `http://${host}:${port}`;
-        this.axiosInstance = axios.create({
+        this.axiosInstance = generation === 2 ? axios.create({
+            method: 'GET',
+            baseURL: baseUrl,
+            timeout: 10000,
+            httpsAgent: new https.Agent({
+                rejectUnauthorized: false
+            })
+        }) : axios.create({
             method: 'GET',
             baseURL: baseUrl,
             timeout: 10000
         });
 
-        this.axiosInstancePost = axios.create({
+        this.axiosInstancePost = generation === 2 ? axios.create({
+            method: 'POST',
+            baseURL: baseUrl,
+            timeout: 10000,
+            httpsAgent: new https.Agent({
+                rejectUnauthorized: false
+            })
+        }) : axios.create({
             method: 'POST',
             baseURL: baseUrl,
             timeout: 10000
@@ -55,7 +71,6 @@ class DENON extends EventEmitter {
         };
         const parseString = new XMLParser(options);
 
-        this.connected = false;
         this.startPrepareAccessory = true;
         this.emitDeviceInfo = true;
         this.power = false;
@@ -69,10 +84,10 @@ class DENON extends EventEmitter {
 
         this.on('checkDeviceInfo', async () => {
             try {
-                const deviceUrl = supportOldAvr ? CONSTANS.ApiUrls.MainZone : CONSTANS.ApiUrls.DeviceInfo;
-                const deviceInfo = await this.axiosInstance(deviceUrl);
-                const parseDeviceInfo = parseString.parse(deviceInfo.data);
-                const devInfo = supportOldAvr ? parseDeviceInfo.item : parseDeviceInfo.Device_Info;
+                //get device info
+                const deviceInfo = await this.axiosInstance(deviceInfoUrl);
+                const parseData = parseString.parse(deviceInfo.data);
+                const devInfo = generation === 0 ? parseData.item : parseData.Device_Info;
                 const debug = debugLog ? this.emit('debug', `Info: ${JSON.stringify(devInfo, null, 2)}`) : false;
 
                 //device info
@@ -87,7 +102,7 @@ class DENON extends EventEmitter {
                 const manualModelName = deviceInfoKeys.includes('ManualModelName') ? devInfo.ManualModelName : 'Unknown';
                 const deliveryCode = deviceInfoKeys.includes('DeliveryCode') ? devInfo.DeliveryCode : 0;
                 const modelName = deviceInfoKeys.includes('ModelName') ? devInfo.ModelName : 'AV Receiver';
-                const serialNumber = deviceInfoKeys.includes('MacAddress') ? devInfo.MacAddress.toString() : supportOldAvr ? `1234567654321` : false;
+                const serialNumber = deviceInfoKeys.includes('MacAddress') ? devInfo.MacAddress.toString() : generation === 0 ? `1234567654321` : false;
                 const firmwareRevision = deviceInfoKeys.includes('UpgradeVersion') ? devInfo.UpgradeVersion.toString() : '00';
                 const reloadDeviceInfo = deviceInfoKeys.includes('ReloadDeviceInfo') ? devInfo.ReloadDeviceInfo : 0;
                 const deviceZones = deviceInfoKeys.includes('DeviceZones') ? devInfo.DeviceZones : 1;
@@ -187,7 +202,7 @@ class DENON extends EventEmitter {
                 const saveDevInfo = zone === 0 ? await this.saveDevInfo(devInfoFile, devInfo) : false;
 
                 //save inputs to the file
-                await this.saveInputs(inputsFile, devInfo, zone, zoneCapabilities, supportFavorites, supportShortcut, supportInputSource, supportQuickSmartSelect);
+                await this.saveInputs(inputsFile, devInfo, generation, zone, zoneCapabilities, supportFavorites, supportShortcut, supportInputSource, supportQuickSmartSelect);
 
                 //emit device info
                 const emitDeviceInfo = this.emitDeviceInfo ? this.emit('deviceInfo', manufacturer, modelName, serialNumber, firmwareRevision, deviceZones, apiVersion, supportPictureMode) : false;
@@ -267,9 +282,6 @@ class DENON extends EventEmitter {
                     this.pictureMode = pictureMode;
                     this.soundMode = soundMode;
 
-                    const emitConnected = !this.connected ? this.emit('message', `Connected.`) : false;
-                    this.connected = true;
-
                     //emit state changed
                     this.emit('stateChanged', power, reference, volume, volumeDisplay, mute, pictureMode);
 
@@ -292,7 +304,6 @@ class DENON extends EventEmitter {
             .on('disconnect', () => {
                 this.emit('stateChanged', false, this.reference, this.volume, this.volumeDisplay, this.mute, this.pictureMode);
                 this.emit('disconnected', 'Disconnected.');
-                this.connected = false;
                 this.checkState();
             });
 
@@ -323,7 +334,7 @@ class DENON extends EventEmitter {
         });
     };
 
-    saveInputs(path, devInfo, zone, zoneCapabilities, supportFavorites, supportShortcut, supportInputSource, supportQuickSmartSelect) {
+    saveInputs(path, devInfo, generation, zone, zoneCapabilities, supportFavorites, supportShortcut, supportInputSource, supportQuickSmartSelect) {
         return new Promise(async (resolve, reject) => {
             try {
                 const referenceConversionKeys = Object.keys(CONSTANS.InputConversion);
@@ -331,8 +342,8 @@ class DENON extends EventEmitter {
                 const referencesArray = [];
 
                 //old AVR
-                const inputsReferenceOldAvr = this.supportOldAvr ? devInfo.InputFuncList.value : [];
-                const inputsNameOldAvr = this.supportOldAvr ? devInfo.RenameSource.value : [];
+                const inputsReferenceOldAvr = generation === 0 ? devInfo.InputFuncList.value : [];
+                const inputsNameOldAvr = generation === 0 ? devInfo.RenameSource.value : [];
                 const inputsReferenceOldAvrCount = inputsReferenceOldAvr.length;
                 for (let i = 0; i < inputsReferenceOldAvrCount; i++) {
                     const renamedInput = inputsNameOldAvr[i].trim();

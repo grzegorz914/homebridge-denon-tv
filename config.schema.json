@@ -33,6 +33,35 @@
               "placeholder": 8080,
               "required": true
             },
+            "generation": {
+              "title": "Generatin",
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2,
+              "default": 1,
+              "description": "Here select generation of Your device.",
+              "oneOf": [
+                {
+                  "title": "Old like AVR-3311CI",
+                  "enum": [
+                    0
+                  ]
+                },
+                {
+                  "title": "Middle like AVR-X6300H",
+                  "enum": [
+                    1
+                  ]
+                },
+                {
+                  "title": "New like AVC-X4800H",
+                  "enum": [
+                    2
+                  ]
+                }
+              ],
+              "required": true
+            },
             "zoneControl": {
               "title": "Zone/Mode Control",
               "type": "integer",
@@ -4569,13 +4598,6 @@
               "description": "This disable logging device connect error.",
               "required": false
             },
-            "supportOldAvr": {
-              "title": "Support old AVR",
-              "type": "boolean",
-              "default": false,
-              "description": "If enabled, old AVR like AVR-3311CI will be supported.",
-              "required": false
-            },
             "masterPower": {
               "title": "Master Power Control",
               "type": "boolean",
@@ -4787,6 +4809,7 @@
         "devices[].name",
         "devices[].host",
         "devices[].port",
+        "devices[].generation",
         "devices[].zoneControl",
         {
           "key": "devices[]",
@@ -4903,6 +4926,7 @@
                   "title": "Device",
                   "items": [
                     "devices[].supportOldAvr",
+                    "devices[].supportNewAvr",
                     "devices[].masterPower",
                     "devices[].masterVolume",
                     "devices[].masterMute",
