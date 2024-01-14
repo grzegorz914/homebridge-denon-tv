@@ -45,7 +45,7 @@ class DenonDevice extends EventEmitter {
         this.masterVolume = config.masterVolume || false;
         this.masterMute = config.masterMute || false;
         this.infoButtonCommand = config.infoButtonCommand || 'MNINF';
-        this.volumeControl = config.volumeControl >= 0 ? config.volumeControl : -1;
+        this.volumeControl = config.volumeControl || -1;
         this.refreshInterval = config.refreshInterval || 5;
         this.restFulEnabled = config.enableRestFul || false;
         this.restFulPort = config.restFulPort || 3000;
