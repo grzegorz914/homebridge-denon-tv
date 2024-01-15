@@ -23,7 +23,7 @@ class DenonDevice extends EventEmitter {
         this.name = config.name;
         this.host = config.host;
         this.port = config.port;
-        this.generation = config.generation || 1;
+        this.generation = config.generation == 0 ? 0 : config.generation;
         this.zone = config.zoneControl || 0;
         this.getInputsFromDevice = config.getInputsFromDevice || false;
         this.getFavoritesFromDevice = this.getInputsFromDevice ? config.getFavoritesFromDevice : false;
