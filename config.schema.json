@@ -111,7 +111,7 @@
               "description": "If enabled, all Favorites will be loaded direct from device, only if exist.",
               "required": false,
               "condition": {
-                "functionBody": "return  model.devices[arrayIndices].getInputsFromDevice == true;"
+                "functionBody": "return model.devices[arrayIndices].getInputsFromDevice == true && model.devices[arrayIndices].generation >= 1;"
               }
             },
             "getQuickSmartSelectFromDevice": {
@@ -121,7 +121,7 @@
               "description": "If enabled, all Quick/Smart Select will be loaded direct from device, only if exist.",
               "required": false,
               "condition": {
-                "functionBody": "return model.devices[arrayIndices].getInputsFromDevice == true;"
+                "functionBody": "return model.devices[arrayIndices].getInputsFromDevice == true && model.devices[arrayIndices].generation >= 1;"
               }
             },
             "inputsDisplayOrder": {
