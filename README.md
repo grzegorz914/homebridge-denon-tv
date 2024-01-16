@@ -69,18 +69,17 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 | `port` | Here set the API communication port, if `8080` is not working try to use port `80` which some receivers use alternatively. |
 | `zoneControl` | Selects which zone will be controlled by this section `0 - Main Zone`, `1 - Zone 2`, `2 - Zone 3`, `3 - Surround Mode`. |
 | `generation` | Here select generation of Your device, old `0 - AVR-3311CI`, middle `1 - AVR-X6300H`, new `2 - AVC-X4800H`. |
-| `getInputsFromDevice` | If enabled, source *Inputs* will be loaded direct from device. |
+| `getInputsFromDevice` | If enabled, *Inputs* will be loaded direct from device. |
 | `getFavoritesFromDevice` | If enabled, *Favorites* will be loaded to the inputs list if exist. |
 | `getQuickSmartSelectFromDevice` | If enabled, *Quick/Smart Select* will be loaded to the inputs list if exist. |
-| `inputsDisplayOrder` | Here select display order of the inputs list, `None`, `Ascending by Name`, `Descending by Name`, `Ascending by Reference`, `Ascending by Reference`. |
+| `inputsDisplayOrder` | Here select display order of the inputs list, `0 - None`, `1 - Ascending by Name`, `2 - Descending by Name`, `3 - Ascending by Reference`, `4 - Ascending by Reference`. |
 | `inputs.name` | Here set *Input Name* which You want expose to the *Homebridge/HomeKit*. |
 | `inputs.reference` | Choose from available inputs, the inputs that should be published to and appear in HomeKit app in the device tile as inputs list |
-| `inputs.mode` | Choose from available inputs mode. |
 | `surrounds.name` | Here set *Surround Mode Name* which You want expose to the *Homebridge/HomeKit*. |
 | `surrounds.reference` | Here choice *Surround Mode*, the mode that should be published to and appear in HomeKit app in the extra tile as Surrounds List. |
 | `buttons.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. |
 | `buttons.reference` | Here choice function for additional control button for Main Zone. |
-| `buttons.displayType` | Here select display type in HomeKit app, possible `-1 - None/Disabled`, `0 - Outlet`, `1 - Switch`.|
+| `buttons.displayType` | Here select characteristic type to be exposed in HomeKit app, possible `0 - None/Disabled`, `1 - Outlet`, `2 - Switch`.|
 | `buttons.namePrefix` | Here enable/disable the accessory name as a prefix for button name.|
 | `sensorPower`| If enabled, then the Power will be exposed as a `Contact Sensor` to use with automations. |
 | `sensorVolume`| If enabled, then the Volume will be exposed as a `Contact Sensor` to use with automations. |
@@ -88,7 +87,7 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 | `sensorInput`| If enabled, then the Input will be exposed as a `Contact Sensor` to use with automations. |
 | `sensorInputs.name` | Here set own *Name* which You want expose to the *Homebridge/HomeKit* for this sensor. |
 | `sensorInputs.reference` | Here set *Reference* like `CBL/SAT`, `GAME` to be exposed as `Contact Sensor` active on switch to this Input. | 
-| `sensorInputs.displayType` | Here select sensor type to be exposed in HomeKit app, `-1 - None/Disabled`, `0 - Motion Sensor`, `1 - Occupancy Sensor`, `2 - Contact Sensor`. |
+| `sensorInputs.displayType` | Here select characteristic type to be exposed in HomeKit app, `0 - None/Disabled`, `1 - Motion Sensor`, `2 - Occupancy Sensor`, `3 - Contact Sensor`. |
 | `sensorInputs.namePrefix` | Here enable/disable the accessory name as a prefix for sensor name.|
 | `enableDebugMode` | If enabled, deep log will be present in homebridge console. |
 | `disableLogInfo` | If enabled, disable log info, all values and state will not be displayed in Homebridge log console. |
@@ -97,7 +96,7 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 | `masterPower` | If enabled, then the Power switch for that zone (typically you would only use this for the Main Zone) will turn the entire receiver `ON` or `OFF/STANDBY` rather than just the zone itself |
 | `masterVolume`| If enabled, then the Volume for that zone (typically you would only use this for the Main Zone) will set the entire receiver `UP` or `DOWN` rather than just the zone itself |
 | `masterMute`| If enabled, then the Mute switch for that zone (typically you would only use this for the Main Zone) will muted the entire receiver `ON` or `OFF` rather than just the zone itself |
-| `volumeControl` | Here choice what a additional volume control mode You want to use (`-1 - None/Disabled`, `0 - Lightbulb`, `1 - Fan`). |
+| `volumeControl` | Here choice what a additional volume control mode You want to use (`0 - None/Disabled`, `1 - Lightbulb`, `2 - Fan`). |
 | `infoButtonCommand` | Here select the function of `I` button in RC app. |
 | `refreshInterval` | Here set the data refresh interval. |
 | `enableRestFul` | If enabled, RESTful server will start automatically and respond to any path request. |

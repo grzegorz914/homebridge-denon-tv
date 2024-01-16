@@ -31,26 +31,24 @@
                     "inputs": [
                         {
                             "name": "Xbox One",
-                            "reference": "GAME",
-                            "mode": "SI"
+                            "reference": "GAME"
                         },
                         {
                             "name": "Television",
-                            "reference": "TV",
-                            "mode": "SI"
+                            "reference": "TV"
                         }
                     ],
                     "buttons": [
                         {
                             "name": "MASTER POWER ON",
                             "reference": "0PWON",
-                            "displayType": -1,
+                            "displayType": 0,
                             "namePrefix": false
                         },
                         {
                             "name": "ZM POWER ON",
                             "reference": "0ZMON",
-                            "displayType": -1,
+                            "displayType": 0,
                             "namePrefix": false
                         }
                     ],
@@ -62,7 +60,7 @@
                         {
                             "name": "Tuner Sat",
                             "reference": "CBL/SAT",
-                            "displayType": -1,
+                            "displayType": 0,
                             "namePrefix": false
                         }
                     ],
@@ -100,20 +98,18 @@
                     "inputs": [
                         {
                             "name": "Xbox One",
-                            "reference": "GAME",
-                            "mode": "SI"
+                            "reference": "GAME"
                         },
                         {
                             "name": "Television",
-                            "reference": "TV",
-                            "mode": "SI"
+                            "reference": "TV"
                         }
                     ],
                     "buttons": [
                         {
                             "name": "Z2 POWER ON",
                             "reference": "1ON",
-                            "displayType": -1
+                            "displayType": 0
                         }
                     ],
                     "sensorPower": false,
@@ -124,7 +120,7 @@
                         {
                             "name": "Tuner Sat",
                             "reference": "CBL/SAT",
-                            "displayType": -1
+                            "displayType": 0
                         }
                     ],
                     "enableDebugMode": false,
@@ -161,20 +157,18 @@
                     "inputs": [
                         {
                             "name": "Xbox One",
-                            "reference": "GAME",
-                            "mode": "SI"
+                            "reference": "GAME"
                         },
                         {
                             "name": "Television",
-                            "reference": "TV",
-                            "mode": "SI"
+                            "reference": "TV"
                         }
                     ],
                     "buttons": [
                         {
                             "name": "Z3 POWER ON",
                             "reference": "1ON",
-                            "displayType": -1
+                            "displayType": 0
                         }
                     ],
                     "sensorPower": false,
@@ -185,7 +179,7 @@
                         {
                             "name": "Tuner Sat",
                             "reference": "CBL/SAT",
-                            "displayType": -1
+                            "displayType": 0
                         }
                     ],
                     "enableDebugMode": false,
@@ -230,7 +224,7 @@
                         {
                             "name": "MASTER POWER ON",
                             "reference": "0PWON",
-                            "displayType": -1
+                            "displayType": 0
                         }
                     ],
                     "sensorPower": false,

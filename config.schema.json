@@ -38,7 +38,7 @@
               "type": "integer",
               "minimum": 0,
               "maximum": 2,
-              "default": 1,
+              "default": 0,
               "description": "Here select generation of Your device.",
               "oneOf": [
                 {
@@ -125,7 +125,7 @@
               }
             },
             "inputsDisplayOrder": {
-              "title": "Inputs Display Order",
+              "title": "Display Order",
               "type": "integer",
               "minimum": 0,
               "maximum": 4,
@@ -637,32 +637,6 @@
                         "title": "SMART SELECTMEMORY 5",
                         "enum": [
                           "SMART5 MEMORY"
-                        ]
-                      }
-                    ],
-                    "required": true
-                  },
-                  "mode": {
-                    "title": "Mode",
-                    "type": "string",
-                    "description": "Here select input mode.",
-                    "oneOf": [
-                      {
-                        "title": "INPUT",
-                        "enum": [
-                          "SI"
-                        ]
-                      },
-                      {
-                        "title": "FAVORITE",
-                        "enum": [
-                          "ZM"
-                        ]
-                      },
-                      {
-                        "title": "QUICK/SMART SELECT",
-                        "enum": [
-                          "MS"
                         ]
                       }
                     ],
@@ -4446,29 +4420,29 @@
                     "required": true
                   },
                   "displayType": {
-                    "title": "Display Type",
+                    "title": "Type",
                     "type": "integer",
                     "oneOf": [
                       {
                         "title": "None/Disabled",
                         "enum": [
-                          -1
+                          0
                         ]
                       },
                       {
                         "title": "Outlet",
                         "enum": [
-                          0
+                          1
                         ]
                       },
                       {
                         "title": "Switch",
                         "enum": [
-                          1
+                          2
                         ]
                       }
                     ],
-                    "description": "Here select display type in HomeKit app.",
+                    "description": "Here select characteristic type to be exposed in HomeKit app.",
                     "required": true
                   },
                   "namePrefix": {
@@ -4536,29 +4510,29 @@
                       {
                         "title": "None/Disabled",
                         "enum": [
-                          -1
+                          0
                         ]
                       },
                       {
                         "title": "Motion Sensor",
                         "enum": [
-                          0
+                          1
                         ]
                       },
                       {
                         "title": "Occupancy Sensor",
                         "enum": [
-                          1
+                          2
                         ]
                       },
                       {
                         "title": "Contact Sensor",
                         "enum": [
-                          2
+                          3
                         ]
                       }
                     ],
-                    "description": "Here select sensor type to be exposed in HomeKit app.",
+                    "description": "Here select characteristic type to be exposed in HomeKit app.",
                     "required": true
                   },
                   "namePrefix": {
@@ -4648,27 +4622,27 @@
             "volumeControl": {
               "title": "Volume Control Mode",
               "type": "integer",
-              "minimum": -1,
-              "maximum": 1,
-              "default": -1,
+              "minimum": 0,
+              "maximum": 2,
+              "default": 0,
               "description": "Here select what a volume control mode You want to use. If select *None/Disabled* only hardware buttons in RC app can be used to control volume.",
               "oneOf": [
                 {
                   "title": "None/Disabled",
                   "enum": [
-                    -1
+                    0
                   ]
                 },
                 {
                   "title": "Lightbulb",
                   "enum": [
-                    0
+                    1
                   ]
                 },
                 {
                   "title": "Fan",
                   "enum": [
-                    1
+                    2
                   ]
                 }
               ],
@@ -4831,8 +4805,7 @@
               "title": "{{ value.name || 'input' }}",
               "items": [
                 "devices[].inputs[].name",
-                "devices[].inputs[].reference",
-                "devices[].inputs[].mode"
+                "devices[].inputs[].reference"
               ]
             }
           ],
@@ -4928,8 +4901,6 @@
                   "key": "devices[]",
                   "title": "Device",
                   "items": [
-                    "devices[].supportOldAvr",
-                    "devices[].supportNewAvr",
                     "devices[].masterPower",
                     "devices[].masterVolume",
                     "devices[].masterMute",

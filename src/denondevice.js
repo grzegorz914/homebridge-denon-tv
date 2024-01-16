@@ -23,7 +23,7 @@ class DenonDevice extends EventEmitter {
         this.name = config.name;
         this.host = config.host;
         this.port = config.port;
-        this.generation = config.generation || 1;
+        this.generation = config.generation || 0;
         this.zone = config.zoneControl || 0;
         this.getInputsFromDevice = config.getInputsFromDevice || false;
         this.getFavoritesFromDevice = this.getInputsFromDevice ? config.getFavoritesFromDevice : false;
@@ -45,7 +45,7 @@ class DenonDevice extends EventEmitter {
         this.masterVolume = config.masterVolume || false;
         this.masterMute = config.masterMute || false;
         this.infoButtonCommand = config.infoButtonCommand || 'MNINF';
-        this.volumeControl = config.volumeControl || -1;
+        this.volumeControl = config.volumeControl || false;
         this.refreshInterval = config.refreshInterval || 5;
         this.restFulEnabled = config.enableRestFul || false;
         this.restFulPort = config.restFulPort || 3000;
@@ -281,7 +281,7 @@ class DenonDevice extends EventEmitter {
                         for (let i = 0; i < servicesCount; i++) {
                             const state = power ? (this.sensorsInputsConfigured[i].reference === reference) : false;
                             const displayType = this.sensorsInputsConfigured[i].displayType;
-                            const characteristicType = [Characteristic.MotionDetected, Characteristic.OccupancyDetected, Characteristic.ContactSensorState][displayType];
+                            const characteristicType = ['', Characteristic.MotionDetected, Characteristic.OccupancyDetected, Characteristic.ContactSensorState][displayType];
                             this.sensorsInputsServices[i]
                                 .updateCharacteristic(characteristicType, state);
                         }
@@ -761,7 +761,8 @@ class DenonDevice extends EventEmitter {
                     const isConfigured = 1;
 
                     //get mode
-                    const inputMode = zoneControl <= 2 ? input.mode : 'MS';
+                    const modeExist = inputReference.substring(0, 5) in CONSTANS.InputMode;
+                    const inputMode = zoneControl <= 2 ? modeExist ? CONSTANS.InputMode[inputReference.substring(0, 5)] : 'SI' : 'MS';
                     input.mode = inputMode;
 
                     //get visibility
@@ -831,9 +832,9 @@ class DenonDevice extends EventEmitter {
                 };
 
                 //prepare volume service
-                if (this.volumeControl >= 0) {
+                if (this.volumeControl) {
                     const debug = !this.enableDebugMode ? false : this.emit('debug', `Prepare volume service`);
-                    if (this.volumeControl === 0) {
+                    if (this.volumeControl === 1) {
                         this.volumeService = new Service.Lightbulb(`${accessoryName} Volume`, 'Volume');
                         this.volumeService.addOptionalCharacteristic(Characteristic.ConfiguredName);
                         this.volumeService.setCharacteristic(Characteristic.ConfiguredName, `${accessoryName} Volume`);
@@ -858,7 +859,7 @@ class DenonDevice extends EventEmitter {
                         accessory.addService(this.volumeService);
                     }
 
-                    if (this.volumeControl === 1) {
+                    if (this.volumeControl === 2) {
                         this.volumeServiceFan = new Service.Fan(`${accessoryName} Volume`, 'Volume');
                         this.volumeServiceFan.addOptionalCharacteristic(Characteristic.ConfiguredName);
                         this.volumeServiceFan.setCharacteristic(Characteristic.ConfiguredName, `${accessoryName} Volume`);
@@ -963,16 +964,16 @@ class DenonDevice extends EventEmitter {
                         const sensorInputReference = sensorInput.reference;
 
                         //get display type
-                        const sensorInputDisplayType = sensorInput.displayType >= 0 ? sensorInput.displayType : -1;
+                        const sensorInputDisplayType = sensorInput.displayType || false;
 
                         //get sensor name prefix
-                        const namePrefix = sensorInput.namePrefix ?? false;
+                        const namePrefix = sensorInput.namePrefix || false;
 
-                        if (sensorInputDisplayType >= 0) {
+                        if (sensorInputDisplayType) {
                             if (sensorInputName && sensorInputReference) {
                                 const serviceName = namePrefix ? `${accessoryName} ${sensorInputName}` : sensorInputName;
-                                const serviceType = [Service.MotionSensor, Service.OccupancySensor, Service.ContactSensor][sensorInputDisplayType];
-                                const characteristicType = [Characteristic.MotionDetected, Characteristic.OccupancyDetected, Characteristic.ContactSensorState][sensorInputDisplayType];
+                                const serviceType = ['', Service.MotionSensor, Service.OccupancySensor, Service.ContactSensor][sensorInputDisplayType];
+                                const characteristicType = ['', Characteristic.MotionDetected, Characteristic.OccupancyDetected, Characteristic.ContactSensorState][sensorInputDisplayType];
                                 const sensorInputService = new serviceType(serviceName, `Sensor ${i}`);
                                 sensorInputService.addOptionalCharacteristic(Characteristic.ConfiguredName);
                                 sensorInputService.setCharacteristic(Characteristic.ConfiguredName, serviceName);
@@ -1011,15 +1012,15 @@ class DenonDevice extends EventEmitter {
                         const buttonReference = button.reference;
 
                         //get button display type
-                        const buttonDisplayType = button.displayType >= 0 ? button.displayType : -1;
+                        const buttonDisplayType = button.displayType || false;
 
                         //get button name prefix
-                        const namePrefix = button.namePrefix ?? false;
+                        const namePrefix = button.namePrefix || false;
 
-                        if (buttonDisplayType >= 0) {
+                        if (buttonDisplayType) {
                             if (buttonName && buttonReference) {
                                 const serviceName = namePrefix ? `${accessoryName} ${buttonName}` : buttonName;
-                                const serviceType = [Service.Outlet, Service.Switch][buttonDisplayType];
+                                const serviceType = ['', Service.Outlet, Service.Switch][buttonDisplayType];
                                 const buttonService = new serviceType(serviceName, `Button ${i}`);
                                 buttonService.addOptionalCharacteristic(Characteristic.ConfiguredName);
                                 buttonService.setCharacteristic(Characteristic.ConfiguredName, serviceName);

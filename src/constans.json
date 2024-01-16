@@ -192,6 +192,12 @@
         "USB",
         "APPLICATION"
     ],
+    "InputMode": {
+        "INPUT": "SI",
+        "FAVOR": "ZM",
+        "QUICK": "MS",
+        "SMART": "MS"
+    },
     "SoundModeConversion": {
         "MOVIE": "MOVIE",
         "MUSIC": "MUSIC",
