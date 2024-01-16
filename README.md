@@ -96,7 +96,7 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 | `masterPower` | If enabled, then the Power switch for that zone (typically you would only use this for the Main Zone) will turn the entire receiver `ON` or `OFF/STANDBY` rather than just the zone itself |
 | `masterVolume`| If enabled, then the Volume for that zone (typically you would only use this for the Main Zone) will set the entire receiver `UP` or `DOWN` rather than just the zone itself |
 | `masterMute`| If enabled, then the Mute switch for that zone (typically you would only use this for the Main Zone) will muted the entire receiver `ON` or `OFF` rather than just the zone itself |
-| `volumeControl` | Here choice what a additional volume control mode You want to use (`0 - None/Disabled`, `1 - Lightbulb`, `2 - Fan`). |
+| `volumeControl` | Here choice what a additional volume control mode You want to use, `0 - None/Disabled`, `1 - Lightbulb`, `2 - Fan`. |
 | `infoButtonCommand` | Here select the function of `I` button in RC app. |
 | `refreshInterval` | Here set the data refresh interval. |
 | `enableRestFul` | If enabled, RESTful server will start automatically and respond to any path request. |
