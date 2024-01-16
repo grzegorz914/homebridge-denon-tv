@@ -34,7 +34,7 @@
               "required": true
             },
             "generation": {
-              "title": "Generatin",
+              "title": "Generation",
               "type": "integer",
               "minimum": 0,
               "maximum": 2,
