@@ -177,6 +177,7 @@ class DenonDevice extends EventEmitter {
             getInputsFromDevice: this.getInputsFromDevice,
             getFavoritesFromDevice: this.getFavoritesFromDevice,
             getQuickSmartSelectFromDevice: this.getQuickSmartSelectFromDevice,
+            zoneInputSurroundName: this.zoneInputSurroundName,
             debugLog: this.enableDebugMode,
             disableLogConnectError: this.disableLogConnectError,
             refreshInterval: this.refreshInterval,

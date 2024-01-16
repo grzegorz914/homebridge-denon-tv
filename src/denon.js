@@ -21,6 +21,7 @@ class DENON extends EventEmitter {
         const getInputsFromDevice = config.getInputsFromDevice;
         const getFavoritesFromDevice = config.getFavoritesFromDevice;
         const getQuickSmartSelectFromDevice = config.getQuickSmartSelectFromDevice;
+        const zoneInputSurroundName = config.zoneInputSurroundName;
         const debugLog = config.debugLog;
         const disableLogConnectError = config.disableLogConnectError;
         const refreshInterval = config.refreshInterval;
@@ -28,13 +29,7 @@ class DENON extends EventEmitter {
         const mqttEnabled = config.mqttEnabled;
         const deviceInfoUrl = generation === 0 ? CONSTANS.ApiUrls.MainZone : CONSTANS.ApiUrls.DeviceInfo;
 
-        this.inputs = inputs;
-        this.surrounds = surrounds;
-        this.getInputsFromDevice = getInputsFromDevice;
-        this.getFavoritesFromDevice = getFavoritesFromDevice;
-        this.getQuickSmartSelectFromDevice = getQuickSmartSelectFromDevice;
         this.debugLog = debugLog;
-        this.zoneInputSurroundName = CONSTANS.ZoneInputSurroundName[zone];
         this.refreshInterval = refreshInterval;
 
         const baseUrl = `http://${host}:${port}`;
@@ -202,7 +197,7 @@ class DENON extends EventEmitter {
                 const saveDevInfo = zone === 0 ? await this.saveDevInfo(devInfoFile, devInfo) : false;
 
                 //save inputs to the file
-                await this.saveInputs(inputsFile, devInfo, generation, zone, zoneCapabilities, supportFavorites, supportShortcut, supportInputSource, supportQuickSmartSelect);
+                await this.saveInputs(inputsFile, devInfo, generation, zone, zoneInputSurroundName, inputs, surrounds, zoneCapabilities, getInputsFromDevice, getFavoritesFromDevice, getQuickSmartSelectFromDevice, supportFavorites, supportShortcut, supportInputSource, supportQuickSmartSelect);
 
                 //emit device info
                 const emitDeviceInfo = this.emitDeviceInfo ? this.emit('deviceInfo', manufacturer, modelName, serialNumber, firmwareRevision, deviceZones, apiVersion, supportPictureMode) : false;
@@ -334,7 +329,7 @@ class DENON extends EventEmitter {
         });
     };
 
-    saveInputs(path, devInfo, generation, zone, zoneCapabilities, supportFavorites, supportShortcut, supportInputSource, supportQuickSmartSelect) {
+    saveInputs(path, devInfo, generation, zone, zoneInputSurroundName, inputs, surrounds, zoneCapabilities, getInputsFromDevice, getFavoritesFromDevice, getQuickSmartSelectFromDevice, supportFavorites, supportShortcut, supportInputSource, supportQuickSmartSelect) {
         return new Promise(async (resolve, reject) => {
             try {
                 const referenceConversionKeys = Object.keys(CONSTANS.InputConversion);
@@ -359,7 +354,7 @@ class DENON extends EventEmitter {
                 }
 
                 //new AVR-X
-                const deviceInputs = this.getInputsFromDevice && supportInputSource ? zoneCapabilities.InputSource.List.Source : [];
+                const deviceInputs = getInputsFromDevice && supportInputSource ? zoneCapabilities.InputSource.List.Source : [];
                 for (const input of deviceInputs) {
                     const inputName = input.DefaultName;
                     const inputReference = input.FuncName;
@@ -372,7 +367,7 @@ class DENON extends EventEmitter {
                     referencesArray.push(reference);
                 };
 
-                const deviceSchortcuts = this.getInputsFromDevice && supportShortcut ? zoneCapabilities.ShortcutControl.EntryList.Shortcut : [];
+                const deviceSchortcuts = getInputsFromDevice && supportShortcut ? zoneCapabilities.ShortcutControl.EntryList.Shortcut : [];
                 for (const shortcut of deviceSchortcuts) {
                     const category = shortcut.Category; //3 Quick/Smart Select, 4 Inputs
                     const shortcutName = shortcut.DispName;
@@ -386,7 +381,7 @@ class DENON extends EventEmitter {
                     const push = !existedInArray && category === '4' ? inputsArr.push(obj) : false;
                 };
 
-                const deviceFavorites = this.getFavoritesFromDevice && supportFavorites ? devInfo.DeviceCapabilities.Operation.Favorites : [];
+                const deviceFavorites = getFavoritesFromDevice && supportFavorites ? devInfo.DeviceCapabilities.Operation.Favorites : [];
                 for (const favorite of deviceFavorites) {
                     const favoriteName = favorite.DispName;
                     const favoriteReference = favorite.FuncName;
@@ -399,8 +394,8 @@ class DENON extends EventEmitter {
                     const push = !existedInArray ? inputsArr.push(obj) : false;
                 };
 
-                const deviceQuickSmartSelect = this.getQuickSmartSelectFromDevice && supportQuickSmartSelect ? zoneCapabilities.Operation.QuickSelect : [];
-                const quickSelectCount = this.getQuickSmartSelectFromDevice && supportQuickSmartSelect ? deviceQuickSmartSelect.MaxQuickSelect : 0;
+                const deviceQuickSmartSelect = getQuickSmartSelectFromDevice && supportQuickSmartSelect ? zoneCapabilities.Operation.QuickSelect : [];
+                const quickSelectCount = getQuickSmartSelectFromDevice && supportQuickSmartSelect ? deviceQuickSmartSelect.MaxQuickSelect : 0;
                 for (let i = 0; i < quickSelectCount; i++) {
                     const quickSelect = deviceQuickSmartSelect[`QuickSelect${i + 1}`];
                     const quickSelectName = quickSelect.Name;
@@ -414,10 +409,10 @@ class DENON extends EventEmitter {
                     const push = !existedInArray ? inputsArr.push(obj) : false;
                 };
 
-                const allInputsArr = zone <= 2 ? this.getInputsFromDevice ? inputsArr : this.inputs : this.surrounds;
-                const inputs = JSON.stringify(allInputsArr, null, 2);
-                await fsPromises.writeFile(path, inputs);
-                const debug = !this.debugLog ? false : this.emit('message', `saved ${this.zoneInputSurroundName}: ${inputs}`);
+                const allInputs = zone <= 2 ? getInputsFromDevice ? inputsArr : inputs : surrounds;
+                const allInputsStringify = JSON.stringify(allInputs, null, 2);
+                await fsPromises.writeFile(path, allInputsStringify);
+                const debug = !this.debugLog ? false : this.emit('message', `saved ${zoneInputSurroundName}: ${allInputsStringify}`);
 
                 resolve()
             } catch (error) {
