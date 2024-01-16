@@ -352,8 +352,7 @@ class DENON extends EventEmitter {
                     const reference = referenceConversionKeys.includes(inputReference) ? CONSTANS.InputConversion[inputReference] : inputReference;
                     const obj = {
                         'name': name,
-                        'reference': reference,
-                        'mode': 'SI'
+                        'reference': reference
                     }
                     inputsArr.push(obj);
                     referencesArray.push(reference);
@@ -367,8 +366,7 @@ class DENON extends EventEmitter {
                     const reference = referenceConversionKeys.includes(inputReference) ? CONSTANS.InputConversion[inputReference] : inputReference;
                     const obj = {
                         'name': inputName,
-                        'reference': reference,
-                        'mode': 'SI'
+                        'reference': reference
                     }
                     inputsArr.push(obj);
                     referencesArray.push(reference);
@@ -382,8 +380,7 @@ class DENON extends EventEmitter {
                     const reference = referenceConversionKeys.includes(shortcutReference) ? CONSTANS.InputConversion[shortcutReference] : shortcutReference;
                     const obj = {
                         'name': shortcutName,
-                        'reference': reference,
-                        'mode': ['', '', '', 'MS', 'SI'][category]
+                        'reference': reference
                     }
                     const existedInArray = referencesArray.includes(reference);
                     const push = !existedInArray && category === '4' ? inputsArr.push(obj) : false;
@@ -396,8 +393,7 @@ class DENON extends EventEmitter {
                     const reference = referenceConversionKeys.includes(favoriteReference) ? CONSTANS.InputConversion[favoriteReference] : favoriteReference;
                     const obj = {
                         'name': favoriteName,
-                        'reference': reference,
-                        'mode': 'ZM'
+                        'reference': reference
                     }
                     const existedInArray = referencesArray.includes(reference);
                     const push = !existedInArray ? inputsArr.push(obj) : false;
@@ -412,8 +408,7 @@ class DENON extends EventEmitter {
                     const reference = referenceConversionKeys.includes(quickSelectReference) ? CONSTANS.InputConversion[quickSelectReference] : quickSelectReference;
                     const obj = {
                         'name': quickSelectName,
-                        'reference': reference,
-                        'mode': 'MS'
+                        'reference': reference
                     }
                     const existedInArray = referencesArray.includes(reference);
                     const push = !existedInArray ? inputsArr.push(obj) : false;
