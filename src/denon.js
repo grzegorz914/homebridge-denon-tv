@@ -334,26 +334,21 @@ class DENON extends EventEmitter {
             try {
                 const referenceConversionKeys = Object.keys(CONSTANS.InputConversion);
                 const inputsArr = [];
-                const referencesArray = [];
 
-                //old AVR
-                const inputsReferenceOldAvr = generation === 0 ? devInfo.InputFuncList.value : [];
-                const inputsNameOldAvr = generation === 0 ? devInfo.RenameSource.value : [];
-                const inputsReferenceOldAvrCount = inputsReferenceOldAvr.length;
-                for (let i = 0; i < inputsReferenceOldAvrCount; i++) {
-                    const renamedInput = inputsNameOldAvr[i].trim();
-                    const name = renamedInput !== '' ? inputsNameOldAvr[i] : inputsReferenceOldAvr[i];
-                    const inputReference = inputsReferenceOldAvr[i];
+                //old AVR - 0
+                const deviceInputsOldAvr = getInputsFromDevice && generation === 0 ? devInfo.InputFuncList.value : [];
+                for (let i = 0; i < deviceInputsOldAvr.length; i++) {
+                    const inputName = devInfo.RenameSource.value[i].trim() !== '' ? devInfo.RenameSource.value[i] : deviceInputsOldAvr[i];
+                    const inputReference = deviceInputsOldAvr[i];
                     const reference = referenceConversionKeys.includes(inputReference) ? CONSTANS.InputConversion[inputReference] : inputReference;
                     const obj = {
-                        'name': name,
+                        'name': inputName,
                         'reference': reference
                     }
                     inputsArr.push(obj);
-                    referencesArray.push(reference);
                 }
 
-                //new AVR-X
+                //new AVR 1 and 2
                 const deviceInputs = getInputsFromDevice && supportInputSource ? zoneCapabilities.InputSource.List.Source : [];
                 for (const input of deviceInputs) {
                     const inputName = input.DefaultName;
@@ -364,7 +359,6 @@ class DENON extends EventEmitter {
                         'reference': reference
                     }
                     inputsArr.push(obj);
-                    referencesArray.push(reference);
                 };
 
                 const deviceSchortcuts = getInputsFromDevice && supportShortcut ? zoneCapabilities.ShortcutControl.EntryList.Shortcut : [];
@@ -377,7 +371,7 @@ class DENON extends EventEmitter {
                         'name': shortcutName,
                         'reference': reference
                     }
-                    const existedInArray = referencesArray.includes(reference);
+                    const existedInArray = inputsArr.some(input => input.reference === reference);
                     const push = !existedInArray && category === '4' ? inputsArr.push(obj) : false;
                 };
 
@@ -390,7 +384,7 @@ class DENON extends EventEmitter {
                         'name': favoriteName,
                         'reference': reference
                     }
-                    const existedInArray = referencesArray.includes(reference);
+                    const existedInArray = inputsArr.some(input => input.reference === reference);
                     const push = !existedInArray ? inputsArr.push(obj) : false;
                 };
 
@@ -405,7 +399,7 @@ class DENON extends EventEmitter {
                         'name': quickSelectName,
                         'reference': reference
                     }
-                    const existedInArray = referencesArray.includes(reference);
+                    const existedInArray = inputsArr.some(input => input.reference === reference);
                     const push = !existedInArray ? inputsArr.push(obj) : false;
                 };
 
