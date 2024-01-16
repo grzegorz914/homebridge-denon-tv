@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.7.0] - (15.01.2024)
 ## Note - after update to 4.7.x buttons, sensors, volume display type need to be configure again using config UI.
 ## Changes
-- removed *mode* reference from manually configured *inputs*, not dedded anymore
+- removed *mode* reference from manually configured *inputs*, not nedded anymore
 - fixed explicit *generation* resolution for old device *0*, thanks @DonutEspresso
 - fixed legacy volume control mode display if set to lightbulb
 - fixed [#227](https://github.com/grzegorz914/homebridge-denon-tv/issues/227)
