@@ -122,4 +122,4 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 | `mqttUser` | Here set the MQTT Broker user. |
 | `mqttPasswd` | Here set the MQTT Broker password. |
 | `mqttDebug` | If enabled, deep log will be present in homebridge console for MQTT. |
-| `AV Surround Mode` | This extra Accessory will control all functions of Main Zone except (Inputs and Buttons). |
+| `AV Surround Mode` | This extra Accessory will control all functions of Main Zone except `Inputs` and `Buttons`. |
