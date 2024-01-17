@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## The properties *inputs.displayType* and *surrounds.displayType* are removed.
 ## Note - after update to 3.15.x need remove the accessory frome Home app and add it again.
 
+## [4.8.1] - (17.01.2024)
+## Changes
+- added selection list for custom sensors reference
+- config schema updated
+- cleanup
+
 ## [4.8.0] - (17.01.2024)
 ## Note - after update to 4.8.x all buttons need to be configure again using config UI.
 ## Changes

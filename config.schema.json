@@ -5188,28 +5188,28 @@
               "title": "Power",
               "type": "boolean",
               "default": false,
-              "description": "This expose Power as a Contact Sensor (active if power ON).",
+              "description": "This expose Power as a Contact Sensor, fired if power ON.",
               "required": false
             },
             "sensorVolume": {
               "title": "Volume",
               "type": "boolean",
               "default": false,
-              "description": "This expose Volume as a Contact Sensor (active on every Volume change).",
+              "description": "This expose Volume as a Contact Sensor, fired on every Volume change.",
               "required": false
             },
             "sensorMute": {
               "title": "Mute",
               "type": "boolean",
               "default": false,
-              "description": "This expose Mute as a Contact Sensor (active if Mmute ON).",
+              "description": "This expose Mute as a Contact Sensor, fired if Mmute ON.",
               "required": false
             },
             "sensorInput": {
               "title": "Input",
               "type": "boolean",
               "default": false,
-              "description": "This expose Input as a Contact Sensor (active if Input/Surround change).",
+              "description": "This expose Input as a Contact Sensor, fired if Input/Surround change.",
               "required": false
             },
             "sensorInputs": {
@@ -5217,7 +5217,7 @@
               "items": {
                 "title": "Input",
                 "type": "object",
-                "description": "Here create sensors based on Input reference (active if switch to it).",
+                "description": "Here create sensors based on reference, fired if switch to it.",
                 "properties": {
                   "name": {
                     "title": "Name",
@@ -5229,8 +5229,465 @@
                   "reference": {
                     "title": "Reference",
                     "type": "string",
-                    "placeholder": "Input reference",
-                    "description": "Here set the reference.",
+                    "oneOf": [
+                      {
+                        "title": "SOURCE (Only Z2/Z3)",
+                        "enum": [
+                          "SOURCE"
+                        ]
+                      },
+                      {
+                        "title": "PHONO",
+                        "enum": [
+                          "PHONO"
+                        ]
+                      },
+                      {
+                        "title": "CD",
+                        "enum": [
+                          "CD"
+                        ]
+                      },
+                      {
+                        "title": "DVD",
+                        "enum": [
+                          "DVD"
+                        ]
+                      },
+                      {
+                        "title": "BLU-RAY",
+                        "enum": [
+                          "BD"
+                        ]
+                      },
+                      {
+                        "title": "TV AUDIO",
+                        "enum": [
+                          "TV"
+                        ]
+                      },
+                      {
+                        "title": "SAT/CBL",
+                        "enum": [
+                          "SAT/CBL"
+                        ]
+                      },
+                      {
+                        "title": "MEDIA PLAYER",
+                        "enum": [
+                          "MPLAY"
+                        ]
+                      },
+                      {
+                        "title": "GAME",
+                        "enum": [
+                          "GAME"
+                        ]
+                      },
+                      {
+                        "title": "GAME 2",
+                        "enum": [
+                          "GAME2"
+                        ]
+                      },
+                      {
+                        "title": "TUNER",
+                        "enum": [
+                          "TUNER"
+                        ]
+                      },
+                      {
+                        "title": "AUX",
+                        "enum": [
+                          "AUX"
+                        ]
+                      },
+                      {
+                        "title": "AUX 1",
+                        "enum": [
+                          "AUX1"
+                        ]
+                      },
+                      {
+                        "title": "AUX 2",
+                        "enum": [
+                          "AUX2"
+                        ]
+                      },
+                      {
+                        "title": "AUX 3",
+                        "enum": [
+                          "AUX3"
+                        ]
+                      },
+                      {
+                        "title": "AUX 4",
+                        "enum": [
+                          "AUX4"
+                        ]
+                      },
+                      {
+                        "title": "AUX 5",
+                        "enum": [
+                          "AUX5"
+                        ]
+                      },
+                      {
+                        "title": "AUX 6",
+                        "enum": [
+                          "AUX6"
+                        ]
+                      },
+                      {
+                        "title": "AUX 7",
+                        "enum": [
+                          "AUX7"
+                        ]
+                      },
+                      {
+                        "title": "V.AUX",
+                        "enum": [
+                          "V.AUX"
+                        ]
+                      },
+                      {
+                        "title": "DVR",
+                        "enum": [
+                          "DVR"
+                        ]
+                      },
+                      {
+                        "title": "DOCK",
+                        "enum": [
+                          "DOCK"
+                        ]
+                      },
+                      {
+                        "title": "NET/USB",
+                        "enum": [
+                          "NET/USB"
+                        ]
+                      },
+                      {
+                        "title": "USB/IPOD",
+                        "enum": [
+                          "USB/IPOD"
+                        ]
+                      },
+                      {
+                        "title": "CDR",
+                        "enum": [
+                          "CDR"
+                        ]
+                      },
+                      {
+                        "title": "VCR",
+                        "enum": [
+                          "VCR"
+                        ]
+                      },
+                      {
+                        "title": "M-XPORT",
+                        "enum": [
+                          "M-XPORT"
+                        ]
+                      },
+                      {
+                        "title": "HDP",
+                        "enum": [
+                          "HDP"
+                        ]
+                      },
+                      {
+                        "title": "NETWORK/AIRPLAY/HEOS",
+                        "enum": [
+                          "NET"
+                        ]
+                      },
+                      {
+                        "title": "BLUETOOTH",
+                        "enum": [
+                          "BT"
+                        ]
+                      },
+                      {
+                        "title": "8K",
+                        "enum": [
+                          "8K"
+                        ]
+                      },
+                      {
+                        "title": "iRADIO",
+                        "enum": [
+                          "IRADIO"
+                        ]
+                      },
+                      {
+                        "title": "MEDIA SERVER",
+                        "enum": [
+                          "SERVER"
+                        ]
+                      },
+                      {
+                        "title": "SPOTIFY",
+                        "enum": [
+                          "SPOTIFY"
+                        ]
+                      },
+                      {
+                        "title": "FLICKR",
+                        "enum": [
+                          "FLICKR"
+                        ]
+                      },
+                      {
+                        "title": "HD RADIO (NA Only)",
+                        "enum": [
+                          "HDRADIO"
+                        ]
+                      },
+                      {
+                        "title": "SIRIUS (NA Only)",
+                        "enum": [
+                          "SIRIUS"
+                        ]
+                      },
+                      {
+                        "title": "SIRIUSXM (NA Only)",
+                        "enum": [
+                          "SIRIUSXM"
+                        ]
+                      },
+                      {
+                        "title": "RHAPSODY (NA Only)",
+                        "enum": [
+                          "RHAPSODY"
+                        ]
+                      },
+                      {
+                        "title": "PANDORA (NA Only)",
+                        "enum": [
+                          "PANDORA"
+                        ]
+                      },
+                      {
+                        "title": "NAPSTER (EU and NA Only)",
+                        "enum": [
+                          "NAPSTER"
+                        ]
+                      },
+                      {
+                        "title": "LAST.FM (EU Only)",
+                        "enum": [
+                          "LASTFM"
+                        ]
+                      },
+                      {
+                        "title": "USB START PLAYBACK",
+                        "enum": [
+                          "USB"
+                        ]
+                      },
+                      {
+                        "title": "IPOD START PLAYBACK",
+                        "enum": [
+                          "IPD"
+                        ]
+                      },
+                      {
+                        "title": "iRADIO START PLAYBACK",
+                        "enum": [
+                          "IRP"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITES START PLAYBACK",
+                        "enum": [
+                          "FVP"
+                        ]
+                      },
+                      {
+                        "title": "ONE TOUCH START PLAYBACK",
+                        "enum": [
+                          "OTP"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITES",
+                        "enum": [
+                          "FAVORITES"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE 1",
+                        "enum": [
+                          "FAVORITE1"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE 2",
+                        "enum": [
+                          "FAVORITE2"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE 3",
+                        "enum": [
+                          "FAVORITE3"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE 4",
+                        "enum": [
+                          "FAVORITE4"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE MEMORY 1",
+                        "enum": [
+                          "FAVORITE1 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE MEMORY 2",
+                        "enum": [
+                          "FAVORITE2 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE MEMORY 3",
+                        "enum": [
+                          "FAVORITE3 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE MEMORY 4",
+                        "enum": [
+                          "FAVORITE4 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT 1",
+                        "enum": [
+                          "QUICK1"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT 2",
+                        "enum": [
+                          "QUICK2"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT 3",
+                        "enum": [
+                          "QUICK3"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT 4",
+                        "enum": [
+                          "QUICK4"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT 5",
+                        "enum": [
+                          "QUICK5"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT MEMORY 1",
+                        "enum": [
+                          "QUICK1 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT MEMORY 2",
+                        "enum": [
+                          "QUICK2 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT MEMORY 3",
+                        "enum": [
+                          "QUICK3 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT MEMORY 4",
+                        "enum": [
+                          "QUICK4 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT MEMORY 5",
+                        "enum": [
+                          "QUICK5 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "SMART SELECT 1",
+                        "enum": [
+                          "SMART1"
+                        ]
+                      },
+                      {
+                        "title": "SMART SELECT 2",
+                        "enum": [
+                          "SMART2"
+                        ]
+                      },
+                      {
+                        "title": "SMART SELECT 3",
+                        "enum": [
+                          "SMART3"
+                        ]
+                      },
+                      {
+                        "title": "SMART SELECT 4",
+                        "enum": [
+                          "SMART4"
+                        ]
+                      },
+                      {
+                        "title": "SMART SELECT 5",
+                        "enum": [
+                          "SMART5"
+                        ]
+                      },
+                      {
+                        "title": "SMART SELECT MEMORY 1",
+                        "enum": [
+                          "SMART1 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "SMART SELECT MEMORY 2",
+                        "enum": [
+                          "SMART2 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "SMART SELECT MEMORY 3",
+                        "enum": [
+                          "SMART3 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "SMART SELECTMEMORY 4",
+                        "enum": [
+                          "SMART4 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "SMART SELECTMEMORY 5",
+                        "enum": [
+                          "SMART5 MEMORY"
+                        ]
+                      }
+                    ],
+                    "description": "Here select reference.",
                     "required": true
                   },
                   "displayType": {
@@ -5657,7 +6114,7 @@
                     {
                       "key": "devices[]",
                       "type": "section",
-                      "title": "Custom Inputs",
+                      "title": "Custom Sensors",
                       "expandable": true,
                       "expanded": false,
                       "items": [
