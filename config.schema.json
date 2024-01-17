@@ -3784,7 +3784,63 @@
                         "enum": [
                           "0DAODR MLT"
                         ]
+                      }
+                    ],
+                    "description": "Here select function.",
+                    "required": true
+                  },
+                  "displayType": {
+                    "title": "Type",
+                    "type": "integer",
+                    "oneOf": [
+                      {
+                        "title": "None/Disabled",
+                        "enum": [
+                          0
+                        ]
                       },
+                      {
+                        "title": "Outlet",
+                        "enum": [
+                          1
+                        ]
+                      },
+                      {
+                        "title": "Switch",
+                        "enum": [
+                          2
+                        ]
+                      }
+                    ],
+                    "description": "Here select characteristic type to be exposed in HomeKit app.",
+                    "required": true
+                  },
+                  "namePrefix": {
+                    "title": "Prefix",
+                    "type": "boolean",
+                    "description": "Here enable/disable the accessory name as a prefix for button name.",
+                    "required": true
+                  }
+                }
+              }
+            },
+            "buttonsZ2": {
+              "type": "array",
+              "items": {
+                "title": "Button",
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "title": "Name",
+                    "type": "string",
+                    "placeholder": "Button name",
+                    "description": "Here set Your own name.",
+                    "required": true
+                  },
+                  "reference": {
+                    "title": "Function",
+                    "type": "string",
+                    "oneOf": [
                       {
                         "title": "Z2 HDMI OUT THROUGH",
                         "enum": [
@@ -3798,619 +3854,1293 @@
                         ]
                       },
                       {
-                        "title": "Z2/Z3 POWER ON",
+                        "title": "Z2 POWER ON",
                         "enum": [
                           "1ON"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 POWER OFF",
+                        "title": "Z2 POWER OFF",
                         "enum": [
                           "1OFF"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 VOLUME UP",
+                        "title": "Z2 VOLUME UP",
                         "enum": [
                           "1UP"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 VOLUME DOWN",
+                        "title": "Z2 VOLUME DOWN",
                         "enum": [
                           "1DOWN"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 MUTE ON",
+                        "title": "Z2 MUTE ON",
                         "enum": [
                           "1MUON"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 MUTE OFF",
+                        "title": "Z2 MUTE OFF",
                         "enum": [
                           "1MUOFF"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 AUTO STANDBY 2H",
+                        "title": "Z2 AUTO STANDBY 2H",
                         "enum": [
                           "1STBY2H"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 AUTO STANDBY 4H",
+                        "title": "Z2 AUTO STANDBY 4H",
                         "enum": [
                           "1STBY4H"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 AUTO STANDBY 8H",
+                        "title": "Z2 AUTO STANDBY 8H",
                         "enum": [
                           "1STBY8H"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 AUTO STANDBY OFF",
+                        "title": "Z2 AUTO STANDBY OFF",
                         "enum": [
                           "1STBYOFF"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 SLEEP 10MIN",
+                        "title": "Z2 SLEEP 10MIN",
                         "enum": [
                           "1SLP010"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 SLEEP 20MIN",
+                        "title": "Z2 SLEEP 20MIN",
                         "enum": [
                           "1SLP020"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 SLEEP 30MIN",
+                        "title": "Z2 SLEEP 30MIN",
                         "enum": [
                           "1SLP030"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 SLEEP 1H",
+                        "title": "Z2 SLEEP 1H",
                         "enum": [
                           "1SLP060"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 SLEEP 2H",
+                        "title": "Z2 SLEEP 2H",
                         "enum": [
                           "1SLP120"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 SLEEP OFF",
+                        "title": "Z2 SLEEP OFF",
                         "enum": [
                           "1SLPOFF"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 INPUT SOURCE",
+                        "title": "Z2 INPUT SOURCE",
                         "enum": [
                           "1SOURCE"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 INPUT PHONO",
+                        "title": "Z2 INPUT PHONO",
                         "enum": [
                           "1PHONO"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 INPUT CD",
+                        "title": "Z2 INPUT CD",
                         "enum": [
                           "1CD"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 INPUT DVD",
+                        "title": "Z2 INPUT DVD",
                         "enum": [
                           "1DVD"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 INPUT BLU-RAY",
+                        "title": "Z2 INPUT BLU-RAY",
                         "enum": [
                           "1BD"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 INPUT TV AUDIO",
+                        "title": "Z2 INPUT TV AUDIO",
                         "enum": [
                           "1TV"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 INPUT SAT/CBL",
+                        "title": "Z2 INPUT SAT/CBL",
                         "enum": [
                           "1SAT/CBL"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 INPUT MEDIA PLAYER",
+                        "title": "Z2 INPUT MEDIA PLAYER",
                         "enum": [
                           "1MPLAY"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 INPUT GAME",
+                        "title": "Z2 INPUT GAME",
                         "enum": [
                           "1GAME"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 INPUT GAME 2",
+                        "title": "Z2 INPUT GAME 2",
                         "enum": [
                           "1GAME2"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 INPUT TUNER",
+                        "title": "Z2 INPUT TUNER",
                         "enum": [
                           "1TUNER"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 INPUT AUX",
+                        "title": "Z2 INPUT AUX",
                         "enum": [
                           "1AUX"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 INPUT AUX 1",
+                        "title": "Z2 INPUT AUX 1",
                         "enum": [
                           "1AUX1"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 INPUT AUX 2",
+                        "title": "Z2 INPUT AUX 2",
                         "enum": [
                           "1AUX2"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 INPUT AUX 3",
+                        "title": "Z2 INPUT AUX 3",
                         "enum": [
                           "1AUX3"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 INPUT AUX 4",
+                        "title": "Z2 INPUT AUX 4",
                         "enum": [
                           "1AUX4"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 INPUT AUX 5",
+                        "title": "Z2 INPUT AUX 5",
                         "enum": [
                           "1AUX5"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 INPUT AUX 6",
+                        "title": "Z2 INPUT AUX 6",
                         "enum": [
                           "1AUX6"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 INPUT AUX 7",
+                        "title": "Z2 INPUT AUX 7",
                         "enum": [
                           "A1UX7"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 INPUT V.AUX",
+                        "title": "Z2 INPUT V.AUX",
                         "enum": [
                           "1V.AUX"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 INPUT DVR",
+                        "title": "Z2 INPUT DVR",
                         "enum": [
                           "1DVR"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 INPUT DOCK",
+                        "title": "Z2 INPUT DOCK",
                         "enum": [
                           "1DOCK"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 INPUT NET/USB",
+                        "title": "Z2 INPUT NET/USB",
                         "enum": [
                           "1NET/USB"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 INPUT USB/IPOD",
+                        "title": "Z2 INPUT USB/IPOD",
                         "enum": [
                           "1USB/IPOD"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 INPUT CDR",
+                        "title": "Z2 INPUT CDR",
                         "enum": [
                           "1CDR"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 INPUT VCR",
+                        "title": "Z2 INPUT VCR",
                         "enum": [
                           "1VCR"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 INPUT M-XPORT",
+                        "title": "Z2 INPUT M-XPORT",
                         "enum": [
                           "1M-XPORT"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 INPUT HDP",
+                        "title": "Z2 INPUT HDP",
                         "enum": [
                           "1HDP"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 INPUT NETWORK/AIRPLAY/HEOS",
+                        "title": "Z2 INPUT NETWORK/AIRPLAY/HEOS",
                         "enum": [
                           "1NET"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 INPUT BLUETOOTH",
+                        "title": "Z2 INPUT BLUETOOTH",
                         "enum": [
                           "1BT"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 INPUT 8K",
+                        "title": "Z2 INPUT 8K",
                         "enum": [
                           "18K"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 INPUT iRADIO",
+                        "title": "Z2 INPUT iRADIO",
                         "enum": [
                           "1IRADIO"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 INPUT MEDIA SERVER",
+                        "title": "Z2 INPUT MEDIA SERVER",
                         "enum": [
                           "1SERVER"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 INPUT SPOTIFY",
+                        "title": "Z2 INPUT SPOTIFY",
                         "enum": [
                           "1SPOTIFY"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 INPUT HD RADIO (NA Only)",
+                        "title": "Z2 INPUT HD RADIO (NA Only)",
                         "enum": [
                           "1HDRADIO"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 INPUT SIRIUS (NA Only)",
+                        "title": "Z2 INPUT SIRIUS (NA Only)",
                         "enum": [
                           "1SIRIUS"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 INPUT SIRIUSXM (NA Only)",
+                        "title": "Z2 INPUT SIRIUSXM (NA Only)",
                         "enum": [
                           "1SIRIUSXM"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 INPUT RHAPSODY (NA Only)",
+                        "title": "Z2 INPUT RHAPSODY (NA Only)",
                         "enum": [
                           "1RHAPSODY"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 INPUT PANDORA (NA Only)",
+                        "title": "Z2 INPUT PANDORA (NA Only)",
                         "enum": [
                           "1PANDORA"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 INPUT NAPSTER (EU and NA Only)",
+                        "title": "Z2 INPUT NAPSTER (EU and NA Only)",
                         "enum": [
                           "1NAPSTER"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 INPUT LAST.FM (EU Only)",
+                        "title": "Z2 INPUT LAST.FM (EU Only)",
                         "enum": [
                           "1LASTFM"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 USB START PLAYBACK",
+                        "title": "Z2 USB START PLAYBACK",
                         "enum": [
                           "1USB"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 IPOD START PLAYBACK",
+                        "title": "Z2 IPOD START PLAYBACK",
                         "enum": [
                           "1IPD"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 iRADIO START PLAYBACK",
+                        "title": "Z2 iRADIO START PLAYBACK",
                         "enum": [
                           "1IRP"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 FAVORITES START PLAYBACK",
+                        "title": "Z2 FAVORITES START PLAYBACK",
                         "enum": [
                           "1FVP"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 ONE TOUCH START PLAYBACK",
+                        "title": "Z2 ONE TOUCH START PLAYBACK",
                         "enum": [
                           "1OTP"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 FAVORITES",
+                        "title": "Z2 FAVORITES",
                         "enum": [
                           "1FAVORITES"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 FAVORITE 1",
+                        "title": "Z2 FAVORITE 1",
                         "enum": [
                           "1FAVORITE1"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 FAVORITE 2",
+                        "title": "Z2 FAVORITE 2",
                         "enum": [
                           "1FAVORITE2"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 FAVORITE 3",
+                        "title": "Z2 FAVORITE 3",
                         "enum": [
                           "1FAVORITE3"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 FAVORITE 4",
+                        "title": "Z2 FAVORITE 4",
                         "enum": [
                           "1FAVORITE4"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 FAVORITE MEMORY 1",
+                        "title": "Z2 FAVORITE MEMORY 1",
                         "enum": [
                           "1FAVORITE1 MEMORY"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 FAVORITE MEMORY 2",
+                        "title": "Z2 FAVORITE MEMORY 2",
                         "enum": [
                           "1FAVORITE2 MEMORY"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 FAVORITE MEMORY 3",
+                        "title": "Z2 FAVORITE MEMORY 3",
                         "enum": [
                           "1FAVORITE3 MEMORY"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 FAVORITE MEMORY 4",
+                        "title": "Z2 FAVORITE MEMORY 4",
                         "enum": [
                           "1FAVORITE4 MEMORY"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 QUICK SELECT 1",
+                        "title": "Z2 QUICK SELECT 1",
                         "enum": [
                           "1QUICK1"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 QUICK SELECT 2",
+                        "title": "Z2 QUICK SELECT 2",
                         "enum": [
                           "1QUICK2"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 QUICK SELECT 3",
+                        "title": "Z2 QUICK SELECT 3",
                         "enum": [
                           "1QUICK3"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 QUICK SELECT 4",
+                        "title": "Z2 QUICK SELECT 4",
                         "enum": [
                           "1QUICK4"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 QUICK SELECT 5",
+                        "title": "Z2 QUICK SELECT 5",
                         "enum": [
                           "1QUICK5"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 QUICK SELECT MEMORY 1",
+                        "title": "Z2 QUICK SELECT MEMORY 1",
                         "enum": [
                           "1QUICK1 MEMORY"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 QUICK SELECT MEMORY 2",
+                        "title": "Z2 QUICK SELECT MEMORY 2",
                         "enum": [
                           "1QUICK2 MEMORY"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 QUICK SELECT MEMORY 3",
+                        "title": "Z2 QUICK SELECT MEMORY 3",
                         "enum": [
                           "1QUICK3 MEMORY"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 QUICK SELECT MEMORY 4",
+                        "title": "Z2 QUICK SELECT MEMORY 4",
                         "enum": [
                           "1QUICK4 MEMORY"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 QUICK SELECT MEMORY 5",
+                        "title": "Z2 QUICK SELECT MEMORY 5",
                         "enum": [
                           "1QUICK5 MEMORY"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 SMART SELECT 1",
+                        "title": "Z2 SMART SELECT 1",
                         "enum": [
                           "1SMART1"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 SMART SELECT 2",
+                        "title": "Z2 SMART SELECT 2",
                         "enum": [
                           "1SMART2"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 SMART SELECT 3",
+                        "title": "Z2 SMART SELECT 3",
                         "enum": [
                           "1SMART3"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 SMART SELECT 4",
+                        "title": "Z2 SMART SELECT 4",
                         "enum": [
                           "1SMART4"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 SMART SELECT 5",
+                        "title": "Z2 SMART SELECT 5",
                         "enum": [
                           "1SMART5"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 SMART SELECT MEMORY 1",
+                        "title": "Z2 SMART SELECT MEMORY 1",
                         "enum": [
                           "1SMART1 MEMORY"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 SMART SELECT MEMORY 2",
+                        "title": "Z2 SMART SELECT MEMORY 2",
                         "enum": [
                           "1SMART2 MEMORY"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 SMART SELECT MEMORY 3",
+                        "title": "Z2 SMART SELECT MEMORY 3",
                         "enum": [
                           "1SMART3 MEMORY"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 SMART SELECT MEMORY 4",
+                        "title": "Z2 SMART SELECT MEMORY 4",
                         "enum": [
                           "1SMART4 MEMORY"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 SMART SELECT MEMORY 5",
+                        "title": "Z2 SMART SELECT MEMORY 5",
                         "enum": [
                           "1SMART5 MEMORY"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 SOUND MODE STEREO",
+                        "title": "Z2 SOUND MODE STEREO",
                         "enum": [
                           "1CSST"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 SOUND MODE MONO",
+                        "title": "Z2 SOUND MODE MONO",
                         "enum": [
                           "1CSMONO"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 CHANNEL VOLUME FL UP",
+                        "title": "Z2 CHANNEL VOLUME FL UP",
                         "enum": [
                           "1CVFL UP"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 CHANNEL VOLUME FL DOWN",
+                        "title": "Z2 CHANNEL VOLUME FL DOWN",
                         "enum": [
                           "1CVFL DOWN"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 CHANNEL VOLUME FR UP",
+                        "title": "Z2 CHANNEL VOLUME FR UP",
                         "enum": [
                           "1CVFR UP"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 CHANNEL VOLUME FR DOWN",
+                        "title": "Z2 CHANNEL VOLUME FR DOWN",
                         "enum": [
                           "1CVFR DOWN"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 HIGH PASS FILTER ON",
+                        "title": "Z2 HIGH PASS FILTER ON",
                         "enum": [
                           "1HPFON"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 HIGH PASS FILTER OFF",
+                        "title": "Z2 HIGH PASS FILTER OFF",
                         "enum": [
                           "1HPFOFF"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 BASS UP",
+                        "title": "Z2 BASS UP",
                         "enum": [
                           "1PSBAS UP"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 BASS DPWN",
+                        "title": "Z2 BASS DPWN",
                         "enum": [
                           "1PSBAS DOWN"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 TREBLE UP",
+                        "title": "Z2 TREBLE UP",
                         "enum": [
                           "1PSTRE UP"
                         ]
                       },
                       {
-                        "title": "Z2/Z3 TREBLE DOWN",
+                        "title": "Z2 TREBLE DOWN",
+                        "enum": [
+                          "1PSTRE DOWN"
+                        ]
+                      }
+                    ],
+                    "description": "Here select function.",
+                    "required": true
+                  },
+                  "displayType": {
+                    "title": "Type",
+                    "type": "integer",
+                    "oneOf": [
+                      {
+                        "title": "None/Disabled",
+                        "enum": [
+                          0
+                        ]
+                      },
+                      {
+                        "title": "Outlet",
+                        "enum": [
+                          1
+                        ]
+                      },
+                      {
+                        "title": "Switch",
+                        "enum": [
+                          2
+                        ]
+                      }
+                    ],
+                    "description": "Here select characteristic type to be exposed in HomeKit app.",
+                    "required": true
+                  },
+                  "namePrefix": {
+                    "title": "Prefix",
+                    "type": "boolean",
+                    "description": "Here enable/disable the accessory name as a prefix for button name.",
+                    "required": true
+                  }
+                }
+              }
+            },
+            "buttonsZ3": {
+              "type": "array",
+              "items": {
+                "title": "Button",
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "title": "Name",
+                    "type": "string",
+                    "placeholder": "Button name",
+                    "description": "Here set Your own name.",
+                    "required": true
+                  },
+                  "reference": {
+                    "title": "Function",
+                    "type": "string",
+                    "oneOf": [
+                      {
+                        "title": "Z3 POWER ON",
+                        "enum": [
+                          "1ON"
+                        ]
+                      },
+                      {
+                        "title": "Z3 POWER OFF",
+                        "enum": [
+                          "1OFF"
+                        ]
+                      },
+                      {
+                        "title": "Z3 VOLUME UP",
+                        "enum": [
+                          "1UP"
+                        ]
+                      },
+                      {
+                        "title": "Z3 VOLUME DOWN",
+                        "enum": [
+                          "1DOWN"
+                        ]
+                      },
+                      {
+                        "title": "Z3 MUTE ON",
+                        "enum": [
+                          "1MUON"
+                        ]
+                      },
+                      {
+                        "title": "Z3 MUTE OFF",
+                        "enum": [
+                          "1MUOFF"
+                        ]
+                      },
+                      {
+                        "title": "Z3 AUTO STANDBY 2H",
+                        "enum": [
+                          "1STBY2H"
+                        ]
+                      },
+                      {
+                        "title": "Z3 AUTO STANDBY 4H",
+                        "enum": [
+                          "1STBY4H"
+                        ]
+                      },
+                      {
+                        "title": "Z3 AUTO STANDBY 8H",
+                        "enum": [
+                          "1STBY8H"
+                        ]
+                      },
+                      {
+                        "title": "Z3 AUTO STANDBY OFF",
+                        "enum": [
+                          "1STBYOFF"
+                        ]
+                      },
+                      {
+                        "title": "Z3 SLEEP 10MIN",
+                        "enum": [
+                          "1SLP010"
+                        ]
+                      },
+                      {
+                        "title": "Z3 SLEEP 20MIN",
+                        "enum": [
+                          "1SLP020"
+                        ]
+                      },
+                      {
+                        "title": "Z3 SLEEP 30MIN",
+                        "enum": [
+                          "1SLP030"
+                        ]
+                      },
+                      {
+                        "title": "Z3 SLEEP 1H",
+                        "enum": [
+                          "1SLP060"
+                        ]
+                      },
+                      {
+                        "title": "Z3 SLEEP 2H",
+                        "enum": [
+                          "1SLP120"
+                        ]
+                      },
+                      {
+                        "title": "Z3 SLEEP OFF",
+                        "enum": [
+                          "1SLPOFF"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT SOURCE",
+                        "enum": [
+                          "1SOURCE"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT PHONO",
+                        "enum": [
+                          "1PHONO"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT CD",
+                        "enum": [
+                          "1CD"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT DVD",
+                        "enum": [
+                          "1DVD"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT BLU-RAY",
+                        "enum": [
+                          "1BD"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT TV AUDIO",
+                        "enum": [
+                          "1TV"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT SAT/CBL",
+                        "enum": [
+                          "1SAT/CBL"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT MEDIA PLAYER",
+                        "enum": [
+                          "1MPLAY"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT GAME",
+                        "enum": [
+                          "1GAME"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT GAME 2",
+                        "enum": [
+                          "1GAME2"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT TUNER",
+                        "enum": [
+                          "1TUNER"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT AUX",
+                        "enum": [
+                          "1AUX"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT AUX 1",
+                        "enum": [
+                          "1AUX1"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT AUX 2",
+                        "enum": [
+                          "1AUX2"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT AUX 3",
+                        "enum": [
+                          "1AUX3"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT AUX 4",
+                        "enum": [
+                          "1AUX4"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT AUX 5",
+                        "enum": [
+                          "1AUX5"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT AUX 6",
+                        "enum": [
+                          "1AUX6"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT AUX 7",
+                        "enum": [
+                          "A1UX7"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT V.AUX",
+                        "enum": [
+                          "1V.AUX"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT DVR",
+                        "enum": [
+                          "1DVR"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT DOCK",
+                        "enum": [
+                          "1DOCK"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT NET/USB",
+                        "enum": [
+                          "1NET/USB"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT USB/IPOD",
+                        "enum": [
+                          "1USB/IPOD"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT CDR",
+                        "enum": [
+                          "1CDR"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT VCR",
+                        "enum": [
+                          "1VCR"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT M-XPORT",
+                        "enum": [
+                          "1M-XPORT"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT HDP",
+                        "enum": [
+                          "1HDP"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT NETWORK/AIRPLAY/HEOS",
+                        "enum": [
+                          "1NET"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT BLUETOOTH",
+                        "enum": [
+                          "1BT"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT 8K",
+                        "enum": [
+                          "18K"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT iRADIO",
+                        "enum": [
+                          "1IRADIO"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT MEDIA SERVER",
+                        "enum": [
+                          "1SERVER"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT SPOTIFY",
+                        "enum": [
+                          "1SPOTIFY"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT HD RADIO (NA Only)",
+                        "enum": [
+                          "1HDRADIO"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT SIRIUS (NA Only)",
+                        "enum": [
+                          "1SIRIUS"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT SIRIUSXM (NA Only)",
+                        "enum": [
+                          "1SIRIUSXM"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT RHAPSODY (NA Only)",
+                        "enum": [
+                          "1RHAPSODY"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT PANDORA (NA Only)",
+                        "enum": [
+                          "1PANDORA"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT NAPSTER (EU and NA Only)",
+                        "enum": [
+                          "1NAPSTER"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT LAST.FM (EU Only)",
+                        "enum": [
+                          "1LASTFM"
+                        ]
+                      },
+                      {
+                        "title": "Z3 USB START PLAYBACK",
+                        "enum": [
+                          "1USB"
+                        ]
+                      },
+                      {
+                        "title": "Z3 IPOD START PLAYBACK",
+                        "enum": [
+                          "1IPD"
+                        ]
+                      },
+                      {
+                        "title": "Z3 iRADIO START PLAYBACK",
+                        "enum": [
+                          "1IRP"
+                        ]
+                      },
+                      {
+                        "title": "Z3 FAVORITES START PLAYBACK",
+                        "enum": [
+                          "1FVP"
+                        ]
+                      },
+                      {
+                        "title": "Z3 ONE TOUCH START PLAYBACK",
+                        "enum": [
+                          "1OTP"
+                        ]
+                      },
+                      {
+                        "title": "Z3 FAVORITES",
+                        "enum": [
+                          "1FAVORITES"
+                        ]
+                      },
+                      {
+                        "title": "Z3 FAVORITE 1",
+                        "enum": [
+                          "1FAVORITE1"
+                        ]
+                      },
+                      {
+                        "title": "Z3 FAVORITE 2",
+                        "enum": [
+                          "1FAVORITE2"
+                        ]
+                      },
+                      {
+                        "title": "Z3 FAVORITE 3",
+                        "enum": [
+                          "1FAVORITE3"
+                        ]
+                      },
+                      {
+                        "title": "Z3 FAVORITE 4",
+                        "enum": [
+                          "1FAVORITE4"
+                        ]
+                      },
+                      {
+                        "title": "Z3 FAVORITE MEMORY 1",
+                        "enum": [
+                          "1FAVORITE1 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "Z3 FAVORITE MEMORY 2",
+                        "enum": [
+                          "1FAVORITE2 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "Z3 FAVORITE MEMORY 3",
+                        "enum": [
+                          "1FAVORITE3 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "Z3 FAVORITE MEMORY 4",
+                        "enum": [
+                          "1FAVORITE4 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "Z3 QUICK SELECT 1",
+                        "enum": [
+                          "1QUICK1"
+                        ]
+                      },
+                      {
+                        "title": "Z3 QUICK SELECT 2",
+                        "enum": [
+                          "1QUICK2"
+                        ]
+                      },
+                      {
+                        "title": "Z3 QUICK SELECT 3",
+                        "enum": [
+                          "1QUICK3"
+                        ]
+                      },
+                      {
+                        "title": "Z3 QUICK SELECT 4",
+                        "enum": [
+                          "1QUICK4"
+                        ]
+                      },
+                      {
+                        "title": "Z3 QUICK SELECT 5",
+                        "enum": [
+                          "1QUICK5"
+                        ]
+                      },
+                      {
+                        "title": "Z3 QUICK SELECT MEMORY 1",
+                        "enum": [
+                          "1QUICK1 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "Z3 QUICK SELECT MEMORY 2",
+                        "enum": [
+                          "1QUICK2 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "Z3 QUICK SELECT MEMORY 3",
+                        "enum": [
+                          "1QUICK3 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "Z3 QUICK SELECT MEMORY 4",
+                        "enum": [
+                          "1QUICK4 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "Z3 QUICK SELECT MEMORY 5",
+                        "enum": [
+                          "1QUICK5 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "Z3 SMART SELECT 1",
+                        "enum": [
+                          "1SMART1"
+                        ]
+                      },
+                      {
+                        "title": "Z3 SMART SELECT 2",
+                        "enum": [
+                          "1SMART2"
+                        ]
+                      },
+                      {
+                        "title": "Z3 SMART SELECT 3",
+                        "enum": [
+                          "1SMART3"
+                        ]
+                      },
+                      {
+                        "title": "Z3 SMART SELECT 4",
+                        "enum": [
+                          "1SMART4"
+                        ]
+                      },
+                      {
+                        "title": "Z3 SMART SELECT 5",
+                        "enum": [
+                          "1SMART5"
+                        ]
+                      },
+                      {
+                        "title": "Z3 SMART SELECT MEMORY 1",
+                        "enum": [
+                          "1SMART1 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "Z3 SMART SELECT MEMORY 2",
+                        "enum": [
+                          "1SMART2 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "Z3 SMART SELECT MEMORY 3",
+                        "enum": [
+                          "1SMART3 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "Z3 SMART SELECT MEMORY 4",
+                        "enum": [
+                          "1SMART4 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "Z3 SMART SELECT MEMORY 5",
+                        "enum": [
+                          "1SMART5 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "Z3 SOUND MODE STEREO",
+                        "enum": [
+                          "1CSST"
+                        ]
+                      },
+                      {
+                        "title": "Z3 SOUND MODE MONO",
+                        "enum": [
+                          "1CSMONO"
+                        ]
+                      },
+                      {
+                        "title": "Z3 CHANNEL VOLUME FL UP",
+                        "enum": [
+                          "1CVFL UP"
+                        ]
+                      },
+                      {
+                        "title": "Z3 CHANNEL VOLUME FL DOWN",
+                        "enum": [
+                          "1CVFL DOWN"
+                        ]
+                      },
+                      {
+                        "title": "Z3 CHANNEL VOLUME FR UP",
+                        "enum": [
+                          "1CVFR UP"
+                        ]
+                      },
+                      {
+                        "title": "Z3 CHANNEL VOLUME FR DOWN",
+                        "enum": [
+                          "1CVFR DOWN"
+                        ]
+                      },
+                      {
+                        "title": "Z3 HIGH PASS FILTER ON",
+                        "enum": [
+                          "1HPFON"
+                        ]
+                      },
+                      {
+                        "title": "Z3 HIGH PASS FILTER OFF",
+                        "enum": [
+                          "1HPFOFF"
+                        ]
+                      },
+                      {
+                        "title": "Z3 BASS UP",
+                        "enum": [
+                          "1PSBAS UP"
+                        ]
+                      },
+                      {
+                        "title": "Z3 BASS DPWN",
+                        "enum": [
+                          "1PSBAS DOWN"
+                        ]
+                      },
+                      {
+                        "title": "Z3 TREBLE UP",
+                        "enum": [
+                          "1PSTRE UP"
+                        ]
+                      },
+                      {
+                        "title": "Z3 TREBLE DOWN",
                         "enum": [
                           "1PSTRE DOWN"
                         ]
@@ -4853,7 +5583,56 @@
                 "devices[].buttons[].namePrefix"
               ]
             }
-          ]
+          ],
+          "condition": {
+            "functionBody": "return model.devices[arrayIndices].zoneControl === 0;"
+          }
+        },
+        {
+          "key": "devices[]",
+          "type": "section",
+          "title": "Buttons",
+          "expandable": true,
+          "expanded": false,
+          "items": [
+            {
+              "key": "devices[].buttonsZ2",
+              "type": "tabarray",
+              "title": "{{ value.name || 'button' }}",
+              "items": [
+                "devices[].buttonsZ2[].name",
+                "devices[].buttonsZ2[].reference",
+                "devices[].buttonsZ2[].displayType",
+                "devices[].buttonsZ2[].namePrefix"
+              ]
+            }
+          ],
+          "condition": {
+            "functionBody": "return model.devices[arrayIndices].zoneControl === 1;"
+          }
+        },
+        {
+          "key": "devices[]",
+          "type": "section",
+          "title": "Buttons",
+          "expandable": true,
+          "expanded": false,
+          "items": [
+            {
+              "key": "devices[].buttonsZ3",
+              "type": "tabarray",
+              "title": "{{ value.name || 'button' }}",
+              "items": [
+                "devices[].buttonsZ3[].name",
+                "devices[].buttonsZ3[].reference",
+                "devices[].buttonsZ3[].displayType",
+                "devices[].buttonsZ3[].namePrefix"
+              ]
+            }
+          ],
+          "condition": {
+            "functionBody": "return model.devices[arrayIndices].zoneControl === 2;"
+          }
         },
         {
           "key": "devices[]",

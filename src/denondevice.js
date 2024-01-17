@@ -28,10 +28,9 @@ class DenonDevice extends EventEmitter {
         this.getInputsFromDevice = config.getInputsFromDevice || false;
         this.getFavoritesFromDevice = this.getInputsFromDevice ? config.getFavoritesFromDevice : false;
         this.getQuickSmartSelectFromDevice = this.getInputsFromDevice ? config.getQuickSmartSelectFromDevice : false;
-        this.inputs = config.inputs || [];
         this.inputsDisplayOrder = config.inputsDisplayOrder || 0;
-        this.surrounds = config.surrounds || [];
-        this.buttons = config.buttons || [];
+        this.inputs = [config.inputs, config.inputs, config.inputs, config.surrounds][config.zoneControl] || [];
+        this.buttons = [config.buttons, config.buttonsZ2, config.buttonsZ3, []][config.zoneControl] || [];
         this.sensorPower = config.sensorPower || false;
         this.sensorVolume = config.sensorVolume || false
         this.sensorMute = config.sensorMute || false;
@@ -171,7 +170,6 @@ class DenonDevice extends EventEmitter {
             generation: this.generation,
             zone: this.zone,
             inputs: this.inputs,
-            surrounds: this.surrounds,
             devInfoFile: this.devInfoFile,
             inputsFile: this.inputsFile,
             getInputsFromDevice: this.getInputsFromDevice,
@@ -313,7 +311,7 @@ class DenonDevice extends EventEmitter {
                     //read inputs file
                     try {
                         const data = await fsPromises.readFile(this.inputsFile);
-                        this.savedInputs = data.toString().trim() !== '' ? JSON.parse(data) : (this.zone <= 2 ? this.inputs : this.surrounds);
+                        this.savedInputs = data.toString().trim() !== '' ? JSON.parse(data) : [];
                         const debug = !this.enableDebugMode ? false : this.emit('debug', `Read saved ${this.zoneInputSurroundName}: ${JSON.stringify(this.savedInputs, null, 2)}`);
                     } catch (error) {
                         this.emit('error', `Read saved ${this.zoneInputSurroundName} error: ${error}`);

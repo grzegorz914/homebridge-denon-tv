@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## The properties *inputs.displayType* and *surrounds.displayType* are removed.
 ## Note - after update to 3.15.x need remove the accessory frome Home app and add it again.
 
+## [4.8.0] - (17.01.2024)
+## Note - after update to 4.8.x all buttons need to be configure again using config UI.
+## Changes
+- fixed [#190](https://github.com/grzegorz914/homebridge-denon-tv/issues/190)
+- fixed [#228](https://github.com/grzegorz914/homebridge-denon-tv/issues/228)
+- config schema updated
+- cleanup
+
 ## [4.7.0] - (15.01.2024)
 ## Note - after update to 4.7.x buttons, sensors, volume display type need to be configure again using config UI.
 ## Changes

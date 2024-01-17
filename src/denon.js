@@ -15,7 +15,6 @@ class DENON extends EventEmitter {
         const generation = config.generation;
         const zone = config.zone;
         const inputs = config.inputs;
-        const surrounds = config.surrounds;
         const devInfoFile = config.devInfoFile;
         const inputsFile = config.inputsFile;
         const getInputsFromDevice = config.getInputsFromDevice;
@@ -197,7 +196,7 @@ class DENON extends EventEmitter {
                 const saveDevInfo = zone === 0 ? await this.saveDevInfo(devInfoFile, devInfo) : false;
 
                 //save inputs to the file
-                await this.saveInputs(inputsFile, devInfo, generation, zone, zoneInputSurroundName, inputs, surrounds, zoneCapabilities, getInputsFromDevice, getFavoritesFromDevice, getQuickSmartSelectFromDevice, supportFavorites, supportShortcut, supportInputSource, supportQuickSmartSelect);
+                await this.saveInputs(inputsFile, devInfo, generation, zone, zoneInputSurroundName, inputs, zoneCapabilities, getInputsFromDevice, getFavoritesFromDevice, getQuickSmartSelectFromDevice, supportFavorites, supportShortcut, supportInputSource, supportQuickSmartSelect);
 
                 //emit device info
                 const emitDeviceInfo = this.emitDeviceInfo ? this.emit('deviceInfo', manufacturer, modelName, serialNumber, firmwareRevision, deviceZones, apiVersion, supportPictureMode) : false;
@@ -329,7 +328,7 @@ class DENON extends EventEmitter {
         });
     };
 
-    saveInputs(path, devInfo, generation, zone, zoneInputSurroundName, inputs, surrounds, zoneCapabilities, getInputsFromDevice, getFavoritesFromDevice, getQuickSmartSelectFromDevice, supportFavorites, supportShortcut, supportInputSource, supportQuickSmartSelect) {
+    saveInputs(path, devInfo, generation, zone, zoneInputSurroundName, inputs, zoneCapabilities, getInputsFromDevice, getFavoritesFromDevice, getQuickSmartSelectFromDevice, supportFavorites, supportShortcut, supportInputSource, supportQuickSmartSelect) {
         return new Promise(async (resolve, reject) => {
             try {
                 const referenceConversionKeys = Object.keys(CONSTANS.InputConversion);
@@ -403,7 +402,7 @@ class DENON extends EventEmitter {
                     const push = !existedInArray ? inputsArr.push(obj) : false;
                 };
 
-                const allInputs = zone <= 2 ? getInputsFromDevice ? inputsArr : inputs : surrounds;
+                const allInputs = zone <= 2 ? getInputsFromDevice ? inputsArr : inputs : inputs;
                 const allInputsStringify = JSON.stringify(allInputs, null, 2);
                 await fsPromises.writeFile(path, allInputsStringify);
                 const debug = !this.debugLog ? false : this.emit('message', `saved ${zoneInputSurroundName}: ${allInputsStringify}`);

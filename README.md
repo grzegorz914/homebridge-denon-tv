@@ -5,19 +5,21 @@
 <span align="center">
 
 # Homebridge Denon TV
+
 [![verified-by-homebridge](https://badgen.net/badge/homebridge/verified/purple)](https://github.com/homebridge/homebridge/wiki/Verified-Plugins)
-[![npm](https://badgen.net/npm/dt/homebridge-denon-tv?color=purple)](https://www.npmjs.com/package/homebridge-denon-tv) 
-[![npm](https://badgen.net/npm/v/homebridge-denon-tv?color=purple)](https://www.npmjs.com/package/homebridge-denon-tv) 
+[![npm](https://badgen.net/npm/dt/homebridge-denon-tv?color=purple)](https://www.npmjs.com/package/homebridge-denon-tv)
+[![npm](https://badgen.net/npm/v/homebridge-denon-tv?color=purple)](https://www.npmjs.com/package/homebridge-denon-tv)
 [![npm](https://img.shields.io/npm/v/homebridge-denon-tv/beta.svg?style=flat-square)](https://www.npmjs.com/package/homebridge-denon-tv)
 [![GitHub pull requests](https://img.shields.io/github/issues-pr/grzegorz914/homebridge-denon-tv.svg)](https://github.com/grzegorz914/homebridge-denon-tv/pulls)
 [![GitHub issues](https://img.shields.io/github/issues/grzegorz914/homebridge-denon-tv.svg)](https://github.com/grzegorz914/homebridge-denon-tv/issues)
 
-Homebridge plugin for Denon/Marantz AV Receivers series X/SR. 
+Homebridge plugin for Denon/Marantz AV Receivers series X/SR.
 Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz SR8012, SR6013, M-CR611, PM7000N.
 
 </span>
 
 ## Package Requirements
+
 | Package | Installation | Role | Required |
 | --- | --- | --- | --- |
 | [Homebridge](https://github.com/homebridge/homebridge) | [Homebridge Wiki](https://github.com/homebridge/homebridge/wiki) | HomeKit Bridge | Required |
@@ -25,6 +27,7 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 | [Denon TV](https://www.npmjs.com/package/homebridge-denon-tv) | [Plug-In Wiki](https://github.com/grzegorz914/homebridge-denon-tv/wiki) | Homebridge Plug-In | Required |
 
 ## About The Plugin
+
 * Multi Zone control.
 * Power ON/OFF short press tile in HomeKit app.
 * RC/Media control is possible after you go to the RC app on iPhone/iPad.
@@ -44,18 +47,18 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
   * Topic: `Info`, `State`, `Picture`, `Surround`.
   * Publish as JSON data.
 
-
 <p align="left">
-  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/main/graphics/homekit.png" width="382"></a> 
+  <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/main/graphics/homekit.png" width="382"></a>
   <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/main/graphics/inputs.png" width="135"></a> <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/main/graphics/rc1.png" width="135"></a>
   <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/main/graphics/RC.png" width="135"></a>
 </p>
 
 ### Configuration
+
 * First enable [Network Contorl Denon/Marantz](https://manuals.denon.com/avrx6300h/na/en/HJWMSYmehwmguq.php).
 * Run this plugin as a [Child Bridge](https://github.com/homebridge/homebridge/wiki/Child-Bridges) (Highly Recommended), this prevent crash Homebridge if plugin crashes.
-* Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-config-ui-x/wiki) to configure this plugin. 
-* The `sample-config.json` can be edited and used as an alternative. 
+* Install and use [Homebridge Config UI X](https://github.com/oznu/homebridge-config-ui-x/wiki) to configure this plugin.
+* The `sample-config.json` can be edited and used as an alternative.
 * Be sure to always make a backup copy of your config.json file before making any changes to it.
 
 <p align="left">
@@ -77,16 +80,24 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 | `inputs.reference` | Choose from available inputs, the inputs that should be published to and appear in HomeKit app in the device tile as inputs list |
 | `surrounds.name` | Here set *Surround Mode Name* which You want expose to the *Homebridge/HomeKit*. |
 | `surrounds.reference` | Here choice *Surround Mode*, the mode that should be published to and appear in HomeKit app in the extra tile as Surrounds List. |
-| `buttons.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit*. |
+| `buttons.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit* for Main Zone. |
 | `buttons.reference` | Here choice function for additional control button for Main Zone. |
 | `buttons.displayType` | Here select characteristic type to be exposed in HomeKit app, possible `0 - None/Disabled`, `1 - Outlet`, `2 - Switch`.|
 | `buttons.namePrefix` | Here enable/disable the accessory name as a prefix for button name.|
+| `buttonsZ2.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit* for Zone 2. |
+| `buttonsZ2.reference` | Here choice function for additional control button for Zone 2. |
+| `buttonsZ2.displayType` | Here select characteristic type to be exposed in HomeKit app, possible `0 - None/Disabled`, `1 - Outlet`, `2 - Switch`.|
+| `buttonsZ2.namePrefix` | Here enable/disable the accessory name as a prefix for button name.|
+| `buttonsZ3.name` | Here set *Button Name* which You want expose to the *Homebridge/HomeKit* for Zone 3. |
+| `buttonsZ3.reference` | Here choice function for additional control button for Zone 3. |
+| `buttonsZ3.displayType` | Here select characteristic type to be exposed in HomeKit app, possible `0 - None/Disabled`, `1 - Outlet`, `2 - Switch`.|
+| `buttonsZ3.namePrefix` | Here enable/disable the accessory name as a prefix for button name.|
 | `sensorPower`| If enabled, then the Power will be exposed as a `Contact Sensor` to use with automations. |
 | `sensorVolume`| If enabled, then the Volume will be exposed as a `Contact Sensor` to use with automations. |
 | `sensorMute`| If enabled, then the Mute will be exposed as a `Contact Sensor` to use with automations. |
 | `sensorInput`| If enabled, then the Input will be exposed as a `Contact Sensor` to use with automations. |
 | `sensorInputs.name` | Here set own *Name* which You want expose to the *Homebridge/HomeKit* for this sensor. |
-| `sensorInputs.reference` | Here set *Reference* like `CBL/SAT`, `GAME` to be exposed as `Contact Sensor` active on switch to this Input. | 
+| `sensorInputs.reference` | Here set *Reference* like `CBL/SAT`, `GAME` to be exposed as `Contact Sensor` active on switch to this Input. |
 | `sensorInputs.displayType` | Here select characteristic type to be exposed in HomeKit app, `0 - None/Disabled`, `1 - Motion Sensor`, `2 - Occupancy Sensor`, `3 - Contact Sensor`. |
 | `sensorInputs.namePrefix` | Here enable/disable the accessory name as a prefix for sensor name.|
 | `enableDebugMode` | If enabled, deep log will be present in homebridge console. |
