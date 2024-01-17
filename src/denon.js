@@ -26,7 +26,7 @@ class DENON extends EventEmitter {
         const refreshInterval = config.refreshInterval;
         const restFulEnabled = config.restFulEnabled;
         const mqttEnabled = config.mqttEnabled;
-        const deviceInfoUrl = generation === 0 ? CONSTANS.ApiUrls.MainZone : CONSTANS.ApiUrls.DeviceInfo;
+        const deviceInfoUrl = [CONSTANS.ApiUrls.MainZone, CONSTANS.ApiUrls.DeviceInfo, CONSTANS.ApiUrls.DeviceInfo][generation];
 
         this.debugLog = debugLog;
         this.refreshInterval = refreshInterval;
@@ -81,7 +81,7 @@ class DENON extends EventEmitter {
                 //get device info
                 const deviceInfo = await this.axiosInstance(deviceInfoUrl);
                 const parseData = parseString.parse(deviceInfo.data);
-                const devInfo = generation === 0 ? parseData.item : parseData.Device_Info;
+                const devInfo = [parseData.item, parseData.Device_Info, parseData.Device_Info][generation];
                 const debug = debugLog ? this.emit('debug', `Info: ${JSON.stringify(devInfo, null, 2)}`) : false;
 
                 //device info
@@ -96,7 +96,8 @@ class DENON extends EventEmitter {
                 const manualModelName = deviceInfoKeys.includes('ManualModelName') ? devInfo.ManualModelName : 'Unknown';
                 const deliveryCode = deviceInfoKeys.includes('DeliveryCode') ? devInfo.DeliveryCode : 0;
                 const modelName = deviceInfoKeys.includes('ModelName') ? devInfo.ModelName : 'AV Receiver';
-                const serialNumber = deviceInfoKeys.includes('MacAddress') ? devInfo.MacAddress.toString() : generation === 0 ? `1234567654321` : false;
+                const macAddressSupported = deviceInfoKeys.includes('MacAddress');
+                const serialNumber = [macAddressSupported ? devInfo.MacAddress.toString() : `1234567654321`, macAddressSupported ? devInfo.MacAddress.toString() : false, macAddressSupported ? devInfo.MacAddress.toString() : false][generation];
                 const firmwareRevision = deviceInfoKeys.includes('UpgradeVersion') ? devInfo.UpgradeVersion.toString() : '00';
                 const reloadDeviceInfo = deviceInfoKeys.includes('ReloadDeviceInfo') ? devInfo.ReloadDeviceInfo : 0;
                 const deviceZones = deviceInfoKeys.includes('DeviceZones') ? devInfo.DeviceZones : 1;
@@ -225,8 +226,8 @@ class DENON extends EventEmitter {
             .on('checkState', async () => {
                 try {
                     //get zones status
-                    const zoneUrl = [CONSTANS.ApiUrls.MainZoneStatusLite, CONSTANS.ApiUrls.Zone2StatusLite, CONSTANS.ApiUrls.Zone3StatusLite, CONSTANS.ApiUrls.SoundModeStatus][zone];
-                    const deviceState = await this.axiosInstance(zoneUrl);
+                    const zoneStateUrl = [CONSTANS.ApiUrls.MainZoneStatusLite, CONSTANS.ApiUrls.Zone2StatusLite, CONSTANS.ApiUrls.Zone3StatusLite, CONSTANS.ApiUrls.SoundModeStatus][zone];
+                    const deviceState = await this.axiosInstance(zoneStateUrl);
                     const parseDeviceState = parseString.parse(deviceState.data);
                     const devState = parseDeviceState.item;
                     const debug = debugLog ? this.emit('debug', `State: ${JSON.stringify(devState, null, 2)}`) : false;
@@ -331,35 +332,30 @@ class DENON extends EventEmitter {
     saveInputs(path, devInfo, generation, zone, zoneInputSurroundName, inputs, zoneCapabilities, getInputsFromDevice, getFavoritesFromDevice, getQuickSmartSelectFromDevice, supportFavorites, supportShortcut, supportInputSource, supportQuickSmartSelect) {
         return new Promise(async (resolve, reject) => {
             try {
+                //inputs select
+                const deviceInputsOldAvr = getInputsFromDevice && generation === 0 ? devInfo.InputFuncList.value : [];
+                const deviceInputsNewAvr = getInputsFromDevice && supportInputSource ? zoneCapabilities.InputSource.List.Source : [];
+                const devInputs = [deviceInputsOldAvr, deviceInputsNewAvr, deviceInputsNewAvr][generation];
+
+
+                //inputs
                 const referenceConversionKeys = Object.keys(CONSTANS.InputConversion);
                 const inputsArr = [];
-
-                //old AVR - 0
-                const deviceInputsOldAvr = getInputsFromDevice && generation === 0 ? devInfo.InputFuncList.value : [];
-                for (let i = 0; i < deviceInputsOldAvr.length; i++) {
-                    const inputName = devInfo.RenameSource.value[i].trim() !== '' ? devInfo.RenameSource.value[i] : deviceInputsOldAvr[i];
-                    const inputReference = deviceInputsOldAvr[i];
+                let i = 0;
+                for (const input of devInputs) {
+                    const inputNameOldAvr = generation === 0 ? devInfo.RenameSource.value[i].trim() !== '' ? devInfo.RenameSource.value[i] : devInputs[i] : '';
+                    const inputName = [inputNameOldAvr, input.DefaultName, input.DefaultName][generation];
+                    const inputReference = [input, input.FuncName, input.FuncName][generation];
                     const reference = referenceConversionKeys.includes(inputReference) ? CONSTANS.InputConversion[inputReference] : inputReference;
                     const obj = {
                         'name': inputName,
                         'reference': reference
                     }
                     inputsArr.push(obj);
-                }
-
-                //new AVR 1 and 2
-                const deviceInputs = getInputsFromDevice && supportInputSource ? zoneCapabilities.InputSource.List.Source : [];
-                for (const input of deviceInputs) {
-                    const inputName = input.DefaultName;
-                    const inputReference = input.FuncName;
-                    const reference = referenceConversionKeys.includes(inputReference) ? CONSTANS.InputConversion[inputReference] : inputReference;
-                    const obj = {
-                        'name': inputName,
-                        'reference': reference
-                    }
-                    inputsArr.push(obj);
+                    i++;
                 };
 
+                //schortcuts
                 const deviceSchortcuts = getInputsFromDevice && supportShortcut ? zoneCapabilities.ShortcutControl.EntryList.Shortcut : [];
                 for (const shortcut of deviceSchortcuts) {
                     const category = shortcut.Category; //3 Quick/Smart Select, 4 Inputs
@@ -374,6 +370,7 @@ class DENON extends EventEmitter {
                     const push = !existedInArray && category === '4' ? inputsArr.push(obj) : false;
                 };
 
+                //favorites
                 const deviceFavorites = getFavoritesFromDevice && supportFavorites ? devInfo.DeviceCapabilities.Operation.Favorites : [];
                 for (const favorite of deviceFavorites) {
                     const favoriteName = favorite.DispName;
@@ -387,10 +384,11 @@ class DENON extends EventEmitter {
                     const push = !existedInArray ? inputsArr.push(obj) : false;
                 };
 
+                //quick and smart select
                 const deviceQuickSmartSelect = getQuickSmartSelectFromDevice && supportQuickSmartSelect ? zoneCapabilities.Operation.QuickSelect : [];
-                const quickSelectCount = getQuickSmartSelectFromDevice && supportQuickSmartSelect ? deviceQuickSmartSelect.MaxQuickSelect : 0;
-                for (let i = 0; i < quickSelectCount; i++) {
-                    const quickSelect = deviceQuickSmartSelect[`QuickSelect${i + 1}`];
+                const quickSelectCount = deviceQuickSmartSelect.length > 0 ? deviceQuickSmartSelect.MaxQuickSelect : 0;
+                for (let j = 0; j < quickSelectCount; j++) {
+                    const quickSelect = deviceQuickSmartSelect[`QuickSelect${j + 1}`];
                     const quickSelectName = quickSelect.Name;
                     const quickSelectReference = quickSelect.FuncName;
                     const reference = referenceConversionKeys.includes(quickSelectReference) ? CONSTANS.InputConversion[quickSelectReference] : quickSelectReference;
