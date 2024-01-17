@@ -42,19 +42,19 @@
               "description": "Here select generation of Your device.",
               "oneOf": [
                 {
-                  "title": "Old like AVR-3311CI",
+                  "title": "2010 - 2012",
                   "enum": [
                     0
                   ]
                 },
                 {
-                  "title": "Middle like AVR-X6300H",
+                  "title": "2013 - 2022",
                   "enum": [
                     1
                   ]
                 },
                 {
-                  "title": "New like AVC-X4800H",
+                  "title": "2023 and newer",
                   "enum": [
                     2
                   ]
