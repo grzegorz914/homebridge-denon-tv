@@ -34,7 +34,7 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 * Speaker control is possible after you go to RC app on iPhone/iPad `Speaker Service`.
 * Legacy Volume and Mute control is possible throught extra `lightbulb`/`fan` (slider).
 * Inputs can be changed using Inputs selector in HomeKit.app, additionally can create separate tile.
-* Surrounds can be changed using Surrounds selector in HomeKit.app, additionally can create separate tile.
+* Surrounds can be changed using Surrounds selector in HomeKit.app, additionally can create separate tile in Main Zone.
 * Digital Input Modes can be controlled by creating separate tile in the buttons section.
 * Siri can be used for all functions, some times need create legacy buttons/switches/sensors.
 * Automations can be used for all functions, some times need create legacy buttons/switches/sensors.
