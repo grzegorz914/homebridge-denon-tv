@@ -4,8 +4,6 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Warning!!! - after update to 4.x.x the properties *buttonsMainZone*, *buttonsZone2* and *buttonsZone3* are changed to *buttons*. 
-## The properties *inputs.displayType* and *surrounds.displayType* are removed.
 ## Note - after update to 4.8.x all buttons need to be configure again using config UI.
 ## Note - after update to 4.7.x buttons, sensors, volume display type need to be configure again using config UI.
 ## Note - after update to 3.15.x need remove the accessory frome Home app and add it again.
