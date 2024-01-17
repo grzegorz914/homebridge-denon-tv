@@ -70,7 +70,7 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 | `host` | Here set the `Hostname` or `Address IP` of AVR. |
 | `port` | Here set the API communication port, if `8080` is not working try to use port `80` which some receivers use alternatively. |
 | `zoneControl` | Selects which zone will be controlled by this section `0 - Main Zone`, `1 - Zone 2`, `2 - Zone 3`, `3 - Surround Mode`. |
-| `generation` | Here select generation of Your device, old `0 - AVR-3311CI`, middle `1 - AVR-X6300H`, new `2 - AVC-X4800H`. |
+| `generation` | Here select generation of Your device, old `0 - 2010 - 2012`, middle `1 - 2013 - 2022`, new `2 - 2023 and newer`. |
 | `getInputsFromDevice` | If enabled, `Inputs` will be loaded direct from device. |
 | `getFavoritesFromDevice` | If enabled, `Favorites` will be loaded to the inputs list if exist. |
 | `getQuickSmartSelectFromDevice` | If enabled, `Quick/Smart Select` will be loaded to the inputs list if exist. |
