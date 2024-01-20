@@ -239,7 +239,7 @@ class DENON extends EventEmitter {
                     //get receiver status
                     const statusKeys = Object.keys(devState);
                     const power = devState.Power.value === 'ON';
-                    const input = inputsConversionKeys.includes(devState.InputFuncSelect.value) ? CONSTANS.InputConversion[devState.InputFuncSelect.value] : (devState.InputFuncSelect.value);
+                    const input = inputsConversionKeys.includes(devState.InputFuncSelect.value) ? CONSTANS.InputConversion[devState.InputFuncSelect.value] : devState.InputFuncSelect.value;
                     const volumeDisplay = statusKeys.includes('VolumeDisplay') ? devState.VolumeDisplay.value : this.volumeDisplay;
                     const volumeRelative = devState.MasterVolume.value;
                     const volume = parseFloat(volumeRelative) >= -79.5 ? parseInt(volumeRelative) + 80 : this.volume;
@@ -261,7 +261,7 @@ class DENON extends EventEmitter {
                     const soundMode = checkSoundeMode ? soundModesConcersionKeys.includes((parseDeviceSoundMode.rx.cmd.surround).replace(/[^a-zA-Z0-9]/g, '').toUpperCase()) ? CONSTANS.SoundModeConversion[(parseDeviceSoundMode.rx.cmd.surround).replace(/[^a-zA-Z0-9]/g, '').toUpperCase()] : (parseDeviceSoundMode.rx.cmd.surround).replace(/[^a-zA-Z0-9]/g, '').toUpperCase() : this.soundMode;
 
                     //select reference
-                    const reference = zone <= 2 ? input : soundMode;
+                    const reference = [input, input, input, soundMode][zone];
 
                     //update only if value change
                     if (power === this.power && reference === this.reference && volume === this.volume && volumeDisplay === this.volumeDisplay && mute === this.mute && pictureMode === this.pictureMode && soundMode === this.soundMode) {
@@ -298,7 +298,7 @@ class DENON extends EventEmitter {
             })
             .on('disconnect', () => {
                 this.emit('stateChanged', false, this.reference, this.volume, this.volumeDisplay, this.mute, this.pictureMode);
-                this.emit('disconnected', 'Disconnected.');
+                const debug = disableLogConnectError ? false : this.emit('disconnected', 'Disconnected.');
                 this.checkState();
             });
 
@@ -385,8 +385,8 @@ class DENON extends EventEmitter {
                 };
 
                 //quick and smart select
-                const deviceQuickSmartSelect = getQuickSmartSelectFromDevice && supportQuickSmartSelect ? zoneCapabilities.Operation.QuickSelect : [];
-                const quickSelectCount = deviceQuickSmartSelect.length > 0 ? deviceQuickSmartSelect.MaxQuickSelect : 0;
+                const deviceQuickSmartSelect = getQuickSmartSelectFromDevice && supportQuickSmartSelect ? zoneCapabilities.Operation.QuickSelect : {};
+                const quickSelectCount = getQuickSmartSelectFromDevice && supportQuickSmartSelect ? deviceQuickSmartSelect.MaxQuickSelect : 0;
                 for (let j = 0; j < quickSelectCount; j++) {
                     const quickSelect = deviceQuickSmartSelect[`QuickSelect${j + 1}`];
                     const quickSelectName = quickSelect.Name;
