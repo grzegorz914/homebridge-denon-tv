@@ -387,8 +387,8 @@ class DENON extends EventEmitter {
                 //quick and smart select
                 const deviceQuickSmartSelect = getQuickSmartSelectFromDevice && supportQuickSmartSelect ? zoneCapabilities.Operation.QuickSelect : {};
                 const quickSelectCount = getQuickSmartSelectFromDevice && supportQuickSmartSelect ? deviceQuickSmartSelect.MaxQuickSelect : 0;
-                for (let j = 0; j < quickSelectCount; j++) {
-                    const quickSelect = deviceQuickSmartSelect[`QuickSelect${j + 1}`];
+                for (let j = 1; j < quickSelectCount; j++) {
+                    const quickSelect = deviceQuickSmartSelect[`QuickSelect${j}`];
                     const quickSelectName = quickSelect.Name;
                     const quickSelectReference = quickSelect.FuncName;
                     const reference = referenceConversionKeys.includes(quickSelectReference) ? CONSTANS.InputConversion[quickSelectReference] : quickSelectReference;
