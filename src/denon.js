@@ -358,7 +358,7 @@ class DENON extends EventEmitter {
                 //schortcuts
                 const deviceSchortcuts = getInputsFromDevice && supportShortcut ? zoneCapabilities.ShortcutControl.EntryList.Shortcut : [];
                 for (const shortcut of deviceSchortcuts) {
-                    const category = shortcut.Category; //3 Quick/Smart Select, 4 Inputs
+                    const category = shortcut.Category; //1, 2, 3 Quick/Smart Select, 4 Inputs
                     const shortcutName = shortcut.DispName;
                     const shortcutReference = shortcut.FuncName;
                     const reference = referenceConversionKeys.includes(shortcutReference) ? CONSTANS.InputConversion[shortcutReference] : shortcutReference;
