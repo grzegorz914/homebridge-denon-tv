@@ -197,7 +197,7 @@ class DENON extends EventEmitter {
                 const saveDevInfo = zone === 0 ? await this.saveDevInfo(devInfoFile, devInfo) : false;
 
                 //save inputs to the file
-                await this.saveInputs(inputsFile, devInfo, generation, zone, zoneInputSurroundName, inputs, zoneCapabilities, getInputsFromDevice, getFavoritesFromDevice, getQuickSmartSelectFromDevice, supportFavorites, supportShortcut, supportInputSource, supportQuickSmartSelect);
+                await this.saveInputs(inputsFile, devInfo, generation, zoneInputSurroundName, inputs, zoneCapabilities, getInputsFromDevice, getFavoritesFromDevice, getQuickSmartSelectFromDevice, supportFavorites, supportShortcut, supportInputSource, supportQuickSmartSelect);
 
                 //emit device info
                 const emitDeviceInfo = this.emitDeviceInfo ? this.emit('deviceInfo', manufacturer, modelName, serialNumber, firmwareRevision, deviceZones, apiVersion, supportPictureMode) : false;
@@ -329,7 +329,7 @@ class DENON extends EventEmitter {
         });
     };
 
-    saveInputs(path, devInfo, generation, zone, zoneInputSurroundName, inputs, zoneCapabilities, getInputsFromDevice, getFavoritesFromDevice, getQuickSmartSelectFromDevice, supportFavorites, supportShortcut, supportInputSource, supportQuickSmartSelect) {
+    saveInputs(path, devInfo, generation, zoneInputSurroundName, inputs, zoneCapabilities, getInputsFromDevice, getFavoritesFromDevice, getQuickSmartSelectFromDevice, supportFavorites, supportShortcut, supportInputSource, supportQuickSmartSelect) {
         return new Promise(async (resolve, reject) => {
             try {
                 //inputs select
@@ -400,7 +400,7 @@ class DENON extends EventEmitter {
                     const push = !existedInArray ? inputsArr.push(obj) : false;
                 };
 
-                const allInputs = zone <= 2 ? getInputsFromDevice ? inputsArr : inputs : inputs;
+                const allInputs = getInputsFromDevice ? inputsArr : inputs;
                 const allInputsStringify = JSON.stringify(allInputs, null, 2);
                 await fsPromises.writeFile(path, allInputsStringify);
                 const debug = !this.debugLog ? false : this.emit('message', `saved ${zoneInputSurroundName}: ${allInputsStringify}`);
