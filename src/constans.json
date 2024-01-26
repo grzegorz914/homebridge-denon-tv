@@ -12,7 +12,7 @@
         "Zone2StatusLite": "/goform/formZone2_Zone2XmlStatusLite.xml",
         "Zone3Status": "/goform/forZone3_Zone3XmlStatus.xml",
         "Zone3StatusLite": "/goform/formZone3_Zone3XmlStatusLite.xml",
-        "Zone4Status": "/goform/forZone4_Zone4XmlStatus.xml",
+        "Zone4Status": "/goform/formZone4_Zone4XmlStatus.xml",
         "Zone4StatusLite": "/goform/formZone4_Zone4XmlStatusLite.xml",
         "SoundModeStatus": "/goform/formMainZone_MainZoneXmlStatusLite.xml",
         "iPhoneDirect": "/goform/formiPhoneAppDirect.xml?",
