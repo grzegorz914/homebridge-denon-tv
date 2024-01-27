@@ -4,8 +4,9 @@
     "ApiUrls": {
         "UPNP": ":60006/upnp/desc/aios_device/aios_device.xml",
         "Description": ":8080/description.xml",
-        "DeviceInfo": "/goform/Deviceinfo.xml",
-        "MainZone": "/goform/formMainZone_MainZoneXml.xml",
+        "DeviceInfoGen0": "/goform/formMainZone_MainZoneXml.xml",
+        "DeviceInfoGen1": "/goform/Deviceinfo.xml",
+        "DeviceInfoGen2": "/goform/Deviceinfo.xml",
         "MainZoneStatus": "/goform/formMainZone_MainZoneXmlStatus.xml",
         "MainZoneStatusLite": "/goform/formMainZone_MainZoneXmlStatusLite.xml",
         "Zone2Status": "/goform/formZone2_Zone2XmlStatus.xml",
@@ -91,6 +92,15 @@
         },
         "GetDeletedSource": {
             "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetDeletedSource</cmd> </tx>"
+        },
+        "GetAudyssey": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetAudyssey</cmd> </tx>"
+        },
+        "GetAudysseyEQCurveType": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetAudysseyEQCurveType</cmd> </tx>"
+        },
+        "SetAudyssey": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>SetAudyssey</cmd> </tx>"
         }
     },
     "BodyXml300": {
@@ -159,6 +169,15 @@
         },
         "GetDeletedSource": {
             "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='3'>GetDeletedSource</cmd> </tx>"
+        },
+        "GetAudyssey": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='3'>GetAudyssey</cmd> </tx>"
+        },
+        "GetAudysseyEQCurveType": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='3'>GetAudysseyEQCurveType</cmd> </tx>"
+        },
+        "SetAudyssey": {
+            "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='3'>SetAudyssey</cmd> </tx>"
         }
     },
     "ZoneName": [
@@ -199,6 +218,7 @@
         "SMART": "MS"
     },
     "SoundModeConversion": {
+        "AUTO": "AUTO",
         "MOVIE": "MOVIE",
         "MUSIC": "MUSIC",
         "GAME": "GAME",
@@ -207,8 +227,10 @@
         "PUREDIRECT": "PURE DIRECT",
         "DSDPUREDIRECT": "PURE DIRECT",
         "STEREO": "STEREO",
+        "ALLZONESTEREO": "STEREO",
+        "71IN": "MCH STEREO",
+        "MCHSTEREO": "MCH STEREO",
         "MULTICHSTEREO": "MCH STEREO",
-        "AUTO": "AUTO",
         "DOLBYSURROUND": "DOLBY DIGITAL",
         "DOLBYPROLOGIC": "DOLBY DIGITAL",
         "DOLBYPLIIMV": "DOLBY DIGITAL",
@@ -248,31 +270,26 @@
         "DOLBYHDNEOXG": "DOLBY DIGITAL",
         "DOLBYAUDIOTRUEHDNEURALX": "DOLBY DIGITAL",
         "DTSSURROUND": "DTS SURROUND",
+        "DTSDSUR": "DTS SURROUND",
+        "DTS9624": "DTS SURROUND",
+        "DTS96ESMTRX": "DTS SURROUND",
+        "DTSPL2XC": "DTS SURROUND",
+        "DTSPL2XM": "DTS SURROUND",
+        "DTSPL2ZH": "DTS SURROUND",
+        "DTSNEURALX": "DTS SURROUND",
+        "DTSVIRTUALX": "DTS SURROUND",
+        "DTSEXPRESS": "DTS SURROUND",
+        "DTSNEO6": "DTS SURROUND",
         "DTSNEO6C": "DTS SURROUND",
         "DTSNEO6M": "DTS SURROUND",
         "DTSNEOXC": "DTS SURROUND",
         "DTSNEOXM": "DTS SURROUND",
         "DTSNEOXG": "DTS SURROUND",
-        "NEURALX": "DTS SURROUND",
-        "VIRTUALX": "DTS SURROUND",
-        "IMAXDTS": "DTS SURROUND",
-        "IMAXDTSNEURALX": "DTS SURROUND",
-        "IMAXDTSVIRTUALX": "DTS SURROUND",
         "DTSESDSCRT61": "DTS SURROUND",
         "DTSESMTRX61": "DTS SURROUND",
-        "DTSPL2XC": "DTS SURROUND",
-        "DTSPL2XM": "DTS SURROUND",
-        "DTSPL2ZH": "DTS SURROUND",
-        "DTSDSUR": "DTS SURROUND",
-        "DTS9624": "DTS SURROUND",
-        "DTS96ESMTRX": "DTS SURROUND",
-        "DTSNEO6": "DTS SURROUND",
-        "DTSNEURALX": "DTS SURROUND",
-        "DTSVIRTUALX": "DTS SURROUND",
         "DTSESMTRXNEURALX": "DTS SURROUND",
         "DTSESDSCRTNEURALX": "DTS SURROUND",
         "DTSES8CHDSCRT": "DTS SURROUND",
-        "DTSEXPRESS": "DTS SURROUND",
         "DTSHD": "DTS SURROUND",
         "DTSHDMSTR": "DTS SURROUND",
         "DTSHDPL2XC": "DTS SURROUND",
@@ -288,8 +305,12 @@
         "DTSX": "DTS SURROUND",
         "DTSXMSTR": "DTS SURROUND",
         "DTSXVIRTUALX": "DTS SURROUND",
+        "IMAXDTS": "DTS SURROUND",
         "IMAXDTSX": "DTS SURROUND",
+        "IMAXDTSNEURALX": "DTS SURROUND",
+        "IMAXDTSVIRTUALX": "DTS SURROUND",
         "IMAXDTSXVIRTUALX": "DTS SURROUND",
+        "IMAXDTSXNEURALX": "DTS SURROUND",
         "MULTICHIN": "DTS SURROUND",
         "MCHINDOLBYEX": "DTS SURROUND",
         "MCHINPL2XC": "DTS SURROUND",
@@ -308,11 +329,17 @@
         "AACPL2XM": "DTS SURROUND",
         "AACPL2ZH": "DTS SURROUND",
         "AACDSUR": "DTS SURROUND",
+        "AACDS": "DTS SURROUND",
         "AACNEOXC": "DTS SURROUND",
         "AACNEOXM": "DTS SURROUND",
         "AACNEOXG": "DTS SURROUND",
         "AACNEURALX": "DTS SURROUND",
         "AACVIRTUALX": "DTS SURROUND",
+        "NEO6CDSX": "DTS SURROUND",
+        "NEO6MDSX": "DTS SURROUND",
+        "AUDYSSEYDSX": "DTS SURROUND",
+        "NEURALX": "DTS SURROUND",
+        "VIRTUALX": "DTS SURROUND",
         "AURO3DSURROUND": "AURO3D",
         "AURO2DSURROUND": "AURO2DSURR",
         "WISDESCREEN": "WIDE SCREEN",

@@ -2148,7 +2148,7 @@
                         ]
                       },
                       {
-                        "title": "ZM HDMI RESOLUTION 4K/24Hz",
+                        "title": "ZM HDMI RESOLUTION 4K",
                         "enum": [
                           "0VSSC4K"
                         ]
@@ -2196,7 +2196,7 @@
                         ]
                       },
                       {
-                        "title": "ZM HDMI RESOLUTION 4K/24Hz (HDMI)",
+                        "title": "ZM HDMI RESOLUTION 4K (HDMI)",
                         "enum": [
                           "0VSSCH4K"
                         ]
@@ -5209,7 +5209,7 @@
               "title": "Input",
               "type": "boolean",
               "default": false,
-              "description": "This expose Input as a Contact Sensor, fired if Input/Surround change.",
+              "description": "This expose Input/Surround as a Contact Sensor, fired if change to it.",
               "required": false
             },
             "sensorInputs": {

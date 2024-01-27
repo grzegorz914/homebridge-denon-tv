@@ -26,7 +26,7 @@ class DENON extends EventEmitter {
         const refreshInterval = config.refreshInterval;
         const restFulEnabled = config.restFulEnabled;
         const mqttEnabled = config.mqttEnabled;
-        const deviceInfoUrl = [CONSTANS.ApiUrls.MainZone, CONSTANS.ApiUrls.DeviceInfo, CONSTANS.ApiUrls.DeviceInfo][generation];
+        const deviceInfoUrl = [CONSTANS.ApiUrls.DeviceInfoGen0, CONSTANS.ApiUrls.DeviceInfoGen1, CONSTANS.ApiUrls.DeviceInfoGen2][generation];
 
         this.debugLog = debugLog;
         this.refreshInterval = refreshInterval;
@@ -74,6 +74,7 @@ class DENON extends EventEmitter {
         this.mute = false;
         this.pictureMode = 0;
         this.soundMode = '';
+        this.audysseyMode = '';
         const object = {};
 
         this.on('checkDeviceInfo', async () => {
@@ -241,8 +242,7 @@ class DENON extends EventEmitter {
                     const power = devState.Power.value === 'ON';
                     const input = inputsConversionKeys.includes(devState.InputFuncSelect.value) ? CONSTANS.InputConversion[devState.InputFuncSelect.value] : devState.InputFuncSelect.value;
                     const volumeDisplay = statusKeys.includes('VolumeDisplay') ? devState.VolumeDisplay.value : this.volumeDisplay;
-                    const volumeRelative = devState.MasterVolume.value;
-                    const volume = parseFloat(volumeRelative) >= -79.5 ? parseInt(volumeRelative) + 80 : this.volume;
+                    const volume = parseFloat(devState.MasterVolume.value) >= -79.5 ? parseInt(devState.MasterVolume.value) + 80 : 0;
                     const mute = devState.Mute.value === 'on';
 
                     //get picture mode
@@ -260,6 +260,13 @@ class DENON extends EventEmitter {
                     const debug2 = debugLog && checkSoundeMode ? this.emit('debug', `Sound mode: ${JSON.stringify(parseDeviceSoundMode, null, 2)}`) : false;
                     const soundMode = checkSoundeMode ? soundModesConcersionKeys.includes((parseDeviceSoundMode.rx.cmd.surround).replace(/[^a-zA-Z0-9]/g, '').toUpperCase()) ? CONSTANS.SoundModeConversion[(parseDeviceSoundMode.rx.cmd.surround).replace(/[^a-zA-Z0-9]/g, '').toUpperCase()] : (parseDeviceSoundMode.rx.cmd.surround).replace(/[^a-zA-Z0-9]/g, '').toUpperCase() : this.soundMode;
 
+                    //get audyssey mode
+                    const checkAudysseyMode = false //power && zone === 0;
+                    const deviceAudysseyMode = checkAudysseyMode ? await this.axiosInstancePost(CONSTANS.ApiUrls.AppCommand, CONSTANS.BodyXml.GetAudyssey) : false;
+                    const parseDeviceAudysseyMode = checkAudysseyMode ? parseString.parse(deviceAudysseyMode.data) : false;
+                    const debug3 = debugLog && checkAudysseyMode ? this.emit('debug', `Audyssey mode: ${JSON.stringify(parseDeviceAudysseyMode, null, 2)}`) : false;
+                    const sudysseyMode = checkAudysseyMode ? parseDeviceAudysseyMode.rx.cmd.value : this.audysseyMode;
+
                     //select reference
                     const reference = [input, input, input, soundMode][zone];
 
@@ -276,6 +283,7 @@ class DENON extends EventEmitter {
                     this.mute = mute;
                     this.pictureMode = pictureMode;
                     this.soundMode = soundMode;
+                    this.audysseyMode = this.audysseyMode;
 
                     //emit state changed
                     this.emit('stateChanged', power, reference, volume, volumeDisplay, mute, pictureMode);

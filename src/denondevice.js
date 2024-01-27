@@ -89,7 +89,7 @@ class DenonDevice extends EventEmitter {
         this.power = false;
         this.reference = '';
         this.volume = 0;
-        this.volumeControlType = ';';
+        this.volumeControlType = 'Absolute';
         this.mute = true;
         this.mediaState = false;
         this.supportPictureMode = false;
@@ -668,8 +668,8 @@ class DenonDevice extends EventEmitter {
                     });
                 this.tvSpeakerService.getCharacteristic(Characteristic.VolumeControlType)
                     .onGet(async () => {
-                        const controlType = this.volumeControlType;
-                        const state = 3; //none, relative, relative with current, absolute
+                        const controlType = this.volumeControlType === 'Relative' ? 1 : 3; //none, relative, relative with current, absolute
+                        const state = 3;
                         return state;
                     })
                 this.tvSpeakerService.getCharacteristic(Characteristic.VolumeSelector)
@@ -1028,18 +1028,18 @@ class DenonDevice extends EventEmitter {
                                         const state = false;
                                         return state;
                                     })
-                                    .onSet(async () => {
+                                    .onSet(async (state) => {
                                         try {
                                             const mode = parseInt(buttonReference.charAt(0)); //0 - All/Maiz Zone, 1 - Zone 2/3, 2 - Only Z2
                                             const command = buttonReference.substring(1);
                                             const zonePrefix = ['', 'Z2', 'Z3', ''][zoneControl];
                                             const reference = [`${command}`, `${zonePrefix}${command}`, `Z2${command}`][mode];
-                                            await this.denon.send(reference);
+                                            const set = state ? await this.denon.send(reference) : false;
+                                            const info = this.disableLogInfo || !state ? false : this.emit('message', `set Button Name: ${buttonName}, Reference: ${reference}`);
                                             buttonService.updateCharacteristic(Characteristic.On, false);
-                                            const info = this.disableLogInfo ? false : this.emit('message', `set Button Name: ${buttonName}, Reference: ${reference}`);
                                         } catch (error) {
-                                            buttonService.updateCharacteristic(Characteristic.On, false);
                                             this.emit('error', `set Button error: ${error}`);
+                                            buttonService.updateCharacteristic(Characteristic.On, false);
                                         };
                                     });
 
