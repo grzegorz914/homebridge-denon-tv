@@ -460,6 +460,8 @@
         "MATRIX": "MATRIX",
         "VIDEOGAME": "VIDEO GAME",
         "VIRTUAL": "VIRTUAL",
+        "NEURAL": "NEURAL",
+        "STANDARD": "STANDARD",
         "LEFT": "LEFT",
         "RIGHT": "RIGHT"
     },

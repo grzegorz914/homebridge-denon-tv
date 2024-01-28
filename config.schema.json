@@ -304,6 +304,30 @@
                         ]
                       },
                       {
+                        "title": "AUX A (Marantz Only)",
+                        "enum": [
+                          "AUXA"
+                        ]
+                      },
+                      {
+                        "title": "AUX B (Marantz Only)",
+                        "enum": [
+                          "AUXB"
+                        ]
+                      },
+                      {
+                        "title": "AUX C (Marantz Only)",
+                        "enum": [
+                          "AUXC"
+                        ]
+                      },
+                      {
+                        "title": "M-XPORT (Marantz Only)",
+                        "enum": [
+                          "M-XPORT"
+                        ]
+                      },
+                      {
                         "title": "DVR",
                         "enum": [
                           "DVR"
@@ -791,6 +815,18 @@
                         "enum": [
                           "VIRTUAL"
                         ]
+                      },
+                      {
+                        "title": "NEURAL",
+                        "enum": [
+                          "NEURAL"
+                        ]
+                      },
+                      {
+                        "title": "STANDARD",
+                        "enum": [
+                          "STANDARD"
+                        ]
                       }
                     ],
                     "required": true
@@ -1059,6 +1095,30 @@
                         "title": "ZM INPUT AUX 7",
                         "enum": [
                           "0SIAUX7"
+                        ]
+                      },
+                      {
+                        "title": "ZM INPUT AUX A (Marantz Only)",
+                        "enum": [
+                          "0SIAUXA"
+                        ]
+                      },
+                      {
+                        "title": "ZM INPUT AUX B (Marantz Only)",
+                        "enum": [
+                          "0SIAUXB"
+                        ]
+                      },
+                      {
+                        "title": "ZM INPUT AUX C (Marantz Only)",
+                        "enum": [
+                          "0SIAUXC"
+                        ]
+                      },
+                      {
+                        "title": "ZM INPUT M-XPORT (Marantz Only)",
+                        "enum": [
+                          "0SIM-XPORT"
                         ]
                       },
                       {
@@ -1587,6 +1647,18 @@
                         "title": "ZM SOUND MODE CLASSIC CONCERT",
                         "enum": [
                           "0MSCLASSIC CONCERT"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE NEURAL",
+                        "enum": [
+                          "0MSNEURAL"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE STANDARD",
+                        "enum": [
+                          "0MSSTANDARD"
                         ]
                       },
                       {
@@ -5408,6 +5480,30 @@
                         "title": "AUX 7",
                         "enum": [
                           "AUX7"
+                        ]
+                      },
+                      {
+                        "title": "AUX A (Marantz Only)",
+                        "enum": [
+                          "AUXA"
+                        ]
+                      },
+                      {
+                        "title": "AUX B (Marantz Only)",
+                        "enum": [
+                          "AUXB"
+                        ]
+                      },
+                      {
+                        "title": "AUX C (Marantz Only)",
+                        "enum": [
+                          "AUXC"
+                        ]
+                      },
+                      {
+                        "title": " M-XPORT (Marantz Only)",
+                        "enum": [
+                          "M-XPORT"
                         ]
                       },
                       {
