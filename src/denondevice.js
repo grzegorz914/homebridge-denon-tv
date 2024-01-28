@@ -1030,11 +1030,18 @@ class DenonDevice extends EventEmitter {
                                     })
                                     .onSet(async (state) => {
                                         try {
-                                            const mode = parseInt(buttonReference.charAt(0)); //0 - All/Maiz Zone, 1 - Zone 2/3, 2 - Only Z2
-                                            const command = buttonReference.substring(1);
+                                            const zone = parseInt(buttonReference.charAt(0)); //0 - All/Maiz Zone, 1 - Zone 2/3, 2 - Only Z2
                                             const zonePrefix = ['', 'Z2', 'Z3', ''][zoneControl];
-                                            const reference = [`${command}`, `${zonePrefix}${command}`, `Z2${command}`][mode];
+
+                                            const directSound = CONSTANS.DirectSoundMode[buttonReference] !== undefined ? CONSTANS.DirectSoundMode[buttonReference] : false;
+                                            const directSoundModeMode = directSound ? directSound.mode : false;
+                                            const directSoundModeSurround = directSound ? directSound.surround : false;
+
+                                            const command = directSound ? directSoundModeMode : buttonReference.substring(1);
+                                            const reference = [`${command}`, `${zonePrefix}${command}`, `Z2${command}`][zone];
+
                                             const set = state ? await this.denon.send(reference) : false;
+                                            const set2 = state && directSound ? await this.denon.send(directSoundModeSurround) : false;
                                             const info = this.disableLogInfo || !state ? false : this.emit('message', `set Button Name: ${buttonName}, Reference: ${reference}`);
                                             buttonService.updateCharacteristic(Characteristic.On, false);
                                         } catch (error) {

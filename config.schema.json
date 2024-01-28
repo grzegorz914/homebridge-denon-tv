@@ -1398,75 +1398,177 @@
                         ]
                       },
                       {
-                        "title": "ZM SOUND MODE MOVIE",
+                        "title": "ZM SOUND MODE MOVIE (Stereo)",
                         "enum": [
-                          "0MSMOVIE"
+                          "0MSMOVIE0"
                         ]
                       },
                       {
-                        "title": "ZM SOUND MODE MUSIC",
+                        "title": "ZM SOUND MODE MOVIE (Dolby Surround)",
                         "enum": [
-                          "0MSMUSIC"
+                          "0MSMOVIE1"
                         ]
                       },
                       {
-                        "title": "ZM SOUND MODE GAME",
+                        "title": "ZM SOUND MODE MOVIE (Neural:X)",
                         "enum": [
-                          "0MSGAME"
+                          "0MSMOVIE2"
                         ]
                       },
                       {
-                        "title": "ZM SOUND MODE DIRECT",
+                        "title": "ZM SOUND MODE MOVIE (Auro-2D Surround)",
+                        "enum": [
+                          "0MSMOVIE3"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE MOVIE (Auro-3D)",
+                        "enum": [
+                          "0MSMOVIE4"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE MOVIE (Multi Ch Stetreo)",
+                        "enum": [
+                          "0MSMOVIE5"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE MOVIE (Mono Movie)",
+                        "enum": [
+                          "0MSMOVIE6"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE MOVIE (Virtual)",
+                        "enum": [
+                          "0MSMOVIE7"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE MUSIC (Stereo)",
+                        "enum": [
+                          "0MSMUSIC0"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE MUSIC (Dolby Surround)",
+                        "enum": [
+                          "0MSMUSIC1"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE MUSIC (Neural:X)",
+                        "enum": [
+                          "0MSMUSIC2"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE MUSIC (Auro-2D Surround)",
+                        "enum": [
+                          "0MSMUSIC3"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE MUSIC (Auro-3D)",
+                        "enum": [
+                          "0MSMUSIC4"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE MUSIC (Multi Ch Stereo)",
+                        "enum": [
+                          "0MSMUSIC5"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE MUSIC (Rock Arena)",
+                        "enum": [
+                          "0MSMUSIC6"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE MUSIC (Jazz Club)",
+                        "enum": [
+                          "0MSMUSIC7"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE MUSIC (Matrix)",
+                        "enum": [
+                          "0MSMUSIC8"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE MUSIC (Virtual)",
+                        "enum": [
+                          "0MSMUSIC9"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE GAME (Stereo)",
+                        "enum": [
+                          "0MSGAME0"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE GAME (Dolby Surround)",
+                        "enum": [
+                          "0MSGAME1"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE GAME (Neural:X)",
+                        "enum": [
+                          "0MSGAME2"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE GAME (Auro-2D Surround)",
+                        "enum": [
+                          "0MSGAME3"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE GAME (Auro-3D)",
+                        "enum": [
+                          "0MSGAME4"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE GAME (Multi Ch Stereo)",
+                        "enum": [
+                          "0MSGAME5"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE GAME (Video Game)",
+                        "enum": [
+                          "0MSGAME6"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE GAME (Virtual)",
+                        "enum": [
+                          "0MSGAME7"
+                        ]
+                      },
+                      {
+                        "title": "ZM SOUND MODE PURE (Direct)",
                         "enum": [
                           "0MSDIRECT"
                         ]
                       },
                       {
-                        "title": "ZM SOUND MODE PURE DIRECT",
+                        "title": "ZM SOUND MODE PURE (Pure Direct)",
                         "enum": [
                           "0MSPURE DIRECT"
                         ]
                       },
                       {
-                        "title": "ZM SOUND MODE STEREO",
-                        "enum": [
-                          "0MSSTEREO"
-                        ]
-                      },
-                      {
-                        "title": "ZM SOUND MODE AUTO",
+                        "title": "ZM SOUND MODE PURE (Auto)",
                         "enum": [
                           "0MSAUTO"
-                        ]
-                      },
-                      {
-                        "title": "ZM SOUND MODE DOLBY DIGITAL",
-                        "enum": [
-                          "0MSDOLBY DIGITAL"
-                        ]
-                      },
-                      {
-                        "title": "ZM SOUND MODE DTS SURROUND",
-                        "enum": [
-                          "0MSDTS SURROUND"
-                        ]
-                      },
-                      {
-                        "title": "ZM SOUND MODE AURO 3D",
-                        "enum": [
-                          "0MSAURO3D"
-                        ]
-                      },
-                      {
-                        "title": "ZM SOUND MODE AURO 2D",
-                        "enum": [
-                          "0MSAURO2DSURR"
-                        ]
-                      },
-                      {
-                        "title": "ZM SOUND MODE MCH STEREO",
-                        "enum": [
-                          "0MSMCH STEREO"
                         ]
                       },
                       {
@@ -1482,45 +1584,9 @@
                         ]
                       },
                       {
-                        "title": "ZM SOUND MODE ROCK ARENA",
-                        "enum": [
-                          "0MSROCK ARENA"
-                        ]
-                      },
-                      {
-                        "title": "ZM SOUND MODE JAZZ CLUB",
-                        "enum": [
-                          "0MSJAZZ CLUB"
-                        ]
-                      },
-                      {
                         "title": "ZM SOUND MODE CLASSIC CONCERT",
                         "enum": [
                           "0MSCLASSIC CONCERT"
-                        ]
-                      },
-                      {
-                        "title": "ZM SOUND MODE MONO MOVIE",
-                        "enum": [
-                          "0MSMONO MOVIE"
-                        ]
-                      },
-                      {
-                        "title": "ZM SOUND MODE MATRIX",
-                        "enum": [
-                          "0MSMATRIX"
-                        ]
-                      },
-                      {
-                        "title": "ZM SOUND MODE VIDEO GAME",
-                        "enum": [
-                          "0MSVIDEO GAME"
-                        ]
-                      },
-                      {
-                        "title": "ZM SOUND MODE VIRTUAL",
-                        "enum": [
-                          "0MSVIRTUAL"
                         ]
                       },
                       {

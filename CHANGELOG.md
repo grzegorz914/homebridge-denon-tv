@@ -4,9 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Note - after update to 4.9.x all buttons (Sound Mode) need to be configure again using config UI.
 ## Note - after update to 4.8.x all buttons need to be configure again using config UI.
 ## Note - after update to 4.7.x buttons, sensors, volume display type need to be configure again using config UI.
 ## Note - after update to 3.15.x need remove the accessory frome Home app and add it again.
+
+## [4.9.0] - (28.01.2024)
+## Note - after update to 4.9.x all buttons (Sound Mode) need to be configure again using config UI.
+## Changes
+- changed button direct surround mode control, MOVIE(Surround), MUSIC(Surround), GAME(Surround), PURE(Surround)
+- config schema updated
+- cleanup
 
 ## [4.8.1] - (17.01.2024)
 ## Changes
