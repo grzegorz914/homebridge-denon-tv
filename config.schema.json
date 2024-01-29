@@ -364,12 +364,6 @@
                         ]
                       },
                       {
-                        "title": "M-XPORT",
-                        "enum": [
-                          "M-XPORT"
-                        ]
-                      },
-                      {
                         "title": "HDP",
                         "enum": [
                           "HDP"
@@ -1098,6 +1092,12 @@
                         ]
                       },
                       {
+                        "title": "ZM INPUT V.AUX",
+                        "enum": [
+                          "0SIV.AUX"
+                        ]
+                      },
+                      {
                         "title": "ZM INPUT AUX A (Marantz Only)",
                         "enum": [
                           "0SIAUXA"
@@ -1119,12 +1119,6 @@
                         "title": "ZM INPUT M-XPORT (Marantz Only)",
                         "enum": [
                           "0SIM-XPORT"
-                        ]
-                      },
-                      {
-                        "title": "ZM INPUT V.AUX",
-                        "enum": [
-                          "0SIV.AUX"
                         ]
                       },
                       {
@@ -1161,12 +1155,6 @@
                         "title": "ZM INPUT VCR",
                         "enum": [
                           "0SIVCR"
-                        ]
-                      },
-                      {
-                        "title": "ZM INPUT M-XPORT",
-                        "enum": [
-                          "0SIM-XPORT"
                         ]
                       },
                       {
@@ -4208,6 +4196,30 @@
                         ]
                       },
                       {
+                        "title": "ZM INPUT AUX A (Marantz Only)",
+                        "enum": [
+                          "1SIAUXA"
+                        ]
+                      },
+                      {
+                        "title": "ZM INPUT AUX B (Marantz Only)",
+                        "enum": [
+                          "1SIAUXB"
+                        ]
+                      },
+                      {
+                        "title": "ZM INPUT AUX C (Marantz Only)",
+                        "enum": [
+                          "1SIAUXC"
+                        ]
+                      },
+                      {
+                        "title": "Z2 INPUT M-XPORT (Marant Only)",
+                        "enum": [
+                          "1M-XPORT"
+                        ]
+                      },
+                      {
                         "title": "Z2 INPUT DVR",
                         "enum": [
                           "1DVR"
@@ -4241,12 +4253,6 @@
                         "title": "Z2 INPUT VCR",
                         "enum": [
                           "1VCR"
-                        ]
-                      },
-                      {
-                        "title": "Z2 INPUT M-XPORT",
-                        "enum": [
-                          "1M-XPORT"
                         ]
                       },
                       {
@@ -4882,6 +4888,30 @@
                         ]
                       },
                       {
+                        "title": "ZM INPUT AUX A (Marantz Only)",
+                        "enum": [
+                          "1SIAUXA"
+                        ]
+                      },
+                      {
+                        "title": "ZM INPUT AUX B (Marantz Only)",
+                        "enum": [
+                          "1SIAUXB"
+                        ]
+                      },
+                      {
+                        "title": "ZM INPUT AUX C (Marantz Only)",
+                        "enum": [
+                          "1SIAUXC"
+                        ]
+                      },
+                      {
+                        "title": "Z3 INPUT M-XPORT (Marantz Only)",
+                        "enum": [
+                          "1M-XPORT"
+                        ]
+                      },
+                      {
                         "title": "Z3 INPUT DVR",
                         "enum": [
                           "1DVR"
@@ -4915,12 +4945,6 @@
                         "title": "Z3 INPUT VCR",
                         "enum": [
                           "1VCR"
-                        ]
-                      },
-                      {
-                        "title": "Z3 INPUT M-XPORT",
-                        "enum": [
-                          "1M-XPORT"
                         ]
                       },
                       {
