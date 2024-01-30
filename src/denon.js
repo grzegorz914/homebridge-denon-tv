@@ -339,23 +339,23 @@ class DENON extends EventEmitter {
         return new Promise(async (resolve, reject) => {
             try {
                 //inputs select
-                const deviceInputs = getInputsFromDevice ? [] : inputs;
                 const deviceInputsOldAvr = getInputsFromDevice && generation === 0 ? devInfo.InputFuncList.value : [];
                 const deviceInputsNewAvr = getInputsFromDevice && supportInputSource ? zoneCapabilities.InputSource.List.Source : [];
-                const deviceInputsOldNew = [deviceInputsOldAvr, deviceInputsNewAvr, deviceInputsNewAvr][generation];
+                const deviceInputs = getInputsFromDevice ? [deviceInputsOldAvr, deviceInputsNewAvr, deviceInputsNewAvr][generation] : inputs;
 
                 //inputs
+                const tempInputs = [];
                 const inputsArr = [];
                 let i = 0;
-                for (const input of deviceInputsOldNew) {
-                    const inputNameOldAvr = generation === 0 ? devInfo.RenameSource.value[i].trim() !== '' ? devInfo.RenameSource.value[i] : deviceInputsOldNew[i] : '';
+                for (const input of deviceInputs) {
+                    const inputNameOldAvr = generation === 0 ? devInfo.RenameSource.value[i].trim() !== '' ? devInfo.RenameSource.value[i] : deviceInputs[i] : '';
                     const inputName = [inputNameOldAvr, input.DefaultName, input.DefaultName][generation];
                     const inputReference = [input, input.FuncName, input.FuncName][generation];
                     const obj = {
                         'name': inputName,
                         'reference': inputReference
                     }
-                    deviceInputs.push(obj);
+                    tempInputs.push(obj);
                     i++;
                 };
 
@@ -369,7 +369,7 @@ class DENON extends EventEmitter {
                         'name': shortcutName,
                         'reference': shortcutReference
                     }
-                    const push = category === '4' ? deviceInputs.push(obj) : false;
+                    const push = category === '4' ? tempInputs.push(obj) : false;
                 };
 
                 //favorites
@@ -381,7 +381,7 @@ class DENON extends EventEmitter {
                         'name': favoriteName,
                         'reference': favoriteReference
                     }
-                    deviceInputs.push(obj);
+                    tempInputs.push(obj);
                 };
 
                 //quick and smart select
@@ -395,11 +395,11 @@ class DENON extends EventEmitter {
                         'name': quickSelectName,
                         'reference': quickSelectReference
                     }
-                    deviceInputs.push(obj);
+                    tempInputs.push(obj);
                 };
 
                 //chack duplicated inputs and convert reference
-                for (const input of deviceInputs) {
+                for (const input of tempInputs) {
                     const inputName = input.name
                     const inputReference = input.reference;
                     const reference = INPUTS_CONVERSION_KEYS.includes(inputReference) ? CONSTANS.InputConversion[inputReference] : inputReference;
