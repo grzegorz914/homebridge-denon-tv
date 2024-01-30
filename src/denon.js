@@ -200,7 +200,7 @@ class DENON extends EventEmitter {
                 const saveDevInfo = zone === 0 ? await this.saveDevInfo(devInfoFile, devInfo) : false;
 
                 //save inputs to the file
-                await this.saveInputs(inputsFile, devInfo, generation, zoneInputSurroundName, inputs, zoneCapabilities, getInputsFromDevice, getFavoritesFromDevice, getQuickSmartSelectFromDevice, supportFavorites, supportShortcut, supportInputSource, supportQuickSmartSelect);
+                await this.saveInputs(inputsFile, devInfo, generation, zone, zoneInputSurroundName, inputs, zoneCapabilities, getInputsFromDevice, getFavoritesFromDevice, getQuickSmartSelectFromDevice, supportFavorites, supportShortcut, supportInputSource, supportQuickSmartSelect);
 
                 //emit device info
                 const emitDeviceInfo = this.emitDeviceInfo ? this.emit('deviceInfo', manufacturer, modelName, serialNumber, firmwareRevision, deviceZones, apiVersion, supportPictureMode) : false;
@@ -335,7 +335,7 @@ class DENON extends EventEmitter {
         });
     };
 
-    saveInputs(path, devInfo, generation, zoneInputSurroundName, inputs, zoneCapabilities, getInputsFromDevice, getFavoritesFromDevice, getQuickSmartSelectFromDevice, supportFavorites, supportShortcut, supportInputSource, supportQuickSmartSelect) {
+    saveInputs(path, devInfo, generation, zone, zoneInputSurroundName, inputs, zoneCapabilities, getInputsFromDevice, getFavoritesFromDevice, getQuickSmartSelectFromDevice, supportFavorites, supportShortcut, supportInputSource, supportQuickSmartSelect) {
         return new Promise(async (resolve, reject) => {
             try {
                 //inputs select
@@ -349,8 +349,8 @@ class DENON extends EventEmitter {
                 let i = 0;
                 for (const input of deviceInputs) {
                     const inputNameOldAvr = generation === 0 ? devInfo.RenameSource.value[i].trim() !== '' ? devInfo.RenameSource.value[i] : deviceInputs[i] : '';
-                    const inputName = [inputNameOldAvr, input.DefaultName, input.DefaultName][generation];
-                    const inputReference = [input, input.FuncName, input.FuncName][generation];
+                    const inputName = zone <= 2 ? [inputNameOldAvr, input.DefaultName, input.DefaultName][generation] : input.name;
+                    const inputReference = zone <= 2 ? [input, input.FuncName, input.FuncName][generation] : input.reference;
                     const obj = {
                         'name': inputName,
                         'reference': inputReference
@@ -400,7 +400,7 @@ class DENON extends EventEmitter {
 
                 //chack duplicated inputs and convert reference
                 for (const input of tempInputs) {
-                    const inputName = input.name
+                    const inputName = input.name;
                     const inputReference = input.reference;
                     const reference = INPUTS_CONVERSION_KEYS.includes(inputReference) ? CONSTANS.InputConversion[inputReference] : inputReference;
                     const obj = {
