@@ -6,6 +6,8 @@ const axios = require('axios');
 const EventEmitter = require('events');
 const { XMLParser, XMLBuilder, XMLValidator } = require('fast-xml-parser');
 const CONSTANS = require('./constans.json');
+const INPUTS_CONVERSION_KEYS = Object.keys(CONSTANS.InputConversion);
+const SOUND_MODES_CONVERSION_KEYS = Object.keys(CONSTANS.SoundModeConversion);
 
 class DENON extends EventEmitter {
     constructor(config) {
@@ -233,14 +235,10 @@ class DENON extends EventEmitter {
                     const devState = parseDeviceState.item;
                     const debug = debugLog ? this.emit('debug', `State: ${JSON.stringify(devState, null, 2)}`) : false;
 
-                    //conversion array
-                    const inputsConversionKeys = Object.keys(CONSTANS.InputConversion);
-                    const soundModesConcersionKeys = Object.keys(CONSTANS.SoundModeConversion);
-
                     //get receiver status
                     const statusKeys = Object.keys(devState);
                     const power = devState.Power.value === 'ON';
-                    const input = inputsConversionKeys.includes(devState.InputFuncSelect.value) ? CONSTANS.InputConversion[devState.InputFuncSelect.value] : devState.InputFuncSelect.value;
+                    const input = INPUTS_CONVERSION_KEYS.includes(devState.InputFuncSelect.value) ? CONSTANS.InputConversion[devState.InputFuncSelect.value] : devState.InputFuncSelect.value;
                     const volumeDisplay = statusKeys.includes('VolumeDisplay') ? devState.VolumeDisplay.value : this.volumeDisplay;
                     const volume = parseFloat(devState.MasterVolume.value) >= -79.5 ? parseInt(devState.MasterVolume.value) + 80 : 0;
                     const mute = devState.Mute.value === 'on';
@@ -258,7 +256,7 @@ class DENON extends EventEmitter {
                     const deviceSoundMode = checkSoundeMode ? await this.axiosInstancePost(CONSTANS.ApiUrls.AppCommand, CONSTANS.BodyXml.GetSurroundModeStatus) : false;
                     const parseDeviceSoundMode = checkSoundeMode ? parseString.parse(deviceSoundMode.data) : false;
                     const debug2 = debugLog && checkSoundeMode ? this.emit('debug', `Sound mode: ${JSON.stringify(parseDeviceSoundMode, null, 2)}`) : false;
-                    const soundMode = checkSoundeMode ? soundModesConcersionKeys.includes((parseDeviceSoundMode.rx.cmd.surround).replace(/[^a-zA-Z0-9]/g, '').toUpperCase()) ? CONSTANS.SoundModeConversion[(parseDeviceSoundMode.rx.cmd.surround).replace(/[^a-zA-Z0-9]/g, '').toUpperCase()] : (parseDeviceSoundMode.rx.cmd.surround).replace(/[^a-zA-Z0-9]/g, '').toUpperCase() : this.soundMode;
+                    const soundMode = checkSoundeMode ? SOUND_MODES_CONVERSION_KEYS.includes((parseDeviceSoundMode.rx.cmd.surround).replace(/[^a-zA-Z0-9]/g, '').toUpperCase()) ? CONSTANS.SoundModeConversion[(parseDeviceSoundMode.rx.cmd.surround).replace(/[^a-zA-Z0-9]/g, '').toUpperCase()] : (parseDeviceSoundMode.rx.cmd.surround).replace(/[^a-zA-Z0-9]/g, '').toUpperCase() : this.soundMode;
 
                     //get audyssey mode
                     const checkAudysseyMode = false //power && zone === 0;
@@ -341,25 +339,23 @@ class DENON extends EventEmitter {
         return new Promise(async (resolve, reject) => {
             try {
                 //inputs select
+                const deviceInputs = getInputsFromDevice ? [] : inputs;
                 const deviceInputsOldAvr = getInputsFromDevice && generation === 0 ? devInfo.InputFuncList.value : [];
                 const deviceInputsNewAvr = getInputsFromDevice && supportInputSource ? zoneCapabilities.InputSource.List.Source : [];
-                const devInputs = [deviceInputsOldAvr, deviceInputsNewAvr, deviceInputsNewAvr][generation];
-
+                const deviceInputsOldNew = [deviceInputsOldAvr, deviceInputsNewAvr, deviceInputsNewAvr][generation];
 
                 //inputs
-                const referenceConversionKeys = Object.keys(CONSTANS.InputConversion);
                 const inputsArr = [];
                 let i = 0;
-                for (const input of devInputs) {
-                    const inputNameOldAvr = generation === 0 ? devInfo.RenameSource.value[i].trim() !== '' ? devInfo.RenameSource.value[i] : devInputs[i] : '';
+                for (const input of deviceInputsOldNew) {
+                    const inputNameOldAvr = generation === 0 ? devInfo.RenameSource.value[i].trim() !== '' ? devInfo.RenameSource.value[i] : deviceInputsOldNew[i] : '';
                     const inputName = [inputNameOldAvr, input.DefaultName, input.DefaultName][generation];
                     const inputReference = [input, input.FuncName, input.FuncName][generation];
-                    const reference = referenceConversionKeys.includes(inputReference) ? CONSTANS.InputConversion[inputReference] : inputReference;
                     const obj = {
                         'name': inputName,
-                        'reference': reference
+                        'reference': inputReference
                     }
-                    inputsArr.push(obj);
+                    deviceInputs.push(obj);
                     i++;
                 };
 
@@ -369,13 +365,11 @@ class DENON extends EventEmitter {
                     const category = shortcut.Category; //1, 2, 3 Quick/Smart Select, 4 Inputs
                     const shortcutName = shortcut.DispName;
                     const shortcutReference = shortcut.FuncName;
-                    const reference = referenceConversionKeys.includes(shortcutReference) ? CONSTANS.InputConversion[shortcutReference] : shortcutReference;
                     const obj = {
                         'name': shortcutName,
-                        'reference': reference
+                        'reference': shortcutReference
                     }
-                    const existedInArray = inputsArr.some(input => input.reference === reference);
-                    const push = !existedInArray && category === '4' ? inputsArr.push(obj) : false;
+                    const push = category === '4' ? deviceInputs.push(obj) : false;
                 };
 
                 //favorites
@@ -383,13 +377,11 @@ class DENON extends EventEmitter {
                 for (const favorite of deviceFavorites) {
                     const favoriteName = favorite.DispName;
                     const favoriteReference = favorite.FuncName;
-                    const reference = referenceConversionKeys.includes(favoriteReference) ? CONSTANS.InputConversion[favoriteReference] : favoriteReference;
                     const obj = {
                         'name': favoriteName,
-                        'reference': reference
+                        'reference': favoriteReference
                     }
-                    const existedInArray = inputsArr.some(input => input.reference === reference);
-                    const push = !existedInArray ? inputsArr.push(obj) : false;
+                    deviceInputs.push(obj);
                 };
 
                 //quick and smart select
@@ -399,19 +391,31 @@ class DENON extends EventEmitter {
                     const quickSelect = deviceQuickSmartSelect[`QuickSelect${j}`];
                     const quickSelectName = quickSelect.Name;
                     const quickSelectReference = quickSelect.FuncName;
-                    const reference = referenceConversionKeys.includes(quickSelectReference) ? CONSTANS.InputConversion[quickSelectReference] : quickSelectReference;
                     const obj = {
                         'name': quickSelectName,
-                        'reference': reference
+                        'reference': quickSelectReference
                     }
-                    const existedInArray = inputsArr.some(input => input.reference === reference);
-                    const push = !existedInArray ? inputsArr.push(obj) : false;
+                    deviceInputs.push(obj);
                 };
 
-                const allInputs = getInputsFromDevice ? inputsArr : inputs;
-                const allInputsStringify = JSON.stringify(allInputs, null, 2);
-                await fsPromises.writeFile(path, allInputsStringify);
-                const debug = !this.debugLog ? false : this.emit('message', `saved ${zoneInputSurroundName}: ${allInputsStringify}`);
+                //chack duplicated inputs and convert reference
+                for (const input of deviceInputs) {
+                    const inputName = input.name
+                    const inputReference = input.reference;
+                    const reference = INPUTS_CONVERSION_KEYS.includes(inputReference) ? CONSTANS.InputConversion[inputReference] : inputReference;
+                    const obj = {
+                        'name': inputName,
+                        'reference': reference
+                    }
+
+                    const duplicatedInput = inputsArr.some(input => input.reference === inputReference);
+                    const push = !duplicatedInput ? inputsArr.push(obj) : false;
+                }
+
+                //save inputs
+                const allInputs = JSON.stringify(inputsArr, null, 2);
+                await fsPromises.writeFile(path, allInputs);
+                const debug = !this.debugLog ? false : this.emit('message', `saved ${zoneInputSurroundName}: ${allInputs}`);
 
                 resolve()
             } catch (error) {
