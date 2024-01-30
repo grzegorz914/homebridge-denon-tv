@@ -200,7 +200,10 @@ class DENON extends EventEmitter {
                 const saveDevInfo = zone === 0 ? await this.saveDevInfo(devInfoFile, devInfo) : false;
 
                 //save inputs to the file
-                await this.saveInputs(inputsFile, devInfo, generation, zone, zoneInputSurroundName, inputs, zoneCapabilities, getInputsFromDevice, getFavoritesFromDevice, getQuickSmartSelectFromDevice, supportFavorites, supportShortcut, supportInputSource, supportQuickSmartSelect);
+                const deviceInputsOldAvr = getInputsFromDevice ? generation === 0 ? devInfo.InputFuncList.value : [] : inputs;
+                const deviceInputsNewAvr = getInputsFromDevice ? supportInputSource ? zoneCapabilities.InputSource.List.Source : [] : inputs;
+                const deviceInputs = [deviceInputsOldAvr, deviceInputsNewAvr, deviceInputsNewAvr][generation];
+                const allInputs = await this.saveInputs(inputsFile, devInfo, generation, zone, zoneInputSurroundName, deviceInputs, zoneCapabilities, getInputsFromDevice, getFavoritesFromDevice, getQuickSmartSelectFromDevice, supportFavorites, supportShortcut, supportQuickSmartSelect);
 
                 //emit device info
                 const emitDeviceInfo = this.emitDeviceInfo ? this.emit('deviceInfo', manufacturer, modelName, serialNumber, firmwareRevision, deviceZones, apiVersion, supportPictureMode) : false;
@@ -216,7 +219,7 @@ class DENON extends EventEmitter {
                 this.supportSoundMode = supportSoundMode;
 
                 //prepare accessory
-                const prepareAccessory = this.startPrepareAccessory ? this.emit('prepareAccessory') : false;
+                const prepareAccessory = this.startPrepareAccessory ? this.emit('prepareAccessory', allInputs) : false;
                 const awaitPrepareAccessory = this.startPrepareAccessory ? await new Promise(resolve => setTimeout(resolve, 2500)) : false;
                 this.startPrepareAccessory = false;
 
@@ -335,22 +338,17 @@ class DENON extends EventEmitter {
         });
     };
 
-    saveInputs(path, devInfo, generation, zone, zoneInputSurroundName, inputs, zoneCapabilities, getInputsFromDevice, getFavoritesFromDevice, getQuickSmartSelectFromDevice, supportFavorites, supportShortcut, supportInputSource, supportQuickSmartSelect) {
+    saveInputs(path, devInfo, generation, zone, zoneInputSurroundName, inputs, zoneCapabilities, getInputsFromDevice, getFavoritesFromDevice, getQuickSmartSelectFromDevice, supportFavorites, supportShortcut, supportQuickSmartSelect) {
         return new Promise(async (resolve, reject) => {
             try {
-                //inputs select
-                const deviceInputsOldAvr = getInputsFromDevice && generation === 0 ? devInfo.InputFuncList.value : [];
-                const deviceInputsNewAvr = getInputsFromDevice && supportInputSource ? zoneCapabilities.InputSource.List.Source : [];
-                const deviceInputs = getInputsFromDevice ? [deviceInputsOldAvr, deviceInputsNewAvr, deviceInputsNewAvr][generation] : inputs;
-
                 //inputs
                 const tempInputs = [];
                 const inputsArr = [];
                 let i = 0;
-                for (const input of deviceInputs) {
-                    const inputNameOldAvr = generation === 0 ? devInfo.RenameSource.value[i].trim() !== '' ? devInfo.RenameSource.value[i] : deviceInputs[i] : '';
-                    const inputName = zone <= 2 ? [inputNameOldAvr, input.DefaultName, input.DefaultName][generation] : input.name;
-                    const inputReference = zone <= 2 ? [input, input.FuncName, input.FuncName][generation] : input.reference;
+                for (const input of inputs) {
+                    const inputNameOldAvr = generation === 0 ? devInfo.RenameSource.value[i].trim() !== '' ? devInfo.RenameSource.value[i] : inputs[i] : '';
+                    const inputName = getInputsFromDevice ? [inputNameOldAvr, input.DefaultName, input.DefaultName][generation] : input.name;
+                    const inputReference = getInputsFromDevice ? [input, input.FuncName, input.FuncName][generation] : input.reference;
                     const obj = {
                         'name': inputName,
                         'reference': inputReference
@@ -399,25 +397,29 @@ class DENON extends EventEmitter {
                 };
 
                 //chack duplicated inputs and convert reference
+                const debug = !this.debugLog ? false : this.emit('message', `temp Inputs: ${JSON.stringify(tempInputs, null, 2)}`);
                 for (const input of tempInputs) {
                     const inputName = input.name;
-                    const inputReference = input.reference;
-                    const reference = INPUTS_CONVERSION_KEYS.includes(inputReference) ? CONSTANS.InputConversion[inputReference] : inputReference;
+                    const inputReference = INPUTS_CONVERSION_KEYS.includes(input.reference) ? CONSTANS.InputConversion[input.reference] : input.reference;
+                    const inputReferenceSubstring = inputReference.substring(0, 5) ?? 'Unknown';
+                    const inputModeExist = inputReferenceSubstring in CONSTANS.InputMode;
+                    const inputMode = zone <= 2 ? inputModeExist ? CONSTANS.InputMode[inputReference.substring(0, 5)] : 'SI' : 'MS';
                     const obj = {
                         'name': inputName,
-                        'reference': reference
+                        'reference': inputReference,
+                        'mode': inputMode
                     }
 
                     const duplicatedInput = inputsArr.some(input => input.reference === inputReference);
-                    const push = !duplicatedInput ? inputsArr.push(obj) : false;
+                    const push = inputName && inputReference && inputMode && !duplicatedInput ? inputsArr.push(obj) : false;
                 }
 
                 //save inputs
                 const allInputs = JSON.stringify(inputsArr, null, 2);
                 await fsPromises.writeFile(path, allInputs);
-                const debug = !this.debugLog ? false : this.emit('message', `saved ${zoneInputSurroundName}: ${allInputs}`);
+                const debug1 = !this.debugLog ? false : this.emit('message', `saved ${zoneInputSurroundName}: ${allInputs}`);
 
-                resolve()
+                resolve(inputsArr)
             } catch (error) {
                 reject(error);
             }
