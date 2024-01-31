@@ -308,8 +308,6 @@ class DenonDevice extends EventEmitter {
             })
             .on('prepareAccessory', async (allInputs) => {
                 try {
-                    this.allInputs = allInputs;
-
                     //read inputs names from file
                     try {
                         const data = await fsPromises.readFile(this.inputsNamesFile);
@@ -329,7 +327,7 @@ class DenonDevice extends EventEmitter {
                     };
 
                     await new Promise(resolve => setTimeout(resolve, 1500));
-                    const accessory = await this.prepareAccessory();
+                    const accessory = await this.prepareAccessory(allInputs);
                     this.emit('publishAccessory', accessory);
 
                     //sort inputs list
@@ -390,7 +388,7 @@ class DenonDevice extends EventEmitter {
     }
 
     //prepare accessory
-    prepareAccessory() {
+    prepareAccessory(allInputs) {
         return new Promise((resolve, reject) => {
             try {
                 //accessory
@@ -726,7 +724,7 @@ class DenonDevice extends EventEmitter {
                 const debug8 = !this.enableDebugMode ? false : this.emit('debug', `Prepare inputs services`);
 
                 //check possible inputs count (max 85)
-                const inputs = this.allInputs;
+                const inputs = allInputs;
                 const inputsCount = inputs.length;
                 const possibleInputsCount = 85 - this.allServices.length;
                 const maxInputsCount = inputsCount >= possibleInputsCount ? possibleInputsCount : inputsCount;
@@ -771,21 +769,19 @@ class DenonDevice extends EventEmitter {
                             return inputName;
                         })
                         .onSet(async (value) => {
-                            if (value === this.savedInputsNames[inputReference]) {
-                                return;
-                            }
+                            if (value && value !== this.savedInputsNames[inputReference]) {
+                                try {
+                                    this.savedInputsNames[inputReference] = value;
+                                    await fsPromises.writeFile(this.inputsNamesFile, JSON.stringify(this.savedInputsNames, null, 2));
+                                    const debug = !this.enableDebugMode ? false : this.emit('debug', `Saved ${this.zoneInputSurroundName} Name: ${value}, Reference: ${inputReference}`);
 
-                            try {
-                                this.savedInputsNames[inputReference] = value;
-                                await fsPromises.writeFile(this.inputsNamesFile, JSON.stringify(this.savedInputsNames, null, 2));
-                                const debug = !this.enableDebugMode ? false : this.emit('debug', `Saved ${this.zoneInputSurroundName} Name: ${value}, Reference: ${inputReference}`);
-
-                                //sort inputs
-                                const index = this.inputsConfigured.findIndex(input => input.reference === inputReference);
-                                this.inputsConfigured[index].name = value;
-                                await this.displayOrder();
-                            } catch (error) {
-                                this.emit('error', `save Input Name error: ${error}`);
+                                    //sort inputs
+                                    const index = this.inputsConfigured.findIndex(input => input.reference === inputReference);
+                                    this.inputsConfigured[index].name = value;
+                                    await this.displayOrder();
+                                } catch (error) {
+                                    this.emit('error', `save Input Name error: ${error}`);
+                                }
                             }
                         });
 
@@ -794,16 +790,14 @@ class DenonDevice extends EventEmitter {
                             return currentVisibility;
                         })
                         .onSet(async (state) => {
-                            if (state === this.savedInputsTargetVisibility[inputReference]) {
-                                return;
-                            }
-
-                            try {
-                                this.savedInputsTargetVisibility[inputReference] = state;
-                                await fsPromises.writeFile(this.inputsTargetVisibilityFile, JSON.stringify(this.savedInputsTargetVisibility, null, 2));
-                                const debug = !this.enableDebugMode ? false : this.emit('debug', `Saved  ${this.zoneInputSurroundName}: ${inputName} Target Visibility: ${state ? 'HIDEN' : 'SHOWN'}`);
-                            } catch (error) {
-                                this.emit('error', `save Target Visibility error: ${error}`);
+                            if (state !== this.savedInputsTargetVisibility[inputReference]) {
+                                try {
+                                    this.savedInputsTargetVisibility[inputReference] = state;
+                                    await fsPromises.writeFile(this.inputsTargetVisibilityFile, JSON.stringify(this.savedInputsTargetVisibility, null, 2));
+                                    const debug = !this.enableDebugMode ? false : this.emit('debug', `Saved  ${this.zoneInputSurroundName}: ${inputName} Target Visibility: ${state ? 'HIDEN' : 'SHOWN'}`);
+                                } catch (error) {
+                                    this.emit('error', `save Target Visibility error: ${error}`);
+                                }
                             }
                         });
 
