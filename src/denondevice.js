@@ -769,19 +769,21 @@ class DenonDevice extends EventEmitter {
                             return inputName;
                         })
                         .onSet(async (value) => {
-                            if (value && value !== this.savedInputsNames[inputReference]) {
-                                try {
-                                    this.savedInputsNames[inputReference] = value;
-                                    await fsPromises.writeFile(this.inputsNamesFile, JSON.stringify(this.savedInputsNames, null, 2));
-                                    const debug = !this.enableDebugMode ? false : this.emit('debug', `Saved ${this.zoneInputSurroundName} Name: ${value}, Reference: ${inputReference}`);
+                            if (value === this.savedInputsNames[inputReference]) {
+                                return;
+                            }
 
-                                    //sort inputs
-                                    const index = this.inputsConfigured.findIndex(input => input.reference === inputReference);
-                                    this.inputsConfigured[index].name = value;
-                                    await this.displayOrder();
-                                } catch (error) {
-                                    this.emit('error', `save Input Name error: ${error}`);
-                                }
+                            try {
+                                this.savedInputsNames[inputReference] = value;
+                                await fsPromises.writeFile(this.inputsNamesFile, JSON.stringify(this.savedInputsNames, null, 2));
+                                const debug = !this.enableDebugMode ? false : this.emit('debug', `Saved ${this.zoneInputSurroundName} Name: ${value}, Reference: ${inputReference}`);
+
+                                //sort inputs
+                                const index = this.inputsConfigured.findIndex(input => input.reference === inputReference);
+                                this.inputsConfigured[index].name = value;
+                                await this.displayOrder();
+                            } catch (error) {
+                                this.emit('error', `save Input Name error: ${error}`);
                             }
                         });
 
@@ -790,14 +792,16 @@ class DenonDevice extends EventEmitter {
                             return currentVisibility;
                         })
                         .onSet(async (state) => {
-                            if (state !== this.savedInputsTargetVisibility[inputReference]) {
-                                try {
-                                    this.savedInputsTargetVisibility[inputReference] = state;
-                                    await fsPromises.writeFile(this.inputsTargetVisibilityFile, JSON.stringify(this.savedInputsTargetVisibility, null, 2));
-                                    const debug = !this.enableDebugMode ? false : this.emit('debug', `Saved  ${this.zoneInputSurroundName}: ${inputName} Target Visibility: ${state ? 'HIDEN' : 'SHOWN'}`);
-                                } catch (error) {
-                                    this.emit('error', `save Target Visibility error: ${error}`);
-                                }
+                            if (state === this.savedInputsTargetVisibility[inputReference]) {
+                                return;
+                            }
+
+                            try {
+                                this.savedInputsTargetVisibility[inputReference] = state;
+                                await fsPromises.writeFile(this.inputsTargetVisibilityFile, JSON.stringify(this.savedInputsTargetVisibility, null, 2));
+                                const debug = !this.enableDebugMode ? false : this.emit('debug', `Saved  ${this.zoneInputSurroundName}: ${inputName} Target Visibility: ${state ? 'HIDEN' : 'SHOWN'}`);
+                            } catch (error) {
+                                this.emit('error', `save Target Visibility error: ${error}`);
                             }
                         });
 
