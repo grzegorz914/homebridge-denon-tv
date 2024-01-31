@@ -25,7 +25,7 @@ class DenonPlatform {
 					log.warn(`Name: ${device.name ? 'OK' : device.name}, host: ${device.host ? 'OK' : device.host}, port: ${device.port ? 'OK' : device.port}, zone: ${(device.zoneControl >= 0 && device.zoneControl <= 3) ? 'OK' : device.zoneControl} ,in config wrong or missing.`);
 					return;
 				}
-				await new Promise(resolve => setTimeout(resolve, 250))
+				await new Promise(resolve => setTimeout(resolve, 500))
 
 				//debug config
 				const debug = device.enableDebugMode ? log(`Device: ${device.host} ${device.name}, did finish launching.`) : false;
