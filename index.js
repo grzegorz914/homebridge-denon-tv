@@ -22,7 +22,7 @@ class DenonPlatform {
 		api.on('didFinishLaunching', async () => {
 			for (const device of config.devices) {
 				if (!device.name || !device.host || !device.port || !(device.zoneControl >= 0 && device.zoneControl <= 3)) {
-					log.warn(`Name: ${device.name ? 'OK' : device.name}, host: ${device.host ? 'OK' : device.host}, port: ${device.port ? 'OK' : device.port}, zone: ${(device.zoneControl >= 0 && device.zoneControl <= 3) ? 'OK' : device.zoneControl} ,in config wrong or missing.`);
+					log.warn(`Name: ${device.name ? 'OK' : device.name}, host: ${device.host ? 'OK' : device.host}, port: ${device.port ? 'OK' : device.port}, zone: ${(device.zoneControl >= 0 && device.zoneControl <= 3) ? 'OK' : device.zoneControl}, in config wrong or missing.`);
 					return;
 				}
 				await new Promise(resolve => setTimeout(resolve, 500))

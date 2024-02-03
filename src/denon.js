@@ -360,7 +360,7 @@ class DENON extends EventEmitter {
                 //schortcuts
                 const deviceSchortcuts = getInputsFromDevice && supportShortcut ? zoneCapabilities.ShortcutControl.EntryList.Shortcut : [];
                 for (const shortcut of deviceSchortcuts) {
-                    const category = shortcut.Category; //1, 2, 3 Quick/Smart Select, 4 Inputs
+                    const category = shortcut.Category; //1, 2, 3 Quick/Smart Select, 4 Inputs, 5 Sound Mode
                     const shortcutName = shortcut.DispName;
                     const shortcutReference = shortcut.FuncName;
                     const obj = {
@@ -403,7 +403,7 @@ class DENON extends EventEmitter {
                     const inputReference = INPUTS_CONVERSION_KEYS.includes(input.reference) ? CONSTANS.InputConversion[input.reference] : input.reference;
                     const inputReferenceSubstring = inputReference.substring(0, 5) ?? 'Unknown';
                     const inputModeExist = inputReferenceSubstring in CONSTANS.InputMode;
-                    const inputMode = zone <= 2 ? inputModeExist ? CONSTANS.InputMode[inputReference.substring(0, 5)] : 'SI' : 'MS';
+                    const inputMode = zone <= 2 ? inputModeExist ? CONSTANS.InputMode[inputReferenceSubstring] : 'SI' : 'MS';
                     const obj = {
                         'name': inputName,
                         'reference': inputReference,
