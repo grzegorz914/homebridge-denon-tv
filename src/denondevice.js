@@ -254,11 +254,13 @@ class DenonDevice extends EventEmitter {
                         .updateCharacteristic(Characteristic.ContactSensorState, power)
                 }
 
-                if (this.sensorVolumeService) {
-                    const state = power ? (this.volume !== volume) : false;
-                    this.sensorVolumeService
-                        .updateCharacteristic(Characteristic.ContactSensorState, state)
-                    this.sensorVolumeState = state;
+                if (this.sensorVolumeService && volume !== this.volume) {
+                    for (let i = 0; i < 1; i++) {
+                        const state = power ? [true, false][i] : false;
+                        this.sensorVolumeService
+                            .updateCharacteristic(Characteristic.ContactSensorState, state)
+                        this.sensorVolumeState = state;
+                    }
                 }
 
                 if (this.sensorMuteService) {
@@ -267,11 +269,13 @@ class DenonDevice extends EventEmitter {
                         .updateCharacteristic(Characteristic.ContactSensorState, state)
                 }
 
-                if (this.sensorInputService) {
-                    const state = power ? this.inputIdentifier !== inputIdentifier : false;
-                    this.sensorInputService
-                        .updateCharacteristic(Characteristic.ContactSensorState, state)
-                    this.sensorInputState = state;
+                if (this.sensorInputService && inputIdentifier !== this.inputIdentifier) {
+                    for (let i = 0; i < 1; i++) {
+                        const state = power ? [true, false][i] : false;
+                        this.sensorInputService
+                            .updateCharacteristic(Characteristic.ContactSensorState, state)
+                        this.sensorInputState = state;
+                    }
                 }
 
                 if (reference !== undefined) {

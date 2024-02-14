@@ -91,10 +91,11 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 | `buttonsZ3.reference` | Here choice function for additional control button for Zone 3. |
 | `buttonsZ3.displayType` | Here select characteristic type to be exposed in HomeKit app, possible `0 - None/Disabled`, `1 - Outlet`, `2 - Switch`.|
 | `buttonsZ3.namePrefix` | Here enable/disable the accessory name as a prefix for button name.|
-| `sensorPower`| If enabled, then the Power will be exposed as a `Contact Sensor` to use with automations. |
-| `sensorVolume`| If enabled, then the Volume will be exposed as a `Contact Sensor` to use with automations. |
-| `sensorMute`| If enabled, then the Mute will be exposed as a `Contact Sensor` to use with automations. |
-| `sensorInput`| If enabled, then the Input will be exposed as a `Contact Sensor` to use with automations. |
+| `sensorPower`| If enabled, then the Power will be exposed as a `Contact Sensor`, fired if power ON. |
+| `sensorVolume`| If enabled, then the Volume will be exposed as a `Contact Sensor`, fired on every Volume change. |
+| `sensorMute`| If enabled, then the Mute will be exposed as a `Contact Sensor`, fired if Mmute ON. |
+| `sensorInput`| If enabled, then the Input will be exposed as a `Contact Sensor`, fired on every Input change. |
+| `sensorInputs`| Her create custom Inputs sensor, sensors will be exposed as a `Contact Sensor`, fired if switch to it. |
 | `sensorInputs.name` | Here set own `Name` which You want expose to the `Homebridge/HomeKit` for this sensor. |
 | `sensorInputs.reference` | Here select reference, fired if switch to this reference. |
 | `sensorInputs.displayType` | Here select characteristic type to be exposed in HomeKit app, `0 - None/Disabled`, `1 - Motion Sensor`, `2 - Occupancy Sensor`, `3 - Contact Sensor`. |

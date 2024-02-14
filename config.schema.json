@@ -238,6 +238,12 @@
                         ]
                       },
                       {
+                        "title": "GAME 1",
+                        "enum": [
+                          "GAME1"
+                        ]
+                      },
+                      {
                         "title": "GAME 2",
                         "enum": [
                           "GAME2"
@@ -1029,6 +1035,12 @@
                         "title": "ZM INPUT GAME",
                         "enum": [
                           "0SIGAME"
+                        ]
+                      },
+                      {
+                        "title": "ZM INPUT GAME 1",
+                        "enum": [
+                          "0SIGAME1"
                         ]
                       },
                       {
@@ -4130,6 +4142,12 @@
                         ]
                       },
                       {
+                        "title": "Z2 INPUT GAME 1",
+                        "enum": [
+                          "1GAME1"
+                        ]
+                      },
+                      {
                         "title": "Z2 INPUT GAME 2",
                         "enum": [
                           "1GAME2"
@@ -4822,6 +4840,12 @@
                         ]
                       },
                       {
+                        "title": "Z3 INPUT GAME 1",
+                        "enum": [
+                          "1GAME1"
+                        ]
+                      },
+                      {
                         "title": "Z3 INPUT GAME 2",
                         "enum": [
                           "1GAME2"
@@ -5371,7 +5395,7 @@
               "title": "Input",
               "type": "boolean",
               "default": false,
-              "description": "This expose Input/Surround as a Contact Sensor, fired if change to it.",
+              "description": "This expose Input/Surround as a Contact Sensor, fired on every Input change.",
               "required": false
             },
             "sensorInputs": {
