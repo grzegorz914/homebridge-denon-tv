@@ -431,7 +431,7 @@ class DenonDevice extends EventEmitter {
 
                 //prepare television service
                 const debug2 = !this.enableDebugMode ? false : this.emit('debug', `Prepare television service`);
-                this.televisionService = new Service.Television(`${accessoryName} Television`, 'Television');
+                this.televisionService = accessory.addService(Service.Television, `${accessoryName} Television`, 'Television');
                 this.televisionService.setCharacteristic(Characteristic.ConfiguredName, accessoryName);
                 this.televisionService.setCharacteristic(Characteristic.SleepDiscoveryMode, 1);
 
@@ -663,13 +663,11 @@ class DenonDevice extends EventEmitter {
                             };
                         });
                 };
-
                 this.allServices.push(this.televisionService);
-                accessory.addService(this.televisionService);
 
                 //prepare speaker service
                 const debug3 = !this.enableDebugMode ? false : this.emit('debug', `Prepare speaker service`);
-                this.tvSpeakerService = new Service.TelevisionSpeaker(`${accessoryName} Speaker`, 'Speaker');
+                this.tvSpeakerService = accessory.addService(Service.TelevisionSpeaker, `${accessoryName} Speaker`, 'Speaker');
                 this.tvSpeakerService.getCharacteristic(Characteristic.Active)
                     .onGet(async () => {
                         const state = this.power;
@@ -738,7 +736,6 @@ class DenonDevice extends EventEmitter {
                     });
 
                 this.allServices.push(this.tvSpeakerService);
-                accessory.addService(this.tvSpeakerService);
 
                 //prepare inputs service
                 const debug8 = !this.enableDebugMode ? false : this.emit('debug', `Prepare inputs services`);
@@ -776,7 +773,7 @@ class DenonDevice extends EventEmitter {
                     input.identifier = inputIdentifier;
 
                     //input service
-                    const inputService = new Service.InputSource(inputName, `${this.zoneInputSurroundName} ${inputIdentifier}`);
+                    const inputService = accessory.addService(Service.InputSource, inputName, `${this.zoneInputSurroundName} ${inputIdentifier}`);
                     inputService
                         .setCharacteristic(Characteristic.Identifier, inputIdentifier)
                         .setCharacteristic(Characteristic.Name, inputName)
@@ -828,14 +825,13 @@ class DenonDevice extends EventEmitter {
                     this.inputsConfigured.push(input);
                     this.televisionService.addLinkedService(inputService);
                     this.allServices.push(inputService);
-                    accessory.addService(inputService);
                 };
 
                 //prepare volume service
                 if (this.volumeControl) {
                     const debug = !this.enableDebugMode ? false : this.emit('debug', `Prepare volume service`);
                     if (this.volumeControl === 1) {
-                        this.volumeService = new Service.Lightbulb(`${accessoryName} Volume`, 'Volume');
+                        this.volumeService = accessory.addService(Service.Lightbulb, `${accessoryName} Volume`, 'Volume');
                         this.volumeService.addOptionalCharacteristic(Characteristic.ConfiguredName);
                         this.volumeService.setCharacteristic(Characteristic.ConfiguredName, `${accessoryName} Volume`);
                         this.volumeService.getCharacteristic(Characteristic.Brightness)
@@ -856,11 +852,10 @@ class DenonDevice extends EventEmitter {
                             });
 
                         this.allServices.push(this.volumeService);
-                        accessory.addService(this.volumeService);
                     }
 
                     if (this.volumeControl === 2) {
-                        this.volumeServiceFan = new Service.Fan(`${accessoryName} Volume`, 'Volume');
+                        this.volumeServiceFan = accessory.addService(Service.Fan, `${accessoryName} Volume`, 'Volume');
                         this.volumeServiceFan.addOptionalCharacteristic(Characteristic.ConfiguredName);
                         this.volumeServiceFan.setCharacteristic(Characteristic.ConfiguredName, `${accessoryName} Volume`);
                         this.volumeServiceFan.getCharacteristic(Characteristic.RotationSpeed)
@@ -881,14 +876,13 @@ class DenonDevice extends EventEmitter {
                             });
 
                         this.allServices.push(this.volumeServiceFan);
-                        accessory.addService(this.volumeServiceFan);
                     }
                 };
 
                 //prepare sensor service
                 if (this.sensorPower) {
                     const debug = !this.enableDebugMode ? false : this.emit('debug', `Prepare power sensor service`);
-                    this.sensorPowerService = new Service.ContactSensor(`${this.sZoneName} Power Sensor`, `Power Sensor`);
+                    this.sensorPowerService = accessory.addService(Service.ContactSensor, `${this.sZoneName} Power Sensor`, `Power Sensor`);
                     this.sensorPowerService.addOptionalCharacteristic(Characteristic.ConfiguredName);
                     this.sensorPowerService.setCharacteristic(Characteristic.ConfiguredName, `${accessoryName} Power Sensor`);
                     this.sensorPowerService.getCharacteristic(Characteristic.ContactSensorState)
@@ -898,12 +892,11 @@ class DenonDevice extends EventEmitter {
                         });
 
                     this.allServices.push(this.sensorPowerService);
-                    accessory.addService(this.sensorPowerService);
                 };
 
                 if (this.sensorVolume) {
                     const debug = !this.enableDebugMode ? false : this.emit('debug', `Prepare volume sensor service`);
-                    this.sensorVolumeService = new Service.ContactSensor(`${this.sZoneName} Volume Sensor`, `Volume Sensor`);
+                    this.sensorVolumeService = accessory.addService(Service.ContactSensor, `${this.sZoneName} Volume Sensor`, `Volume Sensor`);
                     this.sensorVolumeService.addOptionalCharacteristic(Characteristic.ConfiguredName);
                     this.sensorVolumeService.setCharacteristic(Characteristic.ConfiguredName, `${accessoryName} Volume Sensor`);
                     this.sensorVolumeService.getCharacteristic(Characteristic.ContactSensorState)
@@ -913,12 +906,11 @@ class DenonDevice extends EventEmitter {
                         });
 
                     this.allServices.push(this.sensorVolumeService);
-                    accessory.addService(this.sensorVolumeService);
                 };
 
                 if (this.sensorMute) {
                     const debug = !this.enableDebugMode ? false : this.emit('debug', `Prepare mute sensor service`);
-                    this.sensorMuteService = new Service.ContactSensor(`${this.sZoneName} Mute Sensor`, `Mute Sensor`);
+                    this.sensorMuteService = accessory.addService(Service.ContactSensor, `${this.sZoneName} Mute Sensor`, `Mute Sensor`);
                     this.sensorMuteService.addOptionalCharacteristic(Characteristic.ConfiguredName);
                     this.sensorMuteService.setCharacteristic(Characteristic.ConfiguredName, `${accessoryName} Mute Sensor`);
                     this.sensorMuteService.getCharacteristic(Characteristic.ContactSensorState)
@@ -928,12 +920,11 @@ class DenonDevice extends EventEmitter {
                         });
 
                     this.allServices.push(this.sensorMuteService);
-                    accessory.addService(this.sensorMuteService);
                 };
 
                 if (this.sensorInput) {
                     const debug = !this.enableDebugMode ? false : this.emit('debug', `Prepare input sensor service`);
-                    this.sensorInputService = new Service.ContactSensor(`${this.sZoneName} Input Sensor`, `Input Sensor`);
+                    this.sensorInputService = accessory.addService(Service.ContactSensor, `${this.sZoneName} Input Sensor`, `Input Sensor`);
                     this.sensorInputService.addOptionalCharacteristic(Characteristic.ConfiguredName);
                     this.sensorInputService.setCharacteristic(Characteristic.ConfiguredName, `${accessoryName} Input Sensor`);
                     this.sensorInputService.getCharacteristic(Characteristic.ContactSensorState)
@@ -943,7 +934,6 @@ class DenonDevice extends EventEmitter {
                         });
 
                     this.allServices.push(this.sensorInputService);
-                    accessory.addService(this.sensorInputService);
                 };
 
                 //prepare sonsor services
@@ -972,9 +962,8 @@ class DenonDevice extends EventEmitter {
                         if (sensorInputDisplayType) {
                             if (sensorInputName && sensorInputReference) {
                                 const serviceName = namePrefix ? `${accessoryName} ${sensorInputName}` : sensorInputName;
-                                const serviceType = ['', Service.MotionSensor, Service.OccupancySensor, Service.ContactSensor][sensorInputDisplayType];
                                 const characteristicType = ['', Characteristic.MotionDetected, Characteristic.OccupancyDetected, Characteristic.ContactSensorState][sensorInputDisplayType];
-                                const sensorInputService = new serviceType(serviceName, `Sensor ${i}`);
+                                const sensorInputService = ['', accessory.addService(Service.MotionSensor, serviceName, `Sensor ${i}`), accessory.addService(Service.OccupancySensor, serviceName, `Sensor ${i}`), accessory.addService(Service.ContactSensor, serviceName, `Sensor ${i}`)][sensorInputDisplayType];
                                 sensorInputService.addOptionalCharacteristic(Characteristic.ConfiguredName);
                                 sensorInputService.setCharacteristic(Characteristic.ConfiguredName, serviceName);
                                 sensorInputService.getCharacteristic(characteristicType)
@@ -986,7 +975,6 @@ class DenonDevice extends EventEmitter {
                                 this.sensorsInputsConfigured.push(sensorInput);
                                 this.sensorsInputsServices.push(sensorInputService);
                                 this.allServices.push(sensorInputService);
-                                accessory.addService(sensorInputService);
                             } else {
                                 this.emit('message', `Sensor Name: ${sensorInputName ? sensorInputName : 'Missing'}, Reference: ${sensorInputReference ? sensorInputReference : 'Missing'}.`);
                             };
@@ -1020,8 +1008,7 @@ class DenonDevice extends EventEmitter {
                         if (buttonDisplayType) {
                             if (buttonName && buttonReference) {
                                 const serviceName = namePrefix ? `${accessoryName} ${buttonName}` : buttonName;
-                                const serviceType = ['', Service.Outlet, Service.Switch][buttonDisplayType];
-                                const buttonService = new serviceType(serviceName, `Button ${i}`);
+                                const buttonService = ['', accessory.addService(Service.Outlet, serviceName, `Button ${i}`), accessory.addService(Service.Switch, serviceName, `Button ${i}`)][buttonDisplayType];
                                 buttonService.addOptionalCharacteristic(Characteristic.ConfiguredName);
                                 buttonService.setCharacteristic(Characteristic.ConfiguredName, serviceName);
                                 buttonService.getCharacteristic(Characteristic.On)
@@ -1054,7 +1041,6 @@ class DenonDevice extends EventEmitter {
                                 this.buttonsConfigured.push(button);
                                 this.buttonsServices.push(buttonService);
                                 this.allServices.push(buttonService);
-                                accessory.addService(buttonService);
                             } else {
                                 this.emit('message', `Button Name: ${buttonName ? buttonName : 'Missing'}, Reference: ${buttonReference ? buttonReference : 'Missing'}.`);
                             };
