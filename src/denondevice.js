@@ -249,6 +249,7 @@ class DenonDevice extends EventEmitter {
                     }
                 }
 
+                //sensors
                 if (this.sensorPowerService) {
                     this.sensorPowerService
                         .updateCharacteristic(Characteristic.ContactSensorState, power)
@@ -269,7 +270,7 @@ class DenonDevice extends EventEmitter {
                         .updateCharacteristic(Characteristic.ContactSensorState, state)
                 }
 
-                if (this.sensorInputService && inputIdentifier !== this.inputIdentifier) {
+                if (this.sensorInputService && reference !== this.reference) {
                     for (let i = 0; i < 1; i++) {
                         const state = power ? [true, false][i] : false;
                         this.sensorInputService
@@ -278,22 +279,20 @@ class DenonDevice extends EventEmitter {
                     }
                 }
 
-                if (reference !== undefined) {
-                    if (this.sensorsInputsServices) {
-                        const servicesCount = this.sensorsInputsServices.length;
-                        for (let i = 0; i < servicesCount; i++) {
-                            const state = power ? (this.sensorsInputsConfigured[i].reference === reference) : false;
-                            const displayType = this.sensorsInputsConfigured[i].displayType;
-                            const characteristicType = ['', Characteristic.MotionDetected, Characteristic.OccupancyDetected, Characteristic.ContactSensorState][displayType];
-                            this.sensorsInputsServices[i]
-                                .updateCharacteristic(characteristicType, state);
-                        }
+                if (this.sensorsInputsServices) {
+                    const servicesCount = this.sensorsInputsServices.length;
+                    for (let i = 0; i < servicesCount; i++) {
+                        const state = power ? this.sensorsInputsConfigured[i].reference === reference : false;
+                        const displayType = this.sensorsInputsConfigured[i].displayType;
+                        const characteristicType = ['', Characteristic.MotionDetected, Characteristic.OccupancyDetected, Characteristic.ContactSensorState][displayType];
+                        this.sensorsInputsServices[i]
+                            .updateCharacteristic(characteristicType, state);
                     }
-                    this.reference = reference;
                 }
 
                 this.inputIdentifier = inputIdentifier;
                 this.power = power;
+                this.reference = reference;
                 this.volume = volume;
                 this.mute = mute;
                 this.volumeControlType = volumeControlType;
