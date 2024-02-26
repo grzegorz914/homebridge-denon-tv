@@ -212,10 +212,10 @@ class DENON extends EventEmitter {
                 this.emitDeviceInfo = false;
 
                 //restFul
-                const restFul = restFulEnabled ? this.emit('restFul', 'info', devInfo) : false;
+                this.emit('restFul', 'info', devInfo);
 
                 //mqtt
-                const mqtt = mqttEnabled ? this.emit('mqtt', 'Info', devInfo) : false;
+                this.emit('mqtt', 'Info', devInfo);
 
                 this.supportPictureMode = supportPictureMode;
                 this.supportSoundMode = supportSoundMode;
