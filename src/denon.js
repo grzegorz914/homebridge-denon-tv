@@ -26,8 +26,6 @@ class DENON extends EventEmitter {
         const debugLog = config.debugLog;
         const disableLogConnectError = config.disableLogConnectError;
         const refreshInterval = config.refreshInterval;
-        const restFulEnabled = config.restFulEnabled;
-        const mqttEnabled = config.mqttEnabled;
         const deviceInfoUrl = [CONSTANS.ApiUrls.DeviceInfoGen0, CONSTANS.ApiUrls.DeviceInfoGen1, CONSTANS.ApiUrls.DeviceInfoGen2][generation];
 
         this.debugLog = debugLog;
@@ -294,14 +292,14 @@ class DENON extends EventEmitter {
                     this.emit('stateChanged', power, reference, volume, volumeDisplay, mute, pictureMode);
 
                     //restFul
-                    const restFul = restFulEnabled ? this.emit('restFul', 'state', devState) : false;
-                    const restFul1 = restFulEnabled && checkPictureMode ? this.emit('restFul', 'picture', { 'Picture Mode': CONSTANS.PictureModesDenonNumber[pictureMode] }) : false;
-                    const restFul2 = restFulEnabled && checkSoundeMode ? this.emit('restFul', 'surround', { 'Sound Mode': CONSTANS.SoundModeConversion[soundMode] }) : false;
+                    this.emit('restFul', 'state', devState);
+                    const restFul1 = checkPictureMode ? this.emit('restFul', 'picture', { 'Picture Mode': CONSTANS.PictureModesDenonNumber[pictureMode] }) : false;
+                    const restFul2 = checkSoundeMode ? this.emit('restFul', 'surround', { 'Sound Mode': CONSTANS.SoundModeConversion[soundMode] }) : false;
 
                     //mqtt
-                    const mqtt1 = mqttEnabled ? this.emit('mqtt', 'State', devState) : false;
-                    const mqtt2 = mqttEnabled && checkPictureMode ? this.emit('mqtt', 'Picture', { 'Picture Mode': CONSTANS.PictureModesDenonNumber[pictureMode] }) : false;
-                    const mqtt3 = mqttEnabled && checkSoundeMode ? this.emit('mqtt', 'Surround', { 'Sound Mode': CONSTANS.SoundModeConversion[soundMode] }) : false;
+                    this.emit('mqtt', 'State', devState);
+                    const mqtt2 = checkPictureMode ? this.emit('mqtt', 'Picture', { 'Picture Mode': CONSTANS.PictureModesDenonNumber[pictureMode] }) : false;
+                    const mqtt3 = checkSoundeMode ? this.emit('mqtt', 'Surround', { 'Sound Mode': CONSTANS.SoundModeConversion[soundMode] }) : false;
 
                     this.checkState();
                 } catch (error) {
@@ -350,7 +348,7 @@ class DENON extends EventEmitter {
                 const inputsArr = [];
                 let i = 0;
                 for (const input of inputs) {
-                    const inputNameOldAvr = generation === 0 ? devInfo.RenameSource.value[i].trim() !== '' ? devInfo.RenameSource.value[i] : inputs[i] : '';
+                    const inputNameOldAvr = getInputsFromDevice && generation === 0 ? devInfo.RenameSource.value[i].trim() !== '' ? devInfo.RenameSource.value[i] : inputs[i] : `Input ${i}`;
                     const inputName = getInputsFromDevice ? [inputNameOldAvr, input.DefaultName, input.DefaultName][generation] : input.name;
                     const inputReference = getInputsFromDevice ? [input, input.FuncName, input.FuncName][generation] : input.reference;
                     const obj = {

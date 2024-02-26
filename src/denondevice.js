@@ -2,14 +2,12 @@
 const fs = require('fs');
 const fsPromises = fs.promises;
 const EventEmitter = require('events');
-const RestFul = require('./restful.js');
-const Mqtt = require('./mqtt.js');
 const Denon = require('./denon.js');
 const CONSTANS = require('./constans.json');
 let Accessory, Characteristic, Service, Categories, Encode, UUID;
 
 class DenonDevice extends EventEmitter {
-    constructor(api, prefDir, config) {
+    constructor(api, prefDir, device) {
         super();
 
         Accessory = api.platformAccessory;
@@ -20,53 +18,37 @@ class DenonDevice extends EventEmitter {
         UUID = api.hap.uuid;
 
         //device configuration
-        this.name = config.name;
-        this.host = config.host;
-        this.port = config.port;
-        this.generation = config.generation || 0;
-        this.zone = config.zoneControl || 0;
-        this.getInputsFromDevice = [config.getInputsFromDevice, config.getInputsFromDevice, config.getInputsFromDevice, false][config.zoneControl] || false;
-        this.getFavoritesFromDevice = this.getInputsFromDevice ? config.getFavoritesFromDevice : false;
-        this.getQuickSmartSelectFromDevice = this.getInputsFromDevice ? config.getQuickSmartSelectFromDevice : false;
-        this.inputsDisplayOrder = config.inputsDisplayOrder || 0;
-        this.inputs = [config.inputs, config.inputs, config.inputs, config.surrounds][config.zoneControl] || [];
-        this.buttons = [config.buttons, config.buttonsZ2, config.buttonsZ3, []][config.zoneControl] || [];
-        this.sensorPower = config.sensorPower || false;
-        this.sensorVolume = config.sensorVolume || false
-        this.sensorMute = config.sensorMute || false;
-        this.sensorInput = config.sensorInput || false;
-        this.sensorInputs = config.sensorInputs || [];
-        this.enableDebugMode = config.enableDebugMode || false;
-        this.disableLogInfo = config.disableLogInfo || false;
-        this.disableLogDeviceInfo = config.disableLogDeviceInfo || false;
-        this.disableLogConnectError = config.disableLogConnectError || false;
-        this.masterPower = config.masterPower || false;
-        this.masterVolume = config.masterVolume || false;
-        this.masterMute = config.masterMute || false;
-        this.infoButtonCommand = config.infoButtonCommand || 'MNINF';
-        this.volumeControl = config.volumeControl || false;
-        this.refreshInterval = config.refreshInterval || 5;
-        this.restFulEnabled = config.enableRestFul || false;
-        this.restFulPort = config.restFulPort || 3000;
-        this.restFulDebug = config.restFulDebug || false;
-        this.mqttEnabled = config.enableMqtt || false;
-        this.mqttHost = config.mqttHost;
-        this.mqttPort = config.mqttPort || 1883;
-        this.mqttClientId = config.mqttClientId || `denon_${Math.random().toString(16).slice(3)}`;
-        this.mqttPrefix = config.mqttPrefix;
-        this.mqttAuth = config.mqttAuth || false;
-        this.mqttUser = config.mqttUser;
-        this.mqttPasswd = config.mqttPasswd;
-        this.mqttDebug = config.mqttDebug || false;
+        this.name = device.name;
+        this.host = device.host;
+        this.port = device.port;
+        this.generation = device.generation || 0;
+        this.zone = device.zoneControl || 0;
+        this.getInputsFromDevice = [device.getInputsFromDevice, device.getInputsFromDevice, device.getInputsFromDevice, false][device.zoneControl] || false;
+        this.getFavoritesFromDevice = this.getInputsFromDevice ? device.getFavoritesFromDevice : false;
+        this.getQuickSmartSelectFromDevice = this.getInputsFromDevice ? device.getQuickSmartSelectFromDevice : false;
+        this.inputsDisplayOrder = device.inputsDisplayOrder || 0;
+        this.inputs = [device.inputs, device.inputs, device.inputs, device.surrounds][device.zoneControl] || [];
+        this.buttons = [device.buttons, device.buttonsZ2, device.buttonsZ3, []][device.zoneControl] || [];
+        this.sensorPower = device.sensorPower || false;
+        this.sensorVolume = device.sensorVolume || false
+        this.sensorMute = device.sensorMute || false;
+        this.sensorInput = device.sensorInput || false;
+        this.sensorInputs = device.sensorInputs || [];
+        this.enableDebugMode = device.enableDebugMode || false;
+        this.disableLogInfo = device.disableLogInfo || false;
+        this.disableLogDeviceInfo = device.disableLogDeviceInfo || false;
+        this.disableLogConnectError = device.disableLogConnectError || false;
+        this.masterPower = device.masterPower || false;
+        this.masterVolume = device.masterVolume || false;
+        this.masterMute = device.masterMute || false;
+        this.infoButtonCommand = device.infoButtonCommand || 'MNINF';
+        this.volumeControl = device.volumeControl || false;
+        this.refreshInterval = device.refreshInterval || 5;
 
         //zones
         this.zoneName = CONSTANS.ZoneName[this.zone];
         this.sZoneName = CONSTANS.ZoneNameShort[this.zone];
         this.zoneInputSurroundName = CONSTANS.ZoneInputSurroundName[this.zone];
-
-        //external integrations
-        this.restFulConnected = false;
-        this.mqttConnected = false;
 
         //services
         this.allServices = [];
@@ -120,49 +102,6 @@ class DenonDevice extends EventEmitter {
             this.emit('error', `prepare files error: ${error}`);
         }
 
-        //RESTFul server
-        if (this.restFulEnabled) {
-            this.restFul = new RestFul({
-                port: this.restFulPort,
-                debug: this.restFulDebug
-            });
-
-            this.restFul.on('connected', (message) => {
-                this.emit('message', `${message}`);
-                this.restFulConnected = true;
-            })
-                .on('error', (error) => {
-                    this.emit('error', error);
-                })
-                .on('debug', (debug) => {
-                    this.emit('debug', debug);
-                });
-        }
-
-        //MQTT client
-        if (this.mqttEnabled) {
-            this.mqtt = new Mqtt({
-                host: this.mqttHost,
-                port: this.mqttPort,
-                clientId: this.mqttClientId,
-                user: this.mqttUser,
-                passwd: this.mqttPasswd,
-                prefix: `${this.mqttPrefix}/${this.name}`,
-                debug: this.mqttDebug
-            });
-
-            this.mqtt.on('connected', (message) => {
-                this.emit('message', message);
-                this.mqttConnected = true;
-            })
-                .on('debug', (debug) => {
-                    this.emit('debug', debug);
-                })
-                .on('error', (error) => {
-                    this.emit('error', error);
-                });
-        };
-
         //denon client
         this.denon = new Denon({
             host: this.host,
@@ -179,8 +118,6 @@ class DenonDevice extends EventEmitter {
             debugLog: this.enableDebugMode,
             disableLogConnectError: this.disableLogConnectError,
             refreshInterval: this.refreshInterval,
-            restFulEnabled: this.restFulEnabled,
-            mqttEnabled: this.mqttEnabled
         });
 
         this.denon.on('deviceInfo', (manufacturer, modelName, serialNumber, firmwareRevision, deviceZones, apiVersion, supportPictureMode) => {
@@ -256,7 +193,7 @@ class DenonDevice extends EventEmitter {
                 }
 
                 if (this.sensorVolumeService && volume !== this.volume) {
-                    for (let i = 0; i < 1; i++) {
+                    for (let i = 0; i < 2; i++) {
                         const state = power ? [true, false][i] : false;
                         this.sensorVolumeService
                             .updateCharacteristic(Characteristic.ContactSensorState, state)
@@ -271,7 +208,7 @@ class DenonDevice extends EventEmitter {
                 }
 
                 if (this.sensorInputService && reference !== this.reference) {
-                    for (let i = 0; i < 1; i++) {
+                    for (let i = 0; i < 2; i++) {
                         const state = power ? [true, false][i] : false;
                         this.sensorInputService
                             .updateCharacteristic(Characteristic.ContactSensorState, state)
@@ -341,10 +278,10 @@ class DenonDevice extends EventEmitter {
                 this.emit('error', error);
             })
             .on('restFul', (path, data) => {
-                const restFul = this.restFulConnected ? this.restFul.update(path, data) : false;
+                this.emit('restFul', path, data)
             })
             .on('mqtt', (topic, message) => {
-                const mqtt = this.mqttConnected ? this.mqtt.send(topic, message) : false;
+                this.emit('mqtt', topic, message)
             })
             .on('disconnected', (message) => {
                 this.emit('message', message);
