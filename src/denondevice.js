@@ -2,9 +2,11 @@
 const fs = require('fs');
 const fsPromises = fs.promises;
 const EventEmitter = require('events');
+const RestFul = require('./restful.js');
+const Mqtt = require('./mqtt.js');
 const Denon = require('./denon.js');
 const CONSTANS = require('./constans.json');
-let Accessory, Characteristic, Service, Categories, Encode, UUID;
+let Accessory, Characteristic, Service, Categories, Encode, AccessoryUUID;
 
 class DenonDevice extends EventEmitter {
     constructor(api, prefDir, device) {
@@ -15,7 +17,7 @@ class DenonDevice extends EventEmitter {
         Service = api.hap.Service;
         Categories = api.hap.Categories;
         Encode = api.hap.encode;
-        UUID = api.hap.uuid;
+        AccessoryUUID = api.hap.uuid;
 
         //device configuration
         this.name = device.name;
@@ -44,6 +46,10 @@ class DenonDevice extends EventEmitter {
         this.infoButtonCommand = device.infoButtonCommand || 'MNINF';
         this.volumeControl = device.volumeControl || false;
         this.refreshInterval = device.refreshInterval || 5;
+
+        //external integration
+        this.restFulConnected = false;
+        this.mqttConnected = false;
 
         //zones
         this.zoneName = CONSTANS.ZoneName[this.zone];
@@ -101,6 +107,70 @@ class DenonDevice extends EventEmitter {
         } catch (error) {
             this.emit('error', `prepare files error: ${error}`);
         }
+
+        //RESTFul server
+        const restFulEnabled = device.enableRestFul || false;
+        if (restFulEnabled) {
+            this.restFul = new RestFul({
+                port: device.restFulPort || 3000,
+                debug: device.restFulDebug || false
+            });
+
+            this.restFul.on('connected', (message) => {
+                log(`Device: ${host} ${deviceName}, ${message}`);
+                this.restFulConnected = true;
+            })
+                .on('error', (error) => {
+                    this.emit('error', error);
+                })
+                .on('debug', (debug) => {
+                    this.emit('debug', debug);
+                });
+        }
+
+        //mqtt client
+        const mqttEnabled = device.enableMqtt || false;
+        if (mqttEnabled) {
+            this.mqtt = new Mqtt({
+                host: device.mqttHost,
+                port: device.mqttPort || 1883,
+                clientId: device.mqttClientId || `denon_${Math.random().toString(16).slice(3)}`,
+                prefix: `${device.mqttPrefix}/${device.name}`,
+                user: device.mqttUser,
+                passwd: device.mqttPasswd,
+                debug: device.mqttDebug || false
+            });
+
+            this.mqtt.on('connected', (message) => {
+                this.emit('message', message);
+                this.mqttConnected = true;
+            })
+                .on('changeState', (data) => {
+                    const key = Object.keys(data)[0];
+                    const value = Object.values(data)[0];
+                    switch (key) {
+                        case 'Power':
+                            break;
+                        case 'Input':
+                            break;
+                        case 'Volume':
+                            break;
+                        case 'Mute':
+                            break;
+                        case 'SoundMode':
+                            break;
+                        default:
+                            this.emit('message', `MQTT Received unknown key: ${key}, value: ${value}`);
+                            break;
+                    };
+                })
+                .on('debug', (debug) => {
+                    this.emit('debug', debug);
+                })
+                .on('error', (error) => {
+                    this.emit('error', error);
+                });
+        };
 
         //denon client
         this.denon = new Denon({
@@ -277,14 +347,14 @@ class DenonDevice extends EventEmitter {
             .on('error', (error) => {
                 this.emit('error', error);
             })
-            .on('restFul', (path, data) => {
-                this.emit('restFul', path, data)
-            })
-            .on('mqtt', (topic, message) => {
-                this.emit('mqtt', topic, message)
-            })
             .on('disconnected', (message) => {
                 this.emit('message', message);
+            })
+            .on('restFul', (path, data) => {
+                const restFul = this.restFulConnected ? this.restFul.update(path, data) : false;
+            })
+            .on('mqtt', (topic, message) => {
+                const mqtt = this.mqttConnected ? this.mqtt.send(topic, message) : false;
             });
     };
 
@@ -351,7 +421,7 @@ class DenonDevice extends EventEmitter {
                 const debug = !this.enableDebugMode ? false : this.emit('debug', `Prepare accessory`);
                 const zoneControl = this.zone;
                 const accessoryName = this.name;
-                const accessoryUUID = UUID.generate(this.serialNumber + zoneControl);
+                const accessoryUUID = AccessoryUUID.generate(this.serialNumber + zoneControl);
                 const accessoryCategory = Categories.AUDIO_RECEIVER;
                 const accessory = new Accessory(accessoryName, accessoryUUID, accessoryCategory);
 
