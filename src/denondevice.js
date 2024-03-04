@@ -5,7 +5,7 @@ const EventEmitter = require('events');
 const RestFul = require('./restful.js');
 const Mqtt = require('./mqtt.js');
 const Denon = require('./denon.js');
-const CONSTANS = require('./constans.json');
+const CONSTANTS = require('./constants.json');
 let Accessory, Characteristic, Service, Categories, Encode, AccessoryUUID;
 
 class DenonDevice extends EventEmitter {
@@ -52,9 +52,9 @@ class DenonDevice extends EventEmitter {
         this.mqttConnected = false;
 
         //zones
-        this.zoneName = CONSTANS.ZoneName[this.zone];
-        this.sZoneName = CONSTANS.ZoneNameShort[this.zone];
-        this.zoneInputSurroundName = CONSTANS.ZoneInputSurroundName[this.zone];
+        this.zoneName = CONSTANTS.ZoneName[this.zone];
+        this.sZoneName = CONSTANTS.ZoneNameShort[this.zone];
+        this.zoneInputSurroundName = CONSTANTS.ZoneInputSurroundName[this.zone];
 
         //services
         this.allServices = [];
@@ -128,50 +128,6 @@ class DenonDevice extends EventEmitter {
                 });
         }
 
-        //mqtt client
-        const mqttEnabled = device.enableMqtt || false;
-        if (mqttEnabled) {
-            this.mqtt = new Mqtt({
-                host: device.mqttHost,
-                port: device.mqttPort || 1883,
-                clientId: device.mqttClientId || `denon_${Math.random().toString(16).slice(3)}`,
-                prefix: `${device.mqttPrefix}/${device.name}`,
-                user: device.mqttUser,
-                passwd: device.mqttPasswd,
-                debug: device.mqttDebug || false
-            });
-
-            this.mqtt.on('connected', (message) => {
-                this.emit('message', message);
-                this.mqttConnected = true;
-            })
-                .on('changeState', (data) => {
-                    const key = Object.keys(data)[0];
-                    const value = Object.values(data)[0];
-                    switch (key) {
-                        case 'Power':
-                            break;
-                        case 'Input':
-                            break;
-                        case 'Volume':
-                            break;
-                        case 'Mute':
-                            break;
-                        case 'SoundMode':
-                            break;
-                        default:
-                            this.emit('message', `MQTT Received unknown key: ${key}, value: ${value}`);
-                            break;
-                    };
-                })
-                .on('debug', (debug) => {
-                    this.emit('debug', debug);
-                })
-                .on('error', (error) => {
-                    this.emit('error', error);
-                });
-        };
-
         //denon client
         this.denon = new Denon({
             host: this.host,
@@ -224,7 +180,7 @@ class DenonDevice extends EventEmitter {
                 const index = this.inputsConfigured.findIndex(input => input.reference === reference) ?? -1;
                 const inputIdentifier = index !== -1 ? this.inputsConfigured[index].identifier : this.inputIdentifier;
                 mute = power ? mute : true;
-                const pictureModeHomeKit = CONSTANS.PictureModesConversionToHomeKit[pictureMode];
+                const pictureModeHomeKit = CONSTANTS.PictureModesConversionToHomeKit[pictureMode];
 
                 if (this.televisionService) {
                     this.televisionService
@@ -313,10 +269,69 @@ class DenonDevice extends EventEmitter {
                     this.emit('message', `Volume: ${volume - 80}dB`);
                     this.emit('message', `Mute: ${mute ? 'ON' : 'OFF'}`);
                     this.emit('message', `Volume Control Type: ${volumeControlType}`);
-                    this.emit('message', `Picture Mode: ${CONSTANS.PictureModesDenonNumber[pictureMode]}`);
+                    this.emit('message', `Picture Mode: ${CONSTANTS.PictureModesDenonNumber[pictureMode]}`);
                 };
             })
             .on('prepareAccessory', async (allInputs) => {
+                //mqtt client
+                const mqttEnabled = device.enableMqtt || false;
+                if (mqttEnabled) {
+                    this.mqtt = new Mqtt({
+                        host: device.mqttHost,
+                        port: device.mqttPort || 1883,
+                        clientId: device.mqttClientId || `denon_${Math.random().toString(16).slice(3)}`,
+                        prefix: `${device.mqttPrefix}/${device.name}`,
+                        user: device.mqttUser,
+                        passwd: device.mqttPasswd,
+                        debug: device.mqttDebug || false
+                    });
+
+                    this.mqtt.on('connected', (message) => {
+                        this.emit('message', message);
+                        this.mqttConnected = true;
+                    })
+                        .on('changeState', async (data) => {
+                            const key = Object.keys(data)[0];
+                            const value = Object.values(data)[0];
+                            try {
+                                switch (key) {
+                                    case 'Power':
+                                        const masterPower = this.masterPower ? 4 : device.zoneControl;
+                                        const powerState = [(state ? 'ZMON' : 'ZMOFF'), (value ? 'Z2ON' : 'Z2OFF'), (value ? 'Z3ON' : 'Z3OFF'), (value ? 'ZMON' : 'ZMOFF'), (value ? 'PWON' : 'PWSTANDBY')][masterPower];
+                                        await this.denon.send(powerState)
+                                        break;
+                                    case 'Input':
+                                        await this.denon.send(value);
+                                        break;
+                                    case 'Volume':
+                                        const value1 = (value === 0 || value === 100) ? this.volume : (value < 10 ? `0${value}` : value);
+                                        const masterVolume = this.masterVolume ? 0 : device.zoneControl;
+                                        const value1volume = [`MV${value1}`, `Z2${value1}`, `Z3${value1}`, `MV${value1}`][masterVolume];
+                                        await this.denon.send(volume);
+                                        break;
+                                    case 'Mute':
+                                        const masterMute = this.masterMute ? 0 : device.zoneControl;
+                                        const muteState = [(state ? 'MUON' : 'MUOFF'), (state ? 'Z2MUON' : 'Z2MUOFF'), (state ? 'Z3MUON' : 'Z3MUOFF'), (state ? 'MUON' : 'MUOFF')][masterMute];
+                                        await this.denon.send(muteState);
+                                        break;
+                                    case 'Surround':
+                                        await this.denon.send(value);
+                                        break;
+                                    default:
+                                        this.emit('message', `MQTT Received unknown key: ${key}, value: ${value}`);
+                                        break;
+                                };
+                            } catch (error) {
+                                this.emit('error', `set: ${key}, over MQTT, error: ${error}`);
+                            };
+                        })
+                        .on('debug', (debug) => {
+                            this.emit('debug', debug);
+                        })
+                        .on('error', (error) => {
+                            this.emit('error', error);
+                        });
+                };
                 try {
                     //read inputs names from file
                     const savedInputsNames = await this.readData(this.inputsNamesFile);
@@ -643,7 +658,7 @@ class DenonDevice extends EventEmitter {
                                     }
 
                                     await this.denon.send(command);
-                                    const info = this.disableLogInfo ? false : this.emit('message', `set Picture Mode: ${CONSTANS.PictureModesDenonString[command]}`);
+                                    const info = this.disableLogInfo ? false : this.emit('message', `set Picture Mode: ${CONSTANTS.PictureModesDenonString[command]}`);
                                 } catch (error) {
                                     this.emit('error', `set Picture Mode error: ${error}`);
                                 };
@@ -1029,7 +1044,7 @@ class DenonDevice extends EventEmitter {
                                             const zone = parseInt(buttonReference.charAt(0)); //0 - All/Maiz Zone, 1 - Zone 2/3, 2 - Only Z2
                                             const zonePrefix = ['', 'Z2', 'Z3', ''][zoneControl];
 
-                                            const directSound = CONSTANS.DirectSoundMode[buttonReference] !== undefined ? CONSTANS.DirectSoundMode[buttonReference] : false;
+                                            const directSound = CONSTANTS.DirectSoundMode[buttonReference] !== undefined ? CONSTANTS.DirectSoundMode[buttonReference] : false;
                                             const directSoundModeMode = directSound ? directSound.mode : false;
                                             const directSoundModeSurround = directSound ? directSound.surround : false;
 

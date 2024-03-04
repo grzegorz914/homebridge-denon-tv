@@ -38,13 +38,7 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 * Siri can be used for all functions, some times need create legacy buttons/switches/sensors.
 * Automations can be used for all functions, some times need create legacy buttons/switches/sensors.
 * This plugin is based upon the official documentation: [Denon Control Protocol 2020](https://github.com/grzegorz914/homebridge-denon-tv/blob/main/doc/Denon%20Control%20Protocol.xlsx)
-* RESTful server:
-  * Request: `http//homebridge_ip_address:port/path`.
-  * Path: `info`, `state`, `picture`, `surround`.
-  * Respone as JSON data.
-* MQTT client:
-  * Topic: `Info`, `State`, `Picture`, `Surround`.
-  * Publish as JSON data.
+* Support external integrations, [RESTFul](https://github.com/grzegorz914/homebridge-denon-tv?tab=readme-ov-file#restful-integration), [MQTT](https://github.com/grzegorz914/homebridge-denon-tv?tab=readme-ov-file#mqtt-integration).
 
 <p align="left">
   <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/main/graphics/homekit.png" width="382"></a>
@@ -123,3 +117,25 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 | `mqttPasswd` | Here set the MQTT Broker password. |
 | `mqttDebug` | If enabled, deep log will be present in homebridge console for MQTT. |
 | `AV Surround Mode` | This extra Accessory will control all functions of Main Zone except `Inputs` and `Buttons`. |
+
+### RESTFul Integration
+
+* Request: `http//homebridge_ip_address:port/path`.
+* Path: `info`, `state`, `picture`, `surround`.
+* Respone as JSON data.
+
+### MQTT Integration
+
+| Direction | Topic | Message | Payload Data |
+| --- | --- | --- | --- |
+|  Publish   | `Info`, `State`, `Picture`, `Surround` | `{Power: {value: OFF}}` | JSON object. |
+|  Subscribe   | `Set` | `{"Power": true}` | JSON object. |
+
+| Subscribe | Key | Value | Type | Description |
+| --- | --- | --- | --- | --- |
+| Denon/Marantz |     |     |     |      |
+|     | `Power` | `true`, `false` | boolean | Power state. |
+|     | `Input` | `SAT/CBL` | string | Set input. |
+|     | `Surround` | `MUSIC` | string | Set surround mode. |
+|     | `Volume` | `100` | integer | Set volume. |
+|     | `Mute` | `true`, `false` | boolean | Set mute. |

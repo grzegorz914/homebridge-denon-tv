@@ -2,13 +2,13 @@
 const path = require('path');
 const fs = require('fs');
 const DenonDevice = require('./src/denondevice.js');
-const CONSTANS = require('./src/constans.json');
+const CONSTANTS = require('./src/constants.json');
 
 class DenonPlatform {
 	constructor(log, config, api) {
 		// only load if configured
 		if (!config || !Array.isArray(config.devices)) {
-			log.warn(`No configuration found for ${CONSTANS.PluginName}`);
+			log.warn(`No configuration found for ${CONSTANTS.PluginName}`);
 			return;
 		}
 		this.accessories = [];
@@ -40,7 +40,7 @@ class DenonPlatform {
 				//denon device
 				const denonDevice = new DenonDevice(api, prefDir, device);
 				denonDevice.on('publishAccessory', (accessory) => {
-					api.publishExternalAccessories(CONSTANS.PluginName, [accessory]);
+					api.publishExternalAccessories(CONSTANTS.PluginName, [accessory]);
 					const debug = enableDebugMode ? log(`Device: ${host} ${deviceName}, published as external accessory.`) : false;
 				})
 					.on('devInfo', (devInfo) => {
@@ -65,5 +65,5 @@ class DenonPlatform {
 };
 
 module.exports = (api) => {
-	api.registerPlatform(CONSTANS.PluginName, CONSTANS.PlatformName, DenonPlatform, true);
+	api.registerPlatform(CONSTANTS.PluginName, CONSTANTS.PlatformName, DenonPlatform, true);
 };

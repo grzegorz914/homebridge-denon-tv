@@ -5,9 +5,9 @@ const https = require('https');
 const axios = require('axios');
 const EventEmitter = require('events');
 const { XMLParser, XMLBuilder, XMLValidator } = require('fast-xml-parser');
-const CONSTANS = require('./constans.json');
-const INPUTS_CONVERSION_KEYS = Object.keys(CONSTANS.InputConversion);
-const SOUND_MODES_CONVERSION_KEYS = Object.keys(CONSTANS.SoundModeConversion);
+const CONSTANTS = require('./constants.json');
+const INPUTS_CONVERSION_KEYS = Object.keys(CONSTANTS.InputConversion);
+const SOUND_MODES_CONVERSION_KEYS = Object.keys(CONSTANTS.SoundModeConversion);
 
 class DENON extends EventEmitter {
     constructor(config) {
@@ -26,7 +26,7 @@ class DENON extends EventEmitter {
         const debugLog = config.debugLog;
         const disableLogConnectError = config.disableLogConnectError;
         const refreshInterval = config.refreshInterval;
-        const deviceInfoUrl = [CONSTANS.ApiUrls.DeviceInfoGen0, CONSTANS.ApiUrls.DeviceInfoGen1, CONSTANS.ApiUrls.DeviceInfoGen2][generation];
+        const deviceInfoUrl = [CONSTANTS.ApiUrls.DeviceInfoGen0, CONSTANTS.ApiUrls.DeviceInfoGen1, CONSTANTS.ApiUrls.DeviceInfoGen2][generation];
 
         this.debugLog = debugLog;
         this.refreshInterval = refreshInterval;
@@ -79,6 +79,7 @@ class DENON extends EventEmitter {
         this.pictureMode = 0;
         this.soundMode = '';
         this.audysseyMode = '';
+        this.devInfo = {};
         const object = {};
 
         this.on('checkDeviceInfo', async () => {
@@ -88,6 +89,7 @@ class DENON extends EventEmitter {
                 const parseData = parseString.parse(deviceInfo.data);
                 const devInfo = [parseData.item, parseData.Device_Info, parseData.Device_Info][generation];
                 const debug = debugLog ? this.emit('debug', `Info: ${JSON.stringify(devInfo, null, 2)}`) : false;
+                this.devInfo = devInfo;
 
                 //device info
                 const deviceInfoKeys = Object.keys(devInfo);
@@ -211,12 +213,6 @@ class DENON extends EventEmitter {
                 const emitDeviceInfo = this.emitDeviceInfo ? this.emit('deviceInfo', manufacturer, modelName, serialNumber, firmwareRevision, deviceZones, apiVersion, supportPictureMode) : false;
                 this.emitDeviceInfo = false;
 
-                //restFul
-                this.emit('restFul', 'info', devInfo);
-
-                //mqtt
-                this.emit('mqtt', 'Info', devInfo);
-
                 this.supportPictureMode = supportPictureMode;
                 this.supportSoundMode = supportSoundMode;
 
@@ -234,7 +230,7 @@ class DENON extends EventEmitter {
             .on('checkState', async () => {
                 try {
                     //get zones status
-                    const zoneStateUrl = [CONSTANS.ApiUrls.MainZoneStatusLite, CONSTANS.ApiUrls.Zone2StatusLite, CONSTANS.ApiUrls.Zone3StatusLite, CONSTANS.ApiUrls.SoundModeStatus][zone];
+                    const zoneStateUrl = [CONSTANTS.ApiUrls.MainZoneStatusLite, CONSTANTS.ApiUrls.Zone2StatusLite, CONSTANTS.ApiUrls.Zone3StatusLite, CONSTANTS.ApiUrls.SoundModeStatus][zone];
                     const deviceState = await this.axiosInstance(zoneStateUrl);
                     const parseDeviceState = parseString.parse(deviceState.data);
                     const devState = parseDeviceState.item;
@@ -243,14 +239,14 @@ class DENON extends EventEmitter {
                     //get receiver status
                     const statusKeys = Object.keys(devState);
                     const power = devState.Power.value === 'ON';
-                    const input = INPUTS_CONVERSION_KEYS.includes(devState.InputFuncSelect.value) ? CONSTANS.InputConversion[devState.InputFuncSelect.value] : devState.InputFuncSelect.value;
+                    const input = INPUTS_CONVERSION_KEYS.includes(devState.InputFuncSelect.value) ? CONSTANTS.InputConversion[devState.InputFuncSelect.value] : devState.InputFuncSelect.value;
                     const volumeDisplay = statusKeys.includes('VolumeDisplay') ? devState.VolumeDisplay.value : this.volumeDisplay;
                     const volume = parseFloat(devState.MasterVolume.value) >= -79.5 ? parseInt(devState.MasterVolume.value) + 80 : 0;
                     const mute = devState.Mute.value === 'on';
 
                     //get picture mode
                     const checkPictureMode = this.supportPictureMode && power && zone === 0;
-                    const devicePictureMode = checkPictureMode ? await this.axiosInstancePost(CONSTANS.ApiUrls.AppCommand, CONSTANS.BodyXml.GetPictureMode) : false;
+                    const devicePictureMode = checkPictureMode ? await this.axiosInstancePost(CONSTANTS.ApiUrls.AppCommand, CONSTANTS.BodyXml.GetPictureMode) : false;
                     const parseDevicePictureMode = checkPictureMode ? parseString.parse(devicePictureMode.data) : false;
                     const debug1 = debugLog && checkPictureMode ? this.emit('debug', `Picture mode: ${JSON.stringify(parseDevicePictureMode, null, 2)}`) : false;
                     const pictureMode = checkPictureMode ? parseDevicePictureMode.rx.cmd.value : this.pictureMode;
@@ -258,20 +254,32 @@ class DENON extends EventEmitter {
                     //get sound mode
                     const checkZone = zone === 0 || zone === 3;
                     const checkSoundeMode = this.supportSoundMode && power && checkZone;
-                    const deviceSoundMode = checkSoundeMode ? await this.axiosInstancePost(CONSTANS.ApiUrls.AppCommand, CONSTANS.BodyXml.GetSurroundModeStatus) : false;
+                    const deviceSoundMode = checkSoundeMode ? await this.axiosInstancePost(CONSTANTS.ApiUrls.AppCommand, CONSTANTS.BodyXml.GetSurroundModeStatus) : false;
                     const parseDeviceSoundMode = checkSoundeMode ? parseString.parse(deviceSoundMode.data) : false;
                     const debug2 = debugLog && checkSoundeMode ? this.emit('debug', `Sound mode: ${JSON.stringify(parseDeviceSoundMode, null, 2)}`) : false;
-                    const soundMode = checkSoundeMode ? SOUND_MODES_CONVERSION_KEYS.includes((parseDeviceSoundMode.rx.cmd.surround).replace(/[^a-zA-Z0-9]/g, '').toUpperCase()) ? CONSTANS.SoundModeConversion[(parseDeviceSoundMode.rx.cmd.surround).replace(/[^a-zA-Z0-9]/g, '').toUpperCase()] : (parseDeviceSoundMode.rx.cmd.surround).replace(/[^a-zA-Z0-9]/g, '').toUpperCase() : this.soundMode;
+                    const soundMode = checkSoundeMode ? SOUND_MODES_CONVERSION_KEYS.includes((parseDeviceSoundMode.rx.cmd.surround).replace(/[^a-zA-Z0-9]/g, '').toUpperCase()) ? CONSTANTS.SoundModeConversion[(parseDeviceSoundMode.rx.cmd.surround).replace(/[^a-zA-Z0-9]/g, '').toUpperCase()] : (parseDeviceSoundMode.rx.cmd.surround).replace(/[^a-zA-Z0-9]/g, '').toUpperCase() : this.soundMode;
 
                     //get audyssey mode
                     const checkAudysseyMode = false //power && zone === 0;
-                    const deviceAudysseyMode = checkAudysseyMode ? await this.axiosInstancePost(CONSTANS.ApiUrls.AppCommand, CONSTANS.BodyXml.GetAudyssey) : false;
+                    const deviceAudysseyMode = checkAudysseyMode ? await this.axiosInstancePost(CONSTANTS.ApiUrls.AppCommand, CONSTANTS.BodyXml.GetAudyssey) : false;
                     const parseDeviceAudysseyMode = checkAudysseyMode ? parseString.parse(deviceAudysseyMode.data) : false;
                     const debug3 = debugLog && checkAudysseyMode ? this.emit('debug', `Audyssey mode: ${JSON.stringify(parseDeviceAudysseyMode, null, 2)}`) : false;
                     const sudysseyMode = checkAudysseyMode ? parseDeviceAudysseyMode.rx.cmd.value : this.audysseyMode;
 
                     //select reference
                     const reference = [input, input, input, soundMode][zone];
+
+                    //restFul
+                    this.emit('restFul', 'info', this.devInfo);
+                    this.emit('restFul', 'state', devState);
+                    const restFul1 = checkPictureMode ? this.emit('restFul', 'picture', { 'Picture Mode': CONSTANTS.PictureModesDenonNumber[pictureMode] }) : false;
+                    const restFul2 = checkSoundeMode ? this.emit('restFul', 'surround', { 'Sound Mode': soundMode }) : false;
+
+                    //mqtt
+                    this.emit('mqtt', 'Info', this.devInfo);
+                    this.emit('mqtt', 'State', devState);
+                    const mqtt2 = checkPictureMode ? this.emit('mqtt', 'Picture', { 'Picture Mode': CONSTANTS.PictureModesDenonNumber[pictureMode] }) : false;
+                    const mqtt3 = checkSoundeMode ? this.emit('mqtt', 'Surround', { 'Sound Mode': soundMode }) : false;
 
                     //update only if value change
                     if (power === this.power && reference === this.reference && volume === this.volume && volumeDisplay === this.volumeDisplay && mute === this.mute && pictureMode === this.pictureMode && soundMode === this.soundMode) {
@@ -290,16 +298,6 @@ class DENON extends EventEmitter {
 
                     //emit state changed
                     this.emit('stateChanged', power, reference, volume, volumeDisplay, mute, pictureMode);
-
-                    //restFul
-                    this.emit('restFul', 'state', devState);
-                    const restFul1 = checkPictureMode ? this.emit('restFul', 'picture', { 'Picture Mode': CONSTANS.PictureModesDenonNumber[pictureMode] }) : false;
-                    const restFul2 = checkSoundeMode ? this.emit('restFul', 'surround', { 'Sound Mode': CONSTANS.SoundModeConversion[soundMode] }) : false;
-
-                    //mqtt
-                    this.emit('mqtt', 'State', devState);
-                    const mqtt2 = checkPictureMode ? this.emit('mqtt', 'Picture', { 'Picture Mode': CONSTANS.PictureModesDenonNumber[pictureMode] }) : false;
-                    const mqtt3 = checkSoundeMode ? this.emit('mqtt', 'Surround', { 'Sound Mode': CONSTANS.SoundModeConversion[soundMode] }) : false;
 
                     this.checkState();
                 } catch (error) {
@@ -402,10 +400,10 @@ class DENON extends EventEmitter {
                 const debug = !this.debugLog ? false : this.emit('message', `temp Inputs: ${JSON.stringify(tempInputs, null, 2)}`);
                 for (const input of tempInputs) {
                     const inputName = input.name;
-                    const inputReference = INPUTS_CONVERSION_KEYS.includes(input.reference) ? CONSTANS.InputConversion[input.reference] : input.reference;
+                    const inputReference = INPUTS_CONVERSION_KEYS.includes(input.reference) ? CONSTANTS.InputConversion[input.reference] : input.reference;
                     const inputReferenceSubstring = inputReference.substring(0, 5) ?? 'Unknown';
-                    const inputModeExist = inputReferenceSubstring in CONSTANS.InputMode;
-                    const inputMode = zone <= 2 ? inputModeExist ? CONSTANS.InputMode[inputReferenceSubstring] : 'SI' : 'MS';
+                    const inputModeExist = inputReferenceSubstring in CONSTANTS.InputMode;
+                    const inputMode = zone <= 2 ? inputModeExist ? CONSTANTS.InputMode[inputReferenceSubstring] : 'SI' : 'MS';
                     const obj = {
                         'name': inputName,
                         'reference': inputReference,
@@ -431,7 +429,7 @@ class DENON extends EventEmitter {
     send(command) {
         return new Promise(async (resolve, reject) => {
             try {
-                const path = CONSTANS.ApiUrls.iPhoneDirect + command;
+                const path = CONSTANTS.ApiUrls.iPhoneDirect + command;
                 await this.axiosInstance(path);
 
                 await new Promise(resolve => setTimeout(resolve, 250));
