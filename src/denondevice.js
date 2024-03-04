@@ -108,26 +108,6 @@ class DenonDevice extends EventEmitter {
             this.emit('error', `prepare files error: ${error}`);
         }
 
-        //RESTFul server
-        const restFulEnabled = device.enableRestFul || false;
-        if (restFulEnabled) {
-            this.restFul = new RestFul({
-                port: device.restFulPort || 3000,
-                debug: device.restFulDebug || false
-            });
-
-            this.restFul.on('connected', (message) => {
-                log(`Device: ${host} ${deviceName}, ${message}`);
-                this.restFulConnected = true;
-            })
-                .on('error', (error) => {
-                    this.emit('error', error);
-                })
-                .on('debug', (debug) => {
-                    this.emit('debug', debug);
-                });
-        }
-
         //denon client
         this.denon = new Denon({
             host: this.host,
@@ -273,6 +253,26 @@ class DenonDevice extends EventEmitter {
                 };
             })
             .on('prepareAccessory', async (allInputs) => {
+                //RESTFul server
+                const restFulEnabled = device.enableRestFul || false;
+                if (restFulEnabled) {
+                    this.restFul = new RestFul({
+                        port: device.restFulPort || 3000,
+                        debug: device.restFulDebug || false
+                    });
+
+                    this.restFul.on('connected', (message) => {
+                        log(`Device: ${host} ${deviceName}, ${message}`);
+                        this.restFulConnected = true;
+                    })
+                        .on('error', (error) => {
+                            this.emit('error', error);
+                        })
+                        .on('debug', (debug) => {
+                            this.emit('debug', debug);
+                        });
+                }
+
                 //mqtt client
                 const mqttEnabled = device.enableMqtt || false;
                 if (mqttEnabled) {
@@ -319,6 +319,9 @@ class DenonDevice extends EventEmitter {
                                         const surround = `MS${value}`;
                                         await this.denon.send(surround);
                                         break;
+                                    case 'RcControl':
+                                        await this.denon.send(value);
+                                        break;
                                     default:
                                         this.emit('message', `MQTT Received unknown key: ${key}, value: ${value}`);
                                         break;
@@ -334,6 +337,7 @@ class DenonDevice extends EventEmitter {
                             this.emit('error', error);
                         });
                 };
+
                 try {
                     //read inputs names from file
                     const savedInputsNames = await this.readData(this.inputsNamesFile);

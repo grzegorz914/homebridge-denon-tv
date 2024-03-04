@@ -137,5 +137,6 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 |     | `Power` | `true`, `false` | boolean | Power state. |
 |     | `Input` | `SAT/CBL` | string | Set input. |
 |     | `Surround` | `MUSIC` | string | Set surround mode. |
+|     | `RcControl` | `NS9E` | string | Send RC command. |
 |     | `Volume` | `100` | integer | Set volume. |
 |     | `Mute` | `true`, `false` | boolean | Set mute. |
