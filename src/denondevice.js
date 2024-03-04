@@ -307,13 +307,13 @@ class DenonDevice extends EventEmitter {
                                     case 'Volume':
                                         const value1 = (value === 0 || value === 100) ? this.volume : (value < 10 ? `0${value}` : value);
                                         const masterVolume = this.masterVolume ? 0 : device.zoneControl;
-                                        const value1volume = [`MV${value1}`, `Z2${value1}`, `Z3${value1}`, `MV${value1}`][masterVolume];
+                                        const volume = [`MV${value1}`, `Z2${value1}`, `Z3${value1}`, `MV${value1}`][masterVolume];
                                         await this.denon.send(volume);
                                         break;
                                     case 'Mute':
                                         const masterMute = this.masterMute ? 0 : device.zoneControl;
-                                        const muteState = [(state ? 'MUON' : 'MUOFF'), (state ? 'Z2MUON' : 'Z2MUOFF'), (state ? 'Z3MUON' : 'Z3MUOFF'), (state ? 'MUON' : 'MUOFF')][masterMute];
-                                        await this.denon.send(muteState);
+                                        const mute = [(value ? 'MUON' : 'MUOFF'), (value ? 'Z2MUON' : 'Z2MUOFF'), (value ? 'Z3MUON' : 'Z3MUOFF'), (value ? 'MUON' : 'MUOFF')][masterMute];
+                                        await this.denon.send(mute);
                                         break;
                                     case 'Surround':
                                         const surround = `MS${value}`;
