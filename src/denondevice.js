@@ -301,7 +301,8 @@ class DenonDevice extends EventEmitter {
                                         await this.denon.send(powerState)
                                         break;
                                     case 'Input':
-                                        await this.denon.send(value);
+                                        const input = [`SI${value}`, `Z2${value}`, `Z3${value}`, `MS${value}`][device.zoneControl];
+                                        await this.denon.send(input);
                                         break;
                                     case 'Volume':
                                         const value1 = (value === 0 || value === 100) ? this.volume : (value < 10 ? `0${value}` : value);
@@ -315,7 +316,8 @@ class DenonDevice extends EventEmitter {
                                         await this.denon.send(muteState);
                                         break;
                                     case 'Surround':
-                                        await this.denon.send(value);
+                                        const surround = `MS${value}`;
+                                        await this.denon.send(surround);
                                         break;
                                     default:
                                         this.emit('message', `MQTT Received unknown key: ${key}, value: ${value}`);
