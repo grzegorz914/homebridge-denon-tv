@@ -122,7 +122,7 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 
 * Request: `http//homebridge_ip_address:port/path`.
 * Path: `info`, `state`, `picture`, `surround`.
-* Respone as JSON data.
+* Respone as JSON object.
 
 ### MQTT Integration
 
