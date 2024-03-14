@@ -327,7 +327,7 @@ class DenonDevice extends EventEmitter {
                                         break;
                                 };
                             } catch (error) {
-                                this.emit('error', `set: ${key}, over MQTT, error: ${error}`);
+                                this.emit('error', `MQTT send error: ${error}.`);
                             };
                         })
                         .on('debug', (debug) => {
@@ -375,7 +375,7 @@ class DenonDevice extends EventEmitter {
                 const restFul = this.restFulConnected ? this.restFul.update(path, data) : false;
             })
             .on('mqtt', (topic, message) => {
-                const mqtt = this.mqttConnected ? this.mqtt.send(topic, message) : false;
+                const mqtt = this.mqttConnected ? this.mqtt.emit('publish', topic, message) : false;
             });
     };
 

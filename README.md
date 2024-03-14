@@ -128,8 +128,8 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 
 | Direction | Topic | Message | Payload Data |
 | --- | --- | --- | --- |
-|  Publish   | `Info`, `State`, `Picture`, `Surround` | `{Power: {value: OFF}}` | JSON object. |
-|  Subscribe   | `Set` | `{Power: true}` | JSON object. |
+|  Publish   | `Info`, `State`, `Picture`, `Surround` | `{"Power": {"value": OFF}}` | JSON object. |
+|  Subscribe   | `Set` | `{"Power": true}` | JSON object. |
 
 | Subscribe | Key | Value | Type | Description |
 | --- | --- | --- | --- | --- |
