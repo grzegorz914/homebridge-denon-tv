@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Note - after update to 4.7.x buttons, sensors, volume display type need to be configure again using config UI.
 ## Note - after update to 3.15.x need remove the accessory frome Home app and add it again.
 
+## [4.11.0] - (03.04.2024)
+## Changes
+- added custom sensors based on surrounds reference
+- fixed [#253](https://github.com/grzegorz914/homebridge-denon-tv/issues/253)
+- config schema updated
+- cleanup
+
 ## [4.10.0] - (04.03.2024)
 ## Changes
 - added support to subscribe MQTT and control device

@@ -5549,7 +5549,7 @@
                         ]
                       },
                       {
-                        "title": " M-XPORT (Marantz Only)",
+                        "title": "M-XPORT (Marantz Only)",
                         "enum": [
                           "M-XPORT"
                         ]
@@ -5894,6 +5894,201 @@
                         "title": "SMART SELECTMEMORY 5",
                         "enum": [
                           "SMART5 MEMORY"
+                        ]
+                      }
+                    ],
+                    "description": "Here select reference.",
+                    "required": true
+                  },
+                  "displayType": {
+                    "title": "Type",
+                    "type": "integer",
+                    "oneOf": [
+                      {
+                        "title": "None/Disabled",
+                        "enum": [
+                          0
+                        ]
+                      },
+                      {
+                        "title": "Motion Sensor",
+                        "enum": [
+                          1
+                        ]
+                      },
+                      {
+                        "title": "Occupancy Sensor",
+                        "enum": [
+                          2
+                        ]
+                      },
+                      {
+                        "title": "Contact Sensor",
+                        "enum": [
+                          3
+                        ]
+                      }
+                    ],
+                    "description": "Here select characteristic type to be exposed in HomeKit app.",
+                    "required": true
+                  },
+                  "namePrefix": {
+                    "title": "Prefix",
+                    "type": "boolean",
+                    "description": "Here enable/disable the accessory name as a prefix for sensor name.",
+                    "required": true
+                  }
+                }
+              }
+            },
+            "sensorSurrounds": {
+              "type": "array",
+              "items": {
+                "title": "Surround",
+                "type": "object",
+                "description": "Here create sensors based on reference, fired if switch to it.",
+                "properties": {
+                  "name": {
+                    "title": "Name",
+                    "type": "string",
+                    "placeholder": "Name",
+                    "description": "Here set Your own name.",
+                    "required": true
+                  },
+                  "reference": {
+                    "title": "Reference",
+                    "type": "string",
+                    "oneOf": [
+                      {
+                        "title": "MOVIE",
+                        "enum": [
+                          "MOVIE"
+                        ]
+                      },
+                      {
+                        "title": "MUSIC",
+                        "enum": [
+                          "MUSIC"
+                        ]
+                      },
+                      {
+                        "title": "GAME",
+                        "enum": [
+                          "GAME"
+                        ]
+                      },
+                      {
+                        "title": "DIRECT",
+                        "enum": [
+                          "DIRECT"
+                        ]
+                      },
+                      {
+                        "title": "PURE DIRECT",
+                        "enum": [
+                          "PURE DIRECT"
+                        ]
+                      },
+                      {
+                        "title": "STEREO",
+                        "enum": [
+                          "STEREO"
+                        ]
+                      },
+                      {
+                        "title": "DOLBY DIGITAL",
+                        "enum": [
+                          "DOLBY DIGITAL"
+                        ]
+                      },
+                      {
+                        "title": "DTS SURROUND",
+                        "enum": [
+                          "DTS SURROUND"
+                        ]
+                      },
+                      {
+                        "title": "AURO 3D",
+                        "enum": [
+                          "AURO3D"
+                        ]
+                      },
+                      {
+                        "title": "AURO 2D",
+                        "enum": [
+                          "AURO2DSURR"
+                        ]
+                      },
+                      {
+                        "title": "MCH STEREO",
+                        "enum": [
+                          "MCH STEREO"
+                        ]
+                      },
+                      {
+                        "title": "WIDE SCREEN",
+                        "enum": [
+                          "WIDE SCREEN"
+                        ]
+                      },
+                      {
+                        "title": "SUPER STADIUM",
+                        "enum": [
+                          "SUPER STADIUM"
+                        ]
+                      },
+                      {
+                        "title": "ROCK ARENA",
+                        "enum": [
+                          "ROCK ARENA"
+                        ]
+                      },
+                      {
+                        "title": "JAZZ CLUB",
+                        "enum": [
+                          "JAZZ CLUB"
+                        ]
+                      },
+                      {
+                        "title": "CLASSIC CONCERT",
+                        "enum": [
+                          "CLASSIC CONCERT"
+                        ]
+                      },
+                      {
+                        "title": "MONO MOVIE",
+                        "enum": [
+                          "MONO MOVIE"
+                        ]
+                      },
+                      {
+                        "title": "MATRIX",
+                        "enum": [
+                          "MATRIX"
+                        ]
+                      },
+                      {
+                        "title": "VIDEO GAME",
+                        "enum": [
+                          "VIDEO GAME"
+                        ]
+                      },
+                      {
+                        "title": "VIRTUAL",
+                        "enum": [
+                          "VIRTUAL"
+                        ]
+                      },
+                      {
+                        "title": "NEURAL",
+                        "enum": [
+                          "NEURAL"
+                        ]
+                      },
+                      {
+                        "title": "STANDARD",
+                        "enum": [
+                          "STANDARD"
                         ]
                       }
                     ],
@@ -6339,7 +6534,33 @@
                             "devices[].sensorInputs[].namePrefix"
                           ]
                         }
-                      ]
+                      ],
+                      "condition": {
+                        "functionBody": "return model.devices[arrayIndices].zoneControl <= 2;"
+                      }
+                    },
+                    {
+                      "key": "devices[]",
+                      "type": "section",
+                      "title": "Custom Sensors",
+                      "expandable": true,
+                      "expanded": false,
+                      "items": [
+                        {
+                          "key": "devices[].sensorSurrounds",
+                          "type": "tabarray",
+                          "title": "{{ value.name || 'sensor' }}",
+                          "items": [
+                            "devices[].sensorSurrounds[].name",
+                            "devices[].sensorSurrounds[].reference",
+                            "devices[].sensorSurrounds[].displayType",
+                            "devices[].sensorSurrounds[].namePrefix"
+                          ]
+                        }
+                      ],
+                      "condition": {
+                        "functionBody": "return model.devices[arrayIndices].zoneControl === 3;"
+                      }
                     }
                   ]
                 },

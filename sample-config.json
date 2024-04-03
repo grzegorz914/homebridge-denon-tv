@@ -64,6 +64,14 @@
                             "namePrefix": false
                         }
                     ],
+                    "sensorSurrounds": [
+                        {
+                            "name": "Movie",
+                            "reference": "MOVIE",
+                            "displayType": 0,
+                            "namePrefix": false
+                        }
+                    ],
                     "enableDebugMode": false,
                     "disableLogInfo": false,
                     "disableLogDeviceInfo": false,

@@ -89,11 +89,16 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 | `sensorVolume`| If enabled, then the Volume will be exposed as a `Contact Sensor`, fired on every Volume change. |
 | `sensorMute`| If enabled, then the Mute will be exposed as a `Contact Sensor`, fired if Mmute ON. |
 | `sensorInput`| If enabled, then the Input will be exposed as a `Contact Sensor`, fired on every Input change. |
-| `sensorInputs`| Her create custom Inputs sensor, sensors will be exposed as a `Contact Sensor`, fired if switch to it. |
+| `sensorInputs`| Her create custom Inputs sensor, sensors will be exposed as a `Contact/Motion/Ocupncy Sensor`, fired if switch to it. |
 | `sensorInputs.name` | Here set own `Name` which You want expose to the `Homebridge/HomeKit` for this sensor. |
 | `sensorInputs.reference` | Here select reference, fired if switch to this reference. |
 | `sensorInputs.displayType` | Here select characteristic type to be exposed in HomeKit app, `0 - None/Disabled`, `1 - Motion Sensor`, `2 - Occupancy Sensor`, `3 - Contact Sensor`. |
 | `sensorInputs.namePrefix` | Here enable/disable the accessory name as a prefix for sensor name.|
+| `sensorSurrounds`| Her create custom Sound Mode sensor, sensors will be exposed as a `Contact/Motion/Ocupncy Sensor`, fired if switch to it. |
+| `sensorSurrounds.name` | Here set own `Name` which You want expose to the `Homebridge/HomeKit` for this sensor. |
+| `sensorSurrounds.reference` | Here select reference, fired if switch to this reference. |
+| `sensorSurrounds.displayType` | Here select characteristic type to be exposed in HomeKit app, `0 - None/Disabled`, `1 - Motion Sensor`, `2 - Occupancy Sensor`, `3 - Contact Sensor`. |
+| `sensorSurrounds.namePrefix` | Here enable/disable the accessory name as a prefix for sensor name.|
 | `enableDebugMode` | If enabled, deep log will be present in homebridge console. |
 | `disableLogInfo` | If enabled, disable log info, all values and state will not be displayed in Homebridge log console. |
 | `disableLogDeviceInfo` | If enabled, add ability to disable log device info by every connections device to the network. |

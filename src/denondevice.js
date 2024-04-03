@@ -36,6 +36,7 @@ class DenonDevice extends EventEmitter {
         this.sensorMute = device.sensorMute || false;
         this.sensorInput = device.sensorInput || false;
         this.sensorInputs = device.sensorInputs || [];
+        this.sensorSurrounds = device.sensorSurrounds || [];
         this.enableDebugMode = device.enableDebugMode || false;
         this.disableLogInfo = device.disableLogInfo || false;
         this.disableLogDeviceInfo = device.disableLogDeviceInfo || false;
@@ -59,6 +60,7 @@ class DenonDevice extends EventEmitter {
         //services
         this.allServices = [];
         this.sensorsInputsServices = [];
+        this.sensorsSurroundsServices = [];
         this.buttonsServices = [];
 
         //inputs
@@ -67,6 +69,7 @@ class DenonDevice extends EventEmitter {
 
         //sensors
         this.sensorsInputsConfigured = [];
+        this.sensorsSurroundsConfigured = [];
         this.sensorVolumeState = false;
         this.sensorInputState = false;
 
@@ -229,6 +232,17 @@ class DenonDevice extends EventEmitter {
                         const displayType = this.sensorsInputsConfigured[i].displayType;
                         const characteristicType = ['', Characteristic.MotionDetected, Characteristic.OccupancyDetected, Characteristic.ContactSensorState][displayType];
                         this.sensorsInputsServices[i]
+                            .updateCharacteristic(characteristicType, state);
+                    }
+                }
+
+                if (this.sensorsSurroundsServices) {
+                    const servicesCount = this.sensorsSurroundsServices.length;
+                    for (let i = 0; i < servicesCount; i++) {
+                        const state = power ? this.sensorsSurroundsConfigured[i].reference === reference : false;
+                        const displayType = this.sensorsSurroundsConfigured[i].displayType;
+                        const characteristicType = ['', Characteristic.MotionDetected, Characteristic.OccupancyDetected, Characteristic.ContactSensorState][displayType];
+                        this.sensorsSurroundsServices[i]
                             .updateCharacteristic(characteristicType, state);
                     }
                 }
@@ -963,7 +977,7 @@ class DenonDevice extends EventEmitter {
                     this.allServices.push(this.sensorInputService);
                 };
 
-                //prepare sonsor services
+                //prepare sonsor inputs services
                 const sensorInputs = this.sensorInputs;
                 const sensorInputsCount = sensorInputs.length;
                 const possibleSensorInputsCount = 99 - this.allServices.length;
@@ -991,7 +1005,7 @@ class DenonDevice extends EventEmitter {
                                 const serviceName = namePrefix ? `${accessoryName} ${sensorInputName}` : sensorInputName;
                                 const characteristicType = ['', Characteristic.MotionDetected, Characteristic.OccupancyDetected, Characteristic.ContactSensorState][sensorInputDisplayType];
                                 const serviceType = ['', Service.MotionSensor, Service.OccupancySensor, Service.ContactSensor][sensorInputDisplayType];
-                                const sensorInputService = accessory.addService(serviceType, serviceName, `Sensor ${i}`);
+                                const sensorInputService = accessory.addService(serviceType, serviceName, `Input Sensor ${i}`);
                                 sensorInputService.addOptionalCharacteristic(Characteristic.ConfiguredName);
                                 sensorInputService.setCharacteristic(Characteristic.ConfiguredName, serviceName);
                                 sensorInputService.getCharacteristic(characteristicType)
@@ -1005,6 +1019,53 @@ class DenonDevice extends EventEmitter {
                                 this.allServices.push(sensorInputService);
                             } else {
                                 this.emit('message', `Sensor Name: ${sensorInputName ? sensorInputName : 'Missing'}, Reference: ${sensorInputReference ? sensorInputReference : 'Missing'}.`);
+                            };
+                        }
+                    }
+                }
+
+                //prepare sonsor surrounds services
+                const sensorSurrounds = this.sensorSurrounds;
+                const sensorSurroundsCount = sensorSurrounds.length;
+                const possibleSensorSurroundsCount = 99 - this.allServices.length;
+                const maxSensorSurroundsCount = sensorSurroundsCount >= possibleSensorSurroundsCount ? possibleSensorSurroundsCount : sensorSurroundsCount;
+                if (maxSensorSurroundsCount > 0) {
+                    const debug = !this.enableDebugMode ? false : this.emit('debug', `Prepare surrounds sensors services`);
+                    for (let i = 0; i < maxSensorSurroundsCount; i++) {
+                        //get sensor
+                        const sensorSurround = sensorSurrounds[i];
+
+                        //get name		
+                        const sensorSurroundName = sensorSurround.name;
+
+                        //get reference
+                        const sensorSurroundReference = sensorSurround.reference;
+
+                        //get display type
+                        const sensorSurroundDisplayType = sensorSurround.displayType || false;
+
+                        //get sensor name prefix
+                        const namePrefix = sensorSurround.namePrefix || false;
+
+                        if (sensorSurroundDisplayType) {
+                            if (sensorSurroundName && sensorSurroundReference) {
+                                const serviceName = namePrefix ? `${accessoryName} ${sensorSurroundName}` : sensorSurroundName;
+                                const characteristicType = ['', Characteristic.MotionDetected, Characteristic.OccupancyDetected, Characteristic.ContactSensorState][sensorSurroundDisplayType];
+                                const serviceType = ['', Service.MotionSensor, Service.OccupancySensor, Service.ContactSensor][sensorSurroundDisplayType];
+                                const sensorSurroundService = accessory.addService(serviceType, serviceName, `Surround Sensor ${i}`);
+                                sensorSurroundService.addOptionalCharacteristic(Characteristic.ConfiguredName);
+                                sensorSurroundService.setCharacteristic(Characteristic.ConfiguredName, serviceName);
+                                sensorSurroundService.getCharacteristic(characteristicType)
+                                    .onGet(async () => {
+                                        const state = this.power ? (this.reference === sensorSurroundReference) : false;
+                                        return state;
+                                    });
+
+                                this.sensorsSurroundsConfigured.push(sensorSurround);
+                                this.sensorsSurroundsServices.push(sensorSurroundService);
+                                this.allServices.push(sensorSurroundService);
+                            } else {
+                                this.emit('message', `Sensor Name: ${sensorSurroundName ? sensorSurroundName : 'Missing'}, Reference: ${sensorSurroundReference ? sensorSurroundReference : 'Missing'}.`);
                             };
                         }
                     }
