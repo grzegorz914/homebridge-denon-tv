@@ -129,7 +129,7 @@ class DenonDevice extends EventEmitter {
                 this.emit('devInfo', `-------- ${this.name} --------`);
                 this.emit('devInfo', `Manufacturer: ${manufacturer}`);
                 this.emit('devInfo', `Model: ${modelName}`);
-                this.emit('devInfo', `Control: Zone 3`);
+                this.emit('devInfo', `Control: Zone 2`);
                 this.emit('devInfo', `----------------------------------`);
             }
 

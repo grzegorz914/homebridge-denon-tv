@@ -43,7 +43,7 @@ class DenonPlatform {
 				const zoneControl = device.zoneControl;
 				const generation = device.generation || 0;
 				switch (zoneControl) {
-					case 0:
+					case 0: //main zone
 						const mainZone = new MainZone(api, prefDir, device, zoneControl, deviceName, host, port, generation);
 						mainZone.on('publishAccessory', (accessory) => {
 							api.publishExternalAccessories(CONSTANTS.PluginName, [accessory]);
@@ -62,7 +62,7 @@ class DenonPlatform {
 								log.error(`Device: ${host} ${deviceName}, ${error}`);
 							});
 						break;
-					case 1:
+					case 1: //zone 1
 						const zone2 = new Zone2(api, prefDir, device, zoneControl, deviceName, host, port, generation);
 						zone2.on('publishAccessory', (accessory) => {
 							api.publishExternalAccessories(CONSTANTS.PluginName, [accessory]);
@@ -81,7 +81,7 @@ class DenonPlatform {
 								log.error(`Device: ${host} ${deviceName}, ${error}`);
 							});
 						break;
-					case 2:
+					case 2: //zone 2
 						const zone3 = new Zone3(api, prefDir, device, zoneControl, deviceName, host, port, generation);
 						zone3.on('publishAccessory', (accessory) => {
 							api.publishExternalAccessories(CONSTANTS.PluginName, [accessory]);
@@ -100,7 +100,7 @@ class DenonPlatform {
 								log.error(`Device: ${host} ${deviceName}, ${error}`);
 							});
 						break;
-					case 3:
+					case 3: //surround
 						const surround = new Surround(api, prefDir, device, zoneControl, deviceName, host, port, generation);
 						surround.on('publishAccessory', (accessory) => {
 							api.publishExternalAccessories(CONSTANTS.PluginName, [accessory]);
