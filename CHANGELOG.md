@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Note - after update to 4.7.x buttons, sensors, volume display type need to be configure again using config UI.
 ## Note - after update to 3.15.x need remove the accessory frome Home app and add it again.
 
+## [4.12.0] - (04.04.2024)
+## Changes
+- remove unused master volume and mute control for main zone and surround
+- code refactor
+- config schema updated
+- cleanup
+
 ## [4.11.0] - (03.04.2024)
 ## Changes
 - added custom sensors based on surrounds reference

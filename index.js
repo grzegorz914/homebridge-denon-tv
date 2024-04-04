@@ -1,7 +1,10 @@
 'use strict';
 const path = require('path');
 const fs = require('fs');
-const DenonDevice = require('./src/denondevice.js');
+const MainZone = require('./src/mainzone.js');
+const Zone2 = require('./src/zone2.js');
+const Zone3 = require('./src/zone3.js');
+const Surround = require('./src/surround.js');
 const CONSTANTS = require('./src/constants.json');
 
 class DenonPlatform {
@@ -24,37 +27,102 @@ class DenonPlatform {
 				const deviceName = device.name;
 				const host = device.host;
 				const port = device.port;
-				const zoneControl = device.zoneControl;
 
-				if (!deviceName || !host || !port || !(zoneControl >= 0 && zoneControl <= 3)) {
-					log.warn(`Name: ${deviceName ? 'OK' : deviceName}, host: ${host ? 'OK' : host}, port: ${port ? 'OK' : port}, zone: ${(zoneControl >= 0 && zoneControl <= 3) ? 'OK' : zoneControl}, in config wrong or missing.`);
+				if (!deviceName || !host || !port) {
+					log.warn(`Name: ${deviceName ? 'OK' : deviceName}, host: ${host ? 'OK' : host}, port: ${port ? 'OK' : port}}, in config wrong or missing.`);
 					return;
 				}
-				await new Promise(resolve => setTimeout(resolve, 500))
+				await new Promise(resolve => setTimeout(resolve, 500));
 
 				//debug config
 				const enableDebugMode = device.enableDebugMode || false;
 				const debug = enableDebugMode ? log(`Device: ${host} ${deviceName}, did finish launching.`) : false;
 				const debug1 = enableDebugMode ? log(`Device: ${host} ${deviceName}, Config: ${JSON.stringify(device, null, 2)}`) : false;
 
-				//denon device
-				const denonDevice = new DenonDevice(api, prefDir, device);
-				denonDevice.on('publishAccessory', (accessory) => {
-					api.publishExternalAccessories(CONSTANTS.PluginName, [accessory]);
-					const debug = enableDebugMode ? log(`Device: ${host} ${deviceName}, published as external accessory.`) : false;
-				})
-					.on('devInfo', (devInfo) => {
-						log(devInfo);
-					})
-					.on('message', (message) => {
-						log(`Device: ${host} ${deviceName}, ${message}`);
-					})
-					.on('debug', (debug) => {
-						log(`Device: ${host} ${deviceName}, debug: ${debug}`);
-					})
-					.on('error', (error) => {
-						log.error(`Device: ${host} ${deviceName}, ${error}`);
-					});
+				//zones
+				const zoneControl = device.zoneControl;
+				const generation = device.generation || 0;
+				switch (zoneControl) {
+					case 0:
+						const mainZone = new MainZone(api, prefDir, device, zoneControl, deviceName, host, port, generation);
+						mainZone.on('publishAccessory', (accessory) => {
+							api.publishExternalAccessories(CONSTANTS.PluginName, [accessory]);
+							const debug = enableDebugMode ? log(`Device: ${host} ${deviceName}, published as external accessory.`) : false;
+						})
+							.on('devInfo', (devInfo) => {
+								log(devInfo);
+							})
+							.on('message', (message) => {
+								log(`Device: ${host} ${deviceName}, ${message}`);
+							})
+							.on('debug', (debug) => {
+								log(`Device: ${host} ${deviceName}, debug: ${debug}`);
+							})
+							.on('error', (error) => {
+								log.error(`Device: ${host} ${deviceName}, ${error}`);
+							});
+						break;
+					case 1:
+						const zone2 = new Zone2(api, prefDir, device, zoneControl, deviceName, host, port, generation);
+						zone2.on('publishAccessory', (accessory) => {
+							api.publishExternalAccessories(CONSTANTS.PluginName, [accessory]);
+							const debug = enableDebugMode ? log(`Device: ${host} ${deviceName}, published as external accessory.`) : false;
+						})
+							.on('devInfo', (devInfo) => {
+								log(devInfo);
+							})
+							.on('message', (message) => {
+								log(`Device: ${host} ${deviceName}, ${message}`);
+							})
+							.on('debug', (debug) => {
+								log(`Device: ${host} ${deviceName}, debug: ${debug}`);
+							})
+							.on('error', (error) => {
+								log.error(`Device: ${host} ${deviceName}, ${error}`);
+							});
+						break;
+					case 2:
+						const zone3 = new Zone3(api, prefDir, device, zoneControl, deviceName, host, port, generation);
+						zone3.on('publishAccessory', (accessory) => {
+							api.publishExternalAccessories(CONSTANTS.PluginName, [accessory]);
+							const debug = enableDebugMode ? log(`Device: ${host} ${deviceName}, published as external accessory.`) : false;
+						})
+							.on('devInfo', (devInfo) => {
+								log(devInfo);
+							})
+							.on('message', (message) => {
+								log(`Device: ${host} ${deviceName}, ${message}`);
+							})
+							.on('debug', (debug) => {
+								log(`Device: ${host} ${deviceName}, debug: ${debug}`);
+							})
+							.on('error', (error) => {
+								log.error(`Device: ${host} ${deviceName}, ${error}`);
+							});
+						break;
+					case 3:
+						const surround = new Surround(api, prefDir, device, zoneControl, deviceName, host, port, generation);
+						surround.on('publishAccessory', (accessory) => {
+							api.publishExternalAccessories(CONSTANTS.PluginName, [accessory]);
+							const debug = enableDebugMode ? log(`Device: ${host} ${deviceName}, published as external accessory.`) : false;
+						})
+							.on('devInfo', (devInfo) => {
+								log(devInfo);
+							})
+							.on('message', (message) => {
+								log(`Device: ${host} ${deviceName}, ${message}`);
+							})
+							.on('debug', (debug) => {
+								log(`Device: ${host} ${deviceName}, debug: ${debug}`);
+							})
+							.on('error', (error) => {
+								log.error(`Device: ${host} ${deviceName}, ${error}`);
+							});
+						break;
+					default:
+						log(`Device: ${host} ${deviceName}, unknoen zone: ${zoneControl}`);
+						break;
+				}
 			}
 		});
 	}

@@ -6176,14 +6176,20 @@
               "type": "boolean",
               "default": false,
               "description": "The volume for that zone will set the entire receiver volume *UP* or *DOWN* rather than just the zone itself.",
-              "required": false
+              "required": false,
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].zoneControl >= 1 && model.devices[arrayIndices].zoneControl <= 2;"
+              }
             },
             "masterMute": {
               "title": "Master Mute Control",
               "type": "boolean",
               "default": false,
               "description": "The mute switch for that zone will muted the entire receiver *ON* or *OFF* rather than just the zone itself.",
-              "required": false
+              "required": false,
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].zoneControl >= 1 && model.devices[arrayIndices].zoneControl <= 2;"
+              }
             },
             "infoButtonCommand": {
               "title": "Info Button",

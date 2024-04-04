@@ -64,21 +64,11 @@
                             "namePrefix": false
                         }
                     ],
-                    "sensorSurrounds": [
-                        {
-                            "name": "Movie",
-                            "reference": "MOVIE",
-                            "displayType": 0,
-                            "namePrefix": false
-                        }
-                    ],
                     "enableDebugMode": false,
                     "disableLogInfo": false,
                     "disableLogDeviceInfo": false,
                     "disableLogConnectError": false,
                     "masterPower": false,
-                    "masterVolume": false,
-                    "masterMute": false,
                     "infoButtonCommand": "MNINF",
                     "volumeControl": 0,
                     "refreshInterval": 5,
@@ -232,13 +222,19 @@
                     "sensorVolume": false,
                     "sensorMute": false,
                     "sensorInput": false,
+                    "sensorSurrounds": [
+                        {
+                            "name": "Movie",
+                            "reference": "MOVIE",
+                            "displayType": 0,
+                            "namePrefix": false
+                        }
+                    ],
                     "enableDebugMode": false,
                     "disableLogInfo": false,
                     "disableLogDeviceInfo": false,
                     "disableLogConnectError": false,
                     "masterPower": false,
-                    "masterVolume": false,
-                    "masterMute": false,
                     "infoButtonCommand": "MNINF",
                     "volumeControl": 0,
                     "refreshInterval": 5,

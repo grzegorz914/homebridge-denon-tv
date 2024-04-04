@@ -22,10 +22,10 @@ class DENON extends EventEmitter {
         const getInputsFromDevice = config.getInputsFromDevice;
         const getFavoritesFromDevice = config.getFavoritesFromDevice;
         const getQuickSmartSelectFromDevice = config.getQuickSmartSelectFromDevice;
-        const zoneInputSurroundName = config.zoneInputSurroundName;
         const debugLog = config.debugLog;
         const disableLogConnectError = config.disableLogConnectError;
         const refreshInterval = config.refreshInterval;
+        const zoneInputSurroundName = CONSTANTS.ZoneInputSurroundName[zone]
         const deviceInfoUrl = [CONSTANTS.ApiUrls.DeviceInfoGen0, CONSTANTS.ApiUrls.DeviceInfoGen1, CONSTANTS.ApiUrls.DeviceInfoGen2][generation];
 
         this.debugLog = debugLog;
