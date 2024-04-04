@@ -75,7 +75,7 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 | `surrounds` | Here create `Surrounds` which You want expose to the `Homebridge/HomeKit`. |
 | `surrounds.name` | Here set `Surround Mode Name` which You want expose to the `Homebridge/HomeKit`. |
 | `surrounds.reference` | Here choice `Surround Mode`, the mode that should be published to and appear in HomeKit app in the extra tile as Surrounds List. |
-| `buttons` | Here set `Buttons` which You want expose to the `Homebridge/HomeKit`. |
+| `buttons` | Here create `Buttons` which You want expose to the `Homebridge/HomeKit`. |
 | `buttons.name` | Here set `Button Name` which You want expose to the `Homebridge/HomeKit` for Main Zone. |
 | `buttons.reference` | Here choice function for additional control button for Main Zone. |
 | `buttons.displayType` | Here select characteristic type to be exposed in HomeKit app, possible `0 - None/Disabled`, `1 - Outlet`, `2 - Switch`. |
