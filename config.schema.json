@@ -932,7 +932,7 @@
                       {
                         "title": "ZM AUTO STANDBY 15MIN",
                         "enum": [
-                          "1STBY15M"
+                          "0STBY15M"
                         ]
                       },
                       {
