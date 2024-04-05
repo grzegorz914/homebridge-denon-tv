@@ -8,7 +8,7 @@ const Denon = require('./denon.js');
 const CONSTANTS = require('./constants.json');
 let Accessory, Characteristic, Service, Categories, Encode, AccessoryUUID;
 
-class DenonDevice extends EventEmitter {
+class Zone2 extends EventEmitter {
     constructor(api, device, zone, name, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile) {
         super();
 
@@ -900,4 +900,4 @@ class DenonDevice extends EventEmitter {
     }
 };
 
-module.exports = DenonDevice;
+module.exports = Zone2;
