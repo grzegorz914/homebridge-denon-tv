@@ -261,7 +261,7 @@ class DenonDevice extends EventEmitter {
                                         await this.denon.send(input);
                                         break;
                                     case 'Volume':
-                                        const value1 = (value === 0 || value === 100) ? this.volume : (value < 10 ? `0${value}` : value);
+                                        const value1 = (value < 0 || value > 100) ? this.volume : (value < 10 ? `0${value}` : value);
                                         const volume = `MV${value1}`;
                                         await this.denon.send(volume);
                                         break;
