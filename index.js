@@ -1,6 +1,7 @@
 'use strict';
 const path = require('path');
 const fs = require('fs');
+const fsPromises = fs.promises;
 const MainZone = require('./src/mainzone.js');
 const Zone2 = require('./src/zone2.js');
 const Zone3 = require('./src/zone3.js');
@@ -42,9 +43,34 @@ class DenonPlatform {
 				//zones
 				const zoneControl = device.zoneControl;
 				const generation = device.generation || 0;
+
+				//check files exists, if not then create it
+				const postFix = `${CONSTANTS.ZoneNameShort[zoneControl]}${host.split('.').join('')}`
+				const devInfoFile = `${prefDir}/devInfo_${postFix}`;
+				const inputsFile = `${prefDir}/inputs_${postFix}`;
+				const inputsNamesFile = `${prefDir}/inputsNames_${postFix}`;
+				const inputsTargetVisibilityFile = `${prefDir}/inputsTargetVisibility_${postFix}`;
+
+				try {
+					const files = [
+						devInfoFile,
+						inputsFile,
+						inputsNamesFile,
+						inputsTargetVisibilityFile,
+					];
+
+					files.forEach((file) => {
+						if (!fs.existsSync(file)) {
+							fs.writeFileSync(file, '');
+						}
+					});
+				} catch (error) {
+					this.emit('error', `prepare files error: ${error}`);
+				}
+
 				switch (zoneControl) {
 					case 0: //main zone
-						const mainZone = new MainZone(api, prefDir, device, zoneControl, deviceName, host, port, generation);
+						const mainZone = new MainZone(api, device, zoneControl, deviceName, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile);
 						mainZone.on('publishAccessory', (accessory) => {
 							api.publishExternalAccessories(CONSTANTS.PluginName, [accessory]);
 							const debug = enableDebugMode ? log(`Device: ${host} ${deviceName}, published as external accessory.`) : false;
@@ -63,7 +89,7 @@ class DenonPlatform {
 							});
 						break;
 					case 1: //zone 1
-						const zone2 = new Zone2(api, prefDir, device, zoneControl, deviceName, host, port, generation);
+						const zone2 = new Zone2(api, device, zoneControl, deviceName, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile);
 						zone2.on('publishAccessory', (accessory) => {
 							api.publishExternalAccessories(CONSTANTS.PluginName, [accessory]);
 							const debug = enableDebugMode ? log(`Device: ${host} ${deviceName}, published as external accessory.`) : false;
@@ -82,7 +108,7 @@ class DenonPlatform {
 							});
 						break;
 					case 2: //zone 2
-						const zone3 = new Zone3(api, prefDir, device, zoneControl, deviceName, host, port, generation);
+						const zone3 = new Zone3(api, device, zoneControl, deviceName, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile);
 						zone3.on('publishAccessory', (accessory) => {
 							api.publishExternalAccessories(CONSTANTS.PluginName, [accessory]);
 							const debug = enableDebugMode ? log(`Device: ${host} ${deviceName}, published as external accessory.`) : false;
@@ -101,7 +127,7 @@ class DenonPlatform {
 							});
 						break;
 					case 3: //surround
-						const surround = new Surround(api, prefDir, device, zoneControl, deviceName, host, port, generation);
+						const surround = new Surround(api, device, zoneControl, deviceName, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile);
 						surround.on('publishAccessory', (accessory) => {
 							api.publishExternalAccessories(CONSTANTS.PluginName, [accessory]);
 							const debug = enableDebugMode ? log(`Device: ${host} ${deviceName}, published as external accessory.`) : false;

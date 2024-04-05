@@ -9,7 +9,7 @@ const CONSTANTS = require('./constants.json');
 let Accessory, Characteristic, Service, Categories, Encode, AccessoryUUID;
 
 class DenonDevice extends EventEmitter {
-    constructor(api, prefDir, device, zone, name, host, port, generation) {
+    constructor(api, device, zone, name, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile) {
         super();
 
         Accessory = api.platformAccessory;
@@ -46,9 +46,6 @@ class DenonDevice extends EventEmitter {
         this.restFulConnected = false;
         this.mqttConnected = false;
 
-        //zones
-        this.sZoneName = CONSTANTS.ZoneNameShort[zone];
-
         //services
         this.allServices = [];
         this.sensorsInputsServices = [];
@@ -72,30 +69,8 @@ class DenonDevice extends EventEmitter {
         this.supportPictureMode = false;
         this.pictureMode = 0;
         this.brightness = 0;
-
-        //check files exists, if not then create it
-        const postFix = `${this.sZoneName}${host.split('.').join('')}`
-        this.devInfoFile = `${prefDir}/devInfo_${postFix}`;
-        this.inputsFile = `${prefDir}/inputs_${postFix}`;
-        this.inputsNamesFile = `${prefDir}/inputsNames_${postFix}`;
-        this.inputsTargetVisibilityFile = `${prefDir}/inputsTargetVisibility_${postFix}`;
-
-        try {
-            const files = [
-                this.devInfoFile,
-                this.inputsFile,
-                this.inputsNamesFile,
-                this.inputsTargetVisibilityFile,
-            ];
-
-            files.forEach((file) => {
-                if (!fs.existsSync(file)) {
-                    fs.writeFileSync(file, '');
-                }
-            });
-        } catch (error) {
-            this.emit('error', `prepare files error: ${error}`);
-        }
+        this.inputsNamesFile = inputsNamesFile;
+        this.inputsTargetVisibilityFile = inputsTargetVisibilityFile;
 
         //denon client
         this.denon = new Denon({
@@ -104,8 +79,8 @@ class DenonDevice extends EventEmitter {
             generation: generation,
             zone: zone,
             inputs: this.inputs,
-            devInfoFile: this.devInfoFile,
-            inputsFile: this.inputsFile,
+            devInfoFile: devInfoFile,
+            inputsFile: inputsFile,
             getInputsFromDevice: this.getInputsFromDevice,
             getFavoritesFromDevice: this.getFavoritesFromDevice,
             getQuickSmartSelectFromDevice: this.getQuickSmartSelectFromDevice,
@@ -309,13 +284,13 @@ class DenonDevice extends EventEmitter {
                 };
 
                 try {
-                    //read inputs names from file
-                    const savedInputsNames = await this.readData(this.inputsNamesFile);
+                    //read surrounds names from file
+                    const savedInputsNames = await this.readData(inputsNamesFile);
                     this.savedInputsNames = savedInputsNames.toString().trim() !== '' ? JSON.parse(savedInputsNames) : {};
                     const debug = !this.enableDebugMode ? false : this.emit('debug', `Read saved Surrounds Names: ${JSON.stringify(this.savedInputsNames, null, 2)}`);
 
-                    //read inputs visibility from file
-                    const savedInputsTargetVisibility = await this.readData(this.inputsTargetVisibilityFile);
+                    //read surrounds visibility from file
+                    const savedInputsTargetVisibility = await this.readData(inputsTargetVisibilityFile);
                     this.savedInputsTargetVisibility = savedInputsTargetVisibility.toString().trim() !== '' ? JSON.parse(savedInputsTargetVisibility) : {};
                     const debug1 = !this.enableDebugMode ? false : this.emit('debug', `Read saved Surrounds Target Visibility: ${JSON.stringify(this.savedInputsTargetVisibility, null, 2)}`);
 
@@ -323,7 +298,7 @@ class DenonDevice extends EventEmitter {
                     const accessory = await this.prepareAccessory(allInputs);
                     this.emit('publishAccessory', accessory);
 
-                    //sort inputs list
+                    //sort surrounds list
                     const sortInputsDisplayOrder = this.televisionService ? await this.displayOrder() : false;
                 } catch (error) {
                     this.emit('error', `prepare accessory error: ${error}`);
