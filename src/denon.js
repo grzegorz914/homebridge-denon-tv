@@ -403,7 +403,23 @@ class DENON extends EventEmitter {
                     const inputReference = INPUTS_CONVERSION_KEYS.includes(input.reference) ? CONSTANTS.InputConversion[input.reference] : input.reference;
                     const inputReferenceSubstring = inputReference.substring(0, 5) ?? 'Unknown';
                     const inputModeExist = inputReferenceSubstring in CONSTANTS.InputMode;
-                    const inputMode = zone <= 2 ? inputModeExist ? CONSTANTS.InputMode[inputReferenceSubstring] : 'SI' : 'MS';
+
+                    let inputMode = 'SI';
+                    switch (zone) {
+                        case 0:
+                            inputMode = inputModeExist ? CONSTANTS.InputMode[inputReferenceSubstring] : 'SI';
+                            break;
+                        case 1:
+                            inputMode = 'Z2';
+                            break;
+                        case 2:
+                            inputMode = 'Z3';
+                            break;
+                        case 3:
+                            inputMode = 'MS';
+                            break;
+                    }
+
                     const obj = {
                         'name': inputName,
                         'reference': inputReference,
