@@ -22,8 +22,6 @@ class DenonDevice extends EventEmitter {
         //device configuration
         this.zone = zone;
         this.name = name;
-        this.host = host;
-        this.port = port;
         this.generation = generation;
         this.getInputsFromDevice = false;
         this.getFavoritesFromDevice = false;
@@ -49,7 +47,6 @@ class DenonDevice extends EventEmitter {
         this.mqttConnected = false;
 
         //zones
-        this.zoneName = CONSTANTS.ZoneName[zone];
         this.sZoneName = CONSTANTS.ZoneNameShort[zone];
 
         //services
@@ -77,7 +74,7 @@ class DenonDevice extends EventEmitter {
         this.brightness = 0;
 
         //check files exists, if not then create it
-        const postFix = `${this.sZoneName}${this.host.split('.').join('')}`
+        const postFix = `${this.sZoneName}${host.split('.').join('')}`
         this.devInfoFile = `${prefDir}/devInfo_${postFix}`;
         this.inputsFile = `${prefDir}/inputs_${postFix}`;
         this.inputsNamesFile = `${prefDir}/inputsNames_${postFix}`;
@@ -102,10 +99,10 @@ class DenonDevice extends EventEmitter {
 
         //denon client
         this.denon = new Denon({
-            host: this.host,
-            port: this.port,
-            generation: this.generation,
-            zone: this.zone,
+            host: host,
+            port: port,
+            generation: generation,
+            zone: zone,
             inputs: this.inputs,
             devInfoFile: this.devInfoFile,
             inputsFile: this.inputsFile,
@@ -119,7 +116,7 @@ class DenonDevice extends EventEmitter {
 
         this.denon.on('deviceInfo', (manufacturer, modelName, serialNumber, firmwareRevision, deviceZones, apiVersion, supportPictureMode) => {
             if (!this.disableLogDeviceInfo) {
-                this.emit('devInfo', `-------- ${this.name} --------`);
+                this.emit('devInfo', `-------- ${name} --------`);
                 this.emit('devInfo', `Manufacturer: ${manufacturer}`);
                 this.emit('devInfo', `Model: ${modelName}`);
                 this.emit('devInfo', `Control: Sound Modes`);
@@ -315,12 +312,12 @@ class DenonDevice extends EventEmitter {
                     //read inputs names from file
                     const savedInputsNames = await this.readData(this.inputsNamesFile);
                     this.savedInputsNames = savedInputsNames.toString().trim() !== '' ? JSON.parse(savedInputsNames) : {};
-                    const debug = !this.enableDebugMode ? false : this.emit('debug', `Read saved Surround Names: ${JSON.stringify(this.savedInputsNames, null, 2)}`);
+                    const debug = !this.enableDebugMode ? false : this.emit('debug', `Read saved Surrounds Names: ${JSON.stringify(this.savedInputsNames, null, 2)}`);
 
                     //read inputs visibility from file
                     const savedInputsTargetVisibility = await this.readData(this.inputsTargetVisibilityFile);
                     this.savedInputsTargetVisibility = savedInputsTargetVisibility.toString().trim() !== '' ? JSON.parse(savedInputsTargetVisibility) : {};
-                    const debug1 = !this.enableDebugMode ? false : this.emit('debug', `Read saved Surround Target Visibility: ${JSON.stringify(this.savedInputsTargetVisibility, null, 2)}`);
+                    const debug1 = !this.enableDebugMode ? false : this.emit('debug', `Read saved Surrounds Target Visibility: ${JSON.stringify(this.savedInputsTargetVisibility, null, 2)}`);
 
                     //prepare accessory
                     const accessory = await this.prepareAccessory(allInputs);
@@ -372,7 +369,7 @@ class DenonDevice extends EventEmitter {
                         this.inputsConfigured.sort((a, b) => b.reference.localeCompare(a.reference));
                         break;
                 }
-                const debug = !this.enableDebugMode ? false : this.emit('debug', `Inputs display order: ${JSON.stringify(this.inputsConfigured, null, 2)}`);
+                const debug = !this.enableDebugMode ? false : this.emit('debug', `Surrounds display order: ${JSON.stringify(this.inputsConfigured, null, 2)}`);
 
                 const displayOrder = this.inputsConfigured.map(input => input.identifier);
                 this.televisionService.setCharacteristic(Characteristic.DisplayOrder, Encode(1, displayOrder).toString('base64'));
@@ -668,7 +665,7 @@ class DenonDevice extends EventEmitter {
                 this.allServices.push(this.tvSpeakerService);
 
                 //prepare inputs service
-                const debug8 = !this.enableDebugMode ? false : this.emit('debug', `Prepare inputs services`);
+                const debug8 = !this.enableDebugMode ? false : this.emit('debug', `Prepare surrounds services`);
 
                 //check possible inputs count (max 85)
                 const inputs = allInputs;
@@ -730,7 +727,7 @@ class DenonDevice extends EventEmitter {
                                 this.inputsConfigured[index].name = value;
                                 await this.displayOrder();
                             } catch (error) {
-                                this.emit('error', `save Input Name error: ${error}`);
+                                this.emit('error', `save Surround Name error: ${error}`);
                             }
                         });
 
@@ -748,7 +745,7 @@ class DenonDevice extends EventEmitter {
                                 await this.saveData(this.inputsTargetVisibilityFile, this.savedInputsTargetVisibility);
                                 const debug = !this.enableDebugMode ? false : this.emit('debug', `Saved  Surround: ${inputName} Target Visibility: ${state ? 'HIDEN' : 'SHOWN'}`);
                             } catch (error) {
-                                this.emit('error', `save Target Visibility error: ${error}`);
+                                this.emit('error', `save Surround Target Visibility error: ${error}`);
                             }
                         });
 

@@ -97,7 +97,7 @@ class DENON extends EventEmitter {
                 const apiVersion = deviceInfoKeys.includes('CommApiVers') ? devInfo.CommApiVers : '000';
                 const gen = deviceInfoKeys.includes('Gen') ? devInfo.Gen : 0;
                 const brandCode = deviceInfoKeys.includes('BrandCode') ? devInfo.BrandCode : 2;
-                const manufacturer = ['Denon', 'Marantz', 'Denon/Marantz'][brandCode];
+                const manufacturer = ['Denon', 'Marantz', 'Denon/Marantz'][brandCode] ?? 'Denon/Marantz';
                 const productCategory = deviceInfoKeys.includes('ProductCategory') ? devInfo.ProductCategory : '00';
                 const categoryName = deviceInfoKeys.includes('CategoryName') ? devInfo.ProductCategory : 'Unknown';
                 const manualModelName = deviceInfoKeys.includes('ManualModelName') ? devInfo.ManualModelName : 'Unknown';
