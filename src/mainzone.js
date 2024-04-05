@@ -639,7 +639,7 @@ class DenonDevice extends EventEmitter {
                     })
                     .onSet(async (value) => {
                         try {
-                            value = (value === 0 || value === 100) ? this.volume : (value < 10 ? `0${value}` : value);
+                            value = (value <= 0 || value >= 100) ? this.volume : (value < 10 ? `0${value}` : value);
                             const volume = `MV${value}`;
                             await this.denon.send(volume);
                             const info = this.disableLogInfo ? false : this.emit('message', `set Volume: ${value - 80}`);
