@@ -948,14 +948,12 @@ class DenonDevice extends EventEmitter {
                                     })
                                     .onSet(async (state) => {
                                         try {
-                                            const zone = parseInt(buttonReference.charAt(0)); //0 - All/Maiz Zone, 1 - Zone 2/3, 2 - Only Z2
                                             const directSound = CONSTANTS.DirectSoundMode[buttonReference] !== undefined ? CONSTANTS.DirectSoundMode[buttonReference] : false;
                                             const directSoundModeMode = directSound ? directSound.mode : false;
                                             const directSoundModeSurround = directSound ? directSound.surround : false;
-
                                             const command = directSound ? directSoundModeMode : buttonReference.substring(1);
-                                            const reference = [`${command}`, `${''}${command}`, `Z2${command}`][zone];
-
+                                            const reference = `${command}`;
+                                            
                                             const set = state ? await this.denon.send(reference) : false;
                                             const set2 = state && directSound ? await this.denon.send(directSoundModeSurround) : false;
                                             const info = this.disableLogInfo || !state ? false : this.emit('message', `set Button Name: ${buttonName}, Reference: ${reference}`);
