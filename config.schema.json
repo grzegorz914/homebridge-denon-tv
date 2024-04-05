@@ -3982,13 +3982,13 @@
                       {
                         "title": "Z2 HDMI OUT THROUGH",
                         "enum": [
-                          "2HDA THR"
+                          "1HDA THR"
                         ]
                       },
                       {
                         "title": "Z2 HDMI OUT PCM",
                         "enum": [
-                          "2HDA PCM"
+                          "1HDA PCM"
                         ]
                       },
                       {
