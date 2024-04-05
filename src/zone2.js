@@ -279,7 +279,7 @@ class DenonDevice extends EventEmitter {
                             try {
                                 switch (key) {
                                     case 'Power':
-                                        const powerState = this.masterPower ? (state ? 'ZMON' : 'ZMOFF') : (value ? 'Z2ON' : 'Z2OFF');
+                                        const powerState = this.masterPower ? (value ? 'PWON' : 'PWSTANDBY') : (value ? 'Z2ON' : 'Z2OFF');
                                         await this.denon.send(powerState)
                                         break;
                                     case 'Input':
@@ -452,7 +452,7 @@ class DenonDevice extends EventEmitter {
                         }
 
                         try {
-                            const powerState = this.masterPower ? (state ? 'ZMON' : 'ZMOFF') : (state ? 'Z2ON' : 'Z2OFF');
+                            const powerState = this.masterPower ? (state ? 'PWON' : 'PWSTANDBY') : (state ? 'Z2ON' : 'Z2OFF');
                             await this.denon.send(powerState);
                             const info = this.disableLogInfo ? false : this.emit('message', `set Power: ${powerState}`);
                         } catch (error) {

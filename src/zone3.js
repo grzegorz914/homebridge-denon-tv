@@ -279,7 +279,7 @@ class DenonDevice extends EventEmitter {
                             try {
                                 switch (key) {
                                     case 'Power':
-                                        const powerState = this.masterPower ? (state ? 'ZMON' : 'ZMOFF') : (value ? 'Z3ON' : 'Z3OFF');
+                                        const powerState = this.masterPower ? (value ? 'PWON' : 'PWSTANDBY') : (value ? 'Z3ON' : 'Z3OFF');
                                         await this.denon.send(powerState)
                                         break;
                                     case 'Input':
