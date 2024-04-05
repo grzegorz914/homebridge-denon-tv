@@ -800,12 +800,12 @@ class Zone3 extends EventEmitter {
                         const sensorInputReference = sensorInput.reference;
 
                         //get display type
-                        const sensorInputDisplayType = sensorInput.displayType || false;
+                        const sensorInputDisplayType = sensorInput.displayType || 0;
 
                         //get sensor name prefix
                         const namePrefix = sensorInput.namePrefix || false;
 
-                        if (sensorInputDisplayType) {
+                        if (sensorInputDisplayType > 0) {
                             if (sensorInputName && sensorInputReference) {
                                 const serviceName = namePrefix ? `${accessoryName} ${sensorInputName}` : sensorInputName;
                                 const characteristicType = ['', Characteristic.MotionDetected, Characteristic.OccupancyDetected, Characteristic.ContactSensorState][sensorInputDisplayType];
@@ -847,12 +847,12 @@ class Zone3 extends EventEmitter {
                         const buttonReference = button.reference;
 
                         //get button display type
-                        const buttonDisplayType = button.displayType || false;
+                        const buttonDisplayType = button.displayType || 0;
 
                         //get button name prefix
                         const namePrefix = button.namePrefix || false;
 
-                        if (buttonDisplayType) {
+                        if (buttonDisplayType > 0) {
                             if (buttonName && buttonReference) {
                                 const serviceName = namePrefix ? `${accessoryName} ${buttonName}` : buttonName;
                                 const serviceType = ['', Service.Outlet, Service.Switch][buttonDisplayType];

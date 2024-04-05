@@ -812,12 +812,12 @@ class Surround extends EventEmitter {
                         const sensorInputReference = sensorInput.reference;
 
                         //get display type
-                        const sensorInputDisplayType = sensorInput.displayType || false;
+                        const sensorInputDisplayType = sensorInput.displayType || 0;
 
                         //get sensor name prefix
                         const namePrefix = sensorInput.namePrefix || false;
 
-                        if (sensorInputDisplayType) {
+                        if (sensorInputDisplayType > 0) {
                             if (sensorInputName && sensorInputReference) {
                                 const serviceName = namePrefix ? `${accessoryName} ${sensorInputName}` : sensorInputName;
                                 const characteristicType = ['', Characteristic.MotionDetected, Characteristic.OccupancyDetected, Characteristic.ContactSensorState][sensorInputDisplayType];
