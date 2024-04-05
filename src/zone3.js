@@ -488,91 +488,48 @@ class DenonDevice extends EventEmitter {
                 this.televisionService.getCharacteristic(Characteristic.RemoteKey)
                     .onSet(async (command) => {
                         try {
-                            if (this.inputReference === 'SPOTIFY' || this.inputReference === 'BT' || this.inputReference === 'USB/IPOD' || this.inputReference === 'NET' || this.inputReference === 'MPLAY') {
-                                switch (command) {
-                                    case Characteristic.RemoteKey.REWIND:
-                                        command = 'NS9E';
-                                        break;
-                                    case Characteristic.RemoteKey.FAST_FORWARD:
-                                        command = 'NS9D';
-                                        break;
-                                    case Characteristic.RemoteKey.NEXT_TRACK:
-                                        command = 'MN9D';
-                                        break;
-                                    case Characteristic.RemoteKey.PREVIOUS_TRACK:
-                                        command = 'MN9E';
-                                        break;
-                                    case Characteristic.RemoteKey.ARROW_UP:
-                                        command = 'NS90';
-                                        break;
-                                    case Characteristic.RemoteKey.ARROW_DOWN:
-                                        command = 'NS91';
-                                        break;
-                                    case Characteristic.RemoteKey.ARROW_LEFT:
-                                        command = 'NS92';
-                                        break;
-                                    case Characteristic.RemoteKey.ARROW_RIGHT:
-                                        command = 'NS93';
-                                        break;
-                                    case Characteristic.RemoteKey.SELECT:
-                                        command = 'NS94';
-                                        break;
-                                    case Characteristic.RemoteKey.BACK:
-                                        command = 'MNRTN';
-                                        break;
-                                    case Characteristic.RemoteKey.EXIT:
-                                        command = 'MNRTN';
-                                        break;
-                                    case Characteristic.RemoteKey.PLAY_PAUSE:
-                                        command = this.mediaState ? 'NS9B' : 'NS9A';
-                                        this.mediaState = !this.mediaState;
-                                        break;
-                                    case Characteristic.RemoteKey.INFORMATION:
-                                        command = this.infoButtonCommand;
-                                        break;
-                                }
-                            } else {
-                                switch (command) {
-                                    case Characteristic.RemoteKey.REWIND:
-                                        command = 'MN9E';
-                                        break;
-                                    case Characteristic.RemoteKey.FAST_FORWARD:
-                                        command = 'MN9D';
-                                        break;
-                                    case Characteristic.RemoteKey.NEXT_TRACK:
-                                        command = 'MN9F';
-                                        break;
-                                    case Characteristic.RemoteKey.PREVIOUS_TRACK:
-                                        command = 'MN9G';
-                                        break;
-                                    case Characteristic.RemoteKey.ARROW_UP:
-                                        command = 'MNCUP';
-                                        break;
-                                    case Characteristic.RemoteKey.ARROW_DOWN:
-                                        command = 'MNCDN';
-                                        break;
-                                    case Characteristic.RemoteKey.ARROW_LEFT:
-                                        command = 'MNCLT';
-                                        break;
-                                    case Characteristic.RemoteKey.ARROW_RIGHT:
-                                        command = 'MNCRT';
-                                        break;
-                                    case Characteristic.RemoteKey.SELECT:
-                                        command = 'MNENT';
-                                        break;
-                                    case Characteristic.RemoteKey.BACK:
-                                        command = 'MNRTN';
-                                        break;
-                                    case Characteristic.RemoteKey.EXIT:
-                                        command = 'MNRTN';
-                                        break;
-                                    case Characteristic.RemoteKey.PLAY_PAUSE:
-                                        command = 'NS94';
-                                        break;
-                                    case Characteristic.RemoteKey.INFORMATION:
-                                        command = this.infoButtonCommand;
-                                        break;
-                                }
+                            const rcMedia = this.inputReference === 'SPOTIFY' || this.inputReference === 'BT' || this.inputReference === 'USB/IPOD' || this.inputReference === 'NET' || this.inputReference === 'MPLAY';
+                            switch (command) {
+                                case Characteristic.RemoteKey.REWIND:
+                                    command = rcMedia ? 'NS9E' : 'MN9E';
+                                    break;
+                                case Characteristic.RemoteKey.FAST_FORWARD:
+                                    command = rcMedia ? 'NS9D' : 'MN9D';
+                                    break;
+                                case Characteristic.RemoteKey.NEXT_TRACK:
+                                    command = rcMedia ? 'MN9D' : 'MN9F';
+                                    break;
+                                case Characteristic.RemoteKey.PREVIOUS_TRACK:
+                                    command = rcMedia ? 'MN9E' : 'MN9G';
+                                    break;
+                                case Characteristic.RemoteKey.ARROW_UP:
+                                    command = rcMedia ? 'NS90' : 'MNCUP';
+                                    break;
+                                case Characteristic.RemoteKey.ARROW_DOWN:
+                                    command = rcMedia ? 'NS91' : 'MNCDN';
+                                    break;
+                                case Characteristic.RemoteKey.ARROW_LEFT:
+                                    command = rcMedia ? 'NS92' : 'MNCLT';
+                                    break;
+                                case Characteristic.RemoteKey.ARROW_RIGHT:
+                                    command = rcMedia ? 'NS93' : 'MNENT';
+                                    break;
+                                case Characteristic.RemoteKey.SELECT:
+                                    command = rcMedia ? 'NS94' : 'MNENT';
+                                    break;
+                                case Characteristic.RemoteKey.BACK:
+                                    command = rcMedia ? 'MNRTN' : 'MNRTN';
+                                    break;
+                                case Characteristic.RemoteKey.EXIT:
+                                    command = rcMedia ? 'MNRTN' : 'MNRTN';
+                                    break;
+                                case Characteristic.RemoteKey.PLAY_PAUSE:
+                                    command = rcMedia ? (this.mediaState ? 'NS9B' : 'NS9A') : 'NS94';
+                                    this.mediaState = !this.mediaState;
+                                    break;
+                                case Characteristic.RemoteKey.INFORMATION:
+                                    command = this.infoButtonCommand;
+                                    break;
                             }
 
                             await this.denon.send(command);
