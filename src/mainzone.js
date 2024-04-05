@@ -107,10 +107,10 @@ class DenonDevice extends EventEmitter {
                 this.emit('devInfo', `----------------------------------`);
             }
 
-            this.manufacturer = manufacturer || 'Manufacturer';
-            this.modelName = modelName || 'Model Name';
-            this.serialNumber = serialNumber || 'Serial Number';
-            this.firmwareRevision = firmwareRevision || 'Firmware Revision';
+            this.manufacturer = manufacturer;
+            this.modelName = modelName;
+            this.serialNumber = serialNumber;
+            this.firmwareRevision = firmwareRevision;
             this.supportPictureMode = supportPictureMode;
         })
             .on('stateChanged', (power, reference, volume, volumeControlType, mute, pictureMode) => {
