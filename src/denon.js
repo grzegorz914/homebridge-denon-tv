@@ -35,7 +35,7 @@ class DENON extends EventEmitter {
         this.axiosInstance = generation === 2 ? axios.create({
             method: 'GET',
             baseURL: baseUrl,
-            timeout: 10000,
+            timeout: 15000,
             maxContentLength: 100000000,
             maxBodyLength: 1000000000,
             httpsAgent: new https.Agent({
@@ -44,7 +44,7 @@ class DENON extends EventEmitter {
         }) : axios.create({
             method: 'GET',
             baseURL: baseUrl,
-            timeout: 10000,
+            timeout: 15000,
             maxContentLength: 100000000,
             maxBodyLength: 1000000000,
         });
@@ -52,14 +52,14 @@ class DENON extends EventEmitter {
         this.axiosInstancePost = generation === 2 ? axios.create({
             method: 'POST',
             baseURL: baseUrl,
-            timeout: 10000,
+            timeout: 15000,
             httpsAgent: new https.Agent({
                 rejectUnauthorized: false
             })
         }) : axios.create({
             method: 'POST',
             baseURL: baseUrl,
-            timeout: 10000
+            timeout: 15000
         });
 
         const options = {
