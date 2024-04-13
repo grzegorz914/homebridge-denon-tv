@@ -39,7 +39,9 @@
     "homekit",
     "denon",
     "marantz",
-    "heos"
+    "heos",
+    "mqtt",
+    "restful"
   ],
   "funding": {
     "type": "github",
