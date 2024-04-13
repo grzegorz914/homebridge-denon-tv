@@ -9,7 +9,7 @@ const CONSTANTS = require('./constants.json');
 let Accessory, Characteristic, Service, Categories, Encode, AccessoryUUID;
 
 class Surround extends EventEmitter {
-    constructor(api, device, zone, name, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile) {
+    constructor(api, device, zone, name, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile, refreshInterval) {
         super();
 
         Accessory = api.platformAccessory;
@@ -22,12 +22,8 @@ class Surround extends EventEmitter {
         //device configuration
         this.zone = zone;
         this.name = name;
-        this.generation = generation;
-        this.getInputsFromDevice = false;
-        this.getFavoritesFromDevice = false;
-        this.getQuickSmartSelectFromDevice = false;
         this.inputsDisplayOrder = device.inputsDisplayOrder || 0;
-        this.inputs = device.surrounds || [];
+        this.buttons = [];
         this.sensorPower = device.sensorPower || false;
         this.sensorVolume = device.sensorVolume || false;
         this.sensorMute = device.sensorMute || false;
@@ -37,10 +33,9 @@ class Surround extends EventEmitter {
         this.disableLogInfo = device.disableLogInfo || false;
         this.disableLogDeviceInfo = device.disableLogDeviceInfo || false;
         this.disableLogConnectError = device.disableLogConnectError || false;
-        this.masterPower = device.masterPower || false;
         this.infoButtonCommand = device.infoButtonCommand || 'MNINF';
         this.volumeControl = device.volumeControl || false;
-        this.refreshInterval = device.refreshInterval || 5;
+        this.masterPower = device.masterPower || false;
 
         //external integration
         this.restFulConnected = false;
@@ -78,15 +73,15 @@ class Surround extends EventEmitter {
             port: port,
             generation: generation,
             zone: zone,
-            inputs: this.inputs,
+            inputs: device.surrounds || [],
             devInfoFile: devInfoFile,
             inputsFile: inputsFile,
-            getInputsFromDevice: this.getInputsFromDevice,
-            getFavoritesFromDevice: this.getFavoritesFromDevice,
-            getQuickSmartSelectFromDevice: this.getQuickSmartSelectFromDevice,
+            getInputsFromDevice: device.getInputsFromDevice || false,
+            getFavoritesFromDevice: device.getFavoritesFromDevice || false,
+            getQuickSmartSelectFromDevice: device.getQuickSmartSelectFromDevice || false,
             debugLog: this.enableDebugMode,
             disableLogConnectError: this.disableLogConnectError,
-            refreshInterval: this.refreshInterval,
+            refreshInterval: refreshInterval,
         });
 
         this.denon.on('deviceInfo', (manufacturer, modelName, serialNumber, firmwareRevision, deviceZones, apiVersion, supportPictureMode) => {
@@ -238,7 +233,10 @@ class Surround extends EventEmitter {
                         this.emit('message', message);
                         this.mqttConnected = true;
                     })
-                        .on('changeState', async (data) => {
+                        .on('subscribed', (message) => {
+                            this.emit('message', message);
+                        })
+                        .on('subscribedMessage', async (data) => {
                             const key = Object.keys(data)[0];
                             const value = Object.values(data)[0];
                             try {

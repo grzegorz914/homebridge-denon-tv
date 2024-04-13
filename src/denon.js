@@ -19,9 +19,9 @@ class DENON extends EventEmitter {
         const inputs = config.inputs;
         const devInfoFile = config.devInfoFile;
         const inputsFile = config.inputsFile;
-        const getInputsFromDevice = config.getInputsFromDevice;
-        const getFavoritesFromDevice = config.getFavoritesFromDevice;
-        const getQuickSmartSelectFromDevice = config.getQuickSmartSelectFromDevice;
+        const getInputsFromDevice = zone < 3 ? config.getInputsFromDevice : false;
+        const getFavoritesFromDevice = getInputsFromDevice ? config.getFavoritesFromDevice : false;
+        const getQuickSmartSelectFromDevice = getInputsFromDevice ? config.getQuickSmartSelectFromDevice : false;
         const debugLog = config.debugLog;
         const disableLogConnectError = config.disableLogConnectError;
         const refreshInterval = config.refreshInterval;
