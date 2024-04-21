@@ -358,7 +358,7 @@ class DENON extends EventEmitter {
                 };
 
                 //schortcuts
-                const deviceSchortcuts = getInputsFromDevice && supportShortcut ? zoneCapabilities.ShortcutControl.EntryList.Shortcut : [];
+                const deviceSchortcuts = getInputsFromDevice && supportShortcut && Array.isArray(zoneCapabilities.ShortcutControl.EntryList.Shortcut) ? zoneCapabilities.ShortcutControl.EntryList.Shortcut : [];
                 for (const shortcut of deviceSchortcuts) {
                     const category = shortcut.Category; //1, 2, 3 Quick/Smart Select, 4 Inputs, 5 Sound Mode
                     const shortcutName = shortcut.DispName;
@@ -371,7 +371,7 @@ class DENON extends EventEmitter {
                 };
 
                 //favorites
-                const deviceFavorites = getFavoritesFromDevice && supportFavorites ? devInfo.DeviceCapabilities.Operation.Favorites : [];
+                const deviceFavorites = getFavoritesFromDevice && supportFavorites && Array.isArray(devInfo.DeviceCapabilities.Operation.Favorites) ? devInfo.DeviceCapabilities.Operation.Favorites : [];
                 for (const favorite of deviceFavorites) {
                     const favoriteName = favorite.DispName;
                     const favoriteReference = favorite.FuncName;
