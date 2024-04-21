@@ -6246,6 +6246,15 @@
               ],
               "required": true
             },
+            "volumeMax": {
+              "title": "Max Volume (%)",
+              "type": "integer",
+              "default": 100,
+              "minimum": 0,
+              "maximum": 100,
+              "description": "Here set the max possible volume to set.",
+              "required": true
+            },
             "refreshInterval": {
               "title": "Refresh interval (sec)",
               "type": "integer",
@@ -6579,6 +6588,7 @@
                     "devices[].masterMute",
                     "devices[].infoButtonCommand",
                     "devices[].volumeControl",
+                    "devices[].volumeMax",
                     "devices[].refreshInterval"
                   ]
                 },

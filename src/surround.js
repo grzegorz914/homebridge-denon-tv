@@ -35,6 +35,7 @@ class Surround extends EventEmitter {
         this.disableLogConnectError = device.disableLogConnectError || false;
         this.infoButtonCommand = device.infoButtonCommand || 'MNINF';
         this.volumeControl = device.volumeControl || false;
+        this.volumeMax = device.volumeMax || 100;
         this.masterPower = device.masterPower || false;
 
         //external integration
@@ -559,6 +560,10 @@ class Surround extends EventEmitter {
                     });
 
                 this.tvSpeakerService.getCharacteristic(Characteristic.Volume)
+                    .setProps({
+                        minValue: 0,
+                        maxValue: this.volumeMax
+                    })
                     .onGet(async () => {
                         const volume = this.volume;
                         return volume;
@@ -689,6 +694,10 @@ class Surround extends EventEmitter {
                         this.volumeService.addOptionalCharacteristic(Characteristic.ConfiguredName);
                         this.volumeService.setCharacteristic(Characteristic.ConfiguredName, `${accessoryName} Volume`);
                         this.volumeService.getCharacteristic(Characteristic.Brightness)
+                            .setProps({
+                                minValue: 0,
+                                maxValue: this.volumeMax
+                            })
                             .onGet(async () => {
                                 const volume = this.volume;
                                 return volume;
@@ -713,6 +722,10 @@ class Surround extends EventEmitter {
                         this.volumeServiceFan.addOptionalCharacteristic(Characteristic.ConfiguredName);
                         this.volumeServiceFan.setCharacteristic(Characteristic.ConfiguredName, `${accessoryName} Volume`);
                         this.volumeServiceFan.getCharacteristic(Characteristic.RotationSpeed)
+                            .setProps({
+                                minValue: 0,
+                                maxValue: this.volumeMax
+                            })
                             .onGet(async () => {
                                 const volume = this.volume;
                                 return volume;
