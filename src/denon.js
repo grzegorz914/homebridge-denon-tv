@@ -401,8 +401,9 @@ class DENON extends EventEmitter {
                 for (const input of tempInputs) {
                     const inputName = input.name;
                     let inputReference = INPUTS_CONVERSION_KEYS.includes(input.reference) ? CONSTANTS.InputConversion[input.reference] : input.reference;
-
                     let inputMode = 'SI';
+
+                    //zones
                     switch (zone) {
                         case 0:
                             //Denon
@@ -413,7 +414,7 @@ class DENON extends EventEmitter {
                             const inputReferenceSubstring1 = inputReference.substring(0, 2) ?? 'Unknown';
                             const inputModeExist1 = inputReferenceSubstring1 in CONSTANTS.InputMode;
 
-                            inputMode = inputModeExist ? CONSTANTS.InputMode[inputReferenceSubstring] : inputModeExist1 ? CONSTANTS.InputMode[inputReferenceSubstring1] : 'SI';
+                            inputMode = inputModeExist ? CONSTANTS.InputMode[inputReferenceSubstring] : inputModeExist1 ? CONSTANTS.InputMode[inputReferenceSubstring1] : inputMode;
                             inputReference = inputModeExist1 ? inputReference.substring(3) : inputReference;
                             break;
                         case 1:
