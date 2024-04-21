@@ -215,7 +215,8 @@
         "INPUT": "SI",
         "FAVOR": "ZM",
         "QUICK": "MS",
-        "SMART": "MS"
+        "SMART": "MS",
+        "FV": "FV "
     },
     "DirectSoundMode": {
         "0MSMOVIE0": {

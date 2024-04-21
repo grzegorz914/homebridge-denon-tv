@@ -400,14 +400,21 @@ class DENON extends EventEmitter {
                 const debug = !this.debugLog ? false : this.emit('message', `temp Inputs: ${JSON.stringify(tempInputs, null, 2)}`);
                 for (const input of tempInputs) {
                     const inputName = input.name;
-                    const inputReference = INPUTS_CONVERSION_KEYS.includes(input.reference) ? CONSTANTS.InputConversion[input.reference] : input.reference;
-                    const inputReferenceSubstring = inputReference.substring(0, 5) ?? 'Unknown';
-                    const inputModeExist = inputReferenceSubstring in CONSTANTS.InputMode;
+                    let inputReference = INPUTS_CONVERSION_KEYS.includes(input.reference) ? CONSTANTS.InputConversion[input.reference] : input.reference;
 
                     let inputMode = 'SI';
                     switch (zone) {
                         case 0:
-                            inputMode = inputModeExist ? CONSTANTS.InputMode[inputReferenceSubstring] : 'SI';
+                            //Denon
+                            const inputReferenceSubstring = inputReference.substring(0, 5) ?? 'Unknown';
+                            const inputModeExist = inputReferenceSubstring in CONSTANTS.InputMode;
+
+                            //Marantz M-CR611
+                            const inputReferenceSubstring1 = inputReference.substring(0, 2) ?? 'Unknown';
+                            const inputModeExist1 = inputReferenceSubstring1 in CONSTANTS.InputMode;
+
+                            inputMode = inputModeExist ? CONSTANTS.InputMode[inputReferenceSubstring] : inputModeExist1 ? CONSTANTS.InputMode[inputReferenceSubstring1] : 'SI';
+                            inputReference = inputModeExist1 ? inputReference.substring(3) : inputReference;
                             break;
                         case 1:
                             inputMode = 'Z2';

@@ -544,6 +544,156 @@
                         ]
                       },
                       {
+                        "title": "FAVORITE 1 (Marantz Only)",
+                        "enum": [
+                          "FV 01"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE 2 (Marantz Only)",
+                        "enum": [
+                          "FV 02"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE 3 (Marantz Only)",
+                        "enum": [
+                          "FV 03"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE 4 (Marantz Only)",
+                        "enum": [
+                          "FV 04"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE 5 (Marantz Only)",
+                        "enum": [
+                          "FV 05"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE 6 (Marantz Only)",
+                        "enum": [
+                          "FV 06"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE 7 (Marantz Only)",
+                        "enum": [
+                          "FV 07"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE 8 (Marantz Only)",
+                        "enum": [
+                          "FV 08"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE 9 (Marantz Only)",
+                        "enum": [
+                          "FV 09"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE 10 (Marantz Only)",
+                        "enum": [
+                          "FV 10"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE 11 (Marantz Only)",
+                        "enum": [
+                          "FV 11"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE 12 (Marantz Only)",
+                        "enum": [
+                          "FV 12"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE 13 (Marantz Only)",
+                        "enum": [
+                          "FV 13"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE 13 (Marantz Only)",
+                        "enum": [
+                          "FV 14"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE 15 (Marantz Only)",
+                        "enum": [
+                          "FV 15"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE 16 (Marantz Only)",
+                        "enum": [
+                          "FV 16"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE 17 (Marantz Only)",
+                        "enum": [
+                          "FV 17"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE 18 (Marantz Only)",
+                        "enum": [
+                          "FV 18"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE 19 (Marantz Only)",
+                        "enum": [
+                          "FV 19"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE 20 (Marantz Only)",
+                        "enum": [
+                          "FV 20"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE 21 (Marantz Only)",
+                        "enum": [
+                          "FV 21"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE 22 (Marantz Only)",
+                        "enum": [
+                          "FV 22"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE 23 (Marantz Only)",
+                        "enum": [
+                          "FV 23"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE 24 (Marantz Only)",
+                        "enum": [
+                          "FV 24"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE 25 (Marantz Only)",
+                        "enum": [
+                          "FV 25"
+                        ]
+                      },
+                      {
                         "title": "QUICK SELECT 1",
                         "enum": [
                           "QUICK1"
@@ -1335,6 +1485,156 @@
                         "title": "ZM FAVORITE MEMORY 4",
                         "enum": [
                           "0ZMFAVORITE4 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "ZM FAVORITE 1 (Marantz Only)",
+                        "enum": [
+                          "0FV 01"
+                        ]
+                      },
+                      {
+                        "title": "ZM FAVORITE 2 (Marantz Only)",
+                        "enum": [
+                          "0FV 02"
+                        ]
+                      },
+                      {
+                        "title": "ZM FAVORITE 3 (Marantz Only)",
+                        "enum": [
+                          "0FV 03"
+                        ]
+                      },
+                      {
+                        "title": "ZM FAVORITE 4 (Marantz Only)",
+                        "enum": [
+                          "FV 04"
+                        ]
+                      },
+                      {
+                        "title": "ZM FAVORITE 5 (Marantz Only)",
+                        "enum": [
+                          "FV 05"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE 6 (Marantz Only)",
+                        "enum": [
+                          "0FV 06"
+                        ]
+                      },
+                      {
+                        "title": "ZM FAVORITE 7 (Marantz Only)",
+                        "enum": [
+                          "0FV 07"
+                        ]
+                      },
+                      {
+                        "title": "ZM FAVORITE 8 (Marantz Only)",
+                        "enum": [
+                          "0FV 08"
+                        ]
+                      },
+                      {
+                        "title": "ZM FAVORITE 9 (Marantz Only)",
+                        "enum": [
+                          "0FV 09"
+                        ]
+                      },
+                      {
+                        "title": "ZM FAVORITE 10 (Marantz Only)",
+                        "enum": [
+                          "0FV 10"
+                        ]
+                      },
+                      {
+                        "title": "ZM FAVORITE 11 (Marantz Only)",
+                        "enum": [
+                          "0FV 11"
+                        ]
+                      },
+                      {
+                        "title": "ZM FAVORITE 12 (Marantz Only)",
+                        "enum": [
+                          "0FV 12"
+                        ]
+                      },
+                      {
+                        "title": "ZM FAVORITE 13 (Marantz Only)",
+                        "enum": [
+                          "0FV 13"
+                        ]
+                      },
+                      {
+                        "title": "ZM FAVORITE 13 (Marantz Only)",
+                        "enum": [
+                          "0FV 14"
+                        ]
+                      },
+                      {
+                        "title": "ZM FAVORITE 15 (Marantz Only)",
+                        "enum": [
+                          "0FV 15"
+                        ]
+                      },
+                      {
+                        "title": "ZM FAVORITE 16 (Marantz Only)",
+                        "enum": [
+                          "0FV 16"
+                        ]
+                      },
+                      {
+                        "title": "ZM FAVORITE 17 (Marantz Only)",
+                        "enum": [
+                          "0FV 17"
+                        ]
+                      },
+                      {
+                        "title": "ZM FAVORITE 18 (Marantz Only)",
+                        "enum": [
+                          "0FV 18"
+                        ]
+                      },
+                      {
+                        "title": "ZM FAVORITE 19 (Marantz Only)",
+                        "enum": [
+                          "0FV 19"
+                        ]
+                      },
+                      {
+                        "title": "ZM FAVORITE 20 (Marantz Only)",
+                        "enum": [
+                          "0FV 20"
+                        ]
+                      },
+                      {
+                        "title": "ZM FAVORITE 21 (Marantz Only)",
+                        "enum": [
+                          "0FV 21"
+                        ]
+                      },
+                      {
+                        "title": "ZM FAVORITE 22 (Marantz Only)",
+                        "enum": [
+                          "0FV 22"
+                        ]
+                      },
+                      {
+                        "title": "ZM FAVORITE 23 (Marantz Only)",
+                        "enum": [
+                          "0FV 23"
+                        ]
+                      },
+                      {
+                        "title": "ZM FAVORITE 24 (Marantz Only)",
+                        "enum": [
+                          "FV 24"
+                        ]
+                      },
+                      {
+                        "title": "ZM FAVORITE 25 (Marantz Only)",
+                        "enum": [
+                          "0FV 25"
                         ]
                       },
                       {

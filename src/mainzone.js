@@ -441,7 +441,7 @@ class MainZone extends EventEmitter {
                             const inputName = this.inputsConfigured[index].name;
                             const inputMode = this.inputsConfigured[index].mode;
                             const inputReference = this.inputsConfigured[index].reference;
-                            const reference = inputMode + inputReference;
+                            const reference = `${inputMode}${inputReference}`;
 
                             switch (this.power) {
                                 case false:
