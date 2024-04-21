@@ -414,8 +414,8 @@ class DENON extends EventEmitter {
                             const inputReferenceSubstring1 = inputReference.substring(0, 2) ?? 'Unknown';
                             const inputModeExist1 = inputReferenceSubstring1 in CONSTANTS.InputMode;
 
-                            inputMode = inputModeExist ? CONSTANTS.InputMode[inputReferenceSubstring] : inputModeExist1 ? CONSTANTS.InputMode[inputReferenceSubstring1] : inputMode;
                             inputReference = inputModeExist1 ? inputReference.substring(3) : inputReference;
+                            inputMode = inputModeExist ? CONSTANTS.InputMode[inputReferenceSubstring] : inputModeExist1 ? CONSTANTS.InputMode[inputReferenceSubstring1] : inputMode;
                             break;
                         case 1:
                             inputMode = 'Z2';
