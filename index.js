@@ -65,7 +65,7 @@ class DenonPlatform {
 						}
 					});
 				} catch (error) {
-					this.emit('error', `prepare files error: ${error}`);
+					log.error(`Device: ${host} ${deviceName}, prepare files error: ${error}`);
 				}
 
 				//zones
