@@ -6557,10 +6557,11 @@
             },
             "refreshInterval": {
               "title": "Refresh interval (sec)",
-              "type": "integer",
+              "type": "number",
               "default": 5,
-              "minimum": 0,
+              "minimum": 0.5,
               "maximum": 30,
+              "multipleOf": 0.5,
               "description": "Here set the background data refresh interval.",
               "required": true
             },
