@@ -50,8 +50,22 @@ class Surround extends EventEmitter {
         this.inputsConfigured = [];
         this.inputIdentifier = 1;
 
-        //sensors
+        //sensors variable
         this.sensorsInputsConfigured = [];
+        for (const sensor of this.sensorInputs) {
+            const sensorInputName = sensor.name ?? false;
+            const sensorInputReference = sensor.reference ?? false;
+            const sensorInputDisplayType = sensor.displayType ?? 0;
+            if (sensorInputName && sensorInputReference >= 0 && sensorInputDisplayType > 0) {
+                sensor.serviceType = ['', Service.MotionSensor, Service.OccupancySensor, Service.ContactSensor][sensorInputDisplayType];
+                sensor.characteristicType = ['', Characteristic.MotionDetected, Characteristic.OccupancyDetected, Characteristic.ContactSensorState][sensorInputDisplayType];
+                sensor.state = false;
+                this.sensorsInputsConfigured.push(sensor);
+            } else {
+                const log = sensorInputDisplayType === 0 ? false : this.emit('message', `Sensor Name: ${sensorInputName ? sensorInputName : 'Missing'}, Reference: ${sensorInputReference ? sensorInputReference : 'Missing'}.`);
+            };
+        }
+        this.sensorsInputsConfiguredCount = this.sensorsInputsConfigured.length || 0;
         this.sensorVolumeState = false;
         this.sensorInputState = false;
 
@@ -167,11 +181,10 @@ class Surround extends EventEmitter {
                 }
 
                 if (this.sensorsInputsServices) {
-                    const servicesCount = this.sensorsInputsServices.length;
-                    for (let i = 0; i < servicesCount; i++) {
+                    for (let i = 0; i < this.sensorsInputsConfiguredCount; i++) {
                         const state = power ? this.sensorsInputsConfigured[i].reference === reference : false;
-                        const displayType = this.sensorsInputsConfigured[i].displayType;
-                        const characteristicType = ['', Characteristic.MotionDetected, Characteristic.OccupancyDetected, Characteristic.ContactSensorState][displayType];
+                        this.sensorsInputsConfigured[i].state = state;
+                        const characteristicType = this.sensorsInputsConfigured[i].characteristicType;
                         this.sensorsInputsServices[i]
                             .updateCharacteristic(characteristicType, state);
                     }
@@ -803,50 +816,39 @@ class Surround extends EventEmitter {
                     this.allServices.push(this.sensorInputService);
                 };
 
-                //prepare sonsor inputs services
-                const sensorInputs = this.sensorInputs;
-                const sensorInputsCount = sensorInputs.length;
+                //prepare sonsor service
                 const possibleSensorInputsCount = 99 - this.allServices.length;
-                const maxSensorInputsCount = sensorInputsCount >= possibleSensorInputsCount ? possibleSensorInputsCount : sensorInputsCount;
+                const maxSensorInputsCount = this.sensorsInputsConfiguredCount >= possibleSensorInputsCount ? possibleSensorInputsCount : this.sensorsInputsConfiguredCount;
                 if (maxSensorInputsCount > 0) {
                     const debug = !this.enableDebugMode ? false : this.emit('debug', `Prepare inputs sensors services`);
                     for (let i = 0; i < maxSensorInputsCount; i++) {
                         //get sensor
-                        const sensorInput = sensorInputs[i];
+                        const sensorInput = this.sensorsInputsConfigured[i];
 
-                        //get name		
+                        //get sensor name		
                         const sensorInputName = sensorInput.name;
-
-                        //get reference
-                        const sensorInputReference = sensorInput.reference;
-
-                        //get display type
-                        const sensorInputDisplayType = sensorInput.displayType || 0;
 
                         //get sensor name prefix
                         const namePrefix = sensorInput.namePrefix || false;
 
-                        if (sensorInputDisplayType > 0) {
-                            if (sensorInputName && sensorInputReference) {
-                                const serviceName = namePrefix ? `${accessoryName} ${sensorInputName}` : sensorInputName;
-                                const characteristicType = ['', Characteristic.MotionDetected, Characteristic.OccupancyDetected, Characteristic.ContactSensorState][sensorInputDisplayType];
-                                const serviceType = ['', Service.MotionSensor, Service.OccupancySensor, Service.ContactSensor][sensorInputDisplayType];
-                                const sensorInputService = accessory.addService(serviceType, serviceName, `Input Sensor ${i}`);
-                                sensorInputService.addOptionalCharacteristic(Characteristic.ConfiguredName);
-                                sensorInputService.setCharacteristic(Characteristic.ConfiguredName, serviceName);
-                                sensorInputService.getCharacteristic(characteristicType)
-                                    .onGet(async () => {
-                                        const state = this.power ? (this.reference === sensorInputReference) : false;
-                                        return state;
-                                    });
+                        //get service type
+                        const serviceType = sensorInput.serviceType;
 
-                                this.sensorsInputsConfigured.push(sensorInput);
-                                this.sensorsInputsServices.push(sensorInputService);
-                                this.allServices.push(sensorInputService);
-                            } else {
-                                this.emit('message', `Sensor Name: ${sensorInputName ? sensorInputName : 'Missing'}, Reference: ${sensorInputReference ? sensorInputReference : 'Missing'}.`);
-                            };
-                        }
+                        //get service type
+                        const characteristicType = sensorInput.characteristicType;
+
+                        const serviceName = namePrefix ? `${accessoryName} ${sensorInputName}` : sensorInputName;
+                        const sensorInputService = accessory.addService(serviceType, serviceName, `Sensor ${i}`);
+                        sensorInputService.addOptionalCharacteristic(Characteristic.ConfiguredName);
+                        sensorInputService.setCharacteristic(Characteristic.ConfiguredName, serviceName);
+                        sensorInputService.getCharacteristic(characteristicType)
+                            .onGet(async () => {
+                                const state = sensorInput.state
+                                return state;
+                            });
+                        this.sensorsInputsServices.push(sensorInputService);
+                        this.allServices.push(sensorInputService);
+                        accessory.addService(sensorInputService);
                     }
                 }
 

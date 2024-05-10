@@ -53,13 +53,41 @@ class Zone3 extends EventEmitter {
         this.inputsConfigured = [];
         this.inputIdentifier = 1;
 
-        //sensors
+        //sensors variable
         this.sensorsInputsConfigured = [];
+        for (const sensor of this.sensorInputs) {
+            const sensorInputName = sensor.name ?? false;
+            const sensorInputReference = sensor.reference ?? false;
+            const sensorInputDisplayType = sensor.displayType ?? 0;
+            if (sensorInputName && sensorInputReference >= 0 && sensorInputDisplayType > 0) {
+                sensor.serviceType = ['', Service.MotionSensor, Service.OccupancySensor, Service.ContactSensor][sensorInputDisplayType];
+                sensor.characteristicType = ['', Characteristic.MotionDetected, Characteristic.OccupancyDetected, Characteristic.ContactSensorState][sensorInputDisplayType];
+                sensor.state = false;
+                this.sensorsInputsConfigured.push(sensor);
+            } else {
+                const log = sensorInputDisplayType === 0 ? false : this.emit('message', `Sensor Name: ${sensorInputName ? sensorInputName : 'Missing'}, Reference: ${sensorInputReference ? sensorInputReference : 'Missing'}.`);
+            };
+        }
+        this.sensorsInputsConfiguredCount = this.sensorsInputsConfigured.length || 0;
         this.sensorVolumeState = false;
         this.sensorInputState = false;
 
-        //buttons
+        //buttons variable
         this.buttonsConfigured = [];
+        for (const button of this.buttons) {
+            const buttonName = button.name ?? false;
+            const buttonMode = button.mode ?? -1;
+            const buttonReferenceCommand = [button.reference, button.command][buttonMode] ?? false;
+            const buttonDisplayType = button.displayType ?? 0;
+            if (buttonName && buttonReferenceCommand && buttonMode >= 0 && buttonDisplayType > 0) {
+                button.serviceType = ['', Service.Outlet, Service.Switch][buttonDisplayType];
+                button.state = false;
+                this.buttonsConfigured.push(button);
+            } else {
+                const log = buttonDisplayType === 0 ? false : this.emit('message', `Button Name: ${buttonName ? buttonName : 'Missing'}, ${buttonMode ? 'Command:' : 'Reference:'} ${buttonReferenceCommand ? buttonReferenceCommand : 'Missing'}, Mode: ${buttonMode ? buttonMode : 'Missing'}.`);
+            };
+        }
+        this.buttonsConfiguredCount = this.buttonsConfigured.length || 0;
 
         //state variable
         this.power = false;
@@ -173,13 +201,22 @@ class Zone3 extends EventEmitter {
                 }
 
                 if (this.sensorsInputsServices) {
-                    const servicesCount = this.sensorsInputsServices.length;
-                    for (let i = 0; i < servicesCount; i++) {
+                    for (let i = 0; i < this.sensorsInputsConfiguredCount; i++) {
                         const state = power ? this.sensorsInputsConfigured[i].reference === reference : false;
-                        const displayType = this.sensorsInputsConfigured[i].displayType;
-                        const characteristicType = ['', Characteristic.MotionDetected, Characteristic.OccupancyDetected, Characteristic.ContactSensorState][displayType];
+                        this.sensorsInputsConfigured[i].state = state;
+                        const characteristicType = this.sensorsInputsConfigured[i].characteristicType;
                         this.sensorsInputsServices[i]
                             .updateCharacteristic(characteristicType, state);
+                    }
+                }
+
+                //buttons
+                if (this.buttonsServices) {
+                    for (let i = 0; i < this.buttonsConfiguredCount; i++) {
+                        const state = power ? this.buttonsConfigured[i].reference === reference : false;
+                        this.buttonsConfigured[i].state = state;
+                        this.buttonsServices[i]
+                            .updateCharacteristic(Characteristic.On, state);
                     }
                 }
 
@@ -790,63 +827,50 @@ class Zone3 extends EventEmitter {
                     this.allServices.push(this.sensorInputService);
                 };
 
-                //prepare sonsor inputs services
-                const sensorInputs = this.sensorInputs;
-                const sensorInputsCount = sensorInputs.length;
+                //prepare sonsor service
                 const possibleSensorInputsCount = 99 - this.allServices.length;
-                const maxSensorInputsCount = sensorInputsCount >= possibleSensorInputsCount ? possibleSensorInputsCount : sensorInputsCount;
+                const maxSensorInputsCount = this.sensorsInputsConfiguredCount >= possibleSensorInputsCount ? possibleSensorInputsCount : this.sensorsInputsConfiguredCount;
                 if (maxSensorInputsCount > 0) {
                     const debug = !this.enableDebugMode ? false : this.emit('debug', `Prepare inputs sensors services`);
                     for (let i = 0; i < maxSensorInputsCount; i++) {
                         //get sensor
-                        const sensorInput = sensorInputs[i];
+                        const sensorInput = this.sensorsInputsConfigured[i];
 
-                        //get name		
+                        //get sensor name		
                         const sensorInputName = sensorInput.name;
-
-                        //get reference
-                        const sensorInputReference = sensorInput.reference;
-
-                        //get display type
-                        const sensorInputDisplayType = sensorInput.displayType || 0;
 
                         //get sensor name prefix
                         const namePrefix = sensorInput.namePrefix || false;
 
-                        if (sensorInputDisplayType > 0) {
-                            if (sensorInputName && sensorInputReference) {
-                                const serviceName = namePrefix ? `${accessoryName} ${sensorInputName}` : sensorInputName;
-                                const characteristicType = ['', Characteristic.MotionDetected, Characteristic.OccupancyDetected, Characteristic.ContactSensorState][sensorInputDisplayType];
-                                const serviceType = ['', Service.MotionSensor, Service.OccupancySensor, Service.ContactSensor][sensorInputDisplayType];
-                                const sensorInputService = accessory.addService(serviceType, serviceName, `Input Sensor ${i}`);
-                                sensorInputService.addOptionalCharacteristic(Characteristic.ConfiguredName);
-                                sensorInputService.setCharacteristic(Characteristic.ConfiguredName, serviceName);
-                                sensorInputService.getCharacteristic(characteristicType)
-                                    .onGet(async () => {
-                                        const state = this.power ? (this.reference === sensorInputReference) : false;
-                                        return state;
-                                    });
+                        //get service type
+                        const serviceType = sensorInput.serviceType;
 
-                                this.sensorsInputsConfigured.push(sensorInput);
-                                this.sensorsInputsServices.push(sensorInputService);
-                                this.allServices.push(sensorInputService);
-                            } else {
-                                this.emit('message', `Sensor Name: ${sensorInputName ? sensorInputName : 'Missing'}, Reference: ${sensorInputReference ? sensorInputReference : 'Missing'}.`);
-                            };
-                        }
+                        //get service type
+                        const characteristicType = sensorInput.characteristicType;
+
+                        const serviceName = namePrefix ? `${accessoryName} ${sensorInputName}` : sensorInputName;
+                        const sensorInputService = accessory.addService(serviceType, serviceName, `Sensor ${i}`);
+                        sensorInputService.addOptionalCharacteristic(Characteristic.ConfiguredName);
+                        sensorInputService.setCharacteristic(Characteristic.ConfiguredName, serviceName);
+                        sensorInputService.getCharacteristic(characteristicType)
+                            .onGet(async () => {
+                                const state = sensorInput.state
+                                return state;
+                            });
+                        this.sensorsInputsServices.push(sensorInputService);
+                        this.allServices.push(sensorInputService);
+                        accessory.addService(sensorInputService);
                     }
                 }
 
                 //prepare buttons services
-                const buttons = this.buttons;
-                const buttonsCount = buttons.length;
                 const possibleButtonsCount = 99 - this.allServices.length;
-                const maxButtonsCount = buttonsCount >= possibleButtonsCount ? possibleButtonsCount : buttonsCount;
+                const maxButtonsCount = this.buttonsConfiguredCount >= possibleButtonsCount ? possibleButtonsCount : this.buttonsConfiguredCount;
                 if (maxButtonsCount > 0) {
                     const debug = !this.enableDebugMode ? false : this.emit('debug', `Prepare buttons services`);
                     for (let i = 0; i < maxButtonsCount; i++) {
                         //get button
-                        const button = buttons[i];
+                        const button = this.buttonsConfigured[i];
 
                         //get button name
                         const buttonName = button.name;
@@ -854,49 +878,41 @@ class Zone3 extends EventEmitter {
                         //get button reference
                         const buttonReference = button.reference;
 
-                        //get button display type
-                        const buttonDisplayType = button.displayType || 0;
-
                         //get button name prefix
                         const namePrefix = button.namePrefix || false;
 
-                        if (buttonDisplayType > 0) {
-                            if (buttonName && buttonReference) {
-                                const serviceName = namePrefix ? `${accessoryName} ${buttonName}` : buttonName;
-                                const serviceType = ['', Service.Outlet, Service.Switch][buttonDisplayType];
-                                const buttonService = accessory.addService(serviceType, serviceName, `Button ${i}`);
-                                buttonService.addOptionalCharacteristic(Characteristic.ConfiguredName);
-                                buttonService.setCharacteristic(Characteristic.ConfiguredName, serviceName);
-                                buttonService.getCharacteristic(Characteristic.On)
-                                    .onGet(async () => {
-                                        const state = false;
-                                        return state;
-                                    })
-                                    .onSet(async (state) => {
-                                        try {
-                                            const directSound = CONSTANTS.DirectSoundMode[buttonReference] ?? false;
-                                            const directSoundModeMode = directSound ? directSound.mode : false;
-                                            const directSoundModeSurround = directSound ? directSound.surround : false;
-                                            const command = directSound ? directSoundModeMode : buttonReference.substring(1);
-                                            const reference = `Z3${command}`;
+                        //get service type
+                        const serviceType = button.serviceType;
 
-                                            const set = state ? await this.denon.send(reference) : false;
-                                            const set2 = state && directSound ? await this.denon.send(directSoundModeSurround) : false;
-                                            const info = this.disableLogInfo || !state ? false : this.emit('message', `set Button Name: ${buttonName}, Reference: ${reference}`);
-                                            buttonService.updateCharacteristic(Characteristic.On, false);
-                                        } catch (error) {
-                                            this.emit('error', `set Button error: ${error}`);
-                                            buttonService.updateCharacteristic(Characteristic.On, false);
-                                        };
-                                    });
+                        const serviceName = namePrefix ? `${accessoryName} ${buttonName}` : buttonName;
+                        const buttonService = accessory.addService(serviceType, serviceName, `Button ${i}`);
+                        buttonService.addOptionalCharacteristic(Characteristic.ConfiguredName);
+                        buttonService.setCharacteristic(Characteristic.ConfiguredName, serviceName);
+                        buttonService.getCharacteristic(Characteristic.On)
+                            .onGet(async () => {
+                                const state = button.state;
+                                return state;
+                            })
+                            .onSet(async (state) => {
+                                try {
+                                    const directSound = CONSTANTS.DirectSoundMode[buttonReference] ?? false;
+                                    const directSoundModeMode = directSound ? directSound.mode : false;
+                                    const directSoundModeSurround = directSound ? directSound.surround : false;
+                                    const command = directSound ? directSoundModeMode : buttonReference.substring(1);
+                                    const reference = command;
 
-                                this.buttonsConfigured.push(button);
-                                this.buttonsServices.push(buttonService);
-                                this.allServices.push(buttonService);
-                            } else {
-                                this.emit('message', `Button Name: ${buttonName ? buttonName : 'Missing'}, Reference: ${buttonReference ? buttonReference : 'Missing'}.`);
-                            };
-                        }
+                                    const set = state ? await this.denon.send(reference) : false;
+                                    const set2 = state && directSound ? await this.denon.send(directSoundModeSurround) : false;
+                                    const info = this.disableLogInfo || !state ? false : this.emit('message', `set Button Name: ${buttonName}, Reference: ${reference}`);
+                                } catch (error) {
+                                    this.emit('error', `set Button error: ${error}`);
+                                    buttonService.updateCharacteristic(Characteristic.On, false);
+                                };
+                            });
+
+                        this.buttonsServices.push(buttonService);
+                        this.allServices.push(buttonService);
+                        accessory.addService(buttonService);
                     };
                 };
 
