@@ -56,7 +56,7 @@ class Surround extends EventEmitter {
             const sensorInputName = sensor.name ?? false;
             const sensorInputReference = sensor.reference ?? false;
             const sensorInputDisplayType = sensor.displayType ?? 0;
-            if (sensorInputName && sensorInputReference >= 0 && sensorInputDisplayType > 0) {
+            if (sensorInputName && sensorInputReference && sensorInputDisplayType > 0) {
                 sensor.serviceType = ['', Service.MotionSensor, Service.OccupancySensor, Service.ContactSensor][sensorInputDisplayType];
                 sensor.characteristicType = ['', Characteristic.MotionDetected, Characteristic.OccupancyDetected, Characteristic.ContactSensorState][sensorInputDisplayType];
                 sensor.state = false;

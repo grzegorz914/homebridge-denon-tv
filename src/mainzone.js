@@ -57,7 +57,7 @@ class MainZone extends EventEmitter {
             const sensorInputName = sensor.name ?? false;
             const sensorInputReference = sensor.reference ?? false;
             const sensorInputDisplayType = sensor.displayType ?? 0;
-            if (sensorInputName && sensorInputReference >= 0 && sensorInputDisplayType > 0) {
+            if (sensorInputName && sensorInputReference && sensorInputDisplayType > 0) {
                 sensor.serviceType = ['', Service.MotionSensor, Service.OccupancySensor, Service.ContactSensor][sensorInputDisplayType];
                 sensor.characteristicType = ['', Characteristic.MotionDetected, Characteristic.OccupancyDetected, Characteristic.ContactSensorState][sensorInputDisplayType];
                 sensor.state = false;
@@ -77,7 +77,7 @@ class MainZone extends EventEmitter {
             const buttonMode = button.mode ?? -1;
             const buttonReferenceCommand = [button.reference, button.command][buttonMode] ?? false;
             const buttonDisplayType = button.displayType ?? 0;
-            if (buttonName && buttonReferenceCommand && buttonMode >= 0 && buttonDisplayType > 0) {
+            if (buttonName && buttonMode >= 0 && buttonReferenceCommand && buttonDisplayType > 0) {
                 button.serviceType = ['', Service.Outlet, Service.Switch][buttonDisplayType];
                 button.state = false;
                 this.buttonsConfigured.push(button);
