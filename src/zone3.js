@@ -848,7 +848,7 @@ class Zone3 extends EventEmitter {
                         const characteristicType = sensorInput.characteristicType;
 
                         const serviceName = namePrefix ? `${accessoryName} ${sensorInputName}` : sensorInputName;
-                        const sensorInputService = accessory.addService(serviceType, serviceName, `Sensor ${i}`);
+                        const sensorInputService = new serviceType(serviceName, `Sensor ${i}`);
                         sensorInputService.addOptionalCharacteristic(Characteristic.ConfiguredName);
                         sensorInputService.setCharacteristic(Characteristic.ConfiguredName, serviceName);
                         sensorInputService.getCharacteristic(characteristicType)
@@ -884,7 +884,7 @@ class Zone3 extends EventEmitter {
                         const serviceType = button.serviceType;
 
                         const serviceName = namePrefix ? `${accessoryName} ${buttonName}` : buttonName;
-                        const buttonService = accessory.addService(serviceType, serviceName, `Button ${i}`);
+                        const buttonService = new serviceType(serviceName, `Button ${i}`);
                         buttonService.addOptionalCharacteristic(Characteristic.ConfiguredName);
                         buttonService.setCharacteristic(Characteristic.ConfiguredName, serviceName);
                         buttonService.getCharacteristic(Characteristic.On)
