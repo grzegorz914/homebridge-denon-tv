@@ -201,9 +201,10 @@ class Zone3 extends EventEmitter {
 
                 if (this.sensorsInputsServices) {
                     for (let i = 0; i < this.sensorsInputsConfiguredCount; i++) {
-                        const state = power ? this.sensorsInputsConfigured[i].reference === reference : false;
-                        this.sensorsInputsConfigured[i].state = state;
-                        const characteristicType = this.sensorsInputsConfigured[i].characteristicType;
+                        const sensorInput = this.sensorsInputsConfigured[i];
+                        const state = power ? sensorInput.reference === reference : false;
+                        sensorInput.state = state;
+                        const characteristicType = sensorInput.characteristicType;
                         this.sensorsInputsServices[i]
                             .updateCharacteristic(characteristicType, state);
                     }
@@ -212,8 +213,9 @@ class Zone3 extends EventEmitter {
                 //buttons
                 if (this.buttonsServices) {
                     for (let i = 0; i < this.buttonsConfiguredCount; i++) {
-                        const state = power ? this.buttonsConfigured[i].reference === reference : false;
-                        this.buttonsConfigured[i].state = state;
+                        const button = this.buttonsConfigured[i];
+                        const state = this.power ? button.reference === reference : false;
+                        button.state = state;
                         this.buttonsServices[i]
                             .updateCharacteristic(Characteristic.On, state);
                     }
