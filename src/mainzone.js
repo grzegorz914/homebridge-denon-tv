@@ -989,7 +989,7 @@ class MainZone extends EventEmitter {
                                     const info = this.disableLogInfo || !state ? false : this.emit('message', `set Button Name: ${buttonName}, Reference: ${reference}`);
                                 } catch (error) {
                                     this.emit('error', `set Button error: ${error}`);
-                                    buttonService.updateCharacteristic(Characteristic.On, false);
+                                    button.state = false;
                                 };
                             });
 
