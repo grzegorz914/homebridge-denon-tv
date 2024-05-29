@@ -414,7 +414,6 @@ class MainZone extends EventEmitter {
         return new Promise(async (resolve, reject) => {
             try {
                 const data = await fsPromises.readFile(path);
-                const debug = !this.enableDebugMode ? false : this.emit('debug', `Read data: ${JSON.stringify(data, null, 2)}`);
                 resolve(data);
             } catch (error) {
                 reject(`Read saved data error: ${error}`);
@@ -476,9 +475,10 @@ class MainZone extends EventEmitter {
                     .onSet(async (activeIdentifier) => {
                         try {
                             const index = this.inputsConfigured.findIndex(input => input.identifier === activeIdentifier);
-                            const inputName = this.inputsConfigured[index].name;
-                            const inputMode = this.inputsConfigured[index].mode;
-                            const inputReference = this.inputsConfigured[index].reference;
+                            const input = this.inputsConfigured[index];
+                            const inputName = input.name;
+                            const inputMode = input.mode;
+                            const inputReference = input.reference;
                             const reference = `${inputMode}${inputReference}`;
 
                             switch (this.power) {
@@ -488,7 +488,7 @@ class MainZone extends EventEmitter {
                                     break;
                                 case true:
                                     await this.denon.send(reference);
-                                    const info = this.disableLogInfo ? false : this.emit('message', `set Input Name: ${inputName}, Reference: ${inputReference}`);
+                                    const info = this.disableLogInfo ? false : this.emit('message', `set Input Name: ${inputName}, Reference: ${reference}`);
                                     break;
                             }
                         } catch (error) {

@@ -412,7 +412,6 @@ class Zone2 extends EventEmitter {
         return new Promise(async (resolve, reject) => {
             try {
                 const data = await fsPromises.readFile(path);
-                const debug = !this.enableDebugMode ? false : this.emit('debug', `Read data: ${JSON.stringify(data, null, 2)}`);
                 resolve(data);
             } catch (error) {
                 reject(`Read saved data error: ${error}`);
@@ -474,9 +473,10 @@ class Zone2 extends EventEmitter {
                     .onSet(async (activeIdentifier) => {
                         try {
                             const index = this.inputsConfigured.findIndex(input => input.identifier === activeIdentifier);
-                            const inputName = this.inputsConfigured[index].name;
-                            const inputMode = this.inputsConfigured[index].mode;
-                            const inputReference = this.inputsConfigured[index].reference;
+                            const input = this.inputsConfigured[index];
+                            const inputName = input.name;
+                            const inputMode = input.mode;
+                            const inputReference = input.reference;
                             const reference = `${inputMode}${inputReference}`;
 
                             switch (this.power) {
@@ -486,7 +486,7 @@ class Zone2 extends EventEmitter {
                                     break;
                                 case true:
                                     await this.denon.send(reference);
-                                    const info = this.disableLogInfo ? false : this.emit('message', `set Input Name: ${inputName}, Reference: ${inputReference}`);
+                                    const info = this.disableLogInfo ? false : this.emit('message', `set Input Name: ${inputName}, Reference: ${reference}`);
                                     break;
                             }
                         } catch (error) {
@@ -896,14 +896,8 @@ class Zone2 extends EventEmitter {
                             })
                             .onSet(async (state) => {
                                 try {
-                                    const directSound = CONSTANTS.DirectSoundMode[buttonReference] ?? false;
-                                    const directSoundModeMode = directSound ? directSound.mode : false;
-                                    const directSoundModeSurround = directSound ? directSound.surround : false;
-                                    const command = directSound ? directSoundModeMode : buttonReference.substring(1);
-                                    const reference = command;
-
+                                    const reference = `Z2${buttonReference.substring(1)}`;
                                     const set = state ? await this.denon.send(reference) : false;
-                                    const set2 = state && directSound ? await this.denon.send(directSoundModeSurround) : false;
                                     const info = this.disableLogInfo || !state ? false : this.emit('message', `set Button Name: ${buttonName}, Reference: ${reference}`);
                                 } catch (error) {
                                     this.emit('error', `set Button error: ${error}`);
