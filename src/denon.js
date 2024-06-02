@@ -455,6 +455,7 @@ class DENON extends EventEmitter {
             try {
                 const path = `${CONSTANTS.ApiUrls.iPhoneDirect}${command}`;
                 await this.axiosInstance(path);
+                this.emit('checkState');
                 resolve();
             } catch (error) {
                 reject(error);
