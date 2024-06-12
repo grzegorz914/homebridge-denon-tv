@@ -131,8 +131,8 @@ class Surround extends EventEmitter {
                         .updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier)
                 }
 
-                if (this.tvSpeakerService) {
-                    this.tvSpeakerService
+                if (this.speakerService) {
+                    this.speakerService
                         .updateCharacteristic(Characteristic.Active, power)
                         .updateCharacteristic(Characteristic.Volume, volume)
                         .updateCharacteristic(Characteristic.Mute, mute);
@@ -540,21 +540,21 @@ class Surround extends EventEmitter {
 
                 //prepare speaker service
                 const debug3 = !this.enableDebugMode ? false : this.emit('debug', `Prepare speaker service`);
-                this.tvSpeakerService = accessory.addService(Service.TelevisionSpeaker, `${accessoryName} Speaker`, 'Speaker');
-                this.tvSpeakerService.getCharacteristic(Characteristic.Active)
+                this.speakerService = accessory.addService(Service.TelevisionSpeaker, `${accessoryName} Speaker`, 'Speaker');
+                this.speakerService.getCharacteristic(Characteristic.Active)
                     .onGet(async () => {
                         const state = this.power;
                         return state;
                     })
                     .onSet(async (state) => {
                     });
-                this.tvSpeakerService.getCharacteristic(Characteristic.VolumeControlType)
+                this.speakerService.getCharacteristic(Characteristic.VolumeControlType)
                     .onGet(async () => {
                         const controlType = this.volumeControlType === 'Relative' ? 1 : 3; //none, relative, relative with current, absolute
                         const state = 3;
                         return state;
                     })
-                this.tvSpeakerService.getCharacteristic(Characteristic.VolumeSelector)
+                this.speakerService.getCharacteristic(Characteristic.VolumeSelector)
                     .onSet(async (command) => {
                         try {
                             switch (command) {
@@ -573,7 +573,7 @@ class Surround extends EventEmitter {
                         };
                     });
 
-                this.tvSpeakerService.getCharacteristic(Characteristic.Volume)
+                this.speakerService.getCharacteristic(Characteristic.Volume)
                     .setProps({
                         minValue: 0,
                         maxValue: this.volumeMax
@@ -584,7 +584,7 @@ class Surround extends EventEmitter {
                     })
                     .onSet(async (value) => {
                         try {
-                            value = (value <= 0 || value >= 100) ? this.volume : (value < 10 ? `0${value}` : value);
+                            value = value < 10 ? `0${value}` : value;
                             const volume = `MV${value}`;
                             await this.denon.send(volume);
                             const info = this.disableLogInfo ? false : this.emit('message', `set Volume: ${value - 80}`);
@@ -593,7 +593,7 @@ class Surround extends EventEmitter {
                         };
                     });
 
-                this.tvSpeakerService.getCharacteristic(Characteristic.Mute)
+                this.speakerService.getCharacteristic(Characteristic.Mute)
                     .onGet(async () => {
                         const state = this.mute;
                         return state;
@@ -608,7 +608,7 @@ class Surround extends EventEmitter {
                         };
                     });
 
-                this.allServices.push(this.tvSpeakerService);
+                this.allServices.push(this.speakerService);
 
                 //prepare inputs service
                 const debug8 = !this.enableDebugMode ? false : this.emit('debug', `Prepare surrounds services`);
@@ -717,7 +717,7 @@ class Surround extends EventEmitter {
                                 return volume;
                             })
                             .onSet(async (volume) => {
-                                this.tvSpeakerService.setCharacteristic(Characteristic.Volume, volume);
+                                this.speakerService.setCharacteristic(Characteristic.Volume, volume);
                             });
                         this.volumeService.getCharacteristic(Characteristic.On)
                             .onGet(async () => {
@@ -725,7 +725,7 @@ class Surround extends EventEmitter {
                                 return state;
                             })
                             .onSet(async (state) => {
-                                this.tvSpeakerService.setCharacteristic(Characteristic.Mute, !state);
+                                this.speakerService.setCharacteristic(Characteristic.Mute, !state);
                             });
 
                         this.allServices.push(this.volumeService);
@@ -745,7 +745,7 @@ class Surround extends EventEmitter {
                                 return volume;
                             })
                             .onSet(async (volume) => {
-                                this.tvSpeakerService.setCharacteristic(Characteristic.Volume, volume);
+                                this.speakerService.setCharacteristic(Characteristic.Volume, volume);
                             });
                         this.volumeServiceFan.getCharacteristic(Characteristic.On)
                             .onGet(async () => {
@@ -753,7 +753,7 @@ class Surround extends EventEmitter {
                                 return state;
                             })
                             .onSet(async (state) => {
-                                this.tvSpeakerService.setCharacteristic(Characteristic.Mute, !state);
+                                this.speakerService.setCharacteristic(Characteristic.Mute, !state);
                             });
 
                         this.allServices.push(this.volumeServiceFan);

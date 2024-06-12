@@ -25,7 +25,7 @@ class DENON extends EventEmitter {
         const debugLog = config.debugLog;
         const disableLogConnectError = config.disableLogConnectError;
         const refreshInterval = config.refreshInterval;
-        const zoneInputSurroundName = CONSTANTS.ZoneInputSurroundName[zone]
+        const zoneInputSurroundName = CONSTANTS.ZoneInputSurroundName[zone];
         const deviceInfoUrl = [CONSTANTS.ApiUrls.DeviceInfoGen0, CONSTANTS.ApiUrls.DeviceInfoGen1, CONSTANTS.ApiUrls.DeviceInfoGen2][generation];
 
         this.debugLog = debugLog;
@@ -264,7 +264,7 @@ class DENON extends EventEmitter {
                     const deviceAudysseyMode = checkAudysseyMode ? await this.axiosInstancePost(CONSTANTS.ApiUrls.AppCommand, CONSTANTS.BodyXml.GetAudyssey) : false;
                     const parseDeviceAudysseyMode = checkAudysseyMode ? parseString.parse(deviceAudysseyMode.data) : false;
                     const debug3 = debugLog && checkAudysseyMode ? this.emit('debug', `Audyssey mode: ${JSON.stringify(parseDeviceAudysseyMode, null, 2)}`) : false;
-                    const sudysseyMode = checkAudysseyMode ? parseDeviceAudysseyMode.rx.cmd.value : this.audysseyMode;
+                    const audysseyMode = checkAudysseyMode ? parseDeviceAudysseyMode.rx.cmd.value : this.audysseyMode;
 
                     //select reference
                     const reference = [input, input, input, soundMode][zone];
@@ -294,7 +294,7 @@ class DENON extends EventEmitter {
                     this.mute = mute;
                     this.pictureMode = pictureMode;
                     this.soundMode = soundMode;
-                    this.audysseyMode = this.audysseyMode;
+                    this.audysseyMode = audysseyMode;
 
                     //emit state changed
                     this.emit('stateChanged', power, reference, volume, volumeDisplay, mute, pictureMode);
@@ -455,7 +455,6 @@ class DENON extends EventEmitter {
             try {
                 const path = `${CONSTANTS.ApiUrls.iPhoneDirect}${command}`;
                 await this.axiosInstance(path);
-                this.emit('checkState');
                 resolve();
             } catch (error) {
                 reject(error);
