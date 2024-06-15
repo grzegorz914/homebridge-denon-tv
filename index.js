@@ -42,7 +42,7 @@ class DenonPlatform {
 				//zones
 				const zoneControl = device.zoneControl;
 				const generation = device.generation || 0;
-				const refreshInterval = device.refreshInterval || 5;
+				const refreshInterval = device.refreshInterval * 1000 || 5000;
 
 				//check files exists, if not then create it
 				const postFix = `${CONSTANTS.ZoneNameShort[zoneControl]}${host.split('.').join('')}`

@@ -5,6 +5,7 @@ const https = require('https');
 const axios = require('axios');
 const EventEmitter = require('events');
 const { XMLParser, XMLBuilder, XMLValidator } = require('fast-xml-parser');
+const ImpulseGenerator = require('./impulsegenerator.js');
 const CONSTANTS = require('./constants.json');
 const INPUTS_CONVERSION_KEYS = Object.keys(CONSTANTS.InputConversion);
 const SOUND_MODES_CONVERSION_KEYS = Object.keys(CONSTANTS.SoundModeConversion);
@@ -27,9 +28,7 @@ class DENON extends EventEmitter {
         const refreshInterval = config.refreshInterval;
         const zoneInputSurroundName = CONSTANTS.ZoneInputSurroundName[zone];
         const deviceInfoUrl = [CONSTANTS.ApiUrls.DeviceInfoGen0, CONSTANTS.ApiUrls.DeviceInfoGen1, CONSTANTS.ApiUrls.DeviceInfoGen2][generation];
-
         this.debugLog = debugLog;
-        this.refreshInterval = refreshInterval;
 
         const baseUrl = `http://${host}:${port}`;
         this.axiosInstance = generation === 2 ? axios.create({
@@ -82,7 +81,17 @@ class DENON extends EventEmitter {
         this.devInfo = {};
         const object = {};
 
-        this.on('checkDeviceInfo', async () => {
+        const timers = [
+            { name: 'checkDeviceInfo', interval: 30000 },
+            { name: 'checkState', interval: refreshInterval },
+        ];
+
+        const impulseGenerator = new ImpulseGenerator(timers);
+        impulseGenerator.on('checkDeviceInfo', async () => {
+            if (!this.startPrepareAccessory) {
+                return;
+            }
+
             try {
                 //get device info
                 const deviceInfo = await this.axiosInstance(deviceInfoUrl);
@@ -196,7 +205,6 @@ class DENON extends EventEmitter {
                 //check seriaql number
                 if (!serialNumber) {
                     const debug1 = debugLog ? this.emit('debug', `Missing Serial Number, reconnect in 15s.`) : false;
-                    this.checkDeviceInfo(devInfoFile);
                     return;
                 }
 
@@ -220,14 +228,15 @@ class DENON extends EventEmitter {
                 const prepareAccessory = this.startPrepareAccessory ? this.emit('prepareAccessory', allInputs) : false;
                 const awaitPrepareAccessory = this.startPrepareAccessory ? await new Promise(resolve => setTimeout(resolve, 2500)) : false;
                 this.startPrepareAccessory = false;
-
-                this.emit('checkState');
             } catch (error) {
                 const debug = disableLogConnectError ? false : this.emit('error', `Info error: ${error}, reconnect in 15s.`);
-                this.checkDeviceInfo();
             };
         })
             .on('checkState', async () => {
+                if (this.startPrepareAccessory) {
+                    return;
+                }
+
                 try {
                     //get zones status
                     const zoneStateUrl = [CONSTANTS.ApiUrls.MainZoneStatusLite, CONSTANTS.ApiUrls.Zone2StatusLite, CONSTANTS.ApiUrls.Zone3StatusLite, CONSTANTS.ApiUrls.SoundModeStatus][zone];
@@ -283,7 +292,6 @@ class DENON extends EventEmitter {
 
                     //update only if value change
                     if (power === this.power && reference === this.reference && volume === this.volume && volumeDisplay === this.volumeDisplay && mute === this.mute && pictureMode === this.pictureMode && soundMode === this.soundMode) {
-                        this.checkState();
                         return;
                     };
 
@@ -298,30 +306,17 @@ class DENON extends EventEmitter {
 
                     //emit state changed
                     this.emit('stateChanged', power, reference, volume, volumeDisplay, mute, pictureMode);
-
-                    this.checkState();
                 } catch (error) {
-                    const debug = disableLogConnectError ? false : this.emit('error', `State error: ${error}, reconnect in ${this.refreshInterval}s.`);
+                    const debug = disableLogConnectError ? false : this.emit('error', `State error: ${error}, reconnect in ${refreshInterval / 1000}s.`);
                     this.emit('disconnect');
                 };
             })
             .on('disconnect', () => {
                 this.emit('stateChanged', false, this.reference, this.volume, this.volumeDisplay, this.mute, this.pictureMode);
                 const debug = disableLogConnectError ? false : this.emit('disconnected', 'Disconnected.');
-                this.checkState();
             });
 
-        this.emit('checkDeviceInfo');
-    };
-
-    async checkDeviceInfo() {
-        await new Promise(resolve => setTimeout(resolve, 15000));
-        this.emit('checkDeviceInfo');
-    };
-
-    async checkState() {
-        await new Promise(resolve => setTimeout(resolve, this.refreshInterval * 1000));
-        this.emit('checkState');
+        impulseGenerator.start();
     };
 
     saveDevInfo(path, devInfo) {
