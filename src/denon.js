@@ -226,8 +226,11 @@ class DENON extends EventEmitter {
 
                 //prepare accessory
                 const prepareAccessory = this.startPrepareAccessory ? this.emit('prepareAccessory', allInputs) : false;
-                const awaitPrepareAccessory = this.startPrepareAccessory ? await new Promise(resolve => setTimeout(resolve, 2500)) : false;
                 this.startPrepareAccessory = false;
+
+                //check state
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                impulseGenerator.emit('checkState')
             } catch (error) {
                 const debug = disableLogConnectError ? false : this.emit('error', `Info error: ${error}, reconnect in 15s.`);
             };
@@ -308,7 +311,7 @@ class DENON extends EventEmitter {
                     this.emit('stateChanged', power, reference, volume, volumeDisplay, mute, pictureMode);
                 } catch (error) {
                     const debug = disableLogConnectError ? false : this.emit('error', `State error: ${error}, reconnect in ${refreshInterval / 1000}s.`);
-                    this.emit('disconnect');
+                    impulseGenerator.emit('disconnect');
                 };
             })
             .on('disconnect', () => {
