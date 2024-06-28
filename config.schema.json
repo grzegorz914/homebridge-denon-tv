@@ -102,27 +102,27 @@
               "type": "boolean",
               "default": false,
               "description": "If enabled, all Inputs will be loaded direct from device.",
-              "required": false
+              "required": true
             },
             "getFavoritesFromDevice": {
               "title": "Load Favorites",
               "type": "boolean",
               "default": false,
               "description": "If enabled, all Favorites will be loaded direct from device, only if exist.",
-              "required": false,
               "condition": {
                 "functionBody": "return model.devices[arrayIndices].getInputsFromDevice == true && model.devices[arrayIndices].generation >= 1;"
-              }
+              },
+              "required": true
             },
             "getQuickSmartSelectFromDevice": {
               "title": "Load Quick/Smart Select",
               "type": "boolean",
               "default": false,
               "description": "If enabled, all Quick/Smart Select will be loaded direct from device, only if exist.",
-              "required": false,
               "condition": {
                 "functionBody": "return model.devices[arrayIndices].getInputsFromDevice == true && model.devices[arrayIndices].generation >= 1;"
-              }
+              },
+              "required": true
             },
             "inputsDisplayOrder": {
               "title": "Display Order",
@@ -176,7 +176,7 @@
                     "type": "string",
                     "placeholder": "Name",
                     "description": "Here set Your own name.",
-                    "required": true
+                    "required": false
                   },
                   "reference": {
                     "title": "Reference",
@@ -814,13 +814,14 @@
                         ]
                       }
                     ],
-                    "required": true
+                    "required": false
                   }
                 }
               },
               "condition": {
                 "functionBody": "return model.devices[arrayIndices].getInputsFromDevice === false;"
-              }
+              },
+              "required": false
             },
             "surrounds": {
               "type": "array",
@@ -833,7 +834,7 @@
                     "type": "string",
                     "placeholder": "Surround name",
                     "description": "Here set Your own name.",
-                    "required": true
+                    "required": false
                   },
                   "reference": {
                     "title": "Surround",
@@ -979,10 +980,11 @@
                         ]
                       }
                     ],
-                    "required": true
+                    "required": false
                   }
                 }
-              }
+              },
+              "required": false
             },
             "buttons": {
               "type": "array",
@@ -995,7 +997,7 @@
                     "type": "string",
                     "placeholder": "Button name",
                     "description": "Here set Your own name.",
-                    "required": true
+                    "required": false
                   },
                   "reference": {
                     "title": "Function",
@@ -4225,7 +4227,7 @@
                       }
                     ],
                     "description": "Here select function.",
-                    "required": true
+                    "required": false
                   },
                   "displayType": {
                     "title": "Type",
@@ -4251,16 +4253,17 @@
                       }
                     ],
                     "description": "Here select characteristic type to be exposed in HomeKit app.",
-                    "required": true
+                    "required": false
                   },
                   "namePrefix": {
                     "title": "Prefix",
                     "type": "boolean",
                     "description": "Here enable/disable the accessory name as a prefix for button name.",
-                    "required": true
+                    "required": false
                   }
                 }
-              }
+              },
+              "required": false
             },
             "buttonsZ2": {
               "type": "array",
@@ -4273,7 +4276,7 @@
                     "type": "string",
                     "placeholder": "Button name",
                     "description": "Here set Your own name.",
-                    "required": true
+                    "required": false
                   },
                   "reference": {
                     "title": "Function",
@@ -4935,7 +4938,7 @@
                       }
                     ],
                     "description": "Here select function.",
-                    "required": true
+                    "required": false
                   },
                   "displayType": {
                     "title": "Type",
@@ -4961,16 +4964,17 @@
                       }
                     ],
                     "description": "Here select characteristic type to be exposed in HomeKit app.",
-                    "required": true
+                    "required": false
                   },
                   "namePrefix": {
                     "title": "Prefix",
                     "type": "boolean",
                     "description": "Here enable/disable the accessory name as a prefix for button name.",
-                    "required": true
+                    "required": false
                   }
                 }
-              }
+              },
+              "required": false
             },
             "buttonsZ3": {
               "type": "array",
@@ -4983,7 +4987,7 @@
                     "type": "string",
                     "placeholder": "Button name",
                     "description": "Here set Your own name.",
-                    "required": true
+                    "required": false
                   },
                   "reference": {
                     "title": "Function",
@@ -5659,16 +5663,17 @@
                       }
                     ],
                     "description": "Here select characteristic type to be exposed in HomeKit app.",
-                    "required": true
+                    "required": false
                   },
                   "namePrefix": {
                     "title": "Prefix",
                     "type": "boolean",
                     "description": "Here enable/disable the accessory name as a prefix for button name.",
-                    "required": true
+                    "required": false
                   }
                 }
-              }
+              },
+              "required": false
             },
             "sensorPower": {
               "title": "Power",
@@ -5710,7 +5715,7 @@
                     "type": "string",
                     "placeholder": "Name",
                     "description": "Here set Your own name.",
-                    "required": true
+                    "required": false
                   },
                   "reference": {
                     "title": "Reference",
@@ -6198,7 +6203,7 @@
                       }
                     ],
                     "description": "Here select reference.",
-                    "required": true
+                    "required": false
                   },
                   "displayType": {
                     "title": "Type",
@@ -6230,16 +6235,17 @@
                       }
                     ],
                     "description": "Here select characteristic type to be exposed in HomeKit app.",
-                    "required": true
+                    "required": false
                   },
                   "namePrefix": {
                     "title": "Prefix",
                     "type": "boolean",
                     "description": "Here enable/disable the accessory name as a prefix for sensor name.",
-                    "required": true
+                    "required": false
                   }
                 }
-              }
+              },
+              "required": false
             },
             "sensorSurrounds": {
               "type": "array",
@@ -6253,7 +6259,7 @@
                     "type": "string",
                     "placeholder": "Name",
                     "description": "Here set Your own name.",
-                    "required": true
+                    "required": false
                   },
                   "reference": {
                     "title": "Reference",
@@ -6393,7 +6399,7 @@
                       }
                     ],
                     "description": "Here select reference.",
-                    "required": true
+                    "required": false
                   },
                   "displayType": {
                     "title": "Type",
@@ -6425,16 +6431,17 @@
                       }
                     ],
                     "description": "Here select characteristic type to be exposed in HomeKit app.",
-                    "required": true
+                    "required": false
                   },
                   "namePrefix": {
                     "title": "Prefix",
                     "type": "boolean",
                     "description": "Here enable/disable the accessory name as a prefix for sensor name.",
-                    "required": true
+                    "required": false
                   }
                 }
-              }
+              },
+              "required": false
             },
             "enableDebugMode": {
               "title": "Debug",
@@ -6476,24 +6483,25 @@
               "type": "boolean",
               "default": false,
               "description": "The volume for that zone will set the entire receiver volume *UP* or *DOWN* rather than just the zone itself.",
-              "required": false,
               "condition": {
                 "functionBody": "return model.devices[arrayIndices].zoneControl >= 1 && model.devices[arrayIndices].zoneControl <= 2;"
-              }
+              },
+              "required": false
             },
             "masterMute": {
               "title": "Master Mute Control",
               "type": "boolean",
               "default": false,
               "description": "The mute switch for that zone will muted the entire receiver *ON* or *OFF* rather than just the zone itself.",
-              "required": false,
               "condition": {
                 "functionBody": "return model.devices[arrayIndices].zoneControl >= 1 && model.devices[arrayIndices].zoneControl <= 2;"
-              }
+              },
+              "required": false
             },
             "infoButtonCommand": {
               "title": "Info Button",
               "type": "string",
+              "default": "MNMEN ON",
               "oneOf": [
                 {
                   "title": "MENU",
@@ -6553,7 +6561,7 @@
               "minimum": 0,
               "maximum": 100,
               "description": "Here set the max possible volume to set.",
-              "required": true
+              "required": false
             },
             "refreshInterval": {
               "title": "Refresh interval (sec)",
@@ -6569,116 +6577,116 @@
               "title": "Enable",
               "type": "boolean",
               "default": false,
-              "required": false,
-              "description": "This enable RESTful server."
+              "description": "This enable RESTful server.",
+              "required": false
             },
             "restFulDebug": {
               "title": "Debug",
               "type": "boolean",
               "default": false,
-              "required": false,
               "description": "This enable debug mode for RESTFul.",
               "condition": {
                 "functionBody": "return model.devices[arrayIndices].enableRestFul === true;"
-              }
+              },
+              "required": false
             },
             "restFulPort": {
               "title": "Port",
               "type": "integer",
               "placeholder": 3000,
-              "required": true,
               "description": "Here set the listening Port for RESTful server, every zone need own port.",
               "condition": {
                 "functionBody": "return model.devices[arrayIndices].enableRestFul === true;"
-              }
+              },
+              "required": false
             },
             "enableMqtt": {
               "title": "Enable",
               "type": "boolean",
               "default": false,
-              "required": false,
-              "description": "This enable MQTT client."
+              "description": "This enable MQTT client.",
+              "required": false
             },
             "mqttDebug": {
               "title": "Debug",
               "type": "boolean",
               "default": false,
-              "required": false,
               "description": "This enable debug mode for MQTT.",
               "condition": {
                 "functionBody": "return model.devices[arrayIndices].enableMqtt === true;"
-              }
+              },
+              "required": false
             },
             "mqttHost": {
               "title": "IP/Hostname",
               "type": "string",
               "placeholder": "ip or hostname",
-              "required": true,
               "format": "hostname",
               "description": "Here set the IP/Hostname of MQTT Broker.",
               "condition": {
                 "functionBody": "return model.devices[arrayIndices].enableMqtt === true;"
-              }
+              },
+              "required": false
             },
             "mqttPort": {
               "title": "Port",
               "type": "integer",
               "placeholder": 1883,
-              "required": true,
               "description": "Here set the port of MQTT Broker.",
               "condition": {
                 "functionBody": "return model.devices[arrayIndices].enableMqtt === true;"
-              }
+              },
+              "required": false
             },
             "mqttClientId": {
               "title": "Client ID",
               "type": "string",
               "placeholder": "client id",
-              "required": false,
               "description": "Here optional set the Client ID of MQTT Broker.",
               "condition": {
                 "functionBody": "return model.devices[arrayIndices].enableMqtt === true"
-              }
+              },
+              "required": false
             },
             "mqttPrefix": {
               "title": "Prefix",
               "type": "string",
               "placeholder": "home/openwebif",
-              "required": false,
               "description": "Here set the prefix.",
               "condition": {
                 "functionBody": "return model.devices[arrayIndices].enableMqtt === true;"
-              }
+              },
+              "required": false
             },
             "mqttAuth": {
               "title": "Authorization",
               "type": "boolean",
               "default": false,
-              "required": false,
               "description": "This enable authorization for MQTT Broker.",
               "condition": {
                 "functionBody": "return model.devices[arrayIndices].enableMqtt === true;"
-              }
+              },
+              "required": false
             },
             "mqttUser": {
               "title": "User",
               "type": "string",
               "placeholder": "username",
-              "required": false,
               "description": "Here set the user of MQTT Broker.",
               "condition": {
                 "functionBody": "return model.devices[arrayIndices].enableMqtt === true && model.devices[arrayIndices].mqttAuth === true;"
-              }
+              },
+              "required": false
             },
             "mqttPasswd": {
               "title": "Password",
               "type": "string",
               "placeholder": "password",
-              "required": false,
               "description": "Here set the password of MQTT Broker.",
               "condition": {
                 "functionBody": "return model.devices[arrayIndices].enableMqtt === true && model.devices[arrayIndices].mqttAuth === true;"
-              }
+              },
+              "required": false
             }
           }
         }
