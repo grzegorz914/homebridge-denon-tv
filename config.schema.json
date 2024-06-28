@@ -6443,34 +6443,6 @@
               },
               "required": false
             },
-            "enableDebugMode": {
-              "title": "Debug",
-              "type": "boolean",
-              "default": false,
-              "description": "This enable debug mode.",
-              "required": false
-            },
-            "disableLogInfo": {
-              "title": "Disable Log Info",
-              "type": "boolean",
-              "default": false,
-              "description": "This disable logging values and states on every it change.",
-              "required": false
-            },
-            "disableLogDeviceInfo": {
-              "title": "Disable Log Device Info",
-              "type": "boolean",
-              "default": false,
-              "description": "This disable log device info by every connections device to the network.",
-              "required": false
-            },
-            "disableLogConnectError": {
-              "title": "Disable Log Connect Error",
-              "type": "boolean",
-              "default": false,
-              "description": "This disable logging device connect error.",
-              "required": false
-            },
             "masterPower": {
               "title": "Master Power Control",
               "type": "boolean",
@@ -6523,7 +6495,7 @@
                 }
               ],
               "description": "Here select the function of info button in RC.",
-              "required": true
+              "required": false
             },
             "volumeControl": {
               "title": "Volume Control Mode",
@@ -6552,7 +6524,7 @@
                   ]
                 }
               ],
-              "required": true
+              "required": false
             },
             "volumeMax": {
               "title": "Max Volume (%)",
@@ -6571,7 +6543,35 @@
               "maximum": 30,
               "multipleOf": 0.5,
               "description": "Here set the background data refresh interval.",
-              "required": true
+              "required": false
+            },
+            "enableDebugMode": {
+              "title": "Debug",
+              "type": "boolean",
+              "default": false,
+              "description": "This enable debug mode.",
+              "required": false
+            },
+            "disableLogInfo": {
+              "title": "Disable Log Info",
+              "type": "boolean",
+              "default": false,
+              "description": "This disable logging values and states on every it change.",
+              "required": false
+            },
+            "disableLogDeviceInfo": {
+              "title": "Disable Log Device Info",
+              "type": "boolean",
+              "default": false,
+              "description": "This disable log device info by every connections device to the network.",
+              "required": false
+            },
+            "disableLogConnectError": {
+              "title": "Disable Log Connect Error",
+              "type": "boolean",
+              "default": false,
+              "description": "This disable logging device connect error.",
+              "required": false
             },
             "enableRestFul": {
               "title": "Enable",
