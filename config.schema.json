@@ -6203,7 +6203,7 @@
                       }
                     ],
                     "description": "Here select reference.",
-                    "required": false
+                    "required": true
                   },
                   "displayType": {
                     "title": "Type",
