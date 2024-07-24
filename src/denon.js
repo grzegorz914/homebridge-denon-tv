@@ -397,7 +397,7 @@ class DENON extends EventEmitter {
                 //chack duplicated inputs and convert reference
                 const debug = !this.debugLog ? false : this.emit('message', `temp Inputs: ${JSON.stringify(tempInputs, null, 2)}`);
                 for (const input of tempInputs) {
-                    const inputName = input.name === 'Blu-ray' ? 'Blu Ray' : input.name;
+                    const inputName = input.name;
                     let inputReference = INPUTS_CONVERSION_KEYS.includes(input.reference) ? CONSTANTS.InputConversion[input.reference] : input.reference;
                     let inputMode = 'SI';
 
