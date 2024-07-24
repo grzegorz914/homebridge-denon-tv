@@ -814,7 +814,7 @@
                         ]
                       }
                     ],
-                    "required": false
+                    "required": true
                   }
                 }
               },
@@ -980,7 +980,7 @@
                         ]
                       }
                     ],
-                    "required": false
+                    "required": true
                   }
                 }
               },
@@ -4227,7 +4227,7 @@
                       }
                     ],
                     "description": "Here select function.",
-                    "required": false
+                    "required": true
                   },
                   "displayType": {
                     "title": "Type",
@@ -4253,7 +4253,7 @@
                       }
                     ],
                     "description": "Here select characteristic type to be exposed in HomeKit app.",
-                    "required": false
+                    "required": true
                   },
                   "namePrefix": {
                     "title": "Prefix",
@@ -4938,7 +4938,7 @@
                       }
                     ],
                     "description": "Here select function.",
-                    "required": false
+                    "required": true
                   },
                   "displayType": {
                     "title": "Type",
@@ -4964,7 +4964,7 @@
                       }
                     ],
                     "description": "Here select characteristic type to be exposed in HomeKit app.",
-                    "required": false
+                    "required": true
                   },
                   "namePrefix": {
                     "title": "Prefix",
@@ -5663,7 +5663,7 @@
                       }
                     ],
                     "description": "Here select characteristic type to be exposed in HomeKit app.",
-                    "required": false
+                    "required": true
                   },
                   "namePrefix": {
                     "title": "Prefix",
@@ -6235,7 +6235,7 @@
                       }
                     ],
                     "description": "Here select characteristic type to be exposed in HomeKit app.",
-                    "required": false
+                    "required": true
                   },
                   "namePrefix": {
                     "title": "Prefix",
@@ -6399,7 +6399,7 @@
                       }
                     ],
                     "description": "Here select reference.",
-                    "required": false
+                    "required": true
                   },
                   "displayType": {
                     "title": "Type",
@@ -6431,7 +6431,7 @@
                       }
                     ],
                     "description": "Here select characteristic type to be exposed in HomeKit app.",
-                    "required": false
+                    "required": true
                   },
                   "namePrefix": {
                     "title": "Prefix",
@@ -6495,7 +6495,7 @@
                 }
               ],
               "description": "Here select the function of info button in RC.",
-              "required": false
+              "required": true
             },
             "volumeControl": {
               "title": "Volume Control Mode",
@@ -6524,7 +6524,7 @@
                   ]
                 }
               ],
-              "required": false
+              "required": true
             },
             "volumeMax": {
               "title": "Max Volume (%)",
