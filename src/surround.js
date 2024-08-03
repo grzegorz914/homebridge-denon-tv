@@ -627,10 +627,8 @@ class Surround extends EventEmitter {
                     const inputReference = input.reference;
 
                     //get input name
-                    const name = input.name;
-                    const savedInputsNames = this.savedInputsNames[inputReference] ?? false;
-                    const inputName = savedInputsNames ? savedInputsNames : name;
-                    input.name = inputName;
+                    const savedInputsName = this.savedInputsNames[inputReference] ?? false;
+                    input.name = savedInputsName ? savedInputsName : input.name;
 
                     //get type
                     const inputSourceType = 0;
@@ -639,24 +637,23 @@ class Surround extends EventEmitter {
                     const isConfigured = 1;
 
                     //get visibility
-                    const currentVisibility = this.savedInputsTargetVisibility[inputReference] ?? 0;
-                    input.visibility = currentVisibility;
+                    input.visibility = this.savedInputsTargetVisibility[inputReference] ?? 0;
 
                     //add identifier to the input
                     input.identifier = inputIdentifier;
 
                     //input service
-                    const inputService = accessory.addService(Service.InputSource, inputName, `Surround ${inputIdentifier}`);
+                    const inputService = accessory.addService(Service.InputSource, input.name, `Surround ${inputIdentifier}`);
                     inputService
                         .setCharacteristic(Characteristic.Identifier, inputIdentifier)
-                        .setCharacteristic(Characteristic.Name, inputName)
+                        .setCharacteristic(Characteristic.Name, input.name)
                         .setCharacteristic(Characteristic.IsConfigured, isConfigured)
                         .setCharacteristic(Characteristic.InputSourceType, inputSourceType)
-                        .setCharacteristic(Characteristic.CurrentVisibilityState, currentVisibility)
+                        .setCharacteristic(Characteristic.CurrentVisibilityState, input.visibility)
 
                     inputService.getCharacteristic(Characteristic.ConfiguredName)
                         .onGet(async () => {
-                            return inputName;
+                            return input.name;
                         })
                         .onSet(async (value) => {
                             if (value === this.savedInputsNames[inputReference]) {
@@ -664,6 +661,7 @@ class Surround extends EventEmitter {
                             }
 
                             try {
+                                input.name = value;
                                 this.savedInputsNames[inputReference] = value;
                                 await this.saveData(this.inputsNamesFile, this.savedInputsNames);
                                 const debug = !this.enableDebugMode ? false : this.emit('debug', `Saved Surround Name: ${value}, Reference: ${inputReference}`);
@@ -679,7 +677,7 @@ class Surround extends EventEmitter {
 
                     inputService.getCharacteristic(Characteristic.TargetVisibilityState)
                         .onGet(async () => {
-                            return currentVisibility;
+                            return input.visibility;
                         })
                         .onSet(async (state) => {
                             if (state === this.savedInputsTargetVisibility[inputReference]) {
@@ -687,9 +685,10 @@ class Surround extends EventEmitter {
                             }
 
                             try {
+                                input.visibility = state;
                                 this.savedInputsTargetVisibility[inputReference] = state;
                                 await this.saveData(this.inputsTargetVisibilityFile, this.savedInputsTargetVisibility);
-                                const debug = !this.enableDebugMode ? false : this.emit('debug', `Saved  Surround: ${inputName} Target Visibility: ${state ? 'HIDEN' : 'SHOWN'}`);
+                                const debug = !this.enableDebugMode ? false : this.emit('debug', `Saved  Surround: ${input.name} Target Visibility: ${state ? 'HIDEN' : 'SHOWN'}`);
                             } catch (error) {
                                 this.emit('error', `save Surround Target Visibility error: ${error}`);
                             }

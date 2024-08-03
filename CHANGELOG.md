@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Note - after update to 4.7.x buttons, sensors, volume display type need to be configure again using config UI.
 ## Note - after update to 3.15.x need remove the accessory frome Home app and add it again.
 
+## [4.13.28] - (03.08.2024)
+## Changes
+- fix custom inputs names not working [#270](https://github.com/grzegorz914/homebridge-denon-tv/issues/270)
+- bump dependencies
+- cleanup
+
 ## [4.13.0] - (21.04.2024)
 ## Changes
 - added possibility to set max volume for slider, fan, and speaker
