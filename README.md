@@ -103,17 +103,19 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 | `sensorSurrounds.reference` | Here choose `Sensor Reference`, sensor fired if switch to this reference. |
 | `sensorSurrounds.displayType` | Here choose characteristic type to be exposed in HomeKit app, `0 - None/Disabled`, `1 - Motion Sensor`, `2 - Occupancy Sensor`, `3 - Contact Sensor`. |
 | `sensorSurrounds.namePrefix` | Here enable/disable the accessory name as a prefix for sensor name. |
-| `enableDebugMode` | If enabled, deep log will be present in homebridge console. |
-| `disableLogInfo` | If enabled, disable log info, all values and state will not be displayed in Homebridge log console. |
-| `disableLogDeviceInfo` | If enabled, add ability to disable log device info by every connections device to the network. |
-| `disableLogConnectError` | If enabled, disable logging device connect error. |
 | `masterPower` | If enabled, then the Power switch for that zone will turn the entire receiver `ON` or `OFF/STANDBY` rather than just the zone itself. |
 | `masterVolume`| If enabled, then the Volume for that zone will set the entire receiver `UP` or `DOWN` rather than just the zone itself, (only for the Zone 1 and 2). |
 | `masterMute`| If enabled, then the Mute switch for that zone will muted the entire receiver `ON` or `OFF` rather than just the zone itself, (only for the Zone 1 and 2). |
+| `volumeControlNamePrefix` | Here enable/disable the accessory name as a prefix for volume control name. |
+| `volumeControlName` | Here set Your own volume control name or leave empty. |
 | `volumeControl` | Here choose what a additional volume control mode You want to use, `0 - None/Disabled`, `1 - Lightbulb`, `2 - Fan`. |
 | `volumeMax` | Here set the maximum possible volume to set, `0 - 100`. |
 | `infoButtonCommand` | Here choose the function for `I` button in RC app. |
 | `refreshInterval` | Here set the data refresh interval. |
+| `enableDebugMode` | If enabled, deep log will be present in homebridge console. |
+| `disableLogInfo` | If enabled, disable log info, all values and state will not be displayed in Homebridge log console. |
+| `disableLogDeviceInfo` | If enabled, add ability to disable log device info by every connections device to the network. |
+| `disableLogConnectError` | If enabled, disable logging device connect error. |
 | `enableRestFul` | If enabled, RESTful server will start automatically and respond to any path request. |
 | `restFulPort` | Here set the listening `Port` for RESTful server, every zone need own port. |
 | `restFulDebug` | If enabled, deep log will be present in homebridge console for RESTFul server. |

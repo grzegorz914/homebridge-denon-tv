@@ -6443,33 +6443,6 @@
               },
               "required": false
             },
-            "masterPower": {
-              "title": "Master Power Control",
-              "type": "boolean",
-              "default": false,
-              "description": "The power switch for that zone will turn the entire receiver *ON* or *OFF/STANDBY* rather than just the zone itself.",
-              "required": false
-            },
-            "masterVolume": {
-              "title": "Master Volume Control",
-              "type": "boolean",
-              "default": false,
-              "description": "The volume for that zone will set the entire receiver volume *UP* or *DOWN* rather than just the zone itself.",
-              "condition": {
-                "functionBody": "return model.devices[arrayIndices].zoneControl >= 1 && model.devices[arrayIndices].zoneControl <= 2;"
-              },
-              "required": false
-            },
-            "masterMute": {
-              "title": "Master Mute Control",
-              "type": "boolean",
-              "default": false,
-              "description": "The mute switch for that zone will muted the entire receiver *ON* or *OFF* rather than just the zone itself.",
-              "condition": {
-                "functionBody": "return model.devices[arrayIndices].zoneControl >= 1 && model.devices[arrayIndices].zoneControl <= 2;"
-              },
-              "required": false
-            },
             "infoButtonCommand": {
               "title": "Info Button",
               "type": "string",
@@ -6496,6 +6469,47 @@
               ],
               "description": "Here select the function of info button in RC.",
               "required": true
+            },
+            "masterPower": {
+              "title": "Master Power Control",
+              "type": "boolean",
+              "default": false,
+              "description": "The power switch for that zone will turn the entire receiver *ON* or *OFF/STANDBY* rather than just the zone itself.",
+              "required": false
+            },
+            "masterMute": {
+              "title": "Master Mute Control",
+              "type": "boolean",
+              "default": false,
+              "description": "The mute switch for that zone will muted the entire receiver *ON* or *OFF* rather than just the zone itself.",
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].zoneControl >= 1 && model.devices[arrayIndices].zoneControl <= 2;"
+              },
+              "required": false
+            },
+            "masterVolume": {
+              "title": "Master Volume Control",
+              "type": "boolean",
+              "default": false,
+              "description": "The volume for that zone will set the entire receiver volume *UP* or *DOWN* rather than just the zone itself.",
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].zoneControl >= 1 && model.devices[arrayIndices].zoneControl <= 2;"
+              },
+              "required": false
+            },
+            "volumeControlNamePrefix": {
+              "title": "Volume Control Name Prefix",
+              "type": "boolean",
+              "default": false,
+              "description": "Here enable/disable the accessory name as a prefix for volume control name.",
+              "required": false
+            },
+            "volumeControlName": {
+              "title": "Volume Control Name",
+              "type": "string",
+              "placeholder": "Name",
+              "description": "Here set Your own volume control name or leave empty.",
+              "required": false
             },
             "volumeControl": {
               "title": "Volume Control Mode",
@@ -6834,6 +6848,18 @@
               "items": [
                 {
                   "key": "devices[]",
+                  "title": "Volume",
+                  "items": [
+                    "devices[].masterMute",
+                    "devices[].masterVolume",
+                    "devices[].volumeControlNamePrefix",
+                    "devices[].volumeControlName",
+                    "devices[].volumeControl",
+                    "devices[].volumeMax"
+                  ]
+                },
+                {
+                  "key": "devices[]",
                   "title": "Sensors",
                   "items": [
                     "devices[].sensorPower",
@@ -6893,11 +6919,7 @@
                   "title": "Device",
                   "items": [
                     "devices[].masterPower",
-                    "devices[].masterVolume",
-                    "devices[].masterMute",
                     "devices[].infoButtonCommand",
-                    "devices[].volumeControl",
-                    "devices[].volumeMax",
                     "devices[].refreshInterval"
                   ]
                 },

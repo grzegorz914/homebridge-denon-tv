@@ -34,6 +34,8 @@ class Surround extends EventEmitter {
         this.disableLogDeviceInfo = device.disableLogDeviceInfo || false;
         this.disableLogConnectError = device.disableLogConnectError || false;
         this.infoButtonCommand = device.infoButtonCommand || 'MNINF';
+        this.volumeControlNamePrefix = device.volumeControlNamePrefix || false;
+        this.volumeControlName = device.volumeControlName || 'Volume';
         this.volumeControl = device.volumeControl || false;
         this.volumeMax = device.volumeMax || 100;
         this.masterPower = device.masterPower || false;
@@ -702,10 +704,11 @@ class Surround extends EventEmitter {
                 //prepare volume service
                 if (this.volumeControl) {
                     const debug = !this.enableDebugMode ? false : this.emit('debug', `Prepare volume service`);
+                    const volumeServiceName = this.volumeControlNamePrefix ? `${accessoryName} ${this.volumeControlName}` : this.volumeControlName;
                     if (this.volumeControl === 1) {
-                        this.volumeService = accessory.addService(Service.Lightbulb, `${accessoryName} Volume`, 'Volume');
+                        this.volumeService = accessory.addService(Service.Lightbulb, `${volumeServiceName}`, 'Volume');
                         this.volumeService.addOptionalCharacteristic(Characteristic.ConfiguredName);
-                        this.volumeService.setCharacteristic(Characteristic.ConfiguredName, `${accessoryName} Volume`);
+                        this.volumeService.setCharacteristic(Characteristic.ConfiguredName, `${volumeServiceName}`);
                         this.volumeService.getCharacteristic(Characteristic.Brightness)
                             .setProps({
                                 minValue: 0,
@@ -731,9 +734,9 @@ class Surround extends EventEmitter {
                     }
 
                     if (this.volumeControl === 2) {
-                        this.volumeServiceFan = accessory.addService(Service.Fan, `${accessoryName} Volume`, 'Volume');
+                        this.volumeServiceFan = accessory.addService(Service.Fan, `${volumeServiceName}`, 'Volume');
                         this.volumeServiceFan.addOptionalCharacteristic(Characteristic.ConfiguredName);
-                        this.volumeServiceFan.setCharacteristic(Characteristic.ConfiguredName, `${accessoryName} Volume`);
+                        this.volumeServiceFan.setCharacteristic(Characteristic.ConfiguredName, `${volumeServiceName}`);
                         this.volumeServiceFan.getCharacteristic(Characteristic.RotationSpeed)
                             .setProps({
                                 minValue: 0,
