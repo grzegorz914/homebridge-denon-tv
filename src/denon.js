@@ -81,17 +81,8 @@ class DENON extends EventEmitter {
         this.devInfo = {};
         const object = {};
 
-        const timers = [
-            { name: 'checkDeviceInfo', interval: 30000 },
-            { name: 'checkState', interval: refreshInterval },
-        ];
-
-        const impulseGenerator = new ImpulseGenerator(timers);
+        const impulseGenerator = new ImpulseGenerator();
         impulseGenerator.on('checkDeviceInfo', async () => {
-            if (!this.startPrepareAccessory) {
-                return;
-            }
-
             try {
                 //get device info
                 const deviceInfo = await this.axiosInstance(deviceInfoUrl);
@@ -228,18 +219,21 @@ class DENON extends EventEmitter {
                 const prepareAccessory = this.startPrepareAccessory ? this.emit('prepareAccessory', allInputs) : false;
                 this.startPrepareAccessory = false;
 
+                if (this.startPrepareAccessory) {
+                    return;
+                }
+
                 //check state
                 await new Promise(resolve => setTimeout(resolve, 1500));
-                impulseGenerator.emit('checkState')
+
+                //start check state
+                impulseGenerator.stop();
+                impulseGenerator.start([{ timerName: 'checkState', sampling: refreshInterval }]);
             } catch (error) {
                 const debug = disableLogConnectError ? false : this.emit('error', `Info error: ${error}, reconnect in 15s.`);
             };
         })
             .on('checkState', async () => {
-                if (this.startPrepareAccessory) {
-                    return;
-                }
-
                 try {
                     //get zones status
                     const zoneStateUrl = [CONSTANTS.ApiUrls.MainZoneStatusLite, CONSTANTS.ApiUrls.Zone2StatusLite, CONSTANTS.ApiUrls.Zone3StatusLite, CONSTANTS.ApiUrls.SoundModeStatus][zone];
@@ -317,9 +311,9 @@ class DENON extends EventEmitter {
             .on('disconnect', () => {
                 this.emit('stateChanged', false, this.reference, this.volume, this.volumeDisplay, this.mute, this.pictureMode);
                 const debug = disableLogConnectError ? false : this.emit('disconnected', 'Disconnected.');
-            });
+            }).on('state', () => { });
 
-        impulseGenerator.start();
+        impulseGenerator.start([{ timerName: 'checkDeviceInfo', sampling: 30000 }]);
     };
 
     async saveDevInfo(path, devInfo) {

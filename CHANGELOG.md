@@ -10,6 +10,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Note - after update to 4.7.x buttons, sensors, volume display type need to be configure again using config UI
 ## Note - after update to 3.15.x need remove the accessory frome Home app and add it again
 
+## [5.0.0] - (14.08.2024)
+
+## Changes
+
+### After update to v9.0.0 RESTFull and MQTT config settings need to be updated
+
+- hide passwords by typing and display in Config UI
+- remove return duplicate promises from whole code
+- bump dependencies
+- cleanup
+
 ## [4.14.0] - (04.08.2024)
 
 ## Changes
