@@ -322,142 +322,136 @@ class DENON extends EventEmitter {
         impulseGenerator.start();
     };
 
-    saveDevInfo(path, devInfo) {
-        return new Promise(async (resolve, reject) => {
-            try {
-                const info = JSON.stringify(devInfo, null, 2);
-                await fsPromises.writeFile(path, info);
-                const debug = !this.debugLog ? false : this.emit('message', `saved device info: ${info}`);
+    async saveDevInfo(path, devInfo) {
+        try {
+            const info = JSON.stringify(devInfo, null, 2);
+            await fsPromises.writeFile(path, info);
+            const debug = !this.debugLog ? false : this.emit('message', `saved device info: ${info}`);
 
-                resolve();
-            } catch (error) {
-                reject(error);
-            };
-        });
+            return true;
+        } catch (error) {
+            this.emitDeviceInfo('error', error);
+        };
     };
 
-    saveInputs(path, devInfo, generation, zone, zoneInputSurroundName, inputs, zoneCapabilities, getInputsFromDevice, getFavoritesFromDevice, getQuickSmartSelectFromDevice, supportFavorites, supportShortcut, supportQuickSmartSelect) {
-        return new Promise(async (resolve, reject) => {
-            try {
-                //inputs
-                const tempInputs = [];
-                const inputsArr = [];
-                let i = 0;
-                for (const input of inputs) {
-                    const inputNameOldAvr = getInputsFromDevice && generation === 0 ? devInfo.RenameSource.value[i].trim() !== '' ? devInfo.RenameSource.value[i] : inputs[i] : `Input ${i}`;
-                    const inputName = getInputsFromDevice ? [inputNameOldAvr, input.DefaultName, input.DefaultName][generation] : input.name;
-                    const inputReference = getInputsFromDevice ? [input, input.FuncName, input.FuncName][generation] : input.reference;
-                    const obj = {
-                        'name': inputName,
-                        'reference': inputReference
-                    }
-                    tempInputs.push(obj);
-                    i++;
-                };
+    async saveInputs(path, devInfo, generation, zone, zoneInputSurroundName, inputs, zoneCapabilities, getInputsFromDevice, getFavoritesFromDevice, getQuickSmartSelectFromDevice, supportFavorites, supportShortcut, supportQuickSmartSelect) {
+        try {
+            //inputs
+            const tempInputs = [];
+            const inputsArr = [];
+            let i = 0;
+            for (const input of inputs) {
+                const inputNameOldAvr = getInputsFromDevice && generation === 0 ? devInfo.RenameSource.value[i].trim() !== '' ? devInfo.RenameSource.value[i] : inputs[i] : `Input ${i}`;
+                const inputName = getInputsFromDevice ? [inputNameOldAvr, input.DefaultName, input.DefaultName][generation] : input.name;
+                const inputReference = getInputsFromDevice ? [input, input.FuncName, input.FuncName][generation] : input.reference;
+                const obj = {
+                    'name': inputName,
+                    'reference': inputReference
+                }
+                tempInputs.push(obj);
+                i++;
+            };
 
-                //schortcuts
-                const deviceSchortcuts = getInputsFromDevice && supportShortcut && Array.isArray(zoneCapabilities.ShortcutControl.EntryList.Shortcut) ? zoneCapabilities.ShortcutControl.EntryList.Shortcut : [];
-                for (const shortcut of deviceSchortcuts) {
-                    const category = shortcut.Category; //1, 2, 3 Quick/Smart Select, 4 Inputs, 5 Sound Mode
-                    const shortcutName = shortcut.DispName;
-                    const shortcutReference = shortcut.FuncName;
-                    const obj = {
-                        'name': shortcutName,
-                        'reference': shortcutReference
-                    }
-                    const push = category === '4' ? tempInputs.push(obj) : false;
-                };
+            //schortcuts
+            const deviceSchortcuts = getInputsFromDevice && supportShortcut && Array.isArray(zoneCapabilities.ShortcutControl.EntryList.Shortcut) ? zoneCapabilities.ShortcutControl.EntryList.Shortcut : [];
+            for (const shortcut of deviceSchortcuts) {
+                const category = shortcut.Category; //1, 2, 3 Quick/Smart Select, 4 Inputs, 5 Sound Mode
+                const shortcutName = shortcut.DispName;
+                const shortcutReference = shortcut.FuncName;
+                const obj = {
+                    'name': shortcutName,
+                    'reference': shortcutReference
+                }
+                const push = category === '4' ? tempInputs.push(obj) : false;
+            };
 
-                //favorites
-                const deviceFavorites = getFavoritesFromDevice && supportFavorites && Array.isArray(devInfo.DeviceCapabilities.Operation.Favorites) ? devInfo.DeviceCapabilities.Operation.Favorites : [];
-                for (const favorite of deviceFavorites) {
-                    const favoriteName = favorite.DispName;
-                    const favoriteReference = favorite.FuncName;
-                    const obj = {
-                        'name': favoriteName,
-                        'reference': favoriteReference
-                    }
-                    tempInputs.push(obj);
-                };
+            //favorites
+            const deviceFavorites = getFavoritesFromDevice && supportFavorites && Array.isArray(devInfo.DeviceCapabilities.Operation.Favorites) ? devInfo.DeviceCapabilities.Operation.Favorites : [];
+            for (const favorite of deviceFavorites) {
+                const favoriteName = favorite.DispName;
+                const favoriteReference = favorite.FuncName;
+                const obj = {
+                    'name': favoriteName,
+                    'reference': favoriteReference
+                }
+                tempInputs.push(obj);
+            };
 
-                //quick and smart select
-                const deviceQuickSmartSelect = getQuickSmartSelectFromDevice && supportQuickSmartSelect ? zoneCapabilities.Operation.QuickSelect : {};
-                const quickSelectCount = getQuickSmartSelectFromDevice && supportQuickSmartSelect ? deviceQuickSmartSelect.MaxQuickSelect : 0;
-                for (let j = 1; j < quickSelectCount; j++) {
-                    const quickSelect = deviceQuickSmartSelect[`QuickSelect${j}`];
-                    const quickSelectName = quickSelect.Name;
-                    const quickSelectReference = quickSelect.FuncName;
-                    const obj = {
-                        'name': quickSelectName,
-                        'reference': quickSelectReference
-                    }
-                    tempInputs.push(obj);
-                };
+            //quick and smart select
+            const deviceQuickSmartSelect = getQuickSmartSelectFromDevice && supportQuickSmartSelect ? zoneCapabilities.Operation.QuickSelect : {};
+            const quickSelectCount = getQuickSmartSelectFromDevice && supportQuickSmartSelect ? deviceQuickSmartSelect.MaxQuickSelect : 0;
+            for (let j = 1; j < quickSelectCount; j++) {
+                const quickSelect = deviceQuickSmartSelect[`QuickSelect${j}`];
+                const quickSelectName = quickSelect.Name;
+                const quickSelectReference = quickSelect.FuncName;
+                const obj = {
+                    'name': quickSelectName,
+                    'reference': quickSelectReference
+                }
+                tempInputs.push(obj);
+            };
 
-                //chack duplicated inputs and convert reference
-                const debug = !this.debugLog ? false : this.emit('message', `temp Inputs: ${JSON.stringify(tempInputs, null, 2)}`);
-                for (const input of tempInputs) {
-                    const inputName = input.name;
-                    let inputReference = INPUTS_CONVERSION_KEYS.includes(input.reference) ? CONSTANTS.InputConversion[input.reference] : input.reference;
-                    let inputMode = 'SI';
+            //chack duplicated inputs and convert reference
+            const debug = !this.debugLog ? false : this.emit('message', `temp Inputs: ${JSON.stringify(tempInputs, null, 2)}`);
+            for (const input of tempInputs) {
+                const inputName = input.name;
+                let inputReference = INPUTS_CONVERSION_KEYS.includes(input.reference) ? CONSTANTS.InputConversion[input.reference] : input.reference;
+                let inputMode = 'SI';
 
-                    //zones
-                    switch (zone) {
-                        case 0:
-                            //Denon
-                            const inputReferenceSubstring = inputReference.substring(0, 5) ?? 'Unknown';
-                            const inputModeExist = inputReferenceSubstring in CONSTANTS.InputMode;
+                //zones
+                switch (zone) {
+                    case 0:
+                        //Denon
+                        const inputReferenceSubstring = inputReference.substring(0, 5) ?? 'Unknown';
+                        const inputModeExist = inputReferenceSubstring in CONSTANTS.InputMode;
 
-                            //Marantz M-CR611
-                            const inputReferenceSubstring1 = inputReference.substring(0, 2) ?? 'Unknown';
-                            const inputModeExist1 = inputReferenceSubstring1 in CONSTANTS.InputMode;
+                        //Marantz M-CR611
+                        const inputReferenceSubstring1 = inputReference.substring(0, 2) ?? 'Unknown';
+                        const inputModeExist1 = inputReferenceSubstring1 in CONSTANTS.InputMode;
 
-                            inputReference = inputModeExist1 ? inputReference.substring(3) : inputReference;
-                            inputMode = inputModeExist ? CONSTANTS.InputMode[inputReferenceSubstring] : inputModeExist1 ? CONSTANTS.InputMode[inputReferenceSubstring1] : inputMode;
-                            break;
-                        case 1:
-                            inputMode = 'Z2';
-                            break;
-                        case 2:
-                            inputMode = 'Z3';
-                            break;
-                        case 3:
-                            inputMode = 'MS';
-                            break;
-                    }
-
-                    const obj = {
-                        'name': inputName,
-                        'reference': inputReference,
-                        'mode': inputMode
-                    }
-
-                    const duplicatedInput = inputsArr.some(input => input.reference === inputReference);
-                    const push = inputName && inputReference && inputMode && !duplicatedInput ? inputsArr.push(obj) : false;
+                        inputReference = inputModeExist1 ? inputReference.substring(3) : inputReference;
+                        inputMode = inputModeExist ? CONSTANTS.InputMode[inputReferenceSubstring] : inputModeExist1 ? CONSTANTS.InputMode[inputReferenceSubstring1] : inputMode;
+                        break;
+                    case 1:
+                        inputMode = 'Z2';
+                        break;
+                    case 2:
+                        inputMode = 'Z3';
+                        break;
+                    case 3:
+                        inputMode = 'MS';
+                        break;
                 }
 
-                //save inputs
-                const allInputs = JSON.stringify(inputsArr, null, 2);
-                await fsPromises.writeFile(path, allInputs);
-                const debug1 = !this.debugLog ? false : this.emit('message', `saved ${zoneInputSurroundName}: ${allInputs}`);
+                const obj = {
+                    'name': inputName,
+                    'reference': inputReference,
+                    'mode': inputMode
+                }
 
-                resolve(inputsArr)
-            } catch (error) {
-                reject(error);
+                const duplicatedInput = inputsArr.some(input => input.reference === inputReference);
+                const push = inputName && inputReference && inputMode && !duplicatedInput ? inputsArr.push(obj) : false;
             }
-        });
+
+            //save inputs
+            const allInputs = JSON.stringify(inputsArr, null, 2);
+            await fsPromises.writeFile(path, allInputs);
+            const debug1 = !this.debugLog ? false : this.emit('message', `saved ${zoneInputSurroundName}: ${allInputs}`);
+
+            return inputsArr;
+        } catch (error) {
+            this.emitDeviceInfo('error', error);
+        }
     };
 
-    send(command) {
-        return new Promise(async (resolve, reject) => {
-            try {
-                const path = `${CONSTANTS.ApiUrls.iPhoneDirect}${command}`;
-                await this.axiosInstance(path);
-                resolve();
-            } catch (error) {
-                reject(error);
-            };
-        });
+    async send(command) {
+        try {
+            const path = `${CONSTANTS.ApiUrls.iPhoneDirect}${command}`;
+            await this.axiosInstance(path);
+            return true;
+        } catch (error) {
+            this.emitDeviceInfo('error', error);
+        };
     };
 };
 module.exports = DENON;
