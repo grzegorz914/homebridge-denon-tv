@@ -41,7 +41,6 @@ class DenonPlatform {
 					...device,
 					mqtt: {
 					  ...device.mqtt,
-					  user: 'removed',
 					  passwd: 'removed'
 					}
 				  };

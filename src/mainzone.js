@@ -39,6 +39,8 @@ class MainZone extends EventEmitter {
         this.volumeControl = device.volumeControl || false;
         this.volumeMax = device.volumeMax || 100;
         this.masterPower = device.masterPower || false;
+        this.restFul = device.restFul || {};
+        this.mqtt = device.mqtt || {};
 
         //external integration
         this.restFulConnected = false;
@@ -246,11 +248,11 @@ class MainZone extends EventEmitter {
             })
             .on('prepareAccessory', async (allInputs) => {
                 //RESTFul server
-                const restFulEnabled = device.restFul.enable || false;
+                const restFulEnabled = this.restFul.enable || false;
                 if (restFulEnabled) {
                     this.restFul = new RestFul({
-                        port: device.restFul.port || 3000,
-                        debug: device.restFul.debug || false
+                        port: this.restFul.port || 3000,
+                        debug: this.restFul.debug || false
                     });
 
                     this.restFul.on('connected', (message) => {
@@ -266,16 +268,16 @@ class MainZone extends EventEmitter {
                 }
 
                 //mqtt client
-                const mqttEnabled = device.mqtt.enable || false;
+                const mqttEnabled = this.mqtt.enable || false;
                 if (mqttEnabled) {
                     this.mqtt = new Mqtt({
-                        host: device.mqtt.host,
-                        port: device.mqtt.port || 1883,
-                        clientId: device.mqtt.clientId || `denon_${Math.random().toString(16).slice(3)}`,
-                        prefix: `${device.mqtt.prefix}/${device.name}`,
-                        user: device.mqtt.user,
-                        passwd: device.mqtt.passwd,
-                        debug: device.mqtt.debug || false
+                        host: this.mqtt.host,
+                        port: this.mqtt.port || 1883,
+                        clientId: this.mqtt.clientId || `denon_${Math.random().toString(16).slice(3)}`,
+                        prefix: `${this.mqtt.prefix}/${name}`,
+                        user: this.mqtt.user,
+                        passwd: this.mqtt.passwd,
+                        debug: this.mqtt.debug || false
                     });
 
                     this.mqtt.on('connected', (message) => {
@@ -345,8 +347,13 @@ class MainZone extends EventEmitter {
 
                     //sort inputs list
                     const sortInputsDisplayOrder = this.televisionService ? await this.displayOrder() : false;
+
+                    //start check state
+                    this.denon.impulseGenerator.start([{ timerName: 'checkState', sampling: refreshInterval }]);
                 } catch (error) {
-                    this.emit('error', `prepare accessory error: ${error}`);
+                    this.emit('error', `Prepare accessory error: ${error}`);
+                    await new Promise(resolve => setTimeout(resolve, 15000));
+                    this.denon.impulseGenerator.emit('checkDeviceInfo');
                 };
             })
             .on('message', (message) => {

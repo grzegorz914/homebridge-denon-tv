@@ -68,8 +68,6 @@ class DENON extends EventEmitter {
         };
         const parseString = new XMLParser(options);
 
-        this.startPrepareAccessory = true;
-        this.emitDeviceInfo = true;
         this.power = false;
         this.reference = '';
         this.volume = 0;
@@ -81,8 +79,8 @@ class DENON extends EventEmitter {
         this.devInfo = {};
         const object = {};
 
-        const impulseGenerator = new ImpulseGenerator();
-        impulseGenerator.on('checkDeviceInfo', async () => {
+        this.impulseGenerator = new ImpulseGenerator();
+        this.impulseGenerator.on('checkDeviceInfo', async () => {
             try {
                 //get device info
                 const deviceInfo = await this.axiosInstance(deviceInfoUrl);
@@ -209,28 +207,17 @@ class DENON extends EventEmitter {
                 const allInputs = await this.saveInputs(inputsFile, devInfo, generation, zone, zoneInputSurroundName, deviceInputs, zoneCapabilities, getInputsFromDevice, getFavoritesFromDevice, getQuickSmartSelectFromDevice, supportFavorites, supportShortcut, supportQuickSmartSelect);
 
                 //emit device info
-                const emitDeviceInfo = this.emitDeviceInfo ? this.emit('deviceInfo', manufacturer, modelName, serialNumber, firmwareRevision, deviceZones, apiVersion, supportPictureMode) : false;
-                this.emitDeviceInfo = false;
+                this.emit('deviceInfo', manufacturer, modelName, serialNumber, firmwareRevision, deviceZones, apiVersion, supportPictureMode);
 
                 this.supportPictureMode = supportPictureMode;
                 this.supportSoundMode = supportSoundMode;
 
                 //prepare accessory
-                const prepareAccessory = this.startPrepareAccessory ? this.emit('prepareAccessory', allInputs) : false;
-                this.startPrepareAccessory = false;
-
-                if (this.startPrepareAccessory) {
-                    return;
-                }
-
-                //check state
-                await new Promise(resolve => setTimeout(resolve, 1500));
-
-                //start check state
-                impulseGenerator.stop();
-                impulseGenerator.start([{ timerName: 'checkState', sampling: refreshInterval }]);
+                this.emit('prepareAccessory', allInputs);
             } catch (error) {
                 const debug = disableLogConnectError ? false : this.emit('error', `Info error: ${error}, reconnect in 15s.`);
+                await new Promise(resolve => setTimeout(resolve, 15000));
+                this.impulseGenerator.emit('checkDeviceInfo');
             };
         })
             .on('checkState', async () => {
@@ -304,16 +291,12 @@ class DENON extends EventEmitter {
                     //emit state changed
                     this.emit('stateChanged', power, reference, volume, volumeDisplay, mute, pictureMode);
                 } catch (error) {
-                    const debug = disableLogConnectError ? false : this.emit('error', `State error: ${error}, reconnect in ${refreshInterval / 1000}s.`);
-                    impulseGenerator.emit('disconnect');
+                    this.emit('stateChanged', false, this.reference, this.volume, this.volumeDisplay, this.mute, this.pictureMode);
+                    const debug = disableLogConnectError ? false : this.emit('error', `State error: ${error}, check again in ${refreshInterval / 1000}s.`);
                 };
-            })
-            .on('disconnect', () => {
-                this.emit('stateChanged', false, this.reference, this.volume, this.volumeDisplay, this.mute, this.pictureMode);
-                const debug = disableLogConnectError ? false : this.emit('disconnected', 'Disconnected.');
             }).on('state', () => { });
 
-        impulseGenerator.start([{ timerName: 'checkDeviceInfo', sampling: 30000 }]);
+        this.impulseGenerator.emit('checkDeviceInfo');
     };
 
     async saveDevInfo(path, devInfo) {
