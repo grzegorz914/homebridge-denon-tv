@@ -317,7 +317,7 @@ class Surround extends EventEmitter {
                     const sortInputsDisplayOrder = this.televisionService ? await this.displayOrder() : false;
 
                      //start check state
-                     this.denon.impulseGenerator.start([{ timerName: 'checkState', sampling: refreshInterval }]);
+                     this.denon.impulseGenerator.start([{ name: 'checkState', sampling: refreshInterval }]);
                 } catch (error) {
                     this.emit('error', `prepare accessory error: ${error}`);
                     await new Promise(resolve => setTimeout(resolve, 15000));

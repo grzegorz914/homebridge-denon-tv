@@ -8,13 +8,17 @@ class ImpulseGenerator extends EventEmitter {
     }
 
     start(timers) {
+        if (this.timersState) {
+            this.stop();
+        }
+
         this.timers = [];
-        timers.forEach(({ timerName, sampling }) => {
-            const timer = setInterval(() => {
-                this.emit(timerName);
-            }, sampling);
-            this.timers.push(timer);
-        });
+        for (const timer of timers) {
+            const newTimer = setInterval(() => {
+                this.emit(timer.name);
+            }, timer.sampling);
+            this.timers.push(newTimer);
+        };
 
         //update state
         this.timersState = true;
