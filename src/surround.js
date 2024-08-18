@@ -369,7 +369,7 @@ class Surround extends EventEmitter {
             this.televisionService.setCharacteristic(Characteristic.DisplayOrder, Encode(1, displayOrder).toString('base64'));
             return true;
         } catch (error) {
-            this.emitDeviceInfo('error', error);
+            throw new Error( error);
         };
     }
 
@@ -379,7 +379,7 @@ class Surround extends EventEmitter {
             const debug = !this.enableDebugMode ? false : this.emit('debug', `Saved data: ${JSON.stringify(data, null, 2)}`);
             return true;
         } catch (error) {
-            this.emitDeviceInfo('error', error);
+            throw new Error( error);
         };
     }
 
@@ -388,7 +388,7 @@ class Surround extends EventEmitter {
             const data = await fsPromises.readFile(path);
             return data;
         } catch (error) {
-            this.emitDeviceInfo('error', `Read saved data error: ${error}`);
+            throw new Error( `Read saved data error: ${error}`);
         };
     }
 
@@ -857,7 +857,7 @@ class Surround extends EventEmitter {
 
             return accessory;
         } catch (error) {
-            this.emitDeviceInfo('error', error)
+            throw new Error( error)
         };
     }
 };

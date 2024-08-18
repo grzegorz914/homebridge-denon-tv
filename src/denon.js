@@ -307,7 +307,7 @@ class DENON extends EventEmitter {
 
             return true;
         } catch (error) {
-            this.emitDeviceInfo('error', error);
+            throw new Error( error);
         };
     };
 
@@ -417,7 +417,7 @@ class DENON extends EventEmitter {
 
             return inputsArr;
         } catch (error) {
-            this.emitDeviceInfo('error', error);
+            throw new Error( error);
         }
     };
 
@@ -427,7 +427,7 @@ class DENON extends EventEmitter {
             await this.axiosInstance(path);
             return true;
         } catch (error) {
-            this.emitDeviceInfo('error', error);
+            throw new Error( error);
         };
     };
 };

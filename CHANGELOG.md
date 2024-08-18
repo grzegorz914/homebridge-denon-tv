@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Note - after update to 3.15.x need remove the accessory frome Home app and add it again
 
+## [5.0.2] - (18.08.2024)
+
+## Changes
+
+- fix correct catch error
+
 ## [5.0.1] - (14.08.2024)
 
 ## Changes
