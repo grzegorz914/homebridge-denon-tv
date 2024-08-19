@@ -287,7 +287,7 @@ class Surround extends EventEmitter {
                                         break;
                                 };
                             } catch (error) {
-                                this.emit('error', `MQTT send error: ${error}.`);
+                                this.emit('warn', `MQTT send error: ${error}.`);
                             };
                         })
                         .on('debug', (debug) => {
@@ -329,6 +329,9 @@ class Surround extends EventEmitter {
             })
             .on('debug', (debug) => {
                 this.emit('debug', debug);
+            })
+            .on('warn', (warn) => {
+                this.emit('warn', warn);
             })
             .on('error', (error) => {
                 this.emit('error', error);
@@ -433,7 +436,7 @@ class Surround extends EventEmitter {
                         await this.denon.send(powerState);
                         const info = this.disableLogInfo ? false : this.emit('message', `set Power: ${powerState}`);
                     } catch (error) {
-                        this.emit('error', `set Power error: ${error}`);
+                        this.emit('warn', `set Power error: ${error}`);
                     };
                 });
 
@@ -462,7 +465,7 @@ class Surround extends EventEmitter {
                                 break;
                         }
                     } catch (error) {
-                        this.emit('error', `set Surround error: ${error}`);
+                        this.emit('warn', `set Surround error: ${error}`);
                     };
                 });
 
@@ -516,7 +519,7 @@ class Surround extends EventEmitter {
                         await this.denon.send(command);
                         const info = this.disableLogInfo ? false : this.emit('message', `set Remote Key: ${command}`);
                     } catch (error) {
-                        this.emit('error', `set Remote Key error: ${error}`);
+                        this.emit('warn', `set Remote Key error: ${error}`);
                     };
                 });
 
@@ -535,7 +538,7 @@ class Surround extends EventEmitter {
                         await this.denon.send(command);
                         const info = this.disableLogInfo ? false : this.emit('message', `set Power Mode Selection: ${command === 'MNOPT' ? 'SHOW' : 'HIDE'}`);
                     } catch (error) {
-                        this.emit('error', `set Power Mode Selection error: ${error}`);
+                        this.emit('warn', `set Power Mode Selection error: ${error}`);
                     };
                 });
             this.allServices.push(this.televisionService);
@@ -571,7 +574,7 @@ class Surround extends EventEmitter {
                         await this.denon.send(command);
                         const info = this.disableLogInfo ? false : this.emit('message', `set Volume Selector: ${command}`);
                     } catch (error) {
-                        this.emit('error', `set Volume Selector error: ${error}`);
+                        this.emit('warn', `set Volume Selector error: ${error}`);
                     };
                 });
 
@@ -591,7 +594,7 @@ class Surround extends EventEmitter {
                         await this.denon.send(volume);
                         const info = this.disableLogInfo ? false : this.emit('message', `set Volume: ${value - 80}`);
                     } catch (error) {
-                        this.emit('error', `set Volume error: ${error}`);
+                        this.emit('warn', `set Volume error: ${error}`);
                     };
                 });
 
@@ -606,7 +609,7 @@ class Surround extends EventEmitter {
                         await this.denon.send(muteState);
                         const info = this.disableLogInfo ? false : this.emit('message', `set Mute: ${state ? 'ON' : 'OFF'}`);
                     } catch (error) {
-                        this.emit('error', `set Mute error: ${error}`);
+                        this.emit('warn', `set Mute error: ${error}`);
                     };
                 });
 
@@ -673,7 +676,7 @@ class Surround extends EventEmitter {
                             this.inputsConfigured[index].name = value;
                             await this.displayOrder();
                         } catch (error) {
-                            this.emit('error', `save Surround Name error: ${error}`);
+                            this.emit('warn', `save Surround Name error: ${error}`);
                         }
                     });
 
@@ -692,7 +695,7 @@ class Surround extends EventEmitter {
                             await this.saveData(this.inputsTargetVisibilityFile, this.savedInputsTargetVisibility);
                             const debug = !this.enableDebugMode ? false : this.emit('debug', `Saved  Surround: ${input.name} Target Visibility: ${state ? 'HIDEN' : 'SHOWN'}`);
                         } catch (error) {
-                            this.emit('error', `save Surround Target Visibility error: ${error}`);
+                            this.emit('warn', `save Surround Target Visibility error: ${error}`);
                         }
                     });
 

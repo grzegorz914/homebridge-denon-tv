@@ -319,7 +319,7 @@ class MainZone extends EventEmitter {
                                         break;
                                 };
                             } catch (error) {
-                                this.emit('error', `MQTT send error: ${error}.`);
+                                this.emit('warn', `MQTT send error: ${error}.`);
                             };
                         })
                         .on('debug', (debug) => {
@@ -361,6 +361,9 @@ class MainZone extends EventEmitter {
             })
             .on('debug', (debug) => {
                 this.emit('debug', debug);
+            })
+            .on('warn', (warn) => {
+                this.emit('warn', warn);
             })
             .on('error', (error) => {
                 this.emit('error', error);
@@ -465,7 +468,7 @@ class MainZone extends EventEmitter {
                         await this.denon.send(powerState);
                         const info = this.disableLogInfo ? false : this.emit('message', `set Power: ${powerState}`);
                     } catch (error) {
-                        this.emit('error', `set Power error: ${error}`);
+                        this.emit('warn', `set Power error: ${error}`);
                     };
                 });
 
@@ -494,7 +497,7 @@ class MainZone extends EventEmitter {
                                 break;
                         }
                     } catch (error) {
-                        this.emit('error', `set Input error: ${error}`);
+                        this.emit('warn', `set Input error: ${error}`);
                     };
                 });
 
@@ -548,7 +551,7 @@ class MainZone extends EventEmitter {
                         await this.denon.send(command);
                         const info = this.disableLogInfo ? false : this.emit('message', `set Remote Key: ${command}`);
                     } catch (error) {
-                        this.emit('error', `set Remote Key error: ${error}`);
+                        this.emit('warn', `set Remote Key error: ${error}`);
                     };
                 });
 
@@ -566,7 +569,7 @@ class MainZone extends EventEmitter {
                         await this.denon.send(brightness);
                         const info = this.disableLogInfo ? false : this.emit('message', `set Brightness: ${value}`);
                     } catch (error) {
-                        this.emit('error', `set Brightness error: ${error}`);
+                        this.emit('warn', `set Brightness error: ${error}`);
                     };
                 });
 
@@ -608,7 +611,7 @@ class MainZone extends EventEmitter {
                             await this.denon.send(command);
                             const info = this.disableLogInfo ? false : this.emit('message', `set Picture Mode: ${CONSTANTS.PictureModesDenonString[command]}`);
                         } catch (error) {
-                            this.emit('error', `set Picture Mode error: ${error}`);
+                            this.emit('warn', `set Picture Mode error: ${error}`);
                         };
                     });
             };
@@ -628,7 +631,7 @@ class MainZone extends EventEmitter {
                         await this.denon.send(command);
                         const info = this.disableLogInfo ? false : this.emit('message', `set Power Mode Selection: ${command === 'MNOPT' ? 'SHOW' : 'HIDE'}`);
                     } catch (error) {
-                        this.emit('error', `set Power Mode Selection error: ${error}`);
+                        this.emit('warn', `set Power Mode Selection error: ${error}`);
                     };
                 });
             this.allServices.push(this.televisionService);
@@ -664,7 +667,7 @@ class MainZone extends EventEmitter {
                         await this.denon.send(command);
                         const info = this.disableLogInfo ? false : this.emit('message', `set Volume Selector: ${command}`);
                     } catch (error) {
-                        this.emit('error', `set Volume Selector error: ${error}`);
+                        this.emit('warn', `set Volume Selector error: ${error}`);
                     };
                 });
 
@@ -684,7 +687,7 @@ class MainZone extends EventEmitter {
                         await this.denon.send(volume);
                         const info = this.disableLogInfo ? false : this.emit('message', `set Volume: ${value - 80}`);
                     } catch (error) {
-                        this.emit('error', `set Volume error: ${error}`);
+                        this.emit('warn', `set Volume error: ${error}`);
                     };
                 });
 
@@ -699,7 +702,7 @@ class MainZone extends EventEmitter {
                         await this.denon.send(muteState);
                         const info = this.disableLogInfo ? false : this.emit('message', `set Mute: ${state ? 'ON' : 'OFF'}`);
                     } catch (error) {
-                        this.emit('error', `set Mute error: ${error}`);
+                        this.emit('warn', `set Mute error: ${error}`);
                     };
                 });
 
@@ -766,7 +769,7 @@ class MainZone extends EventEmitter {
                             this.inputsConfigured[index].name = value;
                             await this.displayOrder();
                         } catch (error) {
-                            this.emit('error', `save Input Name error: ${error}`);
+                            this.emit('warn', `save Input Name error: ${error}`);
                         }
                     });
 
@@ -785,7 +788,7 @@ class MainZone extends EventEmitter {
                             await this.saveData(this.inputsTargetVisibilityFile, this.savedInputsTargetVisibility);
                             const debug = !this.enableDebugMode ? false : this.emit('debug', `Saved  Input: ${input.name} Target Visibility: ${state ? 'HIDEN' : 'SHOWN'}`);
                         } catch (error) {
-                            this.emit('error', `save Input Target Visibility error: ${error}`);
+                            this.emit('warn', `save Input Target Visibility error: ${error}`);
                         }
                     });
 
@@ -990,7 +993,7 @@ class MainZone extends EventEmitter {
                                 const set2 = state && directSound ? await this.denon.send(directSoundModeSurround) : false;
                                 const info = this.disableLogInfo || !state ? false : this.emit('message', `set Button Name: ${buttonName}, Reference: ${reference}`);
                             } catch (error) {
-                                this.emit('error', `set Button error: ${error}`);
+                                this.emit('warn', `set Button error: ${error}`);
                             };
                         });
 

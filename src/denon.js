@@ -193,7 +193,7 @@ class DENON extends EventEmitter {
 
                 //check seriaql number
                 if (!serialNumber) {
-                    const debug1 = debugLog ? this.emit('debug', `Missing Serial Number, reconnect in 15s.`) : false;
+                    this.emit('warn', `Missing Serial Number, reconnect in 15s.`);
                     return;
                 }
 
@@ -215,7 +215,7 @@ class DENON extends EventEmitter {
                 //prepare accessory
                 this.emit('prepareAccessory', allInputs);
             } catch (error) {
-                const debug = disableLogConnectError ? false : this.emit('error', `Info error: ${error}, reconnect in 15s.`);
+                const debug = disableLogConnectError ? false : this.emit('error', `Info error: ${error}, check again in 15s.`);
                 await new Promise(resolve => setTimeout(resolve, 15000));
                 this.impulseGenerator.emit('checkDeviceInfo');
             };
@@ -307,7 +307,7 @@ class DENON extends EventEmitter {
 
             return true;
         } catch (error) {
-            throw new Error( error);
+            throw new Error(error);
         };
     };
 
@@ -417,7 +417,7 @@ class DENON extends EventEmitter {
 
             return inputsArr;
         } catch (error) {
-            throw new Error( error);
+            throw new Error(error);
         }
     };
 
@@ -427,7 +427,7 @@ class DENON extends EventEmitter {
             await this.axiosInstance(path);
             return true;
         } catch (error) {
-            throw new Error( error);
+            throw new Error(error);
         };
     };
 };
