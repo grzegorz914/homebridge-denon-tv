@@ -257,11 +257,11 @@ class Zone3 extends EventEmitter {
                         this.emit('message', message);
                         this.restFulConnected = true;
                     })
-                        .on('error', (error) => {
-                            this.emit('error', error);
-                        })
                         .on('debug', (debug) => {
                             this.emit('debug', debug);
+                        })
+                        .on('error', (error) => {
+                            this.emit('warn', error);
                         });
                 }
 
@@ -324,7 +324,7 @@ class Zone3 extends EventEmitter {
                             this.emit('debug', debug);
                         })
                         .on('error', (error) => {
-                            this.emit('error', error);
+                            this.emit('warn', error);
                         });
                 };
 

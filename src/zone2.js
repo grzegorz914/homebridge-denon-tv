@@ -257,11 +257,11 @@ class Zone2 extends EventEmitter {
                         this.emit('message', message);
                         this.restFulConnected = true;
                     })
-                        .on('error', (error) => {
-                            this.emit('error', error);
-                        })
                         .on('debug', (debug) => {
                             this.emit('debug', debug);
+                        })
+                        .on('error', (error) => {
+                            this.emit('warn', error);
                         });
                 }
 
@@ -324,7 +324,7 @@ class Zone2 extends EventEmitter {
                             this.emit('debug', debug);
                         })
                         .on('error', (error) => {
-                            this.emit('error', error);
+                            this.emit('warn', error);
                         });
                 };
 
@@ -346,8 +346,8 @@ class Zone2 extends EventEmitter {
                     //sort inputs list
                     const sortInputsDisplayOrder = this.televisionService ? await this.displayOrder() : false;
 
-                     //start check state
-                     this.denon.impulseGenerator.start([{ name: 'checkState', sampling: refreshInterval }]);
+                    //start check state
+                    this.denon.impulseGenerator.start([{ name: 'checkState', sampling: refreshInterval }]);
                 } catch (error) {
                     this.emit('error', `prepare accessory error: ${error}`);
                     await new Promise(resolve => setTimeout(resolve, 15000));
@@ -402,7 +402,7 @@ class Zone2 extends EventEmitter {
             this.televisionService.setCharacteristic(Characteristic.DisplayOrder, Encode(1, displayOrder).toString('base64'));
             return true;
         } catch (error) {
-            throw new Error( error);
+            throw new Error(error);
         };
     }
 
@@ -412,7 +412,7 @@ class Zone2 extends EventEmitter {
             const debug = !this.enableDebugMode ? false : this.emit('debug', `Saved data: ${JSON.stringify(data, null, 2)}`);
             return true;
         } catch (error) {
-            throw new Error( error);
+            throw new Error(error);
         };
     }
 
@@ -421,7 +421,7 @@ class Zone2 extends EventEmitter {
             const data = await fsPromises.readFile(path);
             return data;
         } catch (error) {
-            throw new Error( `Read saved data error: ${error}`);
+            throw new Error(`Read saved data error: ${error}`);
         };
     }
 
@@ -918,7 +918,7 @@ class Zone2 extends EventEmitter {
 
             return accessory;
         } catch (error) {
-            throw new Error( error)
+            throw new Error(error)
         };
     }
 };

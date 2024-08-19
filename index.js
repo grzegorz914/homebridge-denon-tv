@@ -73,6 +73,7 @@ class DenonPlatform {
 					});
 				} catch (error) {
 					log.error(`Device: ${host} ${deviceName}, prepare files error: ${error}`);
+					return;
 				}
 
 				//zones

@@ -32,7 +32,7 @@ class RestFul extends EventEmitter {
             });
 
         } catch (error) {
-            this.emit('error', `RESTful error: ${error}`)
+            this.emit('error', `RESTful Connect error: ${error}`)
         }
     };
 
@@ -51,7 +51,7 @@ class RestFul extends EventEmitter {
                 this.restFulData.surround = data;
                 break;
             default:
-                this.emit('debug', `RESTFul update unknown path: ${path}, data: ${data}`)
+                this.emit('error', `RESTFul update unknown path: ${path}, data: ${data}`)
                 break;
         };
         const emitDebug = this.restFulDebug ? this.emit('debug', `RESTFul update path: ${path}, data: ${data}`) : false;
