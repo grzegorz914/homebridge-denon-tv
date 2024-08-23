@@ -40,10 +40,10 @@ class DenonPlatform {
 				const config = {
 					...device,
 					mqtt: {
-					  ...device.mqtt,
-					  passwd: 'removed'
+						...device.mqtt,
+						passwd: 'removed'
 					}
-				  };
+				};
 				const debug1 = enableDebugMode ? log.info(`Device: ${host} ${deviceName}, Config: ${JSON.stringify(config, null, 2)}`) : false;
 
 				//zones
@@ -87,6 +87,9 @@ class DenonPlatform {
 							.on('devInfo', (devInfo) => {
 								log.info(devInfo);
 							})
+							.on('success', (message) => {
+								log.success(`Device: ${host} ${deviceName}, ${message}`);
+							})
 							.on('message', (message) => {
 								log.info(`Device: ${host} ${deviceName}, ${message}`);
 							})
@@ -108,6 +111,9 @@ class DenonPlatform {
 						})
 							.on('devInfo', (devInfo) => {
 								log(devInfo);
+							})
+							.on('success', (message) => {
+								log.success(`Device: ${host} ${deviceName}, ${message}`);
 							})
 							.on('message', (message) => {
 								log(`Device: ${host} ${deviceName}, ${message}`);
@@ -131,6 +137,9 @@ class DenonPlatform {
 							.on('devInfo', (devInfo) => {
 								log.info(devInfo);
 							})
+							.on('success', (message) => {
+								log.success(`Device: ${host} ${deviceName}, ${message}`);
+							})
 							.on('message', (message) => {
 								log.info(`Device: ${host} ${deviceName}, ${message}`);
 							})
@@ -152,6 +161,9 @@ class DenonPlatform {
 						})
 							.on('devInfo', (devInfo) => {
 								log.info(devInfo);
+							})
+							.on('success', (message) => {
+								log.success(`Device: ${host} ${deviceName}, ${message}`);
 							})
 							.on('message', (message) => {
 								log.info(`Device: ${host} ${deviceName}, ${message}`);

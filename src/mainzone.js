@@ -39,11 +39,11 @@ class MainZone extends EventEmitter {
         this.volumeControl = device.volumeControl || false;
         this.volumeMax = device.volumeMax || 100;
         this.masterPower = device.masterPower || false;
-        this.restFul = device.restFul || {};
-        this.mqtt = device.mqtt || {};
 
         //external integration
+        const restFul = device.restFul || {};
         this.restFulConnected = false;
+        const mqtt = device.mqtt || {};
         this.mqttConnected = false;
 
         //services
@@ -248,17 +248,24 @@ class MainZone extends EventEmitter {
             })
             .on('prepareAccessory', async (allInputs) => {
                 //RESTFul server
-                const restFulEnabled = this.restFul.enable || false;
+                const restFulEnabled = restFul.enable || false;
                 if (restFulEnabled) {
                     this.restFul = new RestFul({
-                        port: this.restFul.port || 3000,
-                        debug: this.restFul.debug || false
+                        port: restFul.port || 3000,
+                        debug: restFul.debug || false
                     });
 
                     this.restFul.on('connected', (message) => {
-                        this.emit('message', message);
+                        this.emit('success', message);
                         this.restFulConnected = true;
                     })
+                        .on('set', async (key, value) => {
+                            try {
+                                await this.setOverExternalIntegration('RESTFul', key, value);
+                            } catch (error) {
+                                this.emit('warn', `RESTFul set error: ${error}`);
+                            };
+                        })
                         .on('debug', (debug) => {
                             this.emit('debug', debug);
                         })
@@ -268,58 +275,30 @@ class MainZone extends EventEmitter {
                 }
 
                 //mqtt client
-                const mqttEnabled = this.mqtt.enable || false;
+                const mqttEnabled = mqtt.enable || false;
                 if (mqttEnabled) {
                     this.mqtt = new Mqtt({
-                        host: this.mqtt.host,
-                        port: this.mqtt.port || 1883,
-                        clientId: this.mqtt.clientId || `denon_${Math.random().toString(16).slice(3)}`,
-                        prefix: `${this.mqtt.prefix}/${name}`,
-                        user: this.mqtt.user,
-                        passwd: this.mqtt.passwd,
-                        debug: this.mqtt.debug || false
+                        host: mqtt.host,
+                        port: mqtt.port || 1883,
+                        clientId: mqtt.clientId || `denon_${Math.random().toString(16).slice(3)}`,
+                        prefix: `${mqtt.prefix}/${name}`,
+                        user: mqtt.user,
+                        passwd: mqtt.passwd,
+                        debug: mqtt.debug || false
                     });
 
                     this.mqtt.on('connected', (message) => {
-                        this.emit('message', message);
+                        this.emit('success', message);
                         this.mqttConnected = true;
                     })
                         .on('subscribed', (message) => {
-                            this.emit('message', message);
+                            this.emit('success', message);
                         })
                         .on('subscribedMessage', async (key, value) => {
                             try {
-                                switch (key) {
-                                    case 'Power':
-                                        const powerState = this.masterPower ? (value ? 'PWON' : 'PWSTANDBY') : (value ? 'ZMON' : 'ZMOFF');
-                                        await this.denon.send(powerState)
-                                        break;
-                                    case 'Input':
-                                        const input = `SI${value}`;
-                                        await this.denon.send(input);
-                                        break;
-                                    case 'Volume':
-                                        const value1 = (value < 0 || value > 100) ? this.volume : (value < 10 ? `0${value}` : value);
-                                        const volume = `MV${value1}`;
-                                        await this.denon.send(volume);
-                                        break;
-                                    case 'Mute':
-                                        const mute = value ? 'MUON' : 'MUOFF';
-                                        await this.denon.send(mute);
-                                        break;
-                                    case 'Surround':
-                                        const surround = `MS${value}`;
-                                        await this.denon.send(surround);
-                                        break;
-                                    case 'RcControl':
-                                        await this.denon.send(value);
-                                        break;
-                                    default:
-                                        this.emit('message', `MQTT Received unknown key: ${key}, value: ${value}`);
-                                        break;
-                                };
+                                await this.setOverExternalIntegration('MQTT', key, value);
                             } catch (error) {
-                                this.emit('warn', `MQTT send error: ${error}.`);
+                                this.emit('warn', `MQTT set error: ${error}.`);
                             };
                         })
                         .on('debug', (debug) => {
@@ -404,7 +383,7 @@ class MainZone extends EventEmitter {
             this.televisionService.setCharacteristic(Characteristic.DisplayOrder, Encode(1, displayOrder).toString('base64'));
             return true;
         } catch (error) {
-            throw new Error( error);
+            throw new Error(error);
         };
     }
 
@@ -414,7 +393,7 @@ class MainZone extends EventEmitter {
             const debug = !this.enableDebugMode ? false : this.emit('debug', `Saved data: ${JSON.stringify(data, null, 2)}`);
             return true;
         } catch (error) {
-            throw new Error( error);
+            throw new Error(error);
         };
     }
 
@@ -423,7 +402,45 @@ class MainZone extends EventEmitter {
             const data = await fsPromises.readFile(path);
             return data;
         } catch (error) {
-            throw new Error( `Read saved data error: ${error}`);
+            throw new Error(`Read saved data error: ${error}`);
+        };
+    }
+
+    async setOverExternalIntegration(integration, key, value) {
+        try {
+            let set = false
+            switch (key) {
+                case 'Power':
+                    const powerState = this.masterPower ? (value ? 'PWON' : 'PWSTANDBY') : (value ? 'ZMON' : 'ZMOFF');
+                    set = await this.denon.send(powerState)
+                    break;
+                case 'Input':
+                    const input = `SI${value}`;
+                    set = await this.denon.send(input);
+                    break;
+                case 'Volume':
+                    const value1 = (value < 0 || value > 100) ? this.volume : (value < 10 ? `0${value}` : value);
+                    const volume = `MV${value1}`;
+                    set = await this.denon.send(volume);
+                    break;
+                case 'Mute':
+                    const mute = value ? 'MUON' : 'MUOFF';
+                    set = await this.denon.send(mute);
+                    break;
+                case 'Surround':
+                    const surround = `MS${value}`;
+                    set = await this.denon.send(surround);
+                    break;
+                case 'RcControl':
+                    set = await this.denon.send(value);
+                    break;
+                default:
+                    this.emit('warn', `${integration}, received key: ${key}, value: ${value}`);
+                    break;
+            };
+            return set;
+        } catch (error) {
+            throw new Error(`${integration} set key: ${key}, value: ${value}, error: ${error}`);
         };
     }
 
@@ -1005,7 +1022,7 @@ class MainZone extends EventEmitter {
 
             return accessory;
         } catch (error) {
-            throw new Error( error)
+            throw new Error(error)
         };
     }
 };

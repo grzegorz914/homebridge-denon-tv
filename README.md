@@ -135,23 +135,35 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 
 ### RESTFul Integration
 
-* Request: `http//homebridge_ip_address:port/path`.
-* Path: `info`, `state`, `picture`, `surround`.
-* Respone as JSON object.
+* POST data as a JSON Object `{Power: true}`
+
+| Method | URL | Path | Response | Type |
+| --- | --- | --- | --- | --- |
+| GET | `http//ip:port` | `info`, `state`, `picture`, `surround`. | `{"Power": {"value": OFF}}` | JSON object. |
+
+| Method | URL | Key | Value | Type | Description |
+| --- | --- | --- | --- | --- | --- |
+| POST | `http//ip:port` | `Power` | `true`, `false` | boolean | Power On/Off. |
+|      | `http//ip:port` | `Input` | `SAT/CBL` | string | Set input. |
+|      | `http//ip:port` | `Surround` | `MUSIC` | string | Set surround mode. |
+|      | `http//ip:port` | `RcControl` | `NS9E` | string | Send RC command. |
+|      | `http//ip:port` | `Volume` | `100` | integer | Set volume. |
+|      | `http//ip:port` | `Mute` | `true`, `false` | string | Set mute On/Off. |
 
 ### MQTT Integration
 
-| Direction | Topic | Message | Payload Data |
-| --- | --- | --- | --- |
-|  Publish   | `Info`, `State`, `Picture`, `Surround` | `{"Power": {"value": OFF}}` | JSON object. |
-|  Subscribe   | `Set` | `{"Power": true}` | JSON object. |
+* Subscribe data as a JSON Object `{Power: true}`
 
-| Subscribe | Key | Value | Type | Description |
-| --- | --- | --- | --- | --- |
-| Denon/Marantz |     |     |     |      |
-|     | `Power` | `true`, `false` | boolean | Power state. |
-|     | `Input` | `SAT/CBL` | string | Set input. |
-|     | `Surround` | `MUSIC` | string | Set surround mode. |
-|     | `RcControl` | `NS9E` | string | Send RC command. |
-|     | `Volume` | `100` | integer | Set volume. |
-|     | `Mute` | `true`, `false` | boolean | Set mute. |
+| Method | Topic | Message | Type |
+| --- | --- | --- | --- |
+| Publish | `Info`, `State`, `Picture`, `Surround` | `{"Power": {"value": OFF}}` | JSON object. |
+
+| Method | Topic | Key | Value | Type | Description |
+| --- | --- | --- | --- | --- | --- |
+| Denon/Marantz |     |     |     |      |     |
+| Subscribe | `Set` |  `Power` | `true`, `false` | boolean | Power state. |
+|     | `Set` |  `Input` | `SAT/CBL` | string | Set input. |
+|     | `Set` |  `Surround` | `MUSIC` | string | Set surround mode. |
+|     | `Set` |  `RcControl` | `NS9E` | string | Send RC command. |
+|     | `Set` |  `Volume` | `100` | integer | Set volume. |
+|     | `Set` |  `Mute` | `true`, `false` | boolean | Set mute. |
