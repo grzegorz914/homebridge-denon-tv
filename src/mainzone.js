@@ -294,7 +294,7 @@ class MainZone extends EventEmitter {
                         .on('subscribed', (message) => {
                             this.emit('success', message);
                         })
-                        .on('subscribedMessage', async (key, value) => {
+                        .on('set', async (key, value) => {
                             try {
                                 await this.setOverExternalIntegration('MQTT', key, value);
                             } catch (error) {
