@@ -139,7 +139,7 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 
 | Method | URL | Path | Response | Type |
 | --- | --- | --- | --- | --- |
-| GET | `http//ip:port/` | `info`, `state`, `picture`, `surround`. | `{"Power": {"value": OFF}}` | JSON object. |
+| GET | `http//ip:port/` | `info`, `state`, `picture`, `surround` | `{"Power": {"value": OFF}}` | JSON object. |
 
 | Method | URL | Key | Value | Type | Description |
 | --- | --- | --- | --- | --- | --- |
