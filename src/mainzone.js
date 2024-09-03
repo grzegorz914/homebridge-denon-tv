@@ -147,7 +147,7 @@ class MainZone extends EventEmitter {
 
                 if (this.televisionService) {
                     this.televisionService
-                        .updateCharacteristic(Characteristic.Active, power)
+                        .updateCharacteristic(Characteristic.Active, power ? 1 : 0)
                         .updateCharacteristic(Characteristic.PictureMode, pictureModeHomeKit);
                 }
 
@@ -158,7 +158,7 @@ class MainZone extends EventEmitter {
 
                 if (this.speakerService) {
                     this.speakerService
-                        .updateCharacteristic(Characteristic.Active, power)
+                        .updateCharacteristic(Characteristic.Active, power ? 1 : 0)
                         .updateCharacteristic(Characteristic.Volume, volume)
                         .updateCharacteristic(Characteristic.Mute, mute);
 
@@ -472,7 +472,7 @@ class MainZone extends EventEmitter {
 
             this.televisionService.getCharacteristic(Characteristic.Active)
                 .onGet(async () => {
-                    const state = this.power;
+                    const state = this.power ? 1 : 0;
                     return state;
                 })
                 .onSet(async (state) => {
@@ -658,7 +658,7 @@ class MainZone extends EventEmitter {
             this.speakerService = accessory.addService(Service.TelevisionSpeaker, `${accessoryName} Speaker`, 'Speaker');
             this.speakerService.getCharacteristic(Characteristic.Active)
                 .onGet(async () => {
-                    const state = this.power;
+                    const state = this.power ? 1 : 0;
                     return state;
                 })
                 .onSet(async (state) => {

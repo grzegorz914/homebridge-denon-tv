@@ -126,7 +126,7 @@ class Surround extends EventEmitter {
 
                 if (this.televisionService) {
                     this.televisionService
-                        .updateCharacteristic(Characteristic.Active, power)
+                        .updateCharacteristic(Characteristic.Active, power ? 1 : 0)
                         .updateCharacteristic(Characteristic.PictureMode, pictureModeHomeKit);
                 }
 
@@ -137,7 +137,7 @@ class Surround extends EventEmitter {
 
                 if (this.speakerService) {
                     this.speakerService
-                        .updateCharacteristic(Characteristic.Active, power)
+                        .updateCharacteristic(Characteristic.Active, power ? 1 : 0)
                         .updateCharacteristic(Characteristic.Volume, volume)
                         .updateCharacteristic(Characteristic.Mute, mute);
 
@@ -440,7 +440,7 @@ class Surround extends EventEmitter {
 
             this.televisionService.getCharacteristic(Characteristic.Active)
                 .onGet(async () => {
-                    const state = this.power;
+                    const state = this.power ? 1 : 0;
                     return state;
                 })
                 .onSet(async (state) => {
@@ -563,7 +563,7 @@ class Surround extends EventEmitter {
             //prepare speaker service
             const debug3 = !this.enableDebugMode ? false : this.emit('debug', `Prepare speaker service`);
             this.speakerService = accessory.addService(Service.TelevisionSpeaker, `${accessoryName} Speaker`, 'Speaker');
-            this.speakerService.getCharacteristic(Characteristic.Active)
+            this.speakerService.getCharacteristic(Characteristic.Active ? 1 : 0)
                 .onGet(async () => {
                     const state = this.power;
                     return state;

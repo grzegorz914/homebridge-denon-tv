@@ -470,7 +470,7 @@ class Zone3 extends EventEmitter {
 
             this.televisionService.getCharacteristic(Characteristic.Active)
                 .onGet(async () => {
-                    const state = this.power;
+                    const state = this.power ? 1 : 0;
                     return state;
                 })
                 .onSet(async (state) => {
@@ -576,7 +576,7 @@ class Zone3 extends EventEmitter {
             this.speakerService = accessory.addService(Service.TelevisionSpeaker, `${accessoryName} Speaker`, 'Speaker');
             this.speakerService.getCharacteristic(Characteristic.Active)
                 .onGet(async () => {
-                    const state = this.power;
+                    const state = this.power ? 1 : 0;
                     return state;
                 })
                 .onSet(async (state) => {
