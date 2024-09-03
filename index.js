@@ -179,7 +179,7 @@ class DenonPlatform {
 							});
 						break;
 					default:
-						log.warn(`Device: ${host} ${deviceName}, unknoen zone: ${zoneControl}`);
+						log.warn(`Device: ${host} ${deviceName}, unknown zone: ${zoneControl}`);
 						break;
 				}
 			}
