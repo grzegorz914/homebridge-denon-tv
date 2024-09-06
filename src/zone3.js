@@ -20,8 +20,15 @@ class Zone3 extends EventEmitter {
         AccessoryUUID = api.hap.uuid;
 
         //device configuration
-        this.zone = zone;
         this.name = name;
+        this.host = host;
+        this.port = port;
+        this.generation = generation;
+        this.zone = zone;
+        this.getInputsFromDevice = device.getInputsFromDevice || false;
+        this.getFavoritesFromDevice = device.getFavoritesFromDevice || false;
+        this.getQuickSmartSelectFromDevice = device.getQuickSmartSelectFromDevice || false;
+        this.inputs = device.inputs || [];
         this.inputsDisplayOrder = device.inputsDisplayOrder || 0;
         this.buttons = device.buttonsZ3 || [];
         this.sensorPower = device.sensorPower || false;
@@ -41,11 +48,16 @@ class Zone3 extends EventEmitter {
         this.masterPower = device.masterPower || false;
         this.masterVolume = device.masterVolume || false;
         this.masterMute = device.masterMute || false;
+        this.refreshInterval = refreshInterval;
+        this.devInfoFile = devInfoFile;
+        this.inputsFile = inputsFile;
+        this.inputsNamesFile = inputsNamesFile;
+        this.inputsTargetVisibilityFile = inputsTargetVisibilityFile;
 
         //external integration
-        const restFul = device.restFul || {};
+        this.restFul = device.restFul || {};
         this.restFulConnected = false;
-        const mqtt = device.mqtt || {};
+        this.mqtt = device.mqtt || {};
         this.mqttConnected = false;
 
         //services
@@ -104,256 +116,274 @@ class Zone3 extends EventEmitter {
         this.brightness = 0;
         this.inputsNamesFile = inputsNamesFile;
         this.inputsTargetVisibilityFile = inputsTargetVisibilityFile;
+    };
 
-        //denon client
-        this.denon = new Denon({
-            host: host,
-            port: port,
-            generation: generation,
-            zone: zone,
-            inputs: device.inputs || [],
-            devInfoFile: devInfoFile,
-            inputsFile: inputsFile,
-            getInputsFromDevice: device.getInputsFromDevice || false,
-            getFavoritesFromDevice: device.getFavoritesFromDevice || false,
-            getQuickSmartSelectFromDevice: device.getQuickSmartSelectFromDevice || false,
-            debugLog: this.enableDebugMode,
-            disableLogConnectError: this.disableLogConnectError,
-            refreshInterval: refreshInterval,
-        });
-
-        this.denon.on('deviceInfo', (manufacturer, modelName, serialNumber, firmwareRevision, deviceZones, apiVersion, supportPictureMode) => {
-            if (!this.disableLogDeviceInfo) {
-                this.emit('devInfo', `-------- ${name} --------`);
-                this.emit('devInfo', `Manufacturer: ${manufacturer}`);
-                this.emit('devInfo', `Model: ${modelName}`);
-                this.emit('devInfo', `Control: Zone 3`);
-                this.emit('devInfo', `----------------------------------`);
-            }
-
-            this.manufacturer = manufacturer;
-            this.modelName = modelName;
-            this.serialNumber = serialNumber;
-            this.firmwareRevision = firmwareRevision;
-            this.supportPictureMode = supportPictureMode;
-        })
-            .on('stateChanged', (power, reference, volume, volumeControlType, mute, pictureMode) => {
-                const index = this.inputsConfigured.findIndex(input => input.reference === reference) ?? -1;
-                const inputIdentifier = index !== -1 ? this.inputsConfigured[index].identifier : this.inputIdentifier;
-                mute = power ? mute : true;
-                const pictureModeHomeKit = CONSTANTS.PictureModesConversionToHomeKit[pictureMode];
-
-                if (this.televisionService) {
-                    this.televisionService
-                        .updateCharacteristic(Characteristic.Active, power)
-                        .updateCharacteristic(Characteristic.PictureMode, pictureModeHomeKit);
-                }
-
-                if (this.televisionService) {
-                    this.televisionService
-                        .updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier)
-                }
-
-                if (this.speakerService) {
-                    this.speakerService
-                        .updateCharacteristic(Characteristic.Active, power)
-                        .updateCharacteristic(Characteristic.Volume, volume)
-                        .updateCharacteristic(Characteristic.Mute, mute);
-
-                    if (this.volumeService) {
-                        this.volumeService
-                            .updateCharacteristic(Characteristic.Brightness, volume)
-                            .updateCharacteristic(Characteristic.On, !mute);
-                    }
-
-                    if (this.volumeServiceFan) {
-                        this.volumeServiceFan
-                            .updateCharacteristic(Characteristic.RotationSpeed, volume)
-                            .updateCharacteristic(Characteristic.On, !mute);
-                    }
-                }
-
-                //sensors
-                if (this.sensorPowerService) {
-                    this.sensorPowerService
-                        .updateCharacteristic(Characteristic.ContactSensorState, power)
-                }
-
-                if (this.sensorVolumeService && volume !== this.volume) {
-                    for (let i = 0; i < 2; i++) {
-                        const state = power ? [true, false][i] : false;
-                        this.sensorVolumeService
-                            .updateCharacteristic(Characteristic.ContactSensorState, state)
-                        this.sensorVolumeState = state;
-                    }
-                }
-
-                if (this.sensorMuteService) {
-                    const state = power ? mute : false;
-                    this.sensorMuteService
-                        .updateCharacteristic(Characteristic.ContactSensorState, state)
-                }
-
-                if (this.sensorInputService && reference !== this.reference) {
-                    for (let i = 0; i < 2; i++) {
-                        const state = power ? [true, false][i] : false;
-                        this.sensorInputService
-                            .updateCharacteristic(Characteristic.ContactSensorState, state)
-                        this.sensorInputState = state;
-                    }
-                }
-
-                if (this.sensorsInputsServices) {
-                    for (let i = 0; i < this.sensorsInputsConfiguredCount; i++) {
-                        const sensorInput = this.sensorsInputsConfigured[i];
-                        const state = power ? sensorInput.reference === reference : false;
-                        sensorInput.state = state;
-                        const characteristicType = sensorInput.characteristicType;
-                        this.sensorsInputsServices[i]
-                            .updateCharacteristic(characteristicType, state);
-                    }
-                }
-
-                //buttons
-                if (this.buttonsServices) {
-                    for (let i = 0; i < this.buttonsConfiguredCount; i++) {
-                        const button = this.buttonsConfigured[i];
-                        const state = this.power ? button.reference === reference : false;
-                        button.state = state;
-                        this.buttonsServices[i]
-                            .updateCharacteristic(Characteristic.On, state);
-                    }
-                }
-
-                this.inputIdentifier = inputIdentifier;
-                this.power = power;
-                this.reference = reference;
-                this.volume = volume;
-                this.mute = mute;
-                this.volumeControlType = volumeControlType;
-                this.pictureMode = pictureModeHomeKit;
-
-                if (!this.disableLogInfo) {
-                    const name = index !== -1 ? this.inputsConfigured[index].name : reference;
-                    this.emit('message', `Power: ${power ? 'ON' : 'OFF'}`);
-                    this.emit('message', `Input Name: ${name}`);
-                    this.emit('message', `Reference: ${reference}`);
-                    this.emit('message', `Volume: ${volume - 80}dB`);
-                    this.emit('message', `Mute: ${mute ? 'ON' : 'OFF'}`);
-                    this.emit('message', `Volume Control Type: ${volumeControlType}`);
-                    this.emit('message', `Picture Mode: ${CONSTANTS.PictureModesDenonNumber[pictureMode]}`);
-                };
-            })
-            .on('prepareAccessory', async (allInputs) => {
-                //RESTFul server
-                const restFulEnabled = restFul.enable || false;
-                if (restFulEnabled) {
-                    this.restFul = new RestFul({
-                        port: restFul.port || 3000,
-                        debug: restFul.debug || false
-                    });
-
-                    this.restFul.on('connected', (message) => {
-                        this.emit('success', message);
-                        this.restFulConnected = true;
-                    })
-                        .on('set', async (key, value) => {
-                            try {
-                                await this.setOverExternalIntegration('RESTFul', key, value);
-                            } catch (error) {
-                                this.emit('warn', `RESTFul set error: ${error}`);
-                            };
-                        })
-                        .on('debug', (debug) => {
-                            this.emit('debug', debug);
-                        })
-                        .on('error', (error) => {
-                            this.emit('warn', error);
-                        });
-                }
-
-                //mqtt client
-                const mqttEnabled = mqtt.enable || false;
-                if (mqttEnabled) {
-                    this.mqtt = new Mqtt({
-                        host: mqtt.host,
-                        port: mqtt.port || 1883,
-                        clientId: mqtt.clientId || `denon_${Math.random().toString(16).slice(3)}`,
-                        prefix: `${mqtt.prefix}/${name}`,
-                        user: mqtt.user,
-                        passwd: mqtt.passwd,
-                        debug: mqtt.debug || false
-                    });
-
-                    this.mqtt.on('connected', (message) => {
-                        this.emit('success', message);
-                        this.mqttConnected = true;
-                    })
-                        .on('subscribed', (message) => {
-                            this.emit('success', message);
-                        })
-                        .on('set', async (key, value) => {
-                            try {
-                                await this.setOverExternalIntegration('MQTT', key, value);
-                            } catch (error) {
-                                this.emit('warn', `MQTT set error: ${error}.`);
-                            };
-                        })
-                        .on('debug', (debug) => {
-                            this.emit('debug', debug);
-                        })
-                        .on('error', (error) => {
-                            this.emit('warn', error);
-                        });
-                };
-
-                try {
-                    //read inputs names from file
-                    const savedInputsNames = await this.readData(inputsNamesFile);
-                    this.savedInputsNames = savedInputsNames.toString().trim() !== '' ? JSON.parse(savedInputsNames) : {};
-                    const debug = !this.enableDebugMode ? false : this.emit('debug', `Read saved Inputs Names: ${JSON.stringify(this.savedInputsNames, null, 2)}`);
-
-                    //read inputs visibility from file
-                    const savedInputsTargetVisibility = await this.readData(inputsTargetVisibilityFile);
-                    this.savedInputsTargetVisibility = savedInputsTargetVisibility.toString().trim() !== '' ? JSON.parse(savedInputsTargetVisibility) : {};
-                    const debug1 = !this.enableDebugMode ? false : this.emit('debug', `Read saved Inputs Target Visibility: ${JSON.stringify(this.savedInputsTargetVisibility, null, 2)}`);
-
-                    //prepare accessory
-                    const accessory = await this.prepareAccessory(allInputs);
-                    this.emit('publishAccessory', accessory);
-
-                    //sort inputs list
-                    const sortInputsDisplayOrder = this.televisionService ? await this.displayOrder() : false;
-
-                    //start check state
-                    this.denon.impulseGenerator.start([{ name: 'checkState', sampling: refreshInterval }]);
-                } catch (error) {
-                    this.emit('error', `prepare accessory error: ${error}`);
-                    await new Promise(resolve => setTimeout(resolve, 15000));
-                    this.denon.impulseGenerator.emit('checkDeviceInfo');
-                };
-            })
-            .on('message', (message) => {
-                this.emit('message', message);
-            })
-            .on('debug', (debug) => {
-                this.emit('debug', debug);
-            })
-            .on('warn', (warn) => {
-                this.emit('warn', warn);
-            })
-            .on('error', (error) => {
-                this.emit('error', error);
-            })
-            .on('disconnected', (message) => {
-                this.emit('message', message);
-            })
-            .on('restFul', (path, data) => {
-                const restFul = this.restFulConnected ? this.restFul.update(path, data) : false;
-            })
-            .on('mqtt', (topic, message) => {
-                const mqtt = this.mqttConnected ? this.mqtt.emit('publish', topic, message) : false;
+    async start() {
+        try {
+            //denon client
+            this.denon = new Denon({
+                host: this.host,
+                port: this.port,
+                generation: this.generation,
+                zone: this.zone,
+                inputs: this.inputs,
+                devInfoFile: this.devInfoFile,
+                inputsFile: this.inputsFile,
+                getInputsFromDevice: this.getInputsFromDevice,
+                getFavoritesFromDevice: this.getFavoritesFromDevice,
+                getQuickSmartSelectFromDevice: this.getQuickSmartSelectFromDevice,
+                debugLog: this.enableDebugMode,
             });
+
+            this.denon.on('deviceInfo', (manufacturer, modelName, serialNumber, firmwareRevision, deviceZones, apiVersion, supportPictureMode) => {
+                if (!this.disableLogDeviceInfo) {
+                    this.emit('devInfo', `-------- ${this.name} --------`);
+                    this.emit('devInfo', `Manufacturer: ${manufacturer}`);
+                    this.emit('devInfo', `Model: ${modelName}`);
+                    this.emit('devInfo', `Control: Zone 3`);
+                    this.emit('devInfo', `----------------------------------`);
+                }
+
+                this.manufacturer = manufacturer;
+                this.modelName = modelName;
+                this.serialNumber = serialNumber;
+                this.firmwareRevision = firmwareRevision;
+                this.supportPictureMode = supportPictureMode;
+            })
+                .on('stateChanged', (power, reference, volume, volumeControlType, mute, pictureMode) => {
+                    const index = this.inputsConfigured.findIndex(input => input.reference === reference) ?? -1;
+                    const inputIdentifier = index !== -1 ? this.inputsConfigured[index].identifier : this.inputIdentifier;
+                    mute = power ? mute : true;
+                    const pictureModeHomeKit = CONSTANTS.PictureModesConversionToHomeKit[pictureMode];
+
+                    if (this.televisionService) {
+                        this.televisionService
+                            .updateCharacteristic(Characteristic.Active, power)
+                            .updateCharacteristic(Characteristic.PictureMode, pictureModeHomeKit);
+                    }
+
+                    if (this.televisionService) {
+                        this.televisionService
+                            .updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier)
+                    }
+
+                    if (this.speakerService) {
+                        this.speakerService
+                            .updateCharacteristic(Characteristic.Active, power)
+                            .updateCharacteristic(Characteristic.Volume, volume)
+                            .updateCharacteristic(Characteristic.Mute, mute);
+
+                        if (this.volumeService) {
+                            this.volumeService
+                                .updateCharacteristic(Characteristic.Brightness, volume)
+                                .updateCharacteristic(Characteristic.On, !mute);
+                        }
+
+                        if (this.volumeServiceFan) {
+                            this.volumeServiceFan
+                                .updateCharacteristic(Characteristic.RotationSpeed, volume)
+                                .updateCharacteristic(Characteristic.On, !mute);
+                        }
+                    }
+
+                    //sensors
+                    if (this.sensorPowerService) {
+                        this.sensorPowerService
+                            .updateCharacteristic(Characteristic.ContactSensorState, power)
+                    }
+
+                    if (this.sensorVolumeService && volume !== this.volume) {
+                        for (let i = 0; i < 2; i++) {
+                            const state = power ? [true, false][i] : false;
+                            this.sensorVolumeService
+                                .updateCharacteristic(Characteristic.ContactSensorState, state)
+                            this.sensorVolumeState = state;
+                        }
+                    }
+
+                    if (this.sensorMuteService) {
+                        const state = power ? mute : false;
+                        this.sensorMuteService
+                            .updateCharacteristic(Characteristic.ContactSensorState, state)
+                    }
+
+                    if (this.sensorInputService && reference !== this.reference) {
+                        for (let i = 0; i < 2; i++) {
+                            const state = power ? [true, false][i] : false;
+                            this.sensorInputService
+                                .updateCharacteristic(Characteristic.ContactSensorState, state)
+                            this.sensorInputState = state;
+                        }
+                    }
+
+                    if (this.sensorsInputsServices) {
+                        for (let i = 0; i < this.sensorsInputsConfiguredCount; i++) {
+                            const sensorInput = this.sensorsInputsConfigured[i];
+                            const state = power ? sensorInput.reference === reference : false;
+                            sensorInput.state = state;
+                            const characteristicType = sensorInput.characteristicType;
+                            this.sensorsInputsServices[i]
+                                .updateCharacteristic(characteristicType, state);
+                        }
+                    }
+
+                    //buttons
+                    if (this.buttonsServices) {
+                        for (let i = 0; i < this.buttonsConfiguredCount; i++) {
+                            const button = this.buttonsConfigured[i];
+                            const state = this.power ? button.reference === reference : false;
+                            button.state = state;
+                            this.buttonsServices[i]
+                                .updateCharacteristic(Characteristic.On, state);
+                        }
+                    }
+
+                    this.inputIdentifier = inputIdentifier;
+                    this.power = power;
+                    this.reference = reference;
+                    this.volume = volume;
+                    this.mute = mute;
+                    this.volumeControlType = volumeControlType;
+                    this.pictureMode = pictureModeHomeKit;
+
+                    if (!this.disableLogInfo) {
+                        const name = index !== -1 ? this.inputsConfigured[index].name : reference;
+                        this.emit('message', `Power: ${power ? 'ON' : 'OFF'}`);
+                        this.emit('message', `Input Name: ${name}`);
+                        this.emit('message', `Reference: ${reference}`);
+                        this.emit('message', `Volume: ${volume - 80}dB`);
+                        this.emit('message', `Mute: ${mute ? 'ON' : 'OFF'}`);
+                        this.emit('message', `Volume Control Type: ${volumeControlType}`);
+                        this.emit('message', `Picture Mode: ${CONSTANTS.PictureModesDenonNumber[pictureMode]}`);
+                    };
+                })
+                .on('prepareAccessory', async (allInputs) => {
+                    //RESTFul server
+                    const restFulEnabled = this.restFul.enable || false;
+                    if (restFulEnabled) {
+                        this.restFul = new RestFul({
+                            port: this.restFul.port || 3000,
+                            debug: this.restFul.debug || false
+                        });
+
+                        this.restFul.on('connected', (message) => {
+                            this.emit('success', message);
+                            this.restFulConnected = true;
+                        })
+                            .on('set', async (key, value) => {
+                                try {
+                                    await this.setOverExternalIntegration('RESTFul', key, value);
+                                } catch (error) {
+                                    this.emit('warn', `RESTFul set error: ${error}`);
+                                };
+                            })
+                            .on('debug', (debug) => {
+                                this.emit('debug', debug);
+                            })
+                            .on('error', (error) => {
+                                this.emit('warn', error);
+                            });
+                    }
+
+                    //mqtt client
+                    const mqttEnabled = this.mqtt.enable || false;
+                    if (mqttEnabled) {
+                        this.mqtt = new Mqtt({
+                            host: this.mqtt.host,
+                            port: this.mqtt.port || 1883,
+                            clientId: this.mqtt.clientId || `denon_${Math.random().toString(16).slice(3)}`,
+                            prefix: `${this.mqtt.prefix}/${this.name}`,
+                            user: this.mqtt.user,
+                            passwd: this.mqtt.passwd,
+                            debug: this.mqtt.debug || false
+                        });
+
+                        this.mqtt.on('connected', (message) => {
+                            this.emit('success', message);
+                            this.mqttConnected = true;
+                        })
+                            .on('subscribed', (message) => {
+                                this.emit('success', message);
+                            })
+                            .on('set', async (key, value) => {
+                                try {
+                                    await this.setOverExternalIntegration('MQTT', key, value);
+                                } catch (error) {
+                                    this.emit('warn', `MQTT set error: ${error}.`);
+                                };
+                            })
+                            .on('debug', (debug) => {
+                                this.emit('debug', debug);
+                            })
+                            .on('error', (error) => {
+                                this.emit('warn', error);
+                            });
+                    };
+
+                    try {
+                        //read inputs names from file
+                        const savedInputsNames = await this.readData(this.inputsNamesFile);
+                        this.savedInputsNames = savedInputsNames.toString().trim() !== '' ? JSON.parse(savedInputsNames) : {};
+                        const debug = !this.enableDebugMode ? false : this.emit('debug', `Read saved Inputs Names: ${JSON.stringify(this.savedInputsNames, null, 2)}`);
+
+                        //read inputs visibility from file
+                        const savedInputsTargetVisibility = await this.readData(this.inputsTargetVisibilityFile);
+                        this.savedInputsTargetVisibility = savedInputsTargetVisibility.toString().trim() !== '' ? JSON.parse(savedInputsTargetVisibility) : {};
+                        const debug1 = !this.enableDebugMode ? false : this.emit('debug', `Read saved Inputs Target Visibility: ${JSON.stringify(this.savedInputsTargetVisibility, null, 2)}`);
+
+                        //prepare accessory
+                        const accessory = await this.prepareAccessory(allInputs);
+                        this.emit('publishAccessory', accessory);
+
+                        //sort inputs list
+                        const sortInputsDisplayOrder = this.televisionService ? await this.displayOrder() : false;
+
+                        //start check state
+                        this.denon.impulseGenerator.start([{ name: 'checkState', sampling: this.refreshInterval }]);
+                    } catch (error) {
+                        this.emit('error', `prepare accessory error: ${error}`);
+                        await new Promise(resolve => setTimeout(resolve, 15000));
+                        this.denon.impulseGenerator.emit('checkDeviceInfo');
+                    };
+                })
+                .on('success', (message) => {
+                    this.emit('success', message);
+                })
+                .on('message', (message) => {
+                    this.emit('message', message);
+                })
+                .on('debug', (debug) => {
+                    this.emit('debug', debug);
+                })
+                .on('warn', async (warn) => {
+                    this.emit('warn', warn);
+                    this.denon.impulseGenerator.stop();
+                    await new Promise(resolve => setTimeout(resolve, 15000));
+                    await this.denon.connect();
+                })
+                .on('error', async (error) => {
+                    this.emit('error', error);
+                    this.denon.impulseGenerator.stop();
+                    await new Promise(resolve => setTimeout(resolve, 15000));
+                    await this.denon.connect();
+                })
+                .on('disconnected', (message) => {
+                    this.emit('message', message);
+                })
+                .on('restFul', (path, data) => {
+                    const restFul = this.restFulConnected ? this.restFul.update(path, data) : false;
+                })
+                .on('mqtt', (topic, message) => {
+                    const mqtt = this.mqttConnected ? this.mqtt.emit('publish', topic, message) : false;
+                });
+
+            //connect to box
+            await this.denon.connect();
+
+            return true;
+        } catch (error) {
+            throw new Error(`start error: ${error}`);
+        };
     };
 
     async displayOrder() {
@@ -470,7 +500,7 @@ class Zone3 extends EventEmitter {
 
             this.televisionService.getCharacteristic(Characteristic.Active)
                 .onGet(async () => {
-                    const state = this.power ? 1 : 0;
+                    const state = this.power;
                     return state;
                 })
                 .onSet(async (state) => {
@@ -576,7 +606,7 @@ class Zone3 extends EventEmitter {
             this.speakerService = accessory.addService(Service.TelevisionSpeaker, `${accessoryName} Speaker`, 'Speaker');
             this.speakerService.getCharacteristic(Characteristic.Active)
                 .onGet(async () => {
-                    const state = this.power ? 1 : 0;
+                    const state = this.power;
                     return state;
                 })
                 .onSet(async (state) => {

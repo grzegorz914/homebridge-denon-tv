@@ -18,9 +18,12 @@ class DenonPlatform {
 
 		//check if prefs directory exist
 		const prefDir = path.join(api.user.storagePath(), 'denonTv');
-		if (!fs.existsSync(prefDir)) {
-			fs.mkdirSync(prefDir);
-		};
+		try {
+			fs.mkdirSync(prefDir, { recursive: true });
+		} catch (error) {
+			log.error(`Prepare directory error: ${error.message ?? error}`);
+			return;
+		}
 
 		api.on('didFinishLaunching', async () => {
 			for (const device of config.devices) {
@@ -79,104 +82,128 @@ class DenonPlatform {
 				//zones
 				switch (zoneControl) {
 					case 0: //main zone
-						const mainZone = new MainZone(api, device, zoneControl, deviceName, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile, refreshInterval);
-						mainZone.on('publishAccessory', (accessory) => {
-							api.publishExternalAccessories(CONSTANTS.PluginName, [accessory]);
-							log.success(`Device: ${host} ${deviceName}, published as external accessory.`);
-						})
-							.on('devInfo', (devInfo) => {
-								log.info(devInfo);
+						try {
+							const mainZone = new MainZone(api, device, zoneControl, deviceName, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile, refreshInterval);
+							mainZone.on('publishAccessory', (accessory) => {
+								api.publishExternalAccessories(CONSTANTS.PluginName, [accessory]);
+								log.success(`Device: ${host} ${deviceName}, published as external accessory.`);
 							})
-							.on('success', (message) => {
-								log.success(`Device: ${host} ${deviceName}, ${message}`);
-							})
-							.on('message', (message) => {
-								log.info(`Device: ${host} ${deviceName}, ${message}`);
-							})
-							.on('debug', (debug) => {
-								log.info(`Device: ${host} ${deviceName}, debug: ${debug}`);
-							})
-							.on('warn', (warn) => {
-								log.warn(`Device: ${host} ${deviceName}, ${warn}`);
-							})
-							.on('error', (error) => {
-								log.error(`Device: ${host} ${deviceName}, ${error}`);
-							});
+								.on('devInfo', (devInfo) => {
+									log.info(devInfo);
+								})
+								.on('success', (message) => {
+									log.success(`Device: ${host} ${deviceName}, ${message}`);
+								})
+								.on('message', (message) => {
+									log.info(`Device: ${host} ${deviceName}, ${message}`);
+								})
+								.on('debug', (debug) => {
+									log.info(`Device: ${host} ${deviceName}, debug: ${debug}`);
+								})
+								.on('warn', (warn) => {
+									log.warn(`Device: ${host} ${deviceName}, ${warn}`);
+								})
+								.on('error', (error) => {
+									log.error(`Device: ${host} ${deviceName}, ${error}`);
+								});
+
+							await mainZone.start();
+						} catch (error) {
+							log.error(`Device: ${host} ${deviceName}, did finish launching error: ${error}`);
+						}
 						break;
 					case 1: //zone 1
-						const zone2 = new Zone2(api, device, zoneControl, deviceName, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile, refreshInterval);
-						zone2.on('publishAccessory', (accessory) => {
-							api.publishExternalAccessories(CONSTANTS.PluginName, [accessory]);
-							log.success(`Device: ${host} ${deviceName}, published as external accessory.`);
-						})
-							.on('devInfo', (devInfo) => {
-								log(devInfo);
+						try {
+							const zone2 = new Zone2(api, device, zoneControl, deviceName, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile, refreshInterval);
+							zone2.on('publishAccessory', (accessory) => {
+								api.publishExternalAccessories(CONSTANTS.PluginName, [accessory]);
+								log.success(`Device: ${host} ${deviceName}, published as external accessory.`);
 							})
-							.on('success', (message) => {
-								log.success(`Device: ${host} ${deviceName}, ${message}`);
-							})
-							.on('message', (message) => {
-								log(`Device: ${host} ${deviceName}, ${message}`);
-							})
-							.on('debug', (debug) => {
-								log(`Device: ${host} ${deviceName}, debug: ${debug}`);
-							})
-							.on('warn', (warn) => {
-								log.warn(`Device: ${host} ${deviceName}, ${warn}`);
-							})
-							.on('error', (error) => {
-								log.error(`Device: ${host} ${deviceName}, ${error}`);
-							});
+								.on('devInfo', (devInfo) => {
+									log(devInfo);
+								})
+								.on('success', (message) => {
+									log.success(`Device: ${host} ${deviceName}, ${message}`);
+								})
+								.on('message', (message) => {
+									log(`Device: ${host} ${deviceName}, ${message}`);
+								})
+								.on('debug', (debug) => {
+									log(`Device: ${host} ${deviceName}, debug: ${debug}`);
+								})
+								.on('warn', (warn) => {
+									log.warn(`Device: ${host} ${deviceName}, ${warn}`);
+								})
+								.on('error', (error) => {
+									log.error(`Device: ${host} ${deviceName}, ${error}`);
+								});
+
+							await zone2.start();
+						} catch (error) {
+							log.error(`Device: ${host} ${deviceName}, did finish launching error: ${error}`);
+						}
 						break;
 					case 2: //zone 2
-						const zone3 = new Zone3(api, device, zoneControl, deviceName, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile, refreshInterval);
-						zone3.on('publishAccessory', (accessory) => {
-							api.publishExternalAccessories(CONSTANTS.PluginName, [accessory]);
-							log.success(`Device: ${host} ${deviceName}, published as external accessory.`);
-						})
-							.on('devInfo', (devInfo) => {
-								log.info(devInfo);
+						try {
+							const zone3 = new Zone3(api, device, zoneControl, deviceName, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile, refreshInterval);
+							zone3.on('publishAccessory', (accessory) => {
+								api.publishExternalAccessories(CONSTANTS.PluginName, [accessory]);
+								log.success(`Device: ${host} ${deviceName}, published as external accessory.`);
 							})
-							.on('success', (message) => {
-								log.success(`Device: ${host} ${deviceName}, ${message}`);
-							})
-							.on('message', (message) => {
-								log.info(`Device: ${host} ${deviceName}, ${message}`);
-							})
-							.on('debug', (debug) => {
-								log.info(`Device: ${host} ${deviceName}, debug: ${debug}`);
-							})
-							.on('warn', (warn) => {
-								log.warn(`Device: ${host} ${deviceName}, ${warn}`);
-							})
-							.on('error', (error) => {
-								log.error(`Device: ${host} ${deviceName}, ${error}`);
-							});
+								.on('devInfo', (devInfo) => {
+									log.info(devInfo);
+								})
+								.on('success', (message) => {
+									log.success(`Device: ${host} ${deviceName}, ${message}`);
+								})
+								.on('message', (message) => {
+									log.info(`Device: ${host} ${deviceName}, ${message}`);
+								})
+								.on('debug', (debug) => {
+									log.info(`Device: ${host} ${deviceName}, debug: ${debug}`);
+								})
+								.on('warn', (warn) => {
+									log.warn(`Device: ${host} ${deviceName}, ${warn}`);
+								})
+								.on('error', (error) => {
+									log.error(`Device: ${host} ${deviceName}, ${error}`);
+								});
+
+							await zone3.start();
+						} catch (error) {
+							log.error(`Device: ${host} ${deviceName}, did finish launching error: ${error}`);
+						}
 						break;
 					case 3: //surround
-						const surround = new Surround(api, device, zoneControl, deviceName, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile, refreshInterval);
-						surround.on('publishAccessory', (accessory) => {
-							api.publishExternalAccessories(CONSTANTS.PluginName, [accessory]);
-							log.success(`Device: ${host} ${deviceName}, published as external accessory.`);
-						})
-							.on('devInfo', (devInfo) => {
-								log.info(devInfo);
+						try {
+							const surround = new Surround(api, device, zoneControl, deviceName, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile, refreshInterval);
+							surround.on('publishAccessory', (accessory) => {
+								api.publishExternalAccessories(CONSTANTS.PluginName, [accessory]);
+								log.success(`Device: ${host} ${deviceName}, published as external accessory.`);
 							})
-							.on('success', (message) => {
-								log.success(`Device: ${host} ${deviceName}, ${message}`);
-							})
-							.on('message', (message) => {
-								log.info(`Device: ${host} ${deviceName}, ${message}`);
-							})
-							.on('debug', (debug) => {
-								log.info(`Device: ${host} ${deviceName}, debug: ${debug}`);
-							})
-							.on('warn', (warn) => {
-								log.warn(`Device: ${host} ${deviceName}, ${warn}`);
-							})
-							.on('error', (error) => {
-								log.error(`Device: ${host} ${deviceName}, ${error}`);
-							});
+								.on('devInfo', (devInfo) => {
+									log.info(devInfo);
+								})
+								.on('success', (message) => {
+									log.success(`Device: ${host} ${deviceName}, ${message}`);
+								})
+								.on('message', (message) => {
+									log.info(`Device: ${host} ${deviceName}, ${message}`);
+								})
+								.on('debug', (debug) => {
+									log.info(`Device: ${host} ${deviceName}, debug: ${debug}`);
+								})
+								.on('warn', (warn) => {
+									log.warn(`Device: ${host} ${deviceName}, ${warn}`);
+								})
+								.on('error', (error) => {
+									log.error(`Device: ${host} ${deviceName}, ${error}`);
+								});
+
+							await surround.start();
+						} catch (error) {
+							log.error(`Device: ${host} ${deviceName}, did finish launching error: ${error}`);
+						}
 						break;
 					default:
 						log.warn(`Device: ${host} ${deviceName}, unknown zone: ${zoneControl}`);
