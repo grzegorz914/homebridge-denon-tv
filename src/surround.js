@@ -51,6 +51,7 @@ class Surround extends EventEmitter {
         this.inputsFile = inputsFile;
         this.inputsNamesFile = inputsNamesFile;
         this.inputsTargetVisibilityFile = inputsTargetVisibilityFile;
+        this.startPrepareAccessory = true;
 
         //external integration
         this.restFul = device.restFul || {};
@@ -86,6 +87,7 @@ class Surround extends EventEmitter {
         this.sensorInputState = false;
 
         //state variable
+        this.startPrepareAccessory = true;
         this.power = false;
         this.reference = '';
         this.volume = 0;
@@ -107,13 +109,14 @@ class Surround extends EventEmitter {
                 port: this.port,
                 generation: this.generation,
                 zone: this.zone,
-                inputs: this.inputs ,
+                inputs: this.inputs,
                 devInfoFile: this.devInfoFile,
                 inputsFile: this.inputsFile,
                 getInputsFromDevice: this.getInputsFromDevice,
                 getFavoritesFromDevice: this.getFavoritesFromDevice,
-                getQuickSmartSelectFromDevice: this.getQuickSmartSelectFromDevice ,
-                debugLog: this.enableDebugMode
+                getQuickSmartSelectFromDevice: this.getQuickSmartSelectFromDevice,
+                debugLog: this.enableDebugMode,
+                disableLogConnectError: this.disableLogConnectError
             });
 
             this.denon.on('deviceInfo', (manufacturer, modelName, serialNumber, firmwareRevision, deviceZones, apiVersion, supportPictureMode) => {
@@ -132,8 +135,8 @@ class Surround extends EventEmitter {
                 this.supportPictureMode = supportPictureMode;
             })
                 .on('stateChanged', (power, reference, volume, volumeControlType, mute, pictureMode) => {
-                    const index = this.inputsConfigured.findIndex(input => input.reference === reference) ?? -1;
-                    const inputIdentifier = index !== -1 ? this.inputsConfigured[index].identifier : this.inputIdentifier;
+                    const input = this.inputsConfigured.find(input => input.reference === reference) ?? false;
+                    const inputIdentifier = input ? input.identifier : this.inputIdentifier;
                     mute = power ? mute : true;
                     const pictureModeHomeKit = CONSTANTS.PictureModesConversionToHomeKit[pictureMode];
 
@@ -227,67 +230,76 @@ class Surround extends EventEmitter {
                         this.emit('message', `Picture Mode: ${CONSTANTS.PictureModesDenonNumber[pictureMode]}`);
                     };
                 })
-                .on('prepareAccessory', async (allInputs) => {
-                    //RESTFul server
-                    const restFulEnabled = this.restFul.enable || false;
-                    if (restFulEnabled) {
-                        this.restFul = new RestFul({
-                            port: this.restFul.port || 3000,
-                            debug: this.restFul.debug || false
-                        });
-
-                        this.restFul.on('connected', (message) => {
-                            this.emit('success', message);
-                            this.restFulConnected = true;
-                        })
-                            .on('set', async (key, value) => {
-                                try {
-                                    await this.setOverExternalIntegration('RESTFul', key, value);
-                                } catch (error) {
-                                    this.emit('warn', `RESTFul set error: ${error}`);
-                                };
-                            })
-                            .on('debug', (debug) => {
-                                this.emit('debug', debug);
-                            })
-                            .on('error', (error) => {
-                                this.emit('warn', error);
+                .on('startExternalIntegration', () => {
+                    try {
+                        //RESTFul server
+                        const restFulEnabled = this.restFul.enable || false;
+                        if (restFulEnabled) {
+                            this.restFul = new RestFul({
+                                port: this.restFul.port || 3000,
+                                debug: this.restFul.debug || false
                             });
-                    }
 
-                    //mqtt client
-                    const mqttEnabled = this.mqtt.enable || false;
-                    if (mqttEnabled) {
-                        this.mqtt = new Mqtt({
-                            host: this.mqtt.host,
-                            port: this.mqtt.port || 1883,
-                            clientId: this.mqtt.clientId || `denon_${Math.random().toString(16).slice(3)}`,
-                            prefix: `${this.mqtt.prefix}/${this.name}`,
-                            user: this.mqtt.user,
-                            passwd: this.mqtt.passwd,
-                            debug: this.mqtt.debug || false
-                        });
-
-                        this.mqtt.on('connected', (message) => {
-                            this.emit('message', message);
-                            this.mqttConnected = true;
-                        })
-                            .on('subscribed', (message) => {
+                            this.restFul.on('connected', (message) => {
                                 this.emit('success', message);
+                                this.restFulConnected = true;
                             })
-                            .on('set', async (key, value) => {
-                                try {
-                                    await this.setOverExternalIntegration('MQTT', key, value);
-                                } catch (error) {
-                                    this.emit('warn', `MQTT set error: ${error}.`);
-                                };
-                            })
-                            .on('debug', (debug) => {
-                                this.emit('debug', debug);
-                            })
-                            .on('error', (error) => {
-                                this.emit('warn', error);
+                                .on('set', async (key, value) => {
+                                    try {
+                                        await this.setOverExternalIntegration('RESTFul', key, value);
+                                    } catch (error) {
+                                        this.emit('warn', `RESTFul set error: ${error}`);
+                                    };
+                                })
+                                .on('debug', (debug) => {
+                                    this.emit('debug', debug);
+                                })
+                                .on('warn', (error) => {
+                                    this.emit('warn', error);
+                                });
+                        }
+
+                        //mqtt client
+                        const mqttEnabled = this.mqtt.enable || false;
+                        if (mqttEnabled) {
+                            this.mqtt = new Mqtt({
+                                host: this.mqtt.host,
+                                port: this.mqtt.port || 1883,
+                                clientId: this.mqtt.clientId || `denon_${Math.random().toString(16).slice(3)}`,
+                                prefix: `${this.mqtt.prefix}/${this.name}`,
+                                user: this.mqtt.user,
+                                passwd: this.mqtt.passwd,
+                                debug: this.mqtt.debug || false
                             });
+
+                            this.mqtt.on('connected', (message) => {
+                                this.emit('success', message);
+                                this.mqttConnected = true;
+                            })
+                                .on('subscribed', (message) => {
+                                    this.emit('success', message);
+                                })
+                                .on('set', async (key, value) => {
+                                    try {
+                                        await this.setOverExternalIntegration('MQTT', key, value);
+                                    } catch (error) {
+                                        this.emit('warn', `MQTT set error: ${error}.`);
+                                    };
+                                })
+                                .on('debug', (debug) => {
+                                    this.emit('debug', debug);
+                                })
+                                .on('error', (error) => {
+                                    this.emit('warn', error);
+                                });
+                        };
+                    } catch (error) {
+                        this.emit('error', `External integration start error: ${error.message || error}.`);
+                    };
+                })
+                .on('prepareAccessory', async (allInputs) => {
+                    if (!this.startPrepareAccessory) {
+                        return;
                     };
 
                     try {
@@ -308,12 +320,9 @@ class Surround extends EventEmitter {
                         //sort surrounds list
                         const sortInputsDisplayOrder = this.televisionService ? await this.displayOrder() : false;
 
-                        //start check state
-                        this.denon.impulseGenerator.start([{ name: 'checkState', sampling: this.refreshInterval }]);
+                        this.startPrepareAccessory = false;
                     } catch (error) {
-                        this.emit('error', `prepare accessory error: ${error}`);
-                        await new Promise(resolve => setTimeout(resolve, 15000));
-                        await this.denon.connect();
+                        this.emit('error', `Prepare accessory error: ${error.message || error}, check again in 15s.`);
                     };
                 })
                 .on('success', (message) => {
@@ -325,17 +334,8 @@ class Surround extends EventEmitter {
                 .on('debug', (debug) => {
                     this.emit('debug', debug);
                 })
-                .on('warn', async (warn) => {
-                    this.emit('warn', warn);
-                    this.denon.impulseGenerator.stop();
-                    await new Promise(resolve => setTimeout(resolve, 15000));
-                    await this.denon.connect();
-                })
                 .on('error', async (error) => {
                     this.emit('error', error);
-                    this.denon.impulseGenerator.stop();
-                    await new Promise(resolve => setTimeout(resolve, 15000));
-                    await this.denon.connect();
                 })
                 .on('disconnected', (message) => {
                     this.emit('message', message);
@@ -347,12 +347,17 @@ class Surround extends EventEmitter {
                     const mqtt = this.mqttConnected ? this.mqtt.emit('publish', topic, message) : false;
                 });
 
-            //connect to box
+            //connect to avr and check state
             await this.denon.connect();
+            await this.denon.checkState();
+
+            //start impulse generator 
+            await this.denon.impulseGenerator.start([{ name: 'checkState', sampling: this.refreshInterval }]);
 
             return true;
         } catch (error) {
-            throw new Error(`start error: ${error}`);
+            await this.openwebif.impulseGenerato.stop();
+            throw new Error(`Start error: ${error.message || error}, check again in 15s.`);
         };
     };
 
@@ -381,17 +386,18 @@ class Surround extends EventEmitter {
             this.televisionService.setCharacteristic(Characteristic.DisplayOrder, Encode(1, displayOrder).toString('base64'));
             return true;
         } catch (error) {
-            throw new Error(error);
+            throw new Error(`Display order error: ${error.message || error}`);
         };
     }
 
     async saveData(path, data) {
         try {
-            await fsPromises.writeFile(path, JSON.stringify(data, null, 2));
-            const debug = !this.enableDebugMode ? false : this.emit('debug', `Saved data: ${JSON.stringify(data, null, 2)}`);
+            data = JSON.stringify(data, null, 2);
+            await fsPromises.writeFile(path, data);
+            const debug = this.debugLog ? this.emit('debug', `Saved data: ${data}`) : false;
             return true;
         } catch (error) {
-            throw new Error(error);
+            throw new Error(`Save data error: ${error.message || error}`);
         };
     }
 
@@ -400,7 +406,7 @@ class Surround extends EventEmitter {
             const data = await fsPromises.readFile(path);
             return data;
         } catch (error) {
-            throw new Error(`Read saved data error: ${error}`);
+            throw new Error(`Read saved data error: ${error.message || error}`);
         };
     }
 
@@ -438,7 +444,7 @@ class Surround extends EventEmitter {
             };
             return set;
         } catch (error) {
-            throw new Error(`${integration} set key: ${key}, value: ${value}, error: ${error}`);
+            throw new Error(`${integration} set key: ${key}, value: ${value}, error: ${error.message || error}`);
         };
     }
 
@@ -494,8 +500,7 @@ class Surround extends EventEmitter {
                 })
                 .onSet(async (activeIdentifier) => {
                     try {
-                        const index = this.inputsConfigured.findIndex(input => input.identifier === activeIdentifier);
-                        const input = this.inputsConfigured[index];
+                        const input = this.inputsConfigured.find(input => input.identifier === activeIdentifier);
                         const inputName = input.name;
                         const inputMode = input.mode;
                         const inputReference = input.reference;

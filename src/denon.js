@@ -24,13 +24,14 @@ class DENON extends EventEmitter {
         this.getFavoritesFromDevice = this.getInputsFromDevice ? config.getFavoritesFromDevice : false;
         this.getQuickSmartSelectFromDevice = this.getInputsFromDevice ? config.getQuickSmartSelectFromDevice : false;
         this.debugLog = config.debugLog;
+        this.disableLogConnectError = config.disableLogConnectError;
         this.deviceInfoUrl = [CONSTANTS.ApiUrls.DeviceInfoGen0, CONSTANTS.ApiUrls.DeviceInfoGen1, CONSTANTS.ApiUrls.DeviceInfoGen2][this.generation];
 
         const baseUrl = `http://${host}:${port}`;
         this.axiosInstance = this.generation === 2 ? axios.create({
             method: 'GET',
             baseURL: baseUrl,
-            timeout: 15000,
+            timeout: 5000,
             maxContentLength: 100000000,
             maxBodyLength: 1000000000,
             httpsAgent: new https.Agent({
@@ -39,7 +40,7 @@ class DENON extends EventEmitter {
         }) : axios.create({
             method: 'GET',
             baseURL: baseUrl,
-            timeout: 15000,
+            timeout: 5000,
             maxContentLength: 100000000,
             maxBodyLength: 1000000000,
         });
@@ -47,14 +48,14 @@ class DENON extends EventEmitter {
         this.axiosInstancePost = this.generation === 2 ? axios.create({
             method: 'POST',
             baseURL: baseUrl,
-            timeout: 15000,
+            timeout: 5000,
             httpsAgent: new https.Agent({
                 rejectUnauthorized: false
             })
         }) : axios.create({
             method: 'POST',
             baseURL: baseUrl,
-            timeout: 15000
+            timeout: 5000
         });
 
         const options = {
@@ -80,7 +81,8 @@ class DENON extends EventEmitter {
             try {
                 await this.checkState();
             } catch (error) {
-                this.emit('error', error);
+                await this.impulseGenerator.stop();
+                this.emit('error', `Impulse generator check state error: ${error.message || error}, check again in 15s.`);
             };
         }).on('state', (state) => { });
     };
@@ -91,7 +93,7 @@ class DENON extends EventEmitter {
             const deviceInfo = await this.axiosInstance(this.deviceInfoUrl);
             const parseData = this.parseString.parse(deviceInfo.data);
             const devInfo = [parseData.item, parseData.Device_Info, parseData.Device_Info][this.generation];
-            const debug = this.debugLog ? this.emit('debug', `Info: ${JSON.stringify(devInfo, null, 2)}`) : false;
+            const debug = this.debugLog ? this.emit('debug', `Connect data: ${JSON.stringify(devInfo, null, 2)}`) : false;
             this.devInfo = devInfo;
 
             //device info
@@ -198,7 +200,8 @@ class DENON extends EventEmitter {
 
             //check seriaql number
             if (!serialNumber) {
-                this.emit('warn', `Missing Serial Number, reconnect in 15s.`);
+                await this.impulseGenerator.stop();
+                this.emit('error', `Missing Serial Number, check again in 15s.`);
                 return;
             }
 
@@ -212,7 +215,8 @@ class DENON extends EventEmitter {
             const allInputs = await this.getInputs(devInfo, this.generation, this.zone, deviceInputs, zoneCapabilities, this.getInputsFromDevice, this.getFavoritesFromDevice, this.getQuickSmartSelectFromDevice, supportFavorites, supportShortcut, supportQuickSmartSelect);
 
             if (!allInputs) {
-                this.emit('warn', `Found: ${allInputs} inputs, check again in 15s.`);
+                await this.impulseGenerator.stop();
+                this.emit('error', `Found: ${allInputs} inputs, check again in 15s.`);
                 return;
             }
 
@@ -228,11 +232,19 @@ class DENON extends EventEmitter {
             this.supportPictureMode = supportPictureMode;
             this.supportSoundMode = supportSoundMode;
 
+            //start external integration
+            this.emit('externalIntegration');
+
             //prepare accessory
             this.emit('prepareAccessory', allInputs);
+
             return true;
         } catch (error) {
-            this.emit('error', `Info error: ${error}, check again in 15s.`);
+            if (this.disableLogConnectError) {
+                return true;
+            };
+            await this.impulseGenerator.stop();
+            throw new Error(`Connect error: ${error.message || error}, check again in 15s.`);
 
         };
     };
@@ -307,8 +319,14 @@ class DENON extends EventEmitter {
 
             //emit state changed
             this.emit('stateChanged', power, reference, volume, volumeDisplay, mute, pictureMode);
+
+            return true;
         } catch (error) {
-            this.emit('error', `Check state error: ${error}.`);
+            if (this.disableLogConnectError) {
+                return true;
+            };
+            await this.impulseGenerator.stop();
+            throw new Error(`Check state error: ${error.message || error}.`);
         };
     };
 
@@ -413,7 +431,7 @@ class DENON extends EventEmitter {
 
             return inputsArr;
         } catch (error) {
-            throw new Error(error);
+            throw new Error(`Get inputus error: ${error.message || error}`);
         }
     };
 
@@ -424,7 +442,7 @@ class DENON extends EventEmitter {
             const debug = this.debugLog ? this.emit('debug', `Saved data: ${data}`) : false;
             return true;
         } catch (error) {
-            throw new Error(error);
+            throw new Error(`Save data error: ${error.message || error}`);
         };
     };
 
