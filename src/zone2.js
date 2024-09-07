@@ -386,7 +386,7 @@ class Zone2 extends EventEmitter {
 
             return true;
         } catch (error) {
-            await this.openwebif.impulseGenerato.stop();
+            await this.denon.impulseGenerato.stop();
             throw new Error(`Start error: ${error.message || error}, check again in 15s.`);
         };
     };
