@@ -235,12 +235,12 @@ class Surround extends EventEmitter {
                         //RESTFul server
                         const restFulEnabled = this.restFul.enable || false;
                         if (restFulEnabled) {
-                            this.restFul = new RestFul({
+                            this.restFul1 = new RestFul({
                                 port: this.restFul.port || 3000,
                                 debug: this.restFul.debug || false
                             });
 
-                            this.restFul.on('connected', (message) => {
+                            this.restFul1.on('connected', (message) => {
                                 this.emit('success', message);
                                 this.restFulConnected = true;
                             })
@@ -262,7 +262,7 @@ class Surround extends EventEmitter {
                         //mqtt client
                         const mqttEnabled = this.mqtt.enable || false;
                         if (mqttEnabled) {
-                            this.mqtt = new Mqtt({
+                            this.mqtt1 = new Mqtt({
                                 host: this.mqtt.host,
                                 port: this.mqtt.port || 1883,
                                 clientId: this.mqtt.clientId || `denon_${Math.random().toString(16).slice(3)}`,
@@ -272,7 +272,7 @@ class Surround extends EventEmitter {
                                 debug: this.mqtt.debug || false
                             });
 
-                            this.mqtt.on('connected', (message) => {
+                            this.mqtt1.on('connected', (message) => {
                                 this.emit('success', message);
                                 this.mqttConnected = true;
                             })
@@ -341,10 +341,10 @@ class Surround extends EventEmitter {
                     this.emit('message', message);
                 })
                 .on('restFul', (path, data) => {
-                    const restFul = this.restFulConnected ? this.restFul.update(path, data) : false;
+                    const restFul = this.restFulConnected ? this.restFul1.update(path, data) : false;
                 })
                 .on('mqtt', (topic, message) => {
-                    const mqtt = this.mqttConnected ? this.mqtt.emit('publish', topic, message) : false;
+                    const mqtt = this.mqttConnected ? this.mqtt1.emit('publish', topic, message) : false;
                 });
 
             //connect to avr and check state
