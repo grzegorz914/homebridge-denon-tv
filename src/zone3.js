@@ -250,7 +250,7 @@ class Zone3 extends EventEmitter {
                     this.pictureMode = pictureModeHomeKit;
 
                     if (!this.disableLogInfo) {
-                        const name = index !== -1 ? this.inputsConfigured[index].name : reference;
+                        const name = input ? input.name : reference;
                         this.emit('message', `Power: ${power ? 'ON' : 'OFF'}`);
                         this.emit('message', `Input Name: ${name}`);
                         this.emit('message', `Reference: ${reference}`);
@@ -386,7 +386,7 @@ class Zone3 extends EventEmitter {
 
             return true;
         } catch (error) {
-            await this.denon.impulseGenerato.stop();
+            await this.denon.impulseGenerator.stop();
             throw new Error(`Start error: ${error.message || error}, check again in 15s.`);
         };
     };
