@@ -214,7 +214,7 @@ class DENON extends EventEmitter {
             const deviceInputs = [deviceInputsOldAvr, deviceInputsNewAvr, deviceInputsNewAvr][this.generation];
             const allInputs = await this.getInputs(devInfo, this.generation, this.zone, deviceInputs, zoneCapabilities, this.getInputsFromDevice, this.getFavoritesFromDevice, this.getQuickSmartSelectFromDevice, supportFavorites, supportShortcut, supportQuickSmartSelect);
 
-            if (!allInputs) {
+            if (allInputs === 0) {
                 await this.impulseGenerator.stop();
                 this.emit('error', `Found: ${allInputs} inputs, check again in 15s.`);
                 return;
@@ -388,7 +388,6 @@ class DENON extends EventEmitter {
             };
 
             //chack duplicated inputs and convert reference
-            const debug = this.debugLog ? this.emit('message', `temp Inputs: ${JSON.stringify(tempInputs, null, 2)}`) : false;
             for (const input of tempInputs) {
                 const inputName = input.name;
                 let inputReference = INPUTS_CONVERSION_KEYS.includes(input.reference) ? CONSTANTS.InputConversion[input.reference] : input.reference;
@@ -428,6 +427,7 @@ class DENON extends EventEmitter {
                 const duplicatedInput = inputsArr.some(input => input.reference === inputReference);
                 const push = inputName && inputReference && inputMode && !duplicatedInput ? inputsArr.push(obj) : false;
             }
+            const debug = this.debugLog ? this.emit('message', `All Inputs: ${JSON.stringify(inputsArr, null, 2)}`) : false;
 
             return inputsArr;
         } catch (error) {

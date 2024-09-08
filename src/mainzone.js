@@ -28,7 +28,7 @@ class MainZone extends EventEmitter {
         this.getInputsFromDevice = device.getInputsFromDevice || false;
         this.getFavoritesFromDevice = device.getFavoritesFromDevice || false;
         this.getQuickSmartSelectFromDevice = device.getQuickSmartSelectFromDevice || false;
-        this.inputs = device.surrounds || [];
+        this.inputs = device.inputs || [];
         this.inputsDisplayOrder = device.inputsDisplayOrder || 0;
         this.buttons = device.buttons || [];
         this.sensorPower = device.sensorPower || false;
@@ -164,12 +164,8 @@ class MainZone extends EventEmitter {
                     if (this.televisionService) {
                         this.televisionService
                             .updateCharacteristic(Characteristic.Active, power ? 1 : 0)
-                            .updateCharacteristic(Characteristic.PictureMode, pictureModeHomeKit);
-                    }
-
-                    if (this.televisionService) {
-                        this.televisionService
                             .updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier)
+                            .updateCharacteristic(Characteristic.PictureMode, pictureModeHomeKit);
                     }
 
                     if (this.speakerService) {
