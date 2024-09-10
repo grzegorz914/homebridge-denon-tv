@@ -61,8 +61,6 @@ class MainZone extends EventEmitter {
 
         //services
         this.allServices = [];
-        this.sensorsInputsServices = [];
-        this.buttonsServices = [];
 
         //inputs variable
         this.inputsConfigured = [];
@@ -193,12 +191,14 @@ class MainZone extends EventEmitter {
                             .updateCharacteristic(Characteristic.ContactSensorState, power)
                     }
 
-                    if (this.sensorVolumeService && volume !== this.volume) {
+                    if (volume !== this.volume) {
                         for (let i = 0; i < 2; i++) {
                             const state = power ? [true, false][i] : false;
-                            this.sensorVolumeService
-                                .updateCharacteristic(Characteristic.ContactSensorState, state)
-                            this.sensorVolumeState = state;
+                            if (this.sensorVolumeService) {
+                                this.sensorVolumeService
+                                    .updateCharacteristic(Characteristic.ContactSensorState, state)
+                                this.sensorVolumeState = state;
+                            }
                         }
                     }
 
@@ -208,34 +208,40 @@ class MainZone extends EventEmitter {
                             .updateCharacteristic(Characteristic.ContactSensorState, state)
                     }
 
-                    if (this.sensorInputService && reference !== this.reference) {
+                    if (reference !== this.reference) {
                         for (let i = 0; i < 2; i++) {
                             const state = power ? [true, false][i] : false;
-                            this.sensorInputService
-                                .updateCharacteristic(Characteristic.ContactSensorState, state)
-                            this.sensorInputState = state;
+                            if (this.sensorInputService) {
+                                this.sensorInputService
+                                    .updateCharacteristic(Characteristic.ContactSensorState, state)
+                                this.sensorInputState = state;
+                            }
                         }
                     }
 
-                    if (this.sensorsInputsServices) {
+                    if (this.sensorsInputsConfiguredCount > 0) {
                         for (let i = 0; i < this.sensorsInputsConfiguredCount; i++) {
                             const sensorInput = this.sensorsInputsConfigured[i];
                             const state = power ? sensorInput.reference === reference : false;
                             sensorInput.state = state;
-                            const characteristicType = sensorInput.characteristicType;
-                            this.sensorsInputsServices[i]
-                                .updateCharacteristic(characteristicType, state);
+                            if (this.sensorsInputsServices) {
+                                const characteristicType = sensorInput.characteristicType;
+                                this.sensorsInputsServices[i]
+                                    .updateCharacteristic(characteristicType, state);
+                            }
                         }
                     }
 
                     //buttons
-                    if (this.buttonsServices) {
+                    if (this.buttonsConfiguredCount > 0) {
                         for (let i = 0; i < this.buttonsConfiguredCount; i++) {
                             const button = this.buttonsConfigured[i];
                             const state = this.power ? button.reference === reference : false;
                             button.state = state;
-                            this.buttonsServices[i]
-                                .updateCharacteristic(Characteristic.On, state);
+                            if (this.buttonsServices) {
+                                this.buttonsServices[i]
+                                    .updateCharacteristic(Characteristic.On, state);
+                            }
                         }
                     }
 
@@ -963,6 +969,7 @@ class MainZone extends EventEmitter {
             const possibleSensorInputsCount = 99 - this.allServices.length;
             const maxSensorInputsCount = this.sensorsInputsConfiguredCount >= possibleSensorInputsCount ? possibleSensorInputsCount : this.sensorsInputsConfiguredCount;
             if (maxSensorInputsCount > 0) {
+                this.sensorsInputsServices = [];
                 const debug = !this.enableDebugMode ? false : this.emit('debug', `Prepare inputs sensors services`);
                 for (let i = 0; i < maxSensorInputsCount; i++) {
                     //get sensor
@@ -999,6 +1006,7 @@ class MainZone extends EventEmitter {
             const possibleButtonsCount = 99 - this.allServices.length;
             const maxButtonsCount = this.buttonsConfiguredCount >= possibleButtonsCount ? possibleButtonsCount : this.buttonsConfiguredCount;
             if (maxButtonsCount > 0) {
+                this.buttonsServices = [];
                 const debug = !this.enableDebugMode ? false : this.emit('debug', `Prepare buttons services`);
                 for (let i = 0; i < maxButtonsCount; i++) {
                     //get button
