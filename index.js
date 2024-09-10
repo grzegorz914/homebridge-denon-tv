@@ -83,8 +83,8 @@ class DenonPlatform {
 				switch (zoneControl) {
 					case 0: //main zone
 						try {
-							this.mainZone = new MainZone(api, device, zoneControl, deviceName, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile, refreshInterval);
-							this.mainZone.on('publishAccessory', (accessory) => {
+							const mainZone = new MainZone(api, device, zoneControl, deviceName, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile, refreshInterval);
+							mainZone.on('publishAccessory', (accessory) => {
 								api.publishExternalAccessories(CONSTANTS.PluginName, [accessory]);
 								log.success(`Device: ${host} ${deviceName}, published as external accessory.`);
 							})
@@ -105,25 +105,17 @@ class DenonPlatform {
 								})
 								.on('error', async (error) => {
 									log.error(`Device: ${host} ${deviceName}, ${error}`);
-
-									//start
-									await new Promise(resolve => setTimeout(resolve, 15000));
-									await this.mainZone.start()
 								});
 
-							await this.mainZone.start();
+							await mainZone.start();
 						} catch (error) {
 							log.error(`Device: ${host} ${deviceName}, did finish launching error: ${error}`);
-
-							//start
-							await new Promise(resolve => setTimeout(resolve, 15000));
-							await this.mainZone.start();
 						}
 						break;
 					case 1: //zone 1
 						try {
-							this.zone2 = new Zone2(api, device, zoneControl, deviceName, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile, refreshInterval);
-							this.zone2.on('publishAccessory', (accessory) => {
+							const zone2 = new Zone2(api, device, zoneControl, deviceName, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile, refreshInterval);
+							zone2.on('publishAccessory', (accessory) => {
 								api.publishExternalAccessories(CONSTANTS.PluginName, [accessory]);
 								log.success(`Device: ${host} ${deviceName}, published as external accessory.`);
 							})
@@ -144,25 +136,17 @@ class DenonPlatform {
 								})
 								.on('error', async (error) => {
 									log.error(`Device: ${host} ${deviceName}, ${error}`);
-
-									//start
-									await new Promise(resolve => setTimeout(resolve, 15000));
-									await this.zone2.start()
 								});
 
-							await this.zone2.start();
+							await zone2.start();
 						} catch (error) {
 							log.error(`Device: ${host} ${deviceName}, did finish launching error: ${error}`);
-
-							//start
-							await new Promise(resolve => setTimeout(resolve, 15000));
-							await this.zone2.start();
 						}
 						break;
 					case 2: //zone 2
 						try {
-							this.zone3 = new Zone3(api, device, zoneControl, deviceName, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile, refreshInterval);
-							this.zone3.on('publishAccessory', (accessory) => {
+							const zone3 = new Zone3(api, device, zoneControl, deviceName, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile, refreshInterval);
+							zone3.on('publishAccessory', (accessory) => {
 								api.publishExternalAccessories(CONSTANTS.PluginName, [accessory]);
 								log.success(`Device: ${host} ${deviceName}, published as external accessory.`);
 							})
@@ -183,25 +167,17 @@ class DenonPlatform {
 								})
 								.on('error', async (error) => {
 									log.error(`Device: ${host} ${deviceName}, ${error}`);
-
-									//start
-									await new Promise(resolve => setTimeout(resolve, 15000));
-									await this.zone3.start()
 								});
 
-							await this.zone3.start();
+							await zone3.start();
 						} catch (error) {
 							log.error(`Device: ${host} ${deviceName}, did finish launching error: ${error}`);
-
-							//start
-							await new Promise(resolve => setTimeout(resolve, 15000));
-							await this.zone3.start();
 						}
 						break;
 					case 3: //surround
 						try {
-							this.surround = new Surround(api, device, zoneControl, deviceName, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile, refreshInterval);
-							this.surround.on('publishAccessory', (accessory) => {
+							const surround = new Surround(api, device, zoneControl, deviceName, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile, refreshInterval);
+							surround.on('publishAccessory', (accessory) => {
 								api.publishExternalAccessories(CONSTANTS.PluginName, [accessory]);
 								log.success(`Device: ${host} ${deviceName}, published as external accessory.`);
 							})
@@ -222,19 +198,11 @@ class DenonPlatform {
 								})
 								.on('error', async (error) => {
 									log.error(`Device: ${host} ${deviceName}, ${error}`);
-
-									//start
-									await new Promise(resolve => setTimeout(resolve, 15000));
-									await this.surround.start()
 								});
 
-							await this.surround.start();
+							await surround.start();
 						} catch (error) {
 							log.error(`Device: ${host} ${deviceName}, did finish launching error: ${error}`);
-
-							//start
-							await new Promise(resolve => setTimeout(resolve, 15000));
-							await this.surround.start();
 						}
 						break;
 					default:

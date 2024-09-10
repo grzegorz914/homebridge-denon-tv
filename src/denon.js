@@ -81,8 +81,7 @@ class DENON extends EventEmitter {
             try {
                 await this.checkState();
             } catch (error) {
-                await this.impulseGenerator.stop();
-                this.emit('error', `Impulse generator check state error: ${error.message || error}, check again in 15s.`);
+                this.emit('error', `Impulse generator check state error: ${error.message || error}.`);
             };
         }).on('state', (state) => { });
     };
@@ -135,6 +134,8 @@ class DENON extends EventEmitter {
             const supportAllZoneStereo = capabilitiesSetupSupport && capabilitiesSetupKeys.includes('AllZoneStereo') ? capabilitiesSetup.AllZoneStereo.Control === 1 : false;
             const supportPictureMode = capabilitiesSetupSupport && capabilitiesSetupKeys.includes('PictureMode') ? capabilitiesSetup.PictureMode.Control === 1 : false;
             const supportSoundMode = capabilitiesSetupSupport && capabilitiesSetupKeys.includes('SoundMode') ? capabilitiesSetup.SoundMode.Control === 1 : false
+            this.supportPictureMode = supportPictureMode;
+            this.supportSoundMode = supportSoundMode;
 
             //net link
             const capabilitiesNetLinkSupport = capabilitiesSupport && capabilitiesKeys.includes('NetLink');
@@ -200,37 +201,33 @@ class DENON extends EventEmitter {
 
             //check seriaql number
             if (!serialNumber) {
-                await this.impulseGenerator.stop();
-                this.emit('error', `Missing Serial Number, check again in 15s.`);
+                this.emit('error', `Missing Serial Number.`);
                 return;
             }
 
             //save device info to the file
             const saveDevInfo = this.zone === 0 ? await this.saveData(this.devInfoFile, devInfo) : false;
 
-            //save inputs to the file
-            const deviceInputsOldAvr = this.getInputsFromDevice ? this.generation === 0 ? devInfo.InputFuncList.value : [] : this.inputs;
-            const deviceInputsNewAvr = this.getInputsFromDevice ? supportInputSource ? zoneCapabilities.InputSource.List.Source : [] : this.inputs;
-            const deviceInputs = [deviceInputsOldAvr, deviceInputsNewAvr, deviceInputsNewAvr][this.generation];
+            //prepare all inputs
+            const deviceInputsOldAvr = this.generation === 0 ? devInfo.InputFuncList.value : [];
+            const deviceInputsNewAvr = supportInputSource ? zoneCapabilities.InputSource.List.Source : [];
+            const deviceInputs = this.getInputsFromDevice ? [deviceInputsOldAvr, deviceInputsNewAvr, deviceInputsNewAvr][this.generation] : this.inputs;
             const allInputs = await this.getInputs(devInfo, this.generation, this.zone, deviceInputs, zoneCapabilities, this.getInputsFromDevice, this.getFavoritesFromDevice, this.getQuickSmartSelectFromDevice, supportFavorites, supportShortcut, supportQuickSmartSelect);
+            const inputsExist = allInputs.length > 0;
 
-            if (allInputs === 0) {
-                await this.impulseGenerator.stop();
-                this.emit('error', `Found: ${allInputs} inputs, check again in 15s.`);
-                return;
+            //check inputs
+            if (!inputsExist) {
+                this.emit('warn', `Found: ${allInputs} inputs.`);
             }
 
-            //save inputs
-            await this.saveData(this.inputsFile, allInputs);
+            //save inputs if exist
+            const saveInputs = inputsExist ? await this.saveData(this.inputsFile, allInputs) : false;
 
             //connect to deice success
             this.emit('success', `Connect Success.`)
 
             //emit device info
             this.emit('deviceInfo', manufacturer, modelName, serialNumber, firmwareRevision, deviceZones, apiVersion, supportPictureMode);
-
-            this.supportPictureMode = supportPictureMode;
-            this.supportSoundMode = supportSoundMode;
 
             //start external integration
             this.emit('externalIntegration');
@@ -241,10 +238,9 @@ class DENON extends EventEmitter {
             return true;
         } catch (error) {
             if (this.disableLogConnectError) {
-                return true;
+                return;
             };
-            await this.impulseGenerator.stop();
-            throw new Error(`Connect error: ${error.message || error}, check again in 15s.`);
+            throw new Error(`Connect error: ${error.message || error}.`);
 
         };
     };
@@ -323,9 +319,8 @@ class DENON extends EventEmitter {
             return true;
         } catch (error) {
             if (this.disableLogConnectError) {
-                return true;
+                return;
             };
-            await this.impulseGenerator.stop();
             throw new Error(`Check state error: ${error.message || error}.`);
         };
     };

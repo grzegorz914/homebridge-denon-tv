@@ -367,9 +367,6 @@ class Zone2 extends EventEmitter {
                 .on('error', async (error) => {
                     this.emit('error', error);
                 })
-                .on('disconnected', (message) => {
-                    this.emit('message', message);
-                })
                 .on('restFul', (path, data) => {
                     const restFul = this.restFulConnected ? this.restFul1.update(path, data) : false;
                 })
@@ -386,8 +383,7 @@ class Zone2 extends EventEmitter {
 
             return true;
         } catch (error) {
-            await this.denon.impulseGenerator.stop();
-            throw new Error(`Start error: ${error.message || error}, check again in 15s.`);
+            throw new Error(`Start error: ${error.message || error}.`);
         };
     };
 
