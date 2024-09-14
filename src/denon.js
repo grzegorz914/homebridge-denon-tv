@@ -327,40 +327,57 @@ class DENON extends EventEmitter {
 
     async getInputs(devInfo, generation, zone, inputs, zoneCapabilities, getInputsFromDevice, getFavoritesFromDevice, getQuickSmartSelectFromDevice, supportFavorites, supportShortcut, supportQuickSmartSelect) {
         try {
-            //inputs
+            //temp array of inputs
             const tempInputs = [];
-            const inputsArr = [];
-            let i = 0;
-            for (const input of inputs) {
-                const inputNameOldAvr = getInputsFromDevice && generation === 0 ? devInfo.RenameSource.value[i].trim() !== '' ? devInfo.RenameSource.value[i] : inputs[i] : `Input ${i}`;
-                const inputName = getInputsFromDevice ? [inputNameOldAvr, input.DefaultName, input.DefaultName][generation] : input.name;
-                const inputReference = getInputsFromDevice ? [input, input.FuncName, input.FuncName][generation] : input.reference;
+
+            //add inputs from avr or config
+            inputs.forEach((input, index) => {
+                const inputNameOldAvr = getInputsFromDevice && generation === 0 ? devInfo.RenameSource.value[index].trim() !== '' ? devInfo.RenameSource.value[index] : inputs[index] : `Input ${index}`;
+                const inputName = getInputsFromDevice ? [inputNameOldAvr, input.DefaultName, input.DefaultName][generation] : input.name ?? false;
+                const inputReference = getInputsFromDevice ? [input, input.FuncName, input.FuncName][generation] : input.reference ?? false;
+
+                //check input name and reference
+                if (!inputName || !inputReference) {
+                    return;
+                }
+
                 const obj = {
                     'name': inputName,
                     'reference': inputReference
                 }
                 tempInputs.push(obj);
-                i++;
-            };
+            });
 
-            //schortcuts
+            //add schortcuts
             const deviceSchortcuts = getInputsFromDevice && supportShortcut && Array.isArray(zoneCapabilities.ShortcutControl.EntryList.Shortcut) ? zoneCapabilities.ShortcutControl.EntryList.Shortcut : [];
             for (const shortcut of deviceSchortcuts) {
                 const category = shortcut.Category; //1, 2, 3 Quick/Smart Select, 4 Inputs, 5 Sound Mode
-                const shortcutName = shortcut.DispName;
-                const shortcutReference = shortcut.FuncName;
+                const shortcutName = shortcut.DispName ?? false;
+                const shortcutReference = shortcut.FuncName ?? false;
+
+                //check schorcut category, name and reference
+                if (category !== '4' || !shortcutName || !shortcutReference) {
+                    return;
+                }
+
                 const obj = {
                     'name': shortcutName,
                     'reference': shortcutReference
                 }
-                const push = category === '4' ? tempInputs.push(obj) : false;
+                tempInputs.push(obj);
             };
 
-            //favorites
+            //add favorites
             const deviceFavorites = getFavoritesFromDevice && supportFavorites && Array.isArray(devInfo.DeviceCapabilities.Operation.Favorites) ? devInfo.DeviceCapabilities.Operation.Favorites : [];
             for (const favorite of deviceFavorites) {
-                const favoriteName = favorite.DispName;
-                const favoriteReference = favorite.FuncName;
+                const favoriteName = favorite.DispName ?? false;
+                const favoriteReference = favorite.FuncName ?? false;
+
+                //check favorite name and reference
+                if (!favoriteName || !favoriteReference) {
+                    return;
+                }
+
                 const obj = {
                     'name': favoriteName,
                     'reference': favoriteReference
@@ -368,13 +385,19 @@ class DENON extends EventEmitter {
                 tempInputs.push(obj);
             };
 
-            //quick and smart select
+            //add quick and smart select
             const deviceQuickSmartSelect = getQuickSmartSelectFromDevice && supportQuickSmartSelect ? zoneCapabilities.Operation.QuickSelect : {};
             const quickSelectCount = getQuickSmartSelectFromDevice && supportQuickSmartSelect ? deviceQuickSmartSelect.MaxQuickSelect : 0;
             for (let j = 1; j < quickSelectCount; j++) {
                 const quickSelect = deviceQuickSmartSelect[`QuickSelect${j}`];
-                const quickSelectName = quickSelect.Name;
-                const quickSelectReference = quickSelect.FuncName;
+                const quickSelectName = quickSelect.Name ?? false;
+                const quickSelectReference = quickSelect.FuncName ?? false;
+
+                //check quick select name and reference
+                if (!quickSelectName || !quickSelectReference) {
+                    return;
+                }
+
                 const obj = {
                     'name': quickSelectName,
                     'reference': quickSelectReference
@@ -383,6 +406,7 @@ class DENON extends EventEmitter {
             };
 
             //chack duplicated inputs and convert reference
+            const allInputs = [];
             for (const input of tempInputs) {
                 const inputName = input.name;
                 let inputReference = INPUTS_CONVERSION_KEYS.includes(input.reference) ? CONSTANTS.InputConversion[input.reference] : input.reference;
@@ -419,12 +443,12 @@ class DENON extends EventEmitter {
                     'mode': inputMode
                 }
 
-                const duplicatedInput = inputsArr.some(input => input.reference === inputReference);
-                const push = inputName && inputReference && inputMode && !duplicatedInput ? inputsArr.push(obj) : false;
+                const duplicatedInput = allInputs.some(input => input.reference === inputReference);
+                const push = inputName && inputReference && inputMode && !duplicatedInput ? allInputs.push(obj) : false;
             }
-            const debug = this.debugLog ? this.emit('message', `All Inputs: ${JSON.stringify(inputsArr, null, 2)}`) : false;
+            const debug = this.debugLog ? this.emit('message', `All Inputs: ${JSON.stringify(allInputs, null, 2)}`) : false;
 
-            return inputsArr;
+            return allInputs;
         } catch (error) {
             throw new Error(`Get inputus error: ${error.message || error}`);
         }
