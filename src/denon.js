@@ -331,14 +331,16 @@ class DENON extends EventEmitter {
             const tempInputs = [];
 
             //add inputs from avr or config
-            inputs.forEach((input, index) => {
-                const inputNameOldAvr = getInputsFromDevice && generation === 0 ? devInfo.RenameSource.value[index].trim() !== '' ? devInfo.RenameSource.value[index] : inputs[index] : `Input ${index}`;
+            let i = 0;
+            for (const input of inputs) {
+                const inputNameOldAvr = getInputsFromDevice && generation === 0 ? devInfo.RenameSource.value[i].trim() !== '' ? devInfo.RenameSource.value[i] : inputs[i] : `Input ${i}`;
                 const inputName = getInputsFromDevice ? [inputNameOldAvr, input.DefaultName, input.DefaultName][generation] : input.name ?? false;
                 const inputReference = getInputsFromDevice ? [input, input.FuncName, input.FuncName][generation] : input.reference ?? false;
+                i++;
 
                 //check input name and reference
                 if (!inputName || !inputReference) {
-                    return;
+                    continue;
                 }
 
                 const obj = {
@@ -346,7 +348,7 @@ class DENON extends EventEmitter {
                     'reference': inputReference
                 }
                 tempInputs.push(obj);
-            });
+            };
 
             //add schortcuts
             const deviceSchortcuts = getInputsFromDevice && supportShortcut && Array.isArray(zoneCapabilities.ShortcutControl.EntryList.Shortcut) ? zoneCapabilities.ShortcutControl.EntryList.Shortcut : [];
@@ -357,7 +359,7 @@ class DENON extends EventEmitter {
 
                 //check schorcut category, name and reference
                 if (category !== '4' || !shortcutName || !shortcutReference) {
-                    return;
+                    continue;
                 }
 
                 const obj = {
@@ -375,7 +377,7 @@ class DENON extends EventEmitter {
 
                 //check favorite name and reference
                 if (!favoriteName || !favoriteReference) {
-                    return;
+                    continue;
                 }
 
                 const obj = {
@@ -395,7 +397,7 @@ class DENON extends EventEmitter {
 
                 //check quick select name and reference
                 if (!quickSelectName || !quickSelectReference) {
-                    return;
+                    continue;
                 }
 
                 const obj = {
@@ -437,14 +439,17 @@ class DENON extends EventEmitter {
                         break;
                 }
 
+                const duplicatedInput = allInputs.some(input => input.reference === inputReference);
+                if (!inputName || !inputReference || !inputMode || duplicatedInput) {
+                    continue;
+                }
+
                 const obj = {
                     'name': inputName,
                     'reference': inputReference,
                     'mode': inputMode
                 }
-
-                const duplicatedInput = allInputs.some(input => input.reference === inputReference);
-                const push = inputName && inputReference && inputMode && !duplicatedInput ? allInputs.push(obj) : false;
+                allInputs.push(obj);
             }
             const debug = this.debugLog ? this.emit('message', `All Inputs: ${JSON.stringify(allInputs, null, 2)}`) : false;
 

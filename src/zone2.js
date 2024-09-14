@@ -364,6 +364,9 @@ class Zone2 extends EventEmitter {
                 .on('debug', (debug) => {
                     this.emit('debug', debug);
                 })
+                .on('warn', async (error) => {
+                    this.emit('warn', error);
+                })
                 .on('error', async (error) => {
                     this.emit('error', error);
                 })
