@@ -106,7 +106,7 @@ class DENON extends EventEmitter {
             const categoryName = deviceInfoKeys.includes('CategoryName') ? devInfo.ProductCategory : 'Unknown';
             const manualModelName = deviceInfoKeys.includes('ManualModelName') ? devInfo.ManualModelName : 'Unknown';
             const deliveryCode = deviceInfoKeys.includes('DeliveryCode') ? devInfo.DeliveryCode : 0;
-            const modelName = deviceInfoKeys.includes('ModelName') ? devInfo.ModelName : 'AV Receiver';
+            const modelName = deviceInfoKeys.includes('ModelName') ? devInfo.ModelName : deviceInfoKeys.includes('FriendlyName') ? devInfo.FriendlyName : 'AV Receiver';
             const macAddressSupported = deviceInfoKeys.includes('MacAddress');
             const serialNumber = [macAddressSupported ? devInfo.MacAddress.toString() : `1234567654321`, macAddressSupported ? devInfo.MacAddress.toString() : false, macAddressSupported ? devInfo.MacAddress.toString() : false][this.generation];
             const firmwareRevision = deviceInfoKeys.includes('UpgradeVersion') ? devInfo.UpgradeVersion.toString() : '00';
@@ -209,7 +209,8 @@ class DENON extends EventEmitter {
             const saveDevInfo = this.zone === 0 ? await this.saveData(this.devInfoFile, devInfo) : false;
 
             //prepare all inputs
-            const deviceInputsOldAvr = this.generation === 0 ? devInfo.InputFuncList.value : [];
+            const inputFuncListExistOldAvr = deviceInfoKeys.includes('InputFuncList');
+            const deviceInputsOldAvr = this.generation === 0 && inputFuncListExistOldAvr ? devInfo.InputFuncList.value : [];
             const deviceInputsNewAvr = supportInputSource ? zoneCapabilities.InputSource.List.Source : [];
             const deviceInputs = this.getInputsFromDevice ? [deviceInputsOldAvr, deviceInputsNewAvr, deviceInputsNewAvr][this.generation] : this.inputs;
             const allInputs = await this.getInputs(devInfo, this.generation, this.zone, deviceInputs, zoneCapabilities, this.getInputsFromDevice, this.getFavoritesFromDevice, this.getQuickSmartSelectFromDevice, supportFavorites, supportShortcut, supportQuickSmartSelect);
