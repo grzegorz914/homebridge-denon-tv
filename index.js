@@ -35,7 +35,6 @@ class DenonPlatform {
 					log.warn(`Name: ${deviceName ? 'OK' : deviceName}, host: ${host ? 'OK' : host}, port: ${port ? 'OK' : port}}, in config wrong or missing.`);
 					return;
 				}
-				await new Promise(resolve => setTimeout(resolve, 500));
 
 				//debug config
 				const enableDebugMode = device.enableDebugMode || false;
@@ -209,6 +208,7 @@ class DenonPlatform {
 						log.warn(`Device: ${host} ${deviceName}, unknown zone: ${zoneControl}`);
 						break;
 				}
+				await new Promise(resolve => setTimeout(resolve, 500));
 			}
 		});
 	}

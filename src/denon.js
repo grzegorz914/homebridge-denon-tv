@@ -15,6 +15,7 @@ class DENON extends EventEmitter {
         super();
         const host = config.host;
         const port = config.port;
+        this.host = host;
         this.generation = config.generation;
         this.zone = config.zone;
         this.inputs = config.inputs;
@@ -83,7 +84,7 @@ class DENON extends EventEmitter {
             } catch (error) {
                 this.emit('error', `Impulse generator check state error: ${error.message || error}.`);
             };
-        }).on('state', (state) => { });
+        }).on('state', () => { });
     };
 
     async connect() {
@@ -106,9 +107,9 @@ class DENON extends EventEmitter {
             const categoryName = deviceInfoKeys.includes('CategoryName') ? devInfo.ProductCategory : 'Unknown';
             const manualModelName = deviceInfoKeys.includes('ManualModelName') ? devInfo.ManualModelName : 'Unknown';
             const deliveryCode = deviceInfoKeys.includes('DeliveryCode') ? devInfo.DeliveryCode : 0;
-            const modelName = deviceInfoKeys.includes('ModelName') ? devInfo.ModelName : deviceInfoKeys.includes('FriendlyName') ? devInfo.FriendlyName : 'AV Receiver';
+            const modelName = deviceInfoKeys.includes('ModelName') ? devInfo.ModelName : deviceInfoKeys.includes('FriendlyName') ? devInfo.FriendlyName.value : 'AV Receiver';
             const macAddressSupported = deviceInfoKeys.includes('MacAddress');
-            const serialNumber = [macAddressSupported ? devInfo.MacAddress.toString() : `1234567654321`, macAddressSupported ? devInfo.MacAddress.toString() : false, macAddressSupported ? devInfo.MacAddress.toString() : false][this.generation];
+            const serialNumber = [macAddressSupported ? devInfo.MacAddress.toString() : `1234567654321${this.host}`, macAddressSupported ? devInfo.MacAddress.toString() : false, macAddressSupported ? devInfo.MacAddress.toString() : false][this.generation];
             const firmwareRevision = deviceInfoKeys.includes('UpgradeVersion') ? devInfo.UpgradeVersion.toString() : '00';
             const reloadDeviceInfo = deviceInfoKeys.includes('ReloadDeviceInfo') ? devInfo.ReloadDeviceInfo : 0;
             const deviceZones = deviceInfoKeys.includes('DeviceZones') ? devInfo.DeviceZones : 1;
