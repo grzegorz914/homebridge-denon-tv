@@ -4227,11 +4227,12 @@
                       }
                     ],
                     "description": "Here select function.",
-                    "required": true
+                    "required": false
                   },
                   "displayType": {
                     "title": "Type",
                     "type": "integer",
+                    "default": 0,
                     "oneOf": [
                       {
                         "title": "None/Disabled",
@@ -4938,11 +4939,12 @@
                       }
                     ],
                     "description": "Here select function.",
-                    "required": true
+                    "required": false
                   },
                   "displayType": {
                     "title": "Type",
                     "type": "integer",
+                    "default": 0,
                     "oneOf": [
                       {
                         "title": "None/Disabled",
@@ -5637,11 +5639,12 @@
                       }
                     ],
                     "description": "Here select function.",
-                    "required": true
+                    "required": false
                   },
                   "displayType": {
                     "title": "Type",
                     "type": "integer",
+                    "default": 0,
                     "oneOf": [
                       {
                         "title": "None/Disabled",
@@ -6399,11 +6402,12 @@
                       }
                     ],
                     "description": "Here select reference.",
-                    "required": true
+                    "required": false
                   },
                   "displayType": {
                     "title": "Type",
                     "type": "integer",
+                    "default": 0,
                     "oneOf": [
                       {
                         "title": "None/Disabled",
