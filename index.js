@@ -38,7 +38,7 @@ class DenonPlatform {
 
 				//debug config
 				const enableDebugMode = device.enableDebugMode || false;
-				const debug = enableDebugMode ? log.info(`Device: ${host} ${deviceName}, did finish launching.`) : false;
+				const debug = enableDebugMode ? log.info(`Device: ${host} ${deviceName}, debug: Did finish launching.`) : false;
 				const config = {
 					...device,
 					mqtt: {
@@ -74,7 +74,7 @@ class DenonPlatform {
 						}
 					});
 				} catch (error) {
-					log.error(`Device: ${host} ${deviceName}, prepare files error: ${error}`);
+					log.error(`Device: ${host} ${deviceName}, Prepare files error: ${error}`);
 					return;
 				}
 
@@ -85,7 +85,7 @@ class DenonPlatform {
 							const mainZone = new MainZone(api, device, zoneControl, deviceName, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile, refreshInterval);
 							mainZone.on('publishAccessory', (accessory) => {
 								api.publishExternalAccessories(CONSTANTS.PluginName, [accessory]);
-								log.success(`Device: ${host} ${deviceName}, published as external accessory.`);
+								log.success(`Device: ${host} ${deviceName}, Published as external accessory.`);
 							})
 								.on('devInfo', (devInfo) => {
 									log.info(devInfo);
@@ -108,7 +108,7 @@ class DenonPlatform {
 
 							await mainZone.start();
 						} catch (error) {
-							log.error(`Device: ${host} ${deviceName}, did finish launching error: ${error}`);
+							log.error(`Device: ${host} ${deviceName}, Did finish launching error: ${error}`);
 						}
 						break;
 					case 1: //zone 1
@@ -116,7 +116,7 @@ class DenonPlatform {
 							const zone2 = new Zone2(api, device, zoneControl, deviceName, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile, refreshInterval);
 							zone2.on('publishAccessory', (accessory) => {
 								api.publishExternalAccessories(CONSTANTS.PluginName, [accessory]);
-								log.success(`Device: ${host} ${deviceName}, published as external accessory.`);
+								log.success(`Device: ${host} ${deviceName}, Published as external accessory.`);
 							})
 								.on('devInfo', (devInfo) => {
 									log(devInfo);
@@ -139,7 +139,7 @@ class DenonPlatform {
 
 							await zone2.start();
 						} catch (error) {
-							log.error(`Device: ${host} ${deviceName}, did finish launching error: ${error}`);
+							log.error(`Device: ${host} ${deviceName}, Did finish launching error: ${error}`);
 						}
 						break;
 					case 2: //zone 2
@@ -147,7 +147,7 @@ class DenonPlatform {
 							const zone3 = new Zone3(api, device, zoneControl, deviceName, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile, refreshInterval);
 							zone3.on('publishAccessory', (accessory) => {
 								api.publishExternalAccessories(CONSTANTS.PluginName, [accessory]);
-								log.success(`Device: ${host} ${deviceName}, published as external accessory.`);
+								log.success(`Device: ${host} ${deviceName}, Published as external accessory.`);
 							})
 								.on('devInfo', (devInfo) => {
 									log.info(devInfo);
@@ -170,7 +170,7 @@ class DenonPlatform {
 
 							await zone3.start();
 						} catch (error) {
-							log.error(`Device: ${host} ${deviceName}, did finish launching error: ${error}`);
+							log.error(`Device: ${host} ${deviceName}, Did finish launching error: ${error}`);
 						}
 						break;
 					case 3: //surround
@@ -178,7 +178,7 @@ class DenonPlatform {
 							const surround = new Surround(api, device, zoneControl, deviceName, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile, refreshInterval);
 							surround.on('publishAccessory', (accessory) => {
 								api.publishExternalAccessories(CONSTANTS.PluginName, [accessory]);
-								log.success(`Device: ${host} ${deviceName}, published as external accessory.`);
+								log.success(`Device: ${host} ${deviceName}, Published as external accessory.`);
 							})
 								.on('devInfo', (devInfo) => {
 									log.info(devInfo);
@@ -201,7 +201,7 @@ class DenonPlatform {
 
 							await surround.start();
 						} catch (error) {
-							log.error(`Device: ${host} ${deviceName}, did finish launching error: ${error}`);
+							log.error(`Device: ${host} ${deviceName}, Did finish launching error: ${error}`);
 						}
 						break;
 					default:
