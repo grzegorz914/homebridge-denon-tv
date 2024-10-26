@@ -5,6 +5,7 @@ const MainZone = require('./src/mainzone.js');
 const Zone2 = require('./src/zone2.js');
 const Zone3 = require('./src/zone3.js');
 const Surround = require('./src/surround.js');
+const ImpulseGenerator = require('./src/impulsegenerator.js');
 const CONSTANTS = require('./src/constants.json');
 
 class DenonPlatform {
@@ -38,6 +39,7 @@ class DenonPlatform {
 
 				//debug config
 				const enableDebugMode = device.enableDebugMode || false;
+				const disableLogConnectError = device.disableLogConnectError || false;
 				const debug = enableDebugMode ? log.info(`Device: ${host} ${deviceName}, debug: Did finish launching.`) : false;
 				const config = {
 					...device,
@@ -106,7 +108,21 @@ class DenonPlatform {
 									log.error(`Device: ${host} ${deviceName}, ${error}`);
 								});
 
-							await mainZone.start();
+							//create impulse generator
+							const impulseGenerator = new ImpulseGenerator();
+							impulseGenerator.on('start', async () => {
+								try {
+									await mainZone.start();
+									impulseGenerator.stop();
+								} catch (error) {
+									const logError = disableLogConnectError ? false : log.error(`Device: ${host} ${deviceName}, ${error}, trying again.`);
+								};
+							}).on('state', (state) => {
+								const debug = enableDebugMode ? state ? log.info(`Device: ${host} ${deviceName}, Start impulse generator started.`) : log.info(`Device: ${host} ${deviceName}, Start impulse generator stopped.`) : false;
+							});
+
+							//start impulse generator
+							impulseGenerator.start([{ name: 'start', sampling: 45000 }]);
 						} catch (error) {
 							log.error(`Device: ${host} ${deviceName}, Did finish launching error: ${error}`);
 						}
@@ -137,7 +153,21 @@ class DenonPlatform {
 									log.error(`Device: ${host} ${deviceName}, ${error}`);
 								});
 
-							await zone2.start();
+							//create impulse generator
+							const impulseGenerator = new ImpulseGenerator();
+							impulseGenerator.on('start', async () => {
+								try {
+									await zone2.start();
+									impulseGenerator.stop();
+								} catch (error) {
+									const logError = disableLogConnectError ? false : log.error(`Device: ${host} ${deviceName}, ${error}, trying again.`);
+								};
+							}).on('state', (state) => {
+								const debug = enableDebugMode ? state ? log.info(`Device: ${host} ${deviceName}, Start impulse generator started.`) : log.info(`Device: ${host} ${deviceName}, Start impulse generator stopped.`) : false;
+							});
+
+							//start impulse generator
+							impulseGenerator.start([{ name: 'start', sampling: 45000 }]);
 						} catch (error) {
 							log.error(`Device: ${host} ${deviceName}, Did finish launching error: ${error}`);
 						}
@@ -168,7 +198,21 @@ class DenonPlatform {
 									log.error(`Device: ${host} ${deviceName}, ${error}`);
 								});
 
-							await zone3.start();
+							//create impulse generator
+							const impulseGenerator = new ImpulseGenerator();
+							impulseGenerator.on('start', async () => {
+								try {
+									await zone3.start();
+									impulseGenerator.stop();
+								} catch (error) {
+									const logError = disableLogConnectError ? false : log.error(`Device: ${host} ${deviceName}, ${error}, trying again.`);
+								};
+							}).on('state', (state) => {
+								const debug = enableDebugMode ? state ? log.info(`Device: ${host} ${deviceName}, Start impulse generator started.`) : log.info(`Device: ${host} ${deviceName}, Start impulse generator stopped.`) : false;
+							});
+
+							//start impulse generator
+							impulseGenerator.start([{ name: 'start', sampling: 45000 }]);
 						} catch (error) {
 							log.error(`Device: ${host} ${deviceName}, Did finish launching error: ${error}`);
 						}
@@ -199,7 +243,21 @@ class DenonPlatform {
 									log.error(`Device: ${host} ${deviceName}, ${error}`);
 								});
 
-							await surround.start();
+							//create impulse generator
+							const impulseGenerator = new ImpulseGenerator();
+							impulseGenerator.on('start', async () => {
+								try {
+									await surround.start();
+									impulseGenerator.stop();
+								} catch (error) {
+									const logError = disableLogConnectError ? false : log.error(`Device: ${host} ${deviceName}, ${error}, trying again.`);
+								};
+							}).on('state', (state) => {
+								const debug = enableDebugMode ? state ? log.info(`Device: ${host} ${deviceName}, Start impulse generator started.`) : log.info(`Device: ${host} ${deviceName}, Start impulse generator stopped.`) : false;
+							});
+
+							//start impulse generator
+							impulseGenerator.start([{ name: 'start', sampling: 45000 }]);
 						} catch (error) {
 							log.error(`Device: ${host} ${deviceName}, Did finish launching error: ${error}`);
 						}

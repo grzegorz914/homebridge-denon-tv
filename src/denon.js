@@ -25,7 +25,6 @@ class DENON extends EventEmitter {
         this.getFavoritesFromDevice = this.getInputsFromDevice ? config.getFavoritesFromDevice : false;
         this.getQuickSmartSelectFromDevice = this.getInputsFromDevice ? config.getQuickSmartSelectFromDevice : false;
         this.debugLog = config.debugLog;
-        this.disableLogConnectError = config.disableLogConnectError;
         this.deviceInfoUrl = [CONSTANTS.ApiUrls.DeviceInfoGen0, CONSTANTS.ApiUrls.DeviceInfoGen1, CONSTANTS.ApiUrls.DeviceInfoGen2][this.generation];
 
         const baseUrl = `http://${host}:${port}`;
@@ -82,7 +81,7 @@ class DENON extends EventEmitter {
             try {
                 await this.checkState();
             } catch (error) {
-                this.emit('error', `Impulse generator check state error: ${error.message || error}.`);
+                const logError = config.disableLogConnectError ? false : this.emit('error', `Impulse generator check state error: ${error.message || error}.`);
             };
         }).on('state', (state) => {
             const emitState = state ? this.emit('success', `Impulse generator started.`) : this.emit('warn', `Impulse generator stopped.`);
@@ -241,9 +240,6 @@ class DENON extends EventEmitter {
 
             return true;
         } catch (error) {
-            if (this.disableLogConnectError) {
-                return;
-            };
             throw new Error(`Connect error: ${error.message || error}.`);
 
         };
@@ -322,9 +318,6 @@ class DENON extends EventEmitter {
 
             return true;
         } catch (error) {
-            if (this.disableLogConnectError) {
-                return;
-            };
             throw new Error(`Check state error: ${error.message || error}.`);
         };
     };
