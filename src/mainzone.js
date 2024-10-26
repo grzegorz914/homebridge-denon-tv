@@ -247,7 +247,7 @@ class MainZone extends EventEmitter {
                         //start impulse generator 
                         await this.denon.impulseGenerator.start([{ name: 'checkState', sampling: this.refreshInterval }]);
                     } catch (error) {
-                        this.emit('error', `Prepare accessory error: ${error.message || error}, check again in 15s.`);
+                        this.emit('error', `Prepare accessory error: ${error.message || error}`);
                     };
                 })
                 .on('stateChanged', (power, reference, volume, volumeControlType, mute, pictureMode) => {
@@ -383,7 +383,7 @@ class MainZone extends EventEmitter {
                     const mqtt = this.mqttConnected ? this.mqtt1.emit('publish', topic, message) : false;
                 });
 
-            //connect to avr and check state
+            //connect to avr
             await this.denon.connect();
 
             return true;
