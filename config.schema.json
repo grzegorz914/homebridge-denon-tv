@@ -3,6 +3,7 @@
   "pluginType": "platform",
   "singular": true,
   "fixArrays": true,
+  "strictValidation": true,
   "headerDisplay": "This plugin works with Denon/Marantz AV Receivers. Devices are exposed to HomeKit as separate accessories and each needs to be manually paired.",
   "footerDisplay": "For documentation please see [GitHub repository](https://github.com/grzegorz914/homebridge-denon-tv).",
   "schema": {
