@@ -103,7 +103,7 @@
               "type": "boolean",
               "default": false,
               "description": "If enabled, all Inputs will be loaded direct from device.",
-              "required": true
+              "required": false
             },
             "getFavoritesFromDevice": {
               "title": "Load Favorites",
@@ -113,7 +113,7 @@
               "condition": {
                 "functionBody": "return model.devices[arrayIndices].getInputsFromDevice == true && model.devices[arrayIndices].generation >= 1;"
               },
-              "required": true
+              "required": false
             },
             "getQuickSmartSelectFromDevice": {
               "title": "Load Quick/Smart Select",
@@ -123,7 +123,7 @@
               "condition": {
                 "functionBody": "return model.devices[arrayIndices].getInputsFromDevice == true && model.devices[arrayIndices].generation >= 1;"
               },
-              "required": true
+              "required": false
             },
             "inputsDisplayOrder": {
               "title": "Display Order",
@@ -6473,7 +6473,7 @@
                 }
               ],
               "description": "Here select the function of info button in RC.",
-              "required": true
+              "required": false
             },
             "masterPower": {
               "title": "Master Power Control",

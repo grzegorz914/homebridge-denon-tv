@@ -769,7 +769,7 @@ class Zone3 extends EventEmitter {
                 const debug = !this.enableDebugMode ? false : this.emit('debug', `Prepare volume service`);
                 const volumeServiceName = this.volumeControlNamePrefix ? `${accessoryName} ${this.volumeControlName}` : this.volumeControlName;
                 if (this.volumeControl === 1) {
-                    this.volumeService = accessory.addService(Service.Lightbulb, `${volumeServiceName}`, 'Volume');
+                    this.volumeService = accessory.addService(Service.Lightbulb, `${volumeServiceName}`, `${volumeServiceName}`);
                     this.volumeService.addOptionalCharacteristic(Characteristic.ConfiguredName);
                     this.volumeService.setCharacteristic(Characteristic.ConfiguredName, `${volumeServiceName}`);
                     this.volumeService.getCharacteristic(Characteristic.Brightness)
@@ -797,7 +797,7 @@ class Zone3 extends EventEmitter {
                 }
 
                 if (this.volumeControl === 2) {
-                    this.volumeServiceFan = accessory.addService(Service.Fan, `${volumeServiceName}`, 'Volume');
+                    this.volumeServiceFan = accessory.addService(Service.Fan, `${volumeServiceName}`, `${volumeServiceName}`);
                     this.volumeServiceFan.addOptionalCharacteristic(Characteristic.ConfiguredName);
                     this.volumeServiceFan.setCharacteristic(Characteristic.ConfiguredName, `${volumeServiceName}`);
                     this.volumeServiceFan.getCharacteristic(Characteristic.RotationSpeed)
