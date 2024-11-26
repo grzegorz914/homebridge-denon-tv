@@ -815,12 +815,9 @@
                         ]
                       }
                     ],
-                    "required": true
+                    "required": false
                   }
                 }
-              },
-              "condition": {
-                "functionBody": "return model.devices[arrayIndices].getInputsFromDevice === false;"
               },
               "required": false
             },
@@ -981,7 +978,7 @@
                         ]
                       }
                     ],
-                    "required": true
+                    "required": false
                   }
                 }
               },
@@ -6752,7 +6749,10 @@
               "items": [
                 "devices[].inputs[].name",
                 "devices[].inputs[].reference"
-              ]
+              ],
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].getInputsFromDevice === false;"
+              }
             }
           ],
           "condition": {
