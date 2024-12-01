@@ -1,11 +1,11 @@
 'use strict';
-const fs = require('fs');
-const fsPromises = fs.promises;
-const EventEmitter = require('events');
-const RestFul = require('./restful.js');
-const Mqtt = require('./mqtt.js');
-const Denon = require('./denon.js');
-const CONSTANTS = require('./constants.json');
+import { promises } from 'fs';
+const fsPromises = promises;
+import EventEmitter from 'events';
+import Mqtt from './mqtt.js';
+import RestFul from './restful.js';
+import Denon from './denon.js';
+import { PictureModesConversionToHomeKit, PictureModesDenonNumber, PictureModesDenonString, DirectSoundMode } from './constants.js';
 let Accessory, Characteristic, Service, Categories, Encode, AccessoryUUID;
 
 class MainZone extends EventEmitter {
@@ -254,7 +254,7 @@ class MainZone extends EventEmitter {
                     const input = this.inputsConfigured.find(input => input.reference === reference) ?? false;
                     const inputIdentifier = input ? input.identifier : this.inputIdentifier;
                     mute = power ? mute : true;
-                    const pictureModeHomeKit = CONSTANTS.PictureModesConversionToHomeKit[pictureMode] ?? this.pictureMode;
+                    const pictureModeHomeKit = PictureModesConversionToHomeKit[pictureMode] ?? this.pictureMode;
 
                     if (this.televisionService) {
                         this.televisionService
@@ -358,7 +358,7 @@ class MainZone extends EventEmitter {
                         this.emit('message', `Volume: ${volume - 80}dB`);
                         this.emit('message', `Mute: ${mute ? 'ON' : 'OFF'}`);
                         this.emit('message', `Volume Control Type: ${volumeControlType}`);
-                        this.emit('message', `Picture Mode: ${CONSTANTS.PictureModesDenonNumber[pictureMode]}`);
+                        this.emit('message', `Picture Mode: ${PictureModesDenonNumber[pictureMode]}`);
                     };
                 })
                 .on('success', (message) => {
@@ -661,7 +661,7 @@ class MainZone extends EventEmitter {
                             }
 
                             await this.denon.send(command);
-                            const info = this.disableLogInfo ? false : this.emit('message', `set Picture Mode: ${CONSTANTS.PictureModesDenonString[command]}`);
+                            const info = this.disableLogInfo ? false : this.emit('message', `set Picture Mode: ${PictureModesDenonString[command]}`);
                         } catch (error) {
                             this.emit('warn', `set Picture Mode error: ${error}`);
                         };
@@ -1037,7 +1037,7 @@ class MainZone extends EventEmitter {
                         })
                         .onSet(async (state) => {
                             try {
-                                const directSound = CONSTANTS.DirectSoundMode[buttonReference] ?? false;
+                                const directSound = DirectSoundMode[buttonReference] ?? false;
                                 const directSoundModeMode = directSound ? directSound.mode : false;
                                 const directSoundModeSurround = directSound ? directSound.surround : false;
                                 const command = directSound ? directSoundModeMode : buttonReference.substring(1);
@@ -1064,4 +1064,4 @@ class MainZone extends EventEmitter {
     }
 };
 
-module.exports = MainZone;
+export default MainZone;

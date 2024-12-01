@@ -1,11 +1,11 @@
 'use strict';
-const fs = require('fs');
-const fsPromises = fs.promises;
-const EventEmitter = require('events');
-const RestFul = require('./restful.js');
-const Mqtt = require('./mqtt.js');
-const Denon = require('./denon.js');
-const CONSTANTS = require('./constants.json');
+import { promises } from 'fs';
+const fsPromises = promises;
+import EventEmitter from 'events';
+import Mqtt from './mqtt.js';
+import RestFul from './restful.js';
+import Denon from './denon.js';
+import { PictureModesConversionToHomeKit, PictureModesDenonNumber } from './constants.js';
 let Accessory, Characteristic, Service, Categories, Encode, AccessoryUUID;
 
 class Zone3 extends EventEmitter {
@@ -254,7 +254,7 @@ class Zone3 extends EventEmitter {
                     const input = this.inputsConfigured.find(input => input.reference === reference) ?? false;
                     const inputIdentifier = input ? input.identifier : this.inputIdentifier;
                     mute = power ? mute : true;
-                    const pictureModeHomeKit = CONSTANTS.PictureModesConversionToHomeKit[pictureMode] ?? this.pictureMode;
+                    const pictureModeHomeKit = PictureModesConversionToHomeKit[pictureMode] ?? this.pictureMode;
 
                     if (this.televisionService) {
                         this.televisionService
@@ -354,7 +354,7 @@ class Zone3 extends EventEmitter {
                         this.emit('message', `Volume: ${volume - 80}dB`);
                         this.emit('message', `Mute: ${mute ? 'ON' : 'OFF'}`);
                         this.emit('message', `Volume Control Type: ${volumeControlType}`);
-                        this.emit('message', `Picture Mode: ${CONSTANTS.PictureModesDenonNumber[pictureMode]}`);
+                        this.emit('message', `Picture Mode: ${PictureModesDenonNumber[pictureMode]}`);
                     };
                 })
                 .on('success', (message) => {
@@ -971,4 +971,4 @@ class Zone3 extends EventEmitter {
     }
 };
 
-module.exports = Zone3;
+export default Zone3;

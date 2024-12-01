@@ -1,26 +1,26 @@
 'use strict';
-const path = require('path');
-const fs = require('fs');
-const MainZone = require('./src/mainzone.js');
-const Zone2 = require('./src/zone2.js');
-const Zone3 = require('./src/zone3.js');
-const Surround = require('./src/surround.js');
-const ImpulseGenerator = require('./src/impulsegenerator.js');
-const CONSTANTS = require('./src/constants.json');
+import { join } from 'path';
+import { mkdirSync, existsSync, writeFileSync } from 'fs';
+import MainZone from './src/mainzone.js';
+import Zone2 from './src/zone2.js';
+import Zone3 from './src/zone3.js';
+import Surround from './src/surround.js';
+import ImpulseGenerator from './src/impulsegenerator.js';
+import { PluginName, PlatformName, ZoneNameShort } from './src/constants.js';
 
 class DenonPlatform {
 	constructor(log, config, api) {
 		// only load if configured
 		if (!config || !Array.isArray(config.devices)) {
-			log.warn(`No configuration found for ${CONSTANTS.PluginName}`);
+			log.warn(`No configuration found for ${PluginName}`);
 			return;
 		}
 		this.accessories = [];
 
 		//check if prefs directory exist
-		const prefDir = path.join(api.user.storagePath(), 'denonTv');
+		const prefDir = join(api.user.storagePath(), 'denonTv');
 		try {
-			fs.mkdirSync(prefDir, { recursive: true });
+			mkdirSync(prefDir, { recursive: true });
 		} catch (error) {
 			log.error(`Prepare directory error: ${error.message ?? error}`);
 			return;
@@ -56,7 +56,7 @@ class DenonPlatform {
 				const refreshInterval = device.refreshInterval * 1000 || 5000;
 
 				//check files exists, if not then create it
-				const postFix = `${CONSTANTS.ZoneNameShort[zoneControl]}${host.split('.').join('')}`
+				const postFix = `${ZoneNameShort[zoneControl]}${host.split('.').join('')}`
 				const devInfoFile = `${prefDir}/devInfo_${postFix}`;
 				const inputsFile = `${prefDir}/inputs_${postFix}`;
 				const inputsNamesFile = `${prefDir}/inputsNames_${postFix}`;
@@ -71,8 +71,8 @@ class DenonPlatform {
 					];
 
 					files.forEach((file) => {
-						if (!fs.existsSync(file)) {
-							fs.writeFileSync(file, '');
+						if (!existsSync(file)) {
+							writeFileSync(file, '');
 						}
 					});
 				} catch (error) {
@@ -86,7 +86,7 @@ class DenonPlatform {
 						try {
 							const mainZone = new MainZone(api, device, zoneControl, deviceName, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile, refreshInterval);
 							mainZone.on('publishAccessory', (accessory) => {
-								api.publishExternalAccessories(CONSTANTS.PluginName, [accessory]);
+								api.publishExternalAccessories(PluginName, [accessory]);
 								log.success(`Device: ${host} ${deviceName}, Published as external accessory.`);
 							})
 								.on('devInfo', (devInfo) => {
@@ -131,7 +131,7 @@ class DenonPlatform {
 						try {
 							const zone2 = new Zone2(api, device, zoneControl, deviceName, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile, refreshInterval);
 							zone2.on('publishAccessory', (accessory) => {
-								api.publishExternalAccessories(CONSTANTS.PluginName, [accessory]);
+								api.publishExternalAccessories(PluginName, [accessory]);
 								log.success(`Device: ${host} ${deviceName}, Published as external accessory.`);
 							})
 								.on('devInfo', (devInfo) => {
@@ -176,7 +176,7 @@ class DenonPlatform {
 						try {
 							const zone3 = new Zone3(api, device, zoneControl, deviceName, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile, refreshInterval);
 							zone3.on('publishAccessory', (accessory) => {
-								api.publishExternalAccessories(CONSTANTS.PluginName, [accessory]);
+								api.publishExternalAccessories(PluginName, [accessory]);
 								log.success(`Device: ${host} ${deviceName}, Published as external accessory.`);
 							})
 								.on('devInfo', (devInfo) => {
@@ -221,7 +221,7 @@ class DenonPlatform {
 						try {
 							const surround = new Surround(api, device, zoneControl, deviceName, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile, refreshInterval);
 							surround.on('publishAccessory', (accessory) => {
-								api.publishExternalAccessories(CONSTANTS.PluginName, [accessory]);
+								api.publishExternalAccessories(PluginName, [accessory]);
 								log.success(`Device: ${host} ${deviceName}, Published as external accessory.`);
 							})
 								.on('devInfo', (devInfo) => {
@@ -276,6 +276,6 @@ class DenonPlatform {
 	}
 };
 
-module.exports = (api) => {
-	api.registerPlatform(CONSTANTS.PluginName, CONSTANTS.PlatformName, DenonPlatform, true);
+export default (api) => {
+	api.registerPlatform(PluginName, PlatformName, DenonPlatform, true);
 };
