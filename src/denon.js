@@ -1,6 +1,4 @@
-'use strict';
-import { promises } from 'fs';
-const fsPromises = promises;
+import { promises as fsPromises } from 'fs';
 import axios from 'axios';
 import { Agent } from 'https';
 import EventEmitter from 'events';
