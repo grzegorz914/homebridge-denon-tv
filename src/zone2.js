@@ -80,7 +80,7 @@ class Zone2 extends EventEmitter {
                 sensor.state = false;
                 this.sensorsInputsConfigured.push(sensor);
             } else {
-                const log = sensorInputDisplayType === 0 ? false : this.emit('message', `Sensor Name: ${sensorInputName ? sensorInputName : 'Missing'}, Reference: ${sensorInputReference ? sensorInputReference : 'Missing'}.`);
+                const log = sensorInputDisplayType === 0 ? false : this.emit('message', `Sensor Name: ${sensorInputName ? sensorInputName : 'Missing'}, Reference: ${sensorInputReference ? sensorInputReference : 'Missing'}`);
             };
         }
         this.sensorsInputsConfiguredCount = this.sensorsInputsConfigured.length || 0;
@@ -98,7 +98,7 @@ class Zone2 extends EventEmitter {
                 button.state = false;
                 this.buttonsConfigured.push(button);
             } else {
-                const log = buttonDisplayType === 0 ? false : this.emit('message', `Button Name: ${buttonName ? buttonName : 'Missing'}, Reference: ${buttonReference ? buttonReference : 'Missing'}.`);
+                const log = buttonDisplayType === 0 ? false : this.emit('message', `Button Name: ${buttonName ? buttonName : 'Missing'}, Reference: ${buttonReference ? buttonReference : 'Missing'}`);
             };
         }
         this.buttonsConfiguredCount = this.buttonsConfigured.length || 0;
@@ -204,7 +204,7 @@ class Zone2 extends EventEmitter {
                                     try {
                                         await this.setOverExternalIntegration('MQTT', key, value);
                                     } catch (error) {
-                                        this.emit('warn', `MQTT set error: ${error}.`);
+                                        this.emit('warn', `MQTT set error: ${error}`);
                                     };
                                 })
                                 .on('debug', (debug) => {
@@ -215,7 +215,7 @@ class Zone2 extends EventEmitter {
                                 });
                         };
                     } catch (error) {
-                        this.emit('warn', `External integrationstart  error: ${error.message || error}.`);
+                        this.emit('warn', `External integrationstart  error: ${error}`);
                     };
                 })
                 .on('prepareAccessory', async (allInputs) => {
@@ -245,7 +245,7 @@ class Zone2 extends EventEmitter {
                         //start impulse generator 
                         await this.denon.impulseGenerator.start([{ name: 'checkState', sampling: this.refreshInterval }]);
                     } catch (error) {
-                        this.emit('error', `Prepare accessory error: ${error.message || error}, check again in 15s.`);
+                        this.emit('error', `Prepare accessory error: ${error}`);
                     };
                 })
                 .on('stateChanged', (power, reference, volume, volumeControlType, mute, pictureMode) => {
@@ -382,7 +382,7 @@ class Zone2 extends EventEmitter {
 
             return true;
         } catch (error) {
-            throw new Error(`Start error: ${error.message || error}.`);
+            throw new Error(`Start error: ${error}`);
         };
     };
 
@@ -411,7 +411,7 @@ class Zone2 extends EventEmitter {
             this.televisionService.setCharacteristic(Characteristic.DisplayOrder, Encode(1, displayOrder).toString('base64'));
             return true;
         } catch (error) {
-            throw new Error(`Display order error: ${error.message || error}`);
+            throw new Error(`Display order error: ${error}`);
         };
     }
 
@@ -422,7 +422,7 @@ class Zone2 extends EventEmitter {
             const debug = this.debugLog ? this.emit('debug', `Saved data: ${data}`) : false;
             return true;
         } catch (error) {
-            throw new Error(`Save data error: ${error.message || error}`);
+            throw new Error(`Save data error: ${error}`);
         };
     }
 
@@ -431,7 +431,7 @@ class Zone2 extends EventEmitter {
             const data = await fsPromises.readFile(path);
             return data;
         } catch (error) {
-            throw new Error(`Read saved data error: ${error.message || error}`);
+            throw new Error(`Read saved data error: ${error}`);
         };
     }
 
@@ -469,7 +469,7 @@ class Zone2 extends EventEmitter {
             };
             return set;
         } catch (error) {
-            throw new Error(`${integration} set key: ${key}, value: ${value}, error: ${error.message || error}`);
+            throw new Error(`${integration} set key: ${key}, value: ${value}, error: ${error}`);
         };
     }
 

@@ -79,10 +79,10 @@ class Denon extends EventEmitter {
             try {
                 await this.checkState();
             } catch (error) {
-                const logError = config.disableLogConnectError ? false : this.emit('error', `Impulse generator check state error: ${error.message || error}.`);
+                const logError = config.disableLogConnectError ? false : this.emit('error', `Impulse generator error: ${error}`);
             };
         }).on('state', (state) => {
-            const emitState = state ? this.emit('success', `Impulse generator started.`) : this.emit('warn', `Impulse generator stopped.`);
+            const emitState = state ? this.emit('success', `Impulse generator started`) : this.emit('warn', `Impulse generator stopped`);
         });
     };
 
@@ -201,7 +201,7 @@ class Denon extends EventEmitter {
 
             //check seriaql number
             if (!serialNumber) {
-                this.emit('error', `Missing Serial Number.`);
+                this.emit('error', `Missing Serial Number`);
                 return;
             }
 
@@ -218,14 +218,14 @@ class Denon extends EventEmitter {
 
             //check inputs
             if (!inputsExist) {
-                this.emit('warn', `Found: ${allInputs} inputs.`);
+                this.emit('warn', `Found: ${allInputs} inputs`);
             }
 
             //save inputs if exist
             const saveInputs = inputsExist ? await this.saveData(this.inputsFile, allInputs) : false;
 
             //connect to deice success
-            this.emit('success', `Connect Success.`)
+            this.emit('success', `Connect Success`)
 
             //emit device info
             this.emit('deviceInfo', manufacturer, modelName, serialNumber, firmwareRevision, deviceZones, apiVersion, supportPictureMode);
@@ -238,7 +238,7 @@ class Denon extends EventEmitter {
 
             return true;
         } catch (error) {
-            throw new Error(`Connect error: ${error.message || error}.`);
+            throw new Error(`Connect error: ${error}`);
 
         };
     };
@@ -316,7 +316,7 @@ class Denon extends EventEmitter {
 
             return true;
         } catch (error) {
-            throw new Error(`Check state error: ${error.message || error}.`);
+            throw new Error(`Check state error: ${error}`);
         };
     };
 
@@ -450,7 +450,7 @@ class Denon extends EventEmitter {
 
             return allInputs;
         } catch (error) {
-            throw new Error(`Get inputus error: ${error.message || error}`);
+            throw new Error(`Get inputus error: ${error}`);
         }
     };
 
@@ -461,7 +461,7 @@ class Denon extends EventEmitter {
             const debug = this.debugLog ? this.emit('debug', `Saved data: ${data}`) : false;
             return true;
         } catch (error) {
-            throw new Error(`Save data error: ${error.message || error}`);
+            throw new Error(`Save data error: ${error}`);
         };
     };
 
@@ -471,7 +471,7 @@ class Denon extends EventEmitter {
             await this.axiosInstance(path);
             return true;
         } catch (error) {
-            throw new Error(error);
+            throw new Error(`Send data error: ${error}`);
         };
     };
 };
