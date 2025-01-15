@@ -112,10 +112,12 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 | `volumeMax` | Here set the maximum possible volume to set, `0 - 100`. |
 | `infoButtonCommand` | Here choose the function for `I` button in RC app. |
 | `refreshInterval` | Here set the data refresh interval. |
-| `enableDebugMode` | If enabled, deep log will be present in homebridge console. |
-| `disableLogInfo` | If enabled, disable log info, all values and state will not be displayed in Homebridge log console. |
 | `disableLogDeviceInfo` | If enabled, add ability to disable log device info by every connections device to the network. |
-| `disableLogConnectError` | If enabled, disable logging device connect error. |
+| `disableLogInfo` | If enabled, disable log info, all values and state will not be displayed in Homebridge log console. |
+| `disableLogSuccess` | If enabled, disable logging device success. |
+| `disableLogWarn` | If enabled, disable logging device warnings. |
+| `disableLogError` | If enabled, disable logging device error. |
+| `enableDebugMode` | If enabled, deep log will be present in homebridge console. |
 | `enableRestFul` | If enabled, RESTful server will start automatically and respond to any path request. |
 | `restFul` | This is RSTful server. |
 | `enable` | If enabled, RESTful server will start automatically and respond to any path request. |

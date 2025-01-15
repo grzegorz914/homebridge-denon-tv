@@ -11,6 +11,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - after update to 4.7.x buttons, sensors, volume display type need to be configure again using config UI
 - after update to 3.15.x need remove the accessory frome Home app and add it again
 
+## [5.3.0] - (15.01.2025)
+
+## Changes
+
+- added possibility to disable/enable log success, info, warn, error
+- refactor cnnrct code
+- bump dependencies
+- config schema updated
+- redme updated
+- cleanup
+
 ## [5.2.3] - (19.12.2024)
 
 ## Changes

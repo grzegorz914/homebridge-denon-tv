@@ -22,7 +22,7 @@ class Denon extends EventEmitter {
         this.getInputsFromDevice = this.zone < 3 ? config.getInputsFromDevice : false;
         this.getFavoritesFromDevice = this.getInputsFromDevice ? config.getFavoritesFromDevice : false;
         this.getQuickSmartSelectFromDevice = this.getInputsFromDevice ? config.getQuickSmartSelectFromDevice : false;
-        this.debugLog = config.debugLog;
+        this.enableDebugLog = config.enableDebugLog;
         this.deviceInfoUrl = [ApiUrls.DeviceInfoGen0, ApiUrls.DeviceInfoGen1, ApiUrls.DeviceInfoGen2][this.generation];
 
         const baseUrl = `http://${host}:${port}`;
@@ -79,7 +79,7 @@ class Denon extends EventEmitter {
             try {
                 await this.checkState();
             } catch (error) {
-                const logError = config.disableLogConnectError ? false : this.emit('error', `Impulse generator error: ${error}`);
+                const logError = config.disableLogError ? false : this.emit('error', `Impulse generator error: ${error}`);
             };
         }).on('state', (state) => {
             const emitState = state ? this.emit('success', `Impulse generator started`) : this.emit('warn', `Impulse generator stopped`);
@@ -92,7 +92,7 @@ class Denon extends EventEmitter {
             const deviceInfo = await this.axiosInstance(this.deviceInfoUrl);
             const parseData = this.parseString.parse(deviceInfo.data);
             const devInfo = [parseData.item, parseData.Device_Info, parseData.Device_Info][this.generation];
-            const debug = this.debugLog ? this.emit('debug', `Connect data: ${JSON.stringify(devInfo, null, 2)}`) : false;
+            const debug = this.enableDebugLog ? this.emit('debug', `Connect data: ${JSON.stringify(devInfo, null, 2)}`) : false;
             this.devInfo = devInfo;
 
             //device info
@@ -202,7 +202,7 @@ class Denon extends EventEmitter {
             //check seriaql number
             if (!serialNumber) {
                 this.emit('error', `Missing Serial Number`);
-                return;
+                return false;
             }
 
             //save device info to the file
@@ -219,6 +219,7 @@ class Denon extends EventEmitter {
             //check inputs
             if (!inputsExist) {
                 this.emit('warn', `Found: ${allInputs} inputs`);
+                return false;
             }
 
             //save inputs if exist
@@ -229,12 +230,6 @@ class Denon extends EventEmitter {
 
             //emit device info
             this.emit('deviceInfo', manufacturer, modelName, serialNumber, firmwareRevision, deviceZones, apiVersion, supportPictureMode);
-
-            //start external integration
-            this.emit('externalIntegration');
-
-            //prepare accessory
-            this.emit('prepareAccessory', allInputs);
 
             return true;
         } catch (error) {
@@ -250,7 +245,7 @@ class Denon extends EventEmitter {
             const deviceState = await this.axiosInstance(zoneStateUrl);
             const parseDeviceState = this.parseString.parse(deviceState.data);
             const devState = parseDeviceState.item;
-            const debug = this.debugLog ? this.emit('debug', `State: ${JSON.stringify(devState, null, 2)}`) : false;
+            const debug = this.enableDebugLog ? this.emit('debug', `State: ${JSON.stringify(devState, null, 2)}`) : false;
 
             //get receiver status
             const statusKeys = Object.keys(devState);
@@ -264,7 +259,7 @@ class Denon extends EventEmitter {
             const checkPictureMode = this.supportPictureMode && power && this.zone === 0;
             const devicePictureMode = checkPictureMode ? await this.axiosInstancePost(ApiUrls.AppCommand, BodyXml.GetPictureMode) : false;
             const parseDevicePictureMode = checkPictureMode ? this.parseString.parse(devicePictureMode.data) : false;
-            const debug1 = this.debugLog && checkPictureMode ? this.emit('debug', `Picture mode: ${JSON.stringify(parseDevicePictureMode, null, 2)}`) : false;
+            const debug1 = this.enableDebugLog && checkPictureMode ? this.emit('debug', `Picture mode: ${JSON.stringify(parseDevicePictureMode, null, 2)}`) : false;
             const pictureMode = checkPictureMode ? parseDevicePictureMode.rx.cmd.value : this.pictureMode;
 
             //get sound mode
@@ -272,14 +267,14 @@ class Denon extends EventEmitter {
             const checkSoundeMode = this.supportSoundMode && power && checkZone;
             const deviceSoundMode = checkSoundeMode ? await this.axiosInstancePost(ApiUrls.AppCommand, BodyXml.GetSurroundModeStatus) : false;
             const parseDeviceSoundMode = checkSoundeMode ? this.parseString.parse(deviceSoundMode.data) : false;
-            const debug2 = this.debugLog && checkSoundeMode ? this.emit('debug', `Sound mode: ${JSON.stringify(parseDeviceSoundMode, null, 2)}`) : false;
+            const debug2 = this.enableDebugLog && checkSoundeMode ? this.emit('debug', `Sound mode: ${JSON.stringify(parseDeviceSoundMode, null, 2)}`) : false;
             const soundMode = checkSoundeMode ? SOUND_MODES_CONVERSION_KEYS.includes((parseDeviceSoundMode.rx.cmd.surround).replace(/[^a-zA-Z0-9]/g, '').toUpperCase()) ? SoundModeConversion[(parseDeviceSoundMode.rx.cmd.surround).replace(/[^a-zA-Z0-9]/g, '').toUpperCase()] : (parseDeviceSoundMode.rx.cmd.surround).replace(/[^a-zA-Z0-9]/g, '').toUpperCase() : this.soundMode;
 
             //get audyssey mode
             const checkAudysseyMode = false //power && zone === 0;
             const deviceAudysseyMode = checkAudysseyMode ? await this.axiosInstancePost(ApiUrls.AppCommand, BodyXml.GetAudyssey) : false;
             const parseDeviceAudysseyMode = checkAudysseyMode ? this.parseString.parse(deviceAudysseyMode.data) : false;
-            const debug3 = this.debugLog && checkAudysseyMode ? this.emit('debug', `Audyssey mode: ${JSON.stringify(parseDeviceAudysseyMode, null, 2)}`) : false;
+            const debug3 = this.enableDebugLog && checkAudysseyMode ? this.emit('debug', `Audyssey mode: ${JSON.stringify(parseDeviceAudysseyMode, null, 2)}`) : false;
             const audysseyMode = checkAudysseyMode ? parseDeviceAudysseyMode.rx.cmd.value : this.audysseyMode;
 
             //select reference
@@ -446,7 +441,7 @@ class Denon extends EventEmitter {
                 }
                 allInputs.push(obj);
             }
-            const debug = this.debugLog ? this.emit('message', `All Inputs: ${JSON.stringify(allInputs, null, 2)}`) : false;
+            const debug = this.enableDebugLog ? this.emit('info', `All Inputs: ${JSON.stringify(allInputs, null, 2)}`) : false;
 
             return allInputs;
         } catch (error) {
@@ -458,7 +453,7 @@ class Denon extends EventEmitter {
         try {
             data = JSON.stringify(data, null, 2);
             await fsPromises.writeFile(path, data);
-            const debug = this.debugLog ? this.emit('debug', `Saved data: ${data}`) : false;
+            const debug = this.enableDebugLog ? this.emit('debug', `Saved data: ${data}`) : false;
             return true;
         } catch (error) {
             throw new Error(`Save data error: ${error}`);
