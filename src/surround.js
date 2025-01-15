@@ -248,7 +248,11 @@ class Surround extends EventEmitter {
                 });
 
             //connect to avr and check state
-            await this.denon.connect();
+            const connect = await this.denon.connect();
+
+            if (!connect) {
+                return false;
+            }
 
             //start external integrations
             const startExternalIntegrations = this.restFul.enable || this.mqtt.enable ? await this.externalIntegrations() : false;

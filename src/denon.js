@@ -218,12 +218,12 @@ class Denon extends EventEmitter {
 
             //check inputs
             if (!inputsExist) {
-                this.emit('warn', `Found: ${allInputs} inputs`);
+                this.emit('warn', `Found: 0 inputs`);
                 return false;
             }
 
             //save inputs if exist
-            const saveInputs = inputsExist ? await this.saveData(this.inputsFile, allInputs) : false;
+            await this.saveData(this.inputsFile, allInputs);
 
             //connect to deice success
             this.emit('success', `Connect Success`)
