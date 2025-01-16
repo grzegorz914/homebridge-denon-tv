@@ -213,13 +213,34 @@ class Denon extends EventEmitter {
             const deviceInputsOldAvr = this.generation === 0 && inputFuncListExistOldAvr ? devInfo.InputFuncList.value : [];
             const deviceInputsNewAvr = supportInputSource ? zoneCapabilities.InputSource.List.Source : [];
             const deviceInputs = this.getInputsFromDevice ? [deviceInputsOldAvr, deviceInputsNewAvr, deviceInputsNewAvr][this.generation] : this.inputs;
-            const allInputs = await this.getInputs(devInfo, this.generation, this.zone, deviceInputs, zoneCapabilities, this.getInputsFromDevice, this.getFavoritesFromDevice, this.getQuickSmartSelectFromDevice, supportFavorites, supportShortcut, supportQuickSmartSelect);
+            let allInputs = await this.getInputs(devInfo, this.generation, this.zone, deviceInputs, zoneCapabilities, this.getInputsFromDevice, this.getFavoritesFromDevice, this.getQuickSmartSelectFromDevice, supportFavorites, supportShortcut, supportQuickSmartSelect);
             const inputsExist = allInputs.length > 0;
 
             //check inputs
             if (!inputsExist) {
-                this.emit('warn', `Found: 0 inputs`);
-                return false;
+                this.emit('warn', `Found: 0 inputs, adding 1 default input`);
+                let inputMode = 'SI';
+                switch (this.zone) {
+                    case 0:
+                        inputMode = 'SI';
+                        break;
+                    case 1:
+                        inputMode = 'Z2';
+                        break;
+                    case 2:
+                        inputMode = 'Z3';
+                        break;
+                    case 3:
+                        inputMode = 'MS';
+                        break;
+                }
+                allInputs = [
+                    {
+                        name: "CBL/SAT",
+                        reference: "SAT/CBL",
+                        mode: inputMode
+                    }
+                ]
             }
 
             //save inputs if exist
