@@ -199,8 +199,11 @@ class Zone3 extends EventEmitter {
                     .on('debug', (debug) => {
                         this.emit('debug', debug);
                     })
+                    .on('warn', (warn) => {
+                        this.emit('warn', warn);
+                    })
                     .on('error', (error) => {
-                        this.emit('warn', error);
+                        this.emit('error', error);
                     });
             }
 
@@ -234,8 +237,11 @@ class Zone3 extends EventEmitter {
                     .on('debug', (debug) => {
                         this.emit('debug', debug);
                     })
+                    .on('warn', (warn) => {
+                        this.emit('warn', warn);
+                    })
                     .on('error', (error) => {
-                        this.emit('warn', error);
+                        this.emit('error', error);
                     });
             };
 
@@ -935,10 +941,10 @@ class Zone3 extends EventEmitter {
                 .on('debug', (debug) => {
                     this.emit('debug', debug);
                 })
-                .on('warn', async (warn) => {
+                .on('warn', (warn) => {
                     this.emit('warn', warn);
                 })
-                .on('error', async (error) => {
+                .on('error', (error) => {
                     this.emit('error', error);
                 })
                 .on('restFul', (path, data) => {
