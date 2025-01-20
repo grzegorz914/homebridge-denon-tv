@@ -300,7 +300,7 @@ class MainZone extends EventEmitter {
     }
 
     async scaleValue(value, oldMin, oldMax, newMin, newMax) {
-        const scaledValue = parseFloat((((Math.max(oldMin, Math.min(oldMax, value)) - oldMin) * (newMax - newMin)) / (oldMax - oldMin) + newMin).toFixed(1));
+        const scaledValue = parseFloat((((Math.max(oldMin, Math.min(oldMax, value)) - oldMin) * (newMax - newMin)) / (oldMax - oldMin) + newMin).toFixed(0));
         return scaledValue;
     }
 
@@ -923,7 +923,7 @@ class MainZone extends EventEmitter {
                 .on('stateChanged', async (power, reference, volume, volumeControlType, mute, pictureMode) => {
                     const input = this.inputsConfigured.find(input => input.reference === reference) ?? false;
                     const inputIdentifier = input ? input.identifier : this.inputIdentifier;
-                    volume = await this.scaleValue(volume, -80, 0, 0, 100);
+                    const scaledVolume = await this.scaleValue(volume, -80, 0, 0, 100);
                     mute = power ? mute : true;
                     const pictureModeHomeKit = PictureModesConversionToHomeKit[pictureMode] ?? this.pictureMode;
 
@@ -937,18 +937,18 @@ class MainZone extends EventEmitter {
                     if (this.speakerService) {
                         this.speakerService
                             .updateCharacteristic(Characteristic.Active, power ? 1 : 0)
-                            .updateCharacteristic(Characteristic.Volume, volume)
+                            .updateCharacteristic(Characteristic.Volume, scaledVolume)
                             .updateCharacteristic(Characteristic.Mute, mute);
 
                         if (this.volumeService) {
                             this.volumeService
-                                .updateCharacteristic(Characteristic.Brightness, volume)
+                                .updateCharacteristic(Characteristic.Brightness, scaledVolume)
                                 .updateCharacteristic(Characteristic.On, !mute);
                         }
 
                         if (this.volumeServiceFan) {
                             this.volumeServiceFan
-                                .updateCharacteristic(Characteristic.RotationSpeed, volume)
+                                .updateCharacteristic(Characteristic.RotationSpeed, scaledVolume)
                                 .updateCharacteristic(Characteristic.On, !mute);
                         }
                     }
@@ -959,14 +959,12 @@ class MainZone extends EventEmitter {
                             .updateCharacteristic(Characteristic.ContactSensorState, power)
                     }
 
-                    if (volume !== this.volume) {
+                    if (this.sensorVolumeService && scaledVolume !== this.volume) {
                         for (let i = 0; i < 2; i++) {
                             const state = power ? [true, false][i] : false;
-                            if (this.sensorVolumeService) {
-                                this.sensorVolumeService
-                                    .updateCharacteristic(Characteristic.ContactSensorState, state)
-                                this.sensorVolumeState = state;
-                            }
+                            this.sensorVolumeService
+                                .updateCharacteristic(Characteristic.ContactSensorState, state)
+                            this.sensorVolumeState = state;
                         }
                     }
 
@@ -976,14 +974,12 @@ class MainZone extends EventEmitter {
                             .updateCharacteristic(Characteristic.ContactSensorState, state)
                     }
 
-                    if (reference !== this.reference) {
+                    if (this.sensorInputService && reference !== this.reference) {
                         for (let i = 0; i < 2; i++) {
                             const state = power ? [true, false][i] : false;
-                            if (this.sensorInputService) {
-                                this.sensorInputService
-                                    .updateCharacteristic(Characteristic.ContactSensorState, state)
-                                this.sensorInputState = state;
-                            }
+                            this.sensorInputService
+                                .updateCharacteristic(Characteristic.ContactSensorState, state)
+                            this.sensorInputState = state;
                         }
                     }
 
@@ -1016,7 +1012,7 @@ class MainZone extends EventEmitter {
                     this.inputIdentifier = inputIdentifier;
                     this.power = power;
                     this.reference = reference;
-                    this.volume = volume;
+                    this.volume = scaledVolume;
                     this.mute = mute;
                     this.volumeControlType = volumeControlType;
                     this.pictureMode = pictureModeHomeKit;
