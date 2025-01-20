@@ -482,7 +482,7 @@ class Zone2 extends EventEmitter {
                 })
                 .onSet(async (value) => {
                     try {
-                        value = await this.scaleValue(value, 0, 100, 0, 80);
+                        value = await this.scaleValue(value, 0, this.volumeMax, 0, 80);
                         value = value < 10 ? `0${value}` : value;
                         const volume = this.masterVolume ? `MV${value}` : `Z2${value}`;
                         await this.denon.send(volume);
@@ -835,7 +835,7 @@ class Zone2 extends EventEmitter {
                 .on('stateChanged', async (power, reference, volume, volumeControlType, mute, pictureMode) => {
                     const input = this.inputsConfigured.find(input => input.reference === reference) ?? false;
                     const inputIdentifier = input ? input.identifier : this.inputIdentifier;
-                    const scaledVolume = await this.scaleValue(volume, -80, 0, 0, 100);
+                    const scaledVolume = await this.scaleValue(volume, -80, 0, 0, this.volumeMax);
                     mute = power ? mute : true;
                     const pictureModeHomeKit = PictureModesConversionToHomeKit[pictureMode] ?? this.pictureMode;
 
