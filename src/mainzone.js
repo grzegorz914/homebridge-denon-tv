@@ -299,6 +299,11 @@ class MainZone extends EventEmitter {
         }
     }
 
+    async scaleValue(value, oldMin, oldMax, newMin, newMax) {
+        const scaledValue = parseFloat((((Math.max(oldMin, Math.min(oldMax, value)) - oldMin) * (newMax - newMin)) / (oldMax - oldMin) + newMin).toFixed(1));
+        return scaledValue;
+    }
+
     //prepare accessory
     async prepareAccessory() {
         try {
@@ -554,10 +559,11 @@ class MainZone extends EventEmitter {
                 })
                 .onSet(async (value) => {
                     try {
+                        value = await this.scaleValue(value, 0, 100, 0, 80);
                         value = value < 10 ? `0${value}` : value;
                         const volume = `MV${value}`;
                         await this.denon.send(volume);
-                        const info = this.disableLogInfo ? false : this.emit('info', `set Volume: ${value - 80}`);
+                        const info = this.disableLogInfo ? false : this.emit('info', `set Volume: -${value}dB`);
                     } catch (error) {
                         this.emit('warn', `set Volume error: ${error}`);
                     };
@@ -914,9 +920,10 @@ class MainZone extends EventEmitter {
                 this.firmwareRevision = firmwareRevision;
                 this.supportPictureMode = supportPictureMode;
             })
-                .on('stateChanged', (power, reference, volume, volumeControlType, mute, pictureMode) => {
+                .on('stateChanged', async (power, reference, volume, volumeControlType, mute, pictureMode) => {
                     const input = this.inputsConfigured.find(input => input.reference === reference) ?? false;
                     const inputIdentifier = input ? input.identifier : this.inputIdentifier;
+                    volume = await this.scaleValue(volume, -80, 0, 0, 100);
                     mute = power ? mute : true;
                     const pictureModeHomeKit = PictureModesConversionToHomeKit[pictureMode] ?? this.pictureMode;
 
@@ -1019,7 +1026,7 @@ class MainZone extends EventEmitter {
                         this.emit('info', `Power: ${power ? 'ON' : 'OFF'}`);
                         this.emit('info', `Input Name: ${name}`);
                         this.emit('info', `Reference: ${reference}`);
-                        this.emit('info', `Volume: ${volume - 80}dB`);
+                        this.emit('info', `Volume: ${volume}dB`);
                         this.emit('info', `Mute: ${mute ? 'ON' : 'OFF'}`);
                         this.emit('info', `Volume Control Type: ${volumeControlType}`);
                         this.emit('info', `Picture Mode: ${PictureModesDenonNumber[pictureMode]}`);
