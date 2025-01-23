@@ -107,7 +107,7 @@ class Zone3 extends EventEmitter {
         this.power = false;
         this.reference = '';
         this.volume = 0;
-        this.volumeControlType = 'Absolute';
+        this.volumeDisplay = 'Relative';
         this.mute = true;
         this.mediaState = false;
         this.supportPictureMode = false;
@@ -447,8 +447,7 @@ class Zone3 extends EventEmitter {
                 .onSet(async (state) => {
                 });
             this.speakerService.getCharacteristic(Characteristic.VolumeControlType)
-                .onGet(async () => {
-                    const controlType = this.volumeControlType === 'Relative' ? 1 : 3; //none, relative, relative with current, absolute
+                .onGet(async () => {//none, relative, relative with current, absolute
                     const state = 3;
                     return state;
                 })
@@ -482,7 +481,7 @@ class Zone3 extends EventEmitter {
                 })
                 .onSet(async (value) => {
                     try {
-                        value = await this.scaleValue(value, 0, this.volumeMax, 0, 80);
+                        value = await this.scaleValue(value, 0, this.volumeMax, 0, 98);
                         value = value < 10 ? `0${value}` : value;
                         const volume = this.masterVolume ? `MV${value}` : `Z3${value}`;
                         await this.denon.send(volume);
@@ -831,10 +830,10 @@ class Zone3 extends EventEmitter {
                 this.firmwareRevision = firmwareRevision;
                 this.supportPictureMode = supportPictureMode;
             })
-                .on('stateChanged', async (power, reference, volume, volumeControlType, mute, pictureMode) => {
+                .on('stateChanged', async (power, reference, volume, volumeDisplay, mute, pictureMode) => {
                     const input = this.inputsConfigured.find(input => input.reference === reference) ?? false;
                     const inputIdentifier = input ? input.identifier : this.inputIdentifier;
-                    const scaledVolume = await this.scaleValue(volume, -80, 0, 0, this.volumeMax);
+                    const scaledVolume = await this.scaleValue(volume, volumeDisplay === 'Relative' ? -80 : 0, volumeDisplay === 'Relative' ? 18 : 98, 0, this.volumeMax);
                     mute = power ? mute : true;
                     const pictureModeHomeKit = PictureModesConversionToHomeKit[pictureMode] ?? this.pictureMode;
 
@@ -925,7 +924,7 @@ class Zone3 extends EventEmitter {
                     this.reference = reference;
                     this.volume = scaledVolume;
                     this.mute = mute;
-                    this.volumeControlType = volumeControlType;
+                    this.volumeDisplay = volumeDisplay;
                     this.pictureMode = pictureModeHomeKit;
 
                     if (!this.disableLogInfo) {
@@ -933,9 +932,9 @@ class Zone3 extends EventEmitter {
                         this.emit('info', `Power: ${power ? 'ON' : 'OFF'}`);
                         this.emit('info', `Input Name: ${name}`);
                         this.emit('info', `Reference: ${reference}`);
-                        this.emit('info', `Volume: ${volume}dB`);
+                        this.emit('info', `Volume: ${volume}${volumeDisplay === 'Relative' ? 'dB' : '%'}`);
                         this.emit('info', `Mute: ${mute ? 'ON' : 'OFF'}`);
-                        this.emit('info', `Volume Control Type: ${volumeControlType}`);
+                        this.emit('info', `Volume Display: ${volumeDisplay}`);
                         this.emit('info', `Picture Mode: ${PictureModesDenonNumber[pictureMode]}`);
                     };
                 })
