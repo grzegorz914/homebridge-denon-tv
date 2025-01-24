@@ -481,7 +481,7 @@ class Zone3 extends EventEmitter {
                 })
                 .onSet(async (value) => {
                     try {
-                        value = await this.scaleValue(value, 0, this.volumeMax, 0, 98);
+                        value = await this.scaleValue(value, 0, 100, 0, 98);
                         value = value < 10 ? `0${value}` : value;
                         const volume = this.masterVolume ? `MV${value}` : `Z3${value}`;
                         await this.denon.send(volume);
