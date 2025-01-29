@@ -105,7 +105,7 @@ class DenonPlatform {
 									const emitLog = !enableDebugMode ? false : log.info(`Device: ${host} ${deviceName}, debug: ${debug}.`);
 								})
 								.on('warn', (warn) => {
-									const lemitLogog = disableLogWarn ? false : log.warn(`Device: ${host} ${deviceName}, ${warn}.`);
+									const emitLog = disableLogWarn ? false : log.warn(`Device: ${host} ${deviceName}, ${warn}.`);
 								})
 								.on('error', (error) => {
 									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${deviceName}, ${error}.`);
@@ -116,7 +116,7 @@ class DenonPlatform {
 							impulseGenerator.on('start', async () => {
 								try {
 									const startDone = await mainZone.start();
-									const stopImpulseGenerator = startDone ? impulseGenerator.stop() : false;
+									const stopImpulseGenerator = startDone ? await impulseGenerator.stop() : false;
 								} catch (error) {
 									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${deviceName}, ${error}, trying again.`);
 								};
@@ -125,7 +125,7 @@ class DenonPlatform {
 							});
 
 							//start impulse generator
-							impulseGenerator.start([{ name: 'start', sampling: 45000 }]);
+							await impulseGenerator.start([{ name: 'start', sampling: 45000 }]);
 						} catch (error) {
 							throw new Error(`Device: ${host} ${deviceName}, Did finish launching error: ${error}.`);
 						}
@@ -150,7 +150,7 @@ class DenonPlatform {
 									const emitLog = !enableDebugMode ? false : log.info(`Device: ${host} ${deviceName}, debug: ${debug}.`);
 								})
 								.on('warn', (warn) => {
-									const lemitLogog = disableLogWarn ? false : log.warn(`Device: ${host} ${deviceName}, ${warn}.`);
+									const emitLog = disableLogWarn ? false : log.warn(`Device: ${host} ${deviceName}, ${warn}.`);
 								})
 								.on('error', (error) => {
 									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${deviceName}, ${error}.`);
@@ -161,7 +161,7 @@ class DenonPlatform {
 							impulseGenerator.on('start', async () => {
 								try {
 									const startDone = await zone2.start();
-									const stopImpulseGenerator = startDone ? impulseGenerator.stop() : false;
+									const stopImpulseGenerator = startDone ? await impulseGenerator.stop() : false;
 								} catch (error) {
 									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${deviceName}, ${error}, trying again.`);
 								};
@@ -170,7 +170,7 @@ class DenonPlatform {
 							});
 
 							//start impulse generator
-							impulseGenerator.start([{ name: 'start', sampling: 45000 }]);
+							await impulseGenerator.start([{ name: 'start', sampling: 45000 }]);
 						} catch (error) {
 							throw new Error(`Device: ${host} ${deviceName}, Did finish launching error: ${error}.`);
 						}
@@ -195,7 +195,7 @@ class DenonPlatform {
 									const emitLog = !enableDebugMode ? false : log.info(`Device: ${host} ${deviceName}, debug: ${debug}.`);
 								})
 								.on('warn', (warn) => {
-									const lemitLogog = disableLogWarn ? false : log.warn(`Device: ${host} ${deviceName}, ${warn}.`);
+									const emitLog = disableLogWarn ? false : log.warn(`Device: ${host} ${deviceName}, ${warn}.`);
 								})
 								.on('error', (error) => {
 									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${deviceName}, ${error}.`);
@@ -206,7 +206,7 @@ class DenonPlatform {
 							impulseGenerator.on('start', async () => {
 								try {
 									const startDone = await zone3.start();
-									const stopImpulseGenerator = startDone ? impulseGenerator.stop() : false;
+									const stopImpulseGenerator = startDone ? await impulseGenerator.stop() : false;
 								} catch (error) {
 									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${deviceName}, ${error}, trying again.`);
 								};
@@ -215,7 +215,7 @@ class DenonPlatform {
 							});
 
 							//start impulse generator
-							impulseGenerator.start([{ name: 'start', sampling: 45000 }]);
+							await impulseGenerator.start([{ name: 'start', sampling: 45000 }]);
 						} catch (error) {
 							throw new Error(`Device: ${host} ${deviceName}, Did finish launching error: ${error}.`);
 						}
@@ -240,7 +240,7 @@ class DenonPlatform {
 									const emitLog = !enableDebugMode ? false : log.info(`Device: ${host} ${deviceName}, debug: ${debug}.`);
 								})
 								.on('warn', (warn) => {
-									const lemitLogog = disableLogWarn ? false : log.warn(`Device: ${host} ${deviceName}, ${warn}.`);
+									const emitLog = disableLogWarn ? false : log.warn(`Device: ${host} ${deviceName}, ${warn}.`);
 								})
 								.on('error', (error) => {
 									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${deviceName}, ${error}.`);
@@ -251,7 +251,7 @@ class DenonPlatform {
 							impulseGenerator.on('start', async () => {
 								try {
 									const startDone = await surround.start();
-									const stopImpulseGenerator = startDone ? impulseGenerator.stop() : false;
+									const stopImpulseGenerator = startDone ? await impulseGenerator.stop() : false;
 								} catch (error) {
 									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${deviceName}, ${error}, trying again.`);
 								};
@@ -260,13 +260,13 @@ class DenonPlatform {
 							});
 
 							//start impulse generator
-							impulseGenerator.start([{ name: 'start', sampling: 45000 }]);
+							await impulseGenerator.start([{ name: 'start', sampling: 45000 }]);
 						} catch (error) {
 							throw new Error(`Device: ${host} ${deviceName}, Did finish launching error: ${error}.`);
 						}
 						break;
 					default:
-						const lemitLogog = disableLogWarn ? false : log.warn(`Device: ${host} ${deviceName}, unknown zone: ${zoneControl}.`);
+						const emitLog = disableLogWarn ? false : log.warn(`Device: ${host} ${deviceName}, unknown zone: ${zoneControl}.`);
 						break;
 				}
 				await new Promise(resolve => setTimeout(resolve, 500));
