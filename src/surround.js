@@ -88,7 +88,7 @@ class Surround extends EventEmitter {
         this.power = false;
         this.reference = '';
         this.volume = 0;
-        this.volumeDisplay = 'Relative';
+        this.volumeDisplay = false;
         this.mute = true;
         this.mediaState = false;
         this.supportPictureMode = false;
@@ -477,9 +477,9 @@ class Surround extends EventEmitter {
                 })
                 .onSet(async (value) => {
                     try {
-                        value = await this.scaleValue(value, 0, 100, 0, this.volumeMax -2);
-                        value = value < 10 ? `0${value}` : value;
-                        const volume = `MV${value}`;
+                        let scaledValue = await this.scaleValue(value, 0, 100, 0, this.volumeMax >= 2 ? this.volumeMax - 2 : this.volumeMax);
+                        scaledValue = scaledValue < 10 ? `0${scaledValue}` : scaledValue;
+                        const volume = `MV${scaledValue}`;
                         await this.denon.send(volume);
                         const info = this.disableLogInfo ? false : this.emit('info', `set Volume: -${value}%`);
                     } catch (error) {
@@ -775,7 +775,7 @@ class Surround extends EventEmitter {
                 .on('stateChanged', async (power, reference, volume, volumeDisplay, mute, pictureMode) => {
                     const input = this.inputsConfigured.find(input => input.reference === reference) ?? false;
                     const inputIdentifier = input ? input.identifier : this.inputIdentifier;
-                    const scaledVolume = await this.scaleValue(volume, volumeDisplay === 'Relative' ? -80 : 0, volumeDisplay === 'Relative' ? 18 : 98, 0, 100);
+                    const scaledVolume = await this.scaleValue(volume, -80, 18, 0, 100);
                     mute = power ? mute : true;
                     const pictureModeHomeKit = PictureModesConversionToHomeKit[pictureMode] ?? this.pictureMode;
 
@@ -864,8 +864,8 @@ class Surround extends EventEmitter {
                         this.emit('info', `Surround Name: ${name}`);
                         this.emit('info', `Reference: ${reference}`);
                         this.emit('info', `Mute: ${mute ? 'ON' : 'OFF'}`);
-                        this.emit('info', `Volume: ${volume}${volumeDisplay === 'Relative' ? 'dB' : '%'}`);
-                        this.emit('info', `Volume Display: ${volumeDisplay}`);
+                        this.emit('info', `Volume: ${volumeDisplay !== 'Absolute' ? volume : scaledVolume}${volumeDisplay !== 'Absolute' ? 'dB' : '%'}`);
+                        const emitInfo1 = volumeDisplay === false ? false : this.emit('info', `Volume Display: ${volumeDisplay}`);
                         this.emit('info', `Picture Mode: ${PictureModesDenonNumber[pictureMode]}`);
                     };
                 })
