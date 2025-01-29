@@ -11,6 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - after update to 4.7.x buttons, sensors, volume display type need to be configure again using config UI
 - after update to 3.15.x need remove the accessory frome Home app and add it again
 
+## [5.3.8] - (29.01.2025)
+
+## Changes
+
+- added volume scale based on selected Volume Display Type (Relative/Absolute)
+- again fix [#308](https://github.com/grzegorz914/homebridge-denon-tv/issues/308)
+
 ## [5.3.5] - (20.01.2025)
 
 ## Changes

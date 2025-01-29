@@ -299,8 +299,8 @@ class MainZone extends EventEmitter {
         }
     }
 
-    async scaleValue(value, oldMin, oldMax, newMin, newMax) {
-        const scaledValue = parseFloat((((Math.max(oldMin, Math.min(oldMax, value)) - oldMin) * (newMax - newMin)) / (oldMax - oldMin) + newMin).toFixed(0));
+    async scaleValue(value, inMin, inMax, outMin, outMax) {
+        const scaledValue = parseFloat((((Math.max(inMin, Math.min(inMax, value)) - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin).toFixed(0));
         return scaledValue;
     }
 
@@ -548,17 +548,13 @@ class MainZone extends EventEmitter {
                 });
 
             this.speakerService.getCharacteristic(Characteristic.Volume)
-                .setProps({
-                    minValue: 0,
-                    maxValue: this.volumeMax
-                })
                 .onGet(async () => {
                     const volume = this.volume;
                     return volume;
                 })
                 .onSet(async (value) => {
                     try {
-                        value = await this.scaleValue(value, 0, 100, 0, 98);
+                        value = await this.scaleValue(value, 0, 100, 0, this.volumeMax -2);
                         value = value < 10 ? `0${value}` : value;
                         const volume = `MV${value}`;
                         await this.denon.send(volume);
@@ -675,10 +671,6 @@ class MainZone extends EventEmitter {
                     this.volumeService.addOptionalCharacteristic(Characteristic.ConfiguredName);
                     this.volumeService.setCharacteristic(Characteristic.ConfiguredName, `${volumeServiceName}`);
                     this.volumeService.getCharacteristic(Characteristic.Brightness)
-                        .setProps({
-                            minValue: 0,
-                            maxValue: this.volumeMax
-                        })
                         .onGet(async () => {
                             const volume = this.volume;
                             return volume;
@@ -703,10 +695,6 @@ class MainZone extends EventEmitter {
                     this.volumeServiceFan.addOptionalCharacteristic(Characteristic.ConfiguredName);
                     this.volumeServiceFan.setCharacteristic(Characteristic.ConfiguredName, `${volumeServiceName}`);
                     this.volumeServiceFan.getCharacteristic(Characteristic.RotationSpeed)
-                        .setProps({
-                            minValue: 0,
-                            maxValue: this.volumeMax
-                        })
                         .onGet(async () => {
                             const volume = this.volume;
                             return volume;
@@ -922,7 +910,7 @@ class MainZone extends EventEmitter {
                 .on('stateChanged', async (power, reference, volume, volumeDisplay, mute, pictureMode) => {
                     const input = this.inputsConfigured.find(input => input.reference === reference) ?? false;
                     const inputIdentifier = input ? input.identifier : this.inputIdentifier;
-                    const scaledVolume = await this.scaleValue(volume, volumeDisplay === 'Relative' ? -80 : 0, volumeDisplay === 'Relative' ? 18 : 98, 0, this.volumeMax);
+                    const scaledVolume = await this.scaleValue(volume, volumeDisplay === 'Relative' ? -80 : 0, volumeDisplay === 'Relative' ? 18 : 98, 0, 100);
                     mute = power ? mute : true;
                     const pictureModeHomeKit = PictureModesConversionToHomeKit[pictureMode] ?? this.pictureMode;
 
@@ -1021,9 +1009,9 @@ class MainZone extends EventEmitter {
                         this.emit('info', `Power: ${power ? 'ON' : 'OFF'}`);
                         this.emit('info', `Input Name: ${name}`);
                         this.emit('info', `Reference: ${reference}`);
-                        this.emit('info', `Volume: ${volume}${volumeDisplay === 'Relative' ? 'dB' : '%'}`);
                         this.emit('info', `Mute: ${mute ? 'ON' : 'OFF'}`);
-                        this.emit('info', `Volume Display Type: ${volumeDisplayType}`);
+                        this.emit('info', `Volume: ${volume}${volumeDisplay === 'Relative' ? 'dB' : '%'}`);
+                        this.emit('info', `Volume Display: ${volumeDisplay}`);
                         this.emit('info', `Picture Mode: ${PictureModesDenonNumber[pictureMode]}`);
                     };
                 })
