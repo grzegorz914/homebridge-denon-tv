@@ -554,11 +554,11 @@ class MainZone extends EventEmitter {
                 })
                 .onSet(async (value) => {
                     try {
-                        value = await this.scaleValue(value, 0, 100, 0, this.volumeMax -2);
+                        value = await this.scaleValue(value, 0, 100, 0, this.volumeMax - 2);
                         value = value < 10 ? `0${value}` : value;
                         const volume = `MV${value}`;
                         await this.denon.send(volume);
-                        const info = this.disableLogInfo ? false : this.emit('info', `set Volume: -${value}dB`);
+                        const info = this.disableLogInfo ? false : this.emit('info', `set Volume: -${value}%`);
                     } catch (error) {
                         this.emit('warn', `set Volume error: ${error}`);
                     };
@@ -675,8 +675,8 @@ class MainZone extends EventEmitter {
                             const volume = this.volume;
                             return volume;
                         })
-                        .onSet(async (volume) => {
-                            this.speakerService.setCharacteristic(Characteristic.Volume, volume);
+                        .onSet(async (value) => {
+                            this.speakerService.setCharacteristic(Characteristic.Volume, value);
                         });
                     this.volumeService.getCharacteristic(Characteristic.On)
                         .onGet(async () => {
@@ -699,8 +699,8 @@ class MainZone extends EventEmitter {
                             const volume = this.volume;
                             return volume;
                         })
-                        .onSet(async (volume) => {
-                            this.speakerService.setCharacteristic(Characteristic.Volume, volume);
+                        .onSet(async (value) => {
+                            this.speakerService.setCharacteristic(Characteristic.Volume, value);
                         });
                     this.volumeServiceFan.getCharacteristic(Characteristic.On)
                         .onGet(async () => {

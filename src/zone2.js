@@ -481,7 +481,7 @@ class Zone2 extends EventEmitter {
                         value = value < 10 ? `0${value}` : value;
                         const volume = this.masterVolume ? `MV${value}` : `Z2${value}`;
                         await this.denon.send(volume);
-                        const info = this.disableLogInfo ? false : this.emit('info', `set Volume: -${value}dB`);
+                        const info = this.disableLogInfo ? false : this.emit('info', `set Volume: -${value}%`);
                     } catch (error) {
                         this.emit('warn', `set Volume error: ${error}`);
                     };
@@ -599,8 +599,8 @@ class Zone2 extends EventEmitter {
                             const volume = this.volume;
                             return volume;
                         })
-                        .onSet(async (volume) => {
-                            this.speakerService.setCharacteristic(Characteristic.Volume, volume);
+                        .onSet(async (value) => {
+                            this.speakerService.setCharacteristic(Characteristic.Volume, value);
                         });
                     this.volumeService.getCharacteristic(Characteristic.On)
                         .onGet(async () => {
@@ -623,8 +623,8 @@ class Zone2 extends EventEmitter {
                             const volume = this.volume;
                             return volume;
                         })
-                        .onSet(async (volume) => {
-                            this.speakerService.setCharacteristic(Characteristic.Volume, volume);
+                        .onSet(async (value) => {
+                            this.speakerService.setCharacteristic(Characteristic.Volume, value);
                         });
                     this.volumeServiceFan.getCharacteristic(Characteristic.On)
                         .onGet(async () => {
