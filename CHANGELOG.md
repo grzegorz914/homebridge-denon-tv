@@ -48,7 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Changes
 
 - added possibility to disable/enable log success, info, warn, error
-- refactor cnnrct code
+- refactor cnnect code
 - bump dependencies
 - config schema updated
 - redme updated
