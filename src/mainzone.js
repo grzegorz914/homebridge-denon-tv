@@ -863,7 +863,7 @@ class MainZone extends EventEmitter {
             };
 
             //sort inputs list
-            const sortInputsDisplayOrder = this.televisionService ? await this.displayOrder() : false;
+            await this.displayOrder();
 
             return accessory;
         } catch (error) {
