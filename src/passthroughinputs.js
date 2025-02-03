@@ -61,20 +61,12 @@ class MainZone extends EventEmitter {
             };
         }
         this.sensorsInputsConfiguredCount = this.sensorsInputsConfigured.length || 0;
-        this.sensorVolumeState = false;
         this.sensorInputState = false;
 
         //state variable
         this.startPrepareAccessory = true;
         this.power = false;
         this.reference = '';
-        this.volume = 0;
-        this.volumeDisplay = false;
-        this.mute = true;
-        this.mediaState = false;
-        this.supportPictureMode = false;
-        this.pictureMode = 0;
-        this.brightness = 0;
         this.inputsNamesFile = inputsNamesFile;
         this.inputsTargetVisibilityFile = inputsTargetVisibilityFile;
     };

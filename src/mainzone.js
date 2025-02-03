@@ -558,7 +558,7 @@ class MainZone extends EventEmitter {
                         scaledValue = scaledValue < 10 ? `0${scaledValue}` : scaledValue;
                         const volume = `MV${scaledValue}`;
                         await this.denon.send(volume);
-                        const info = this.disableLogInfo ? false : this.emit('info', `set Volume: -${value}%`);
+                        const info = this.disableLogInfo ? false : this.emit('info', `set Volume: ${value}%`);
                     } catch (error) {
                         this.emit('warn', `set Volume error: ${error}`);
                     };

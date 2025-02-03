@@ -149,7 +149,7 @@
                     "enableDebugMode": false,
                     "restFul": {
                         "enable": false,
-                        "port": 3000,
+                        "port": 3001,
                         "debug": false
                     },
                     "mqtt": {
@@ -219,7 +219,7 @@
                     "enableDebugMode": false,
                     "restFul": {
                         "enable": false,
-                        "port": 3000,
+                        "port": 3002,
                         "debug": false
                     },
                     "mqtt": {
