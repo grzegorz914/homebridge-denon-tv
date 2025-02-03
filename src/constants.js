@@ -476,6 +476,54 @@ export const SoundModeConversion = {
     "RIGHT": "RIGHT"
 };
 
+export const PassThroughInputs = [
+    {
+        'name': "TV AUDIO",
+        'reference': "TV",
+        'mode': "SI"
+    },
+    {
+        'name': "CD Player",
+        'reference': "CD",
+        'mode': "SI"
+    },
+    {
+        'name': "DVD Player",
+        'reference': "DVD",
+        'mode': "SI"
+    },
+    {
+        'name': "Media Player",
+        'reference': "MPLAY",
+        'mode': "SI"
+    },
+    {
+        'name': "Blu-ray",
+        'reference': "BD",
+        'mode': "SI"
+    },
+    {
+        'name': "CBL/SAT",
+        'reference': "SAT/CBL",
+        'mode': "SI"
+    },
+    {
+        'name': "Game",
+        'reference': "GAME",
+        'mode': "SI"
+    },
+    {
+        'name': "AUX",
+        'reference': "AUX1",
+        'mode': "SI"
+    },
+    {
+        'name': "Input 8K",
+        'reference': "8K",
+        'mode': "SI"
+    }
+];
+
 export const InputConversion = {
     "TV AUDIO": "TV",
     "iPod/USB": "USB/IPOD",

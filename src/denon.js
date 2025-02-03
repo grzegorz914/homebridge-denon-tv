@@ -153,7 +153,7 @@ class Denon extends EventEmitter {
             const supportFavoriteStation = capabilitiesOperationSupport & capabilitiesOperationKeys.includes('FavoriteStation') ? capabilitiesOperation.FavoriteStation.Control === 1 : false;
 
             //zone capabilities
-            const zoneCapabilitiesSupport = this.zone <= 2 ? deviceInfoKeys.includes('DeviceZoneCapabilities') : false;
+            const zoneCapabilitiesSupport = this.zone < 3 ? deviceInfoKeys.includes('DeviceZoneCapabilities') : false;
             const zoneCapabilities = zoneCapabilitiesSupport ? Array.isArray(devInfo.DeviceZoneCapabilities) ? devInfo.DeviceZoneCapabilities[this.zone] : [devInfo.DeviceZoneCapabilities][0] : [];
             const zoneCapabilitiesKeys = zoneCapabilitiesSupport ? Object.keys(zoneCapabilities) : [];
 
@@ -233,6 +233,9 @@ class Denon extends EventEmitter {
                     case 3:
                         inputMode = 'MS';
                         break;
+                    case 4:
+                        inputMode = 'SI';
+                        break;
                 }
                 allInputs = [
                     {
@@ -262,7 +265,7 @@ class Denon extends EventEmitter {
     async checkState() {
         try {
             //get zones status
-            const zoneStateUrl = [ApiUrls.MainZoneStatusLite, ApiUrls.Zone2StatusLite, ApiUrls.Zone3StatusLite, ApiUrls.SoundModeStatus][this.zone];
+            const zoneStateUrl = [ApiUrls.MainZoneStatusLite, ApiUrls.Zone2StatusLite, ApiUrls.Zone3StatusLite, ApiUrls.SoundModeStatus, ApiUrls.MainZoneStatusLite][this.zone];
             const deviceState = await this.axiosInstance(zoneStateUrl);
             const parseDeviceState = this.parseString.parse(deviceState.data);
             const devState = parseDeviceState.item;
@@ -299,19 +302,19 @@ class Denon extends EventEmitter {
             const audysseyMode = checkAudysseyMode ? parseDeviceAudysseyMode.rx.cmd.value : this.audysseyMode;
 
             //select reference
-            const reference = [input, input, input, soundMode][this.zone];
+            const reference = [input, input, input, soundMode, input][this.zone];
 
             //restFul
-            this.emit('restFul', 'info', this.devInfo);
-            this.emit('restFul', 'state', devState);
-            const restFul1 = checkPictureMode ? this.emit('restFul', 'picture', { 'Picture Mode': PictureModesDenonNumber[pictureMode] }) : false;
-            const restFul2 = checkSoundeMode ? this.emit('restFul', 'surround', { 'Sound Mode': soundMode }) : false;
+            const restFul = this.zone < 3 ? this.emit('restFul', 'info', this.devInfo) : false;
+            const restFul1 = this.zone < 3 ? this.emit('restFul', 'state', devState) : false;
+            const restFul2 = this.zone < 3 && checkPictureMode ? this.emit('restFul', 'picture', { 'Picture Mode': PictureModesDenonNumber[pictureMode] }) : false;
+            const restFul3 = this.zone < 3 && checkSoundeMode ? this.emit('restFul', 'surround', { 'Sound Mode': soundMode }) : false;
 
             //mqtt
-            this.emit('mqtt', 'Info', this.devInfo);
-            this.emit('mqtt', 'State', devState);
-            const mqtt2 = checkPictureMode ? this.emit('mqtt', 'Picture', { 'Picture Mode': PictureModesDenonNumber[pictureMode] }) : false;
-            const mqtt3 = checkSoundeMode ? this.emit('mqtt', 'Surround', { 'Sound Mode': soundMode }) : false;
+            const mqtt = this.zone < 3 ? this.emit('mqtt', 'Info', this.devInfo) : false;
+            const mqtt1 = this.zone < 3 ? this.emit('mqtt', 'State', devState) : false;
+            const mqtt2 = this.zone < 3 && checkPictureMode ? this.emit('mqtt', 'Picture', { 'Picture Mode': PictureModesDenonNumber[pictureMode] }) : false;
+            const mqtt3 = this.zone < 3 && checkSoundeMode ? this.emit('mqtt', 'Surround', { 'Sound Mode': soundMode }) : false;
 
             //update only if value change
             if (power === this.power && reference === this.reference && volume === this.volume && volumeDisplay === this.volumeDisplay && mute === this.mute && pictureMode === this.pictureMode && soundMode === this.soundMode) {
@@ -447,6 +450,9 @@ class Denon extends EventEmitter {
                         break;
                     case 3:
                         inputMode = 'MS';
+                        break;
+                    case 4:
+                        inputMode = 'SI';
                         break;
                 }
 

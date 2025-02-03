@@ -3,10 +3,10 @@ import EventEmitter from 'events';
 import Mqtt from './mqtt.js';
 import RestFul from './restful.js';
 import Denon from './denon.js';
-import { PictureModesConversionToHomeKit, PictureModesDenonNumber } from './constants.js';
+import { PictureModesConversionToHomeKit, PictureModesDenonNumber, PictureModesDenonString, DirectSoundMode } from './constants.js';
 let Accessory, Characteristic, Service, Categories, Encode, AccessoryUUID;
 
-class Surround extends EventEmitter {
+class MainZone extends EventEmitter {
     constructor(api, device, zone, name, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile, refreshInterval) {
         super();
 
@@ -23,10 +23,10 @@ class Surround extends EventEmitter {
         this.port = port;
         this.generation = generation;
         this.zone = zone;
-        this.inputs = device.surrounds || [];
+        this.inputs = device.passThroughInputs || [];
         this.inputsDisplayOrder = device.inputsDisplayOrder || 0;
         this.sensorInput = device.sensorInput || false;
-        this.sensorInputs = device.sensorSurrounds || [];
+        this.sensorInputs = device.sensorInputs || [];
         this.enableDebugMode = device.enableDebugMode || false;
         this.disableLogInfo = device.disableLogInfo || false;
         this.disableLogError = device.disableLogError || false;
@@ -40,9 +40,8 @@ class Surround extends EventEmitter {
 
         //services
         this.allServices = [];
-        this.sensorsInputsServices = [];
 
-        //inputs
+        //inputs variable
         this.inputsConfigured = [];
         this.inputIdentifier = 1;
 
@@ -96,7 +95,36 @@ class Surround extends EventEmitter {
             const data = await fsPromises.readFile(path);
             return data;
         } catch (error) {
-            throw new Error(`Read saved data error: ${error}`);
+            throw new Error(`Read data error: ${error}`);
+        };
+    }
+
+    async displayOrder() {
+        try {
+            switch (this.inputsDisplayOrder) {
+                case 0:
+                    this.inputsConfigured.sort((a, b) => a.identifier - b.identifier);
+                    break;
+                case 1:
+                    this.inputsConfigured.sort((a, b) => a.name.localeCompare(b.name));
+                    break;
+                case 2:
+                    this.inputsConfigured.sort((a, b) => b.name.localeCompare(a.name));
+                    break;
+                case 3:
+                    this.inputsConfigured.sort((a, b) => a.reference.localeCompare(b.reference));
+                    break;
+                case 4:
+                    this.inputsConfigured.sort((a, b) => b.reference.localeCompare(a.reference));
+                    break;
+            }
+            const debug = !this.enableDebugMode ? false : this.emit('debug', `Inputs display order: ${JSON.stringify(this.inputsConfigured, null, 2)}`);
+
+            const displayOrder = this.inputsConfigured.map(input => input.identifier);
+            this.televisionService.setCharacteristic(Characteristic.DisplayOrder, Encode(1, displayOrder).toString('base64'));
+            return true;
+        } catch (error) {
+            throw new Error(`Display order error: ${error}`);
         };
     }
 
@@ -123,35 +151,6 @@ class Surround extends EventEmitter {
         }
     }
 
-    async displayOrder() {
-        try {
-            switch (this.inputsDisplayOrder) {
-                case 0:
-                    this.inputsConfigured.sort((a, b) => a.identifier - b.identifier);
-                    break;
-                case 1:
-                    this.inputsConfigured.sort((a, b) => a.name.localeCompare(b.name));
-                    break;
-                case 2:
-                    this.inputsConfigured.sort((a, b) => b.name.localeCompare(a.name));
-                    break;
-                case 3:
-                    this.inputsConfigured.sort((a, b) => a.reference.localeCompare(b.reference));
-                    break;
-                case 4:
-                    this.inputsConfigured.sort((a, b) => b.reference.localeCompare(a.reference));
-                    break;
-            }
-            const debug = !this.enableDebugMode ? false : this.emit('debug', `Surrounds display order: ${JSON.stringify(this.inputsConfigured, null, 2)}`);
-
-            const displayOrder = this.inputsConfigured.map(input => input.identifier);
-            this.televisionService.setCharacteristic(Characteristic.DisplayOrder, Encode(1, displayOrder).toString('base64'));
-            return true;
-        } catch (error) {
-            throw new Error(`Display order error: ${error}`);
-        };
-    }
-
     //prepare accessory
     async prepareAccessory() {
         try {
@@ -168,7 +167,8 @@ class Surround extends EventEmitter {
                 .setCharacteristic(Characteristic.Manufacturer, this.manufacturer)
                 .setCharacteristic(Characteristic.Model, this.modelName)
                 .setCharacteristic(Characteristic.SerialNumber, this.serialNumber)
-                .setCharacteristic(Characteristic.FirmwareRevision, this.firmwareRevision);
+                .setCharacteristic(Characteristic.FirmwareRevision, this.firmwareRevision)
+                .setCharacteristic(Characteristic.ConfiguredName, accessoryName);
             this.allServices.push(this.informationService);
 
 
@@ -180,7 +180,7 @@ class Surround extends EventEmitter {
 
             this.televisionService.getCharacteristic(Characteristic.Active)
                 .onGet(async () => {
-                    const state = this.power;
+                    const state = true;
                     return state;
                 })
                 .onSet(async (state) => {
@@ -206,18 +206,11 @@ class Surround extends EventEmitter {
                         const inputReference = input.reference;
                         const reference = `${inputMode}${inputReference}`;
 
-                        switch (this.power) {
-                            case false:
-                                await new Promise(resolve => setTimeout(resolve, 4000));
-                                const tryAgain = this.power ? this.televisionService.setCharacteristic(Characteristic.ActiveIdentifier, activeIdentifier) : false;
-                                break;
-                            case true:
-                                await this.denon.send(reference);
-                                const info = this.disableLogInfo ? false : this.emit('info', `set Surround Name: ${inputName}, Reference: ${reference}`);
-                                break;
-                        }
+
+                        await this.denon.send(reference);
+                        const info = this.disableLogInfo ? false : this.emit('info', `set Input Name: ${inputName}, Reference: ${reference}`);
                     } catch (error) {
-                        this.emit('warn', `set Surround error: ${error}`);
+                        this.emit('warn', `set Input error: ${error}`);
                     };
                 });
 
@@ -277,7 +270,7 @@ class Surround extends EventEmitter {
             this.allServices.push(this.televisionService);
 
             //prepare inputs service
-            const debug8 = !this.enableDebugMode ? false : this.emit('debug', `Prepare surrounds services`);
+            const debug8 = !this.enableDebugMode ? false : this.emit('debug', `Prepare inputs services`);
 
             //check possible inputs count (max 85)
             const inputs = this.savedInputs;
@@ -309,7 +302,7 @@ class Surround extends EventEmitter {
                 input.identifier = inputIdentifier;
 
                 //input service
-                const inputService = accessory.addService(Service.InputSource, input.name, `Surround ${inputIdentifier}`);
+                const inputService = accessory.addService(Service.InputSource, input.name, `Input ${inputIdentifier}`);
                 inputService
                     .setCharacteristic(Characteristic.Identifier, inputIdentifier)
                     .setCharacteristic(Characteristic.Name, input.name)
@@ -326,14 +319,14 @@ class Surround extends EventEmitter {
                             input.name = value;
                             this.savedInputsNames[inputReference] = value;
                             await this.saveData(this.inputsNamesFile, this.savedInputsNames);
-                            const debug = !this.enableDebugMode ? false : this.emit('debug', `Saved Surround Name: ${value}, Reference: ${inputReference}`);
+                            const debug = !this.enableDebugMode ? false : this.emit('debug', `Saved Input Name: ${value}, Reference: ${inputReference}`);
 
                             //sort inputs
                             const index = this.inputsConfigured.findIndex(input => input.reference === inputReference);
                             this.inputsConfigured[index].name = value;
                             await this.displayOrder();
                         } catch (error) {
-                            this.emit('warn', `save Surround Name error: ${error}`);
+                            this.emit('warn', `save Input Name error: ${error}`);
                         }
                     });
 
@@ -346,9 +339,9 @@ class Surround extends EventEmitter {
                             input.visibility = state;
                             this.savedInputsTargetVisibility[inputReference] = state;
                             await this.saveData(this.inputsTargetVisibilityFile, this.savedInputsTargetVisibility);
-                            const debug = !this.enableDebugMode ? false : this.emit('debug', `Saved  Surround: ${input.name} Target Visibility: ${state ? 'HIDEN' : 'SHOWN'}`);
+                            const debug = !this.enableDebugMode ? false : this.emit('debug', `Saved  Input: ${input.name} Target Visibility: ${state ? 'HIDEN' : 'SHOWN'}`);
                         } catch (error) {
-                            this.emit('warn', `save Surround Target Visibility error: ${error}`);
+                            this.emit('warn', `save Input Target Visibility error: ${error}`);
                         }
                     });
 
@@ -440,7 +433,7 @@ class Surround extends EventEmitter {
                 this.emit('devInfo', `-------- ${this.name} --------`);
                 this.emit('devInfo', `Manufacturer: ${manufacturer}`);
                 this.emit('devInfo', `Model: ${modelName}`);
-                this.emit('devInfo', `Control: Sound Modes`);
+                this.emit('devInfo', `Control: Pass Through Inputs`);
                 this.emit('devInfo', `----------------------------------`);
 
                 this.manufacturer = manufacturer;
@@ -455,10 +448,9 @@ class Surround extends EventEmitter {
 
                     if (this.televisionService) {
                         this.televisionService
-                            .updateCharacteristic(Characteristic.Active, power ? 1 : 0)
+                            .updateCharacteristic(Characteristic.Active, 1)
                             .updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier)
                     }
-
 
                     if (this.sensorInputService && reference !== this.reference) {
                         for (let i = 0; i < 2; i++) {
@@ -487,7 +479,7 @@ class Surround extends EventEmitter {
                     if (!this.disableLogInfo) {
                         const name = input ? input.name : reference;
                         this.emit('info', `Power: ${power ? 'ON' : 'OFF'}`);
-                        this.emit('info', `Surround Name: ${name}`);
+                        this.emit('info', `Pass Through Input Name: ${name}`);
                         this.emit('info', `Reference: ${reference}`);
                     };
                 })
@@ -507,9 +499,8 @@ class Surround extends EventEmitter {
                     this.emit('error', error);
                 });
 
-            //connect to avr and check state
+            //connect to avr
             const connect = await this.denon.connect();
-
             if (!connect) {
                 return false;
             }
@@ -534,4 +525,4 @@ class Surround extends EventEmitter {
     };
 };
 
-export default Surround;
+export default MainZone;

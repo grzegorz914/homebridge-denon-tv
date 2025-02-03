@@ -67,7 +67,7 @@
               "title": "Zone/Mode Control",
               "type": "integer",
               "minimum": 0,
-              "maximum": 3,
+              "maximum": 4,
               "default": 0,
               "description": "Here select which Zone You want control.",
               "oneOf": [
@@ -94,6 +94,12 @@
                   "enum": [
                     3
                   ]
+                },
+                {
+                  "title": "Pass Through Inputs",
+                  "enum": [
+                    4
+                  ]
                 }
               ],
               "required": true
@@ -103,7 +109,10 @@
               "type": "boolean",
               "default": false,
               "description": "If enabled, all Inputs will be loaded direct from device.",
-              "required": false
+              "required": false,
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].zoneControl <= 2;"
+              }
             },
             "getFavoritesFromDevice": {
               "title": "Load Favorites",
@@ -111,7 +120,7 @@
               "default": false,
               "description": "If enabled, all Favorites will be loaded direct from device, only if exist.",
               "condition": {
-                "functionBody": "return model.devices[arrayIndices].getInputsFromDevice == true && model.devices[arrayIndices].generation >= 1;"
+                "functionBody": "return model.devices[arrayIndices].getInputsFromDevice == true && model.devices[arrayIndices].generation >= 1 && model.devices[arrayIndices].zoneControl <= 2;"
               },
               "required": false
             },
@@ -121,7 +130,7 @@
               "default": false,
               "description": "If enabled, all Quick/Smart Select will be loaded direct from device, only if exist.",
               "condition": {
-                "functionBody": "return model.devices[arrayIndices].getInputsFromDevice == true && model.devices[arrayIndices].generation >= 1;"
+                "functionBody": "return model.devices[arrayIndices].getInputsFromDevice == true && model.devices[arrayIndices].generation >= 1 && model.devices[arrayIndices].zoneControl <= 2;"
               },
               "required": false
             },
@@ -975,6 +984,103 @@
                         "title": "STANDARD",
                         "enum": [
                           "STANDARD"
+                        ]
+                      }
+                    ],
+                    "required": false
+                  }
+                }
+              },
+              "required": false
+            },
+            "passThroughInputs": {
+              "type": "array",
+              "items": {
+                "title": "Input",
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "title": "Name",
+                    "type": "string",
+                    "placeholder": "Name",
+                    "description": "Here set Your own name.",
+                    "required": false
+                  },
+                  "reference": {
+                    "title": "Reference",
+                    "type": "string",
+                    "description": "Here select input.",
+                    "oneOf": [
+                      {
+                        "title": "CD",
+                        "enum": [
+                          "CD"
+                        ]
+                      },
+                      {
+                        "title": "DVD",
+                        "enum": [
+                          "DVD"
+                        ]
+                      },
+                      {
+                        "title": "BLU-RAY",
+                        "enum": [
+                          "BD"
+                        ]
+                      },
+                      {
+                        "title": "TV AUDIO",
+                        "enum": [
+                          "TV"
+                        ]
+                      },
+                      {
+                        "title": "SAT/CBL",
+                        "enum": [
+                          "SAT/CBL"
+                        ]
+                      },
+                      {
+                        "title": "MEDIA PLAYER",
+                        "enum": [
+                          "MPLAY"
+                        ]
+                      },
+                      {
+                        "title": "GAME",
+                        "enum": [
+                          "GAME"
+                        ]
+                      },
+                      {
+                        "title": "GAME 1",
+                        "enum": [
+                          "GAME1"
+                        ]
+                      },
+                      {
+                        "title": "GAME 2",
+                        "enum": [
+                          "GAME2"
+                        ]
+                      },
+                      {
+                        "title": "AUX",
+                        "enum": [
+                          "AUX"
+                        ]
+                      },
+                      {
+                        "title": "AUX 1",
+                        "enum": [
+                          "AUX1"
+                        ]
+                      },
+                      {
+                        "title": "8K",
+                        "enum": [
+                          "8K"
                         ]
                       }
                     ],
@@ -5681,21 +5787,30 @@
               "type": "boolean",
               "default": false,
               "description": "This expose Power as a Contact Sensor, fired if power ON.",
-              "required": false
+              "required": false,
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].zoneControl <= 2;"
+              }
             },
             "sensorVolume": {
               "title": "Volume",
               "type": "boolean",
               "default": false,
               "description": "This expose Volume as a Contact Sensor, fired on every Volume change.",
-              "required": false
+              "required": false,
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].zoneControl <= 2;"
+              }
             },
             "sensorMute": {
               "title": "Mute",
               "type": "boolean",
               "default": false,
               "description": "This expose Mute as a Contact Sensor, fired if Mmute ON.",
-              "required": false
+              "required": false,
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].zoneControl <= 2;"
+              }
             },
             "sensorInput": {
               "title": "Input",
@@ -6477,7 +6592,10 @@
               "type": "boolean",
               "default": false,
               "description": "The power switch for that zone will turn the entire receiver *ON* or *OFF/STANDBY* rather than just the zone itself.",
-              "required": false
+              "required": false,
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].zoneControl <= 2;"
+              }
             },
             "masterMute": {
               "title": "Master Mute Control",
@@ -6504,14 +6622,20 @@
               "type": "boolean",
               "default": false,
               "description": "Here enable/disable the accessory name as a prefix for volume control name.",
-              "required": false
+              "required": false,
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].zoneControl <= 2;"
+              }
             },
             "volumeControlName": {
               "title": "Volume Control Name",
               "type": "string",
               "placeholder": "Name",
               "description": "Here set Your own volume control name or leave empty.",
-              "required": false
+              "required": false,
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].zoneControl <= 2;"
+              }
             },
             "volumeControl": {
               "title": "Volume Control Mode",
@@ -6540,7 +6664,10 @@
                   ]
                 }
               ],
-              "required": true
+              "required": true,
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].zoneControl <= 2;"
+              }
             },
             "volumeMax": {
               "title": "Max Volume (%)",
@@ -6549,7 +6676,10 @@
               "minimum": 0,
               "maximum": 100,
               "description": "Here set the max possible volume to set.",
-              "required": false
+              "required": false,
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].zoneControl <= 2;"
+              }
             },
             "refreshInterval": {
               "title": "Refresh interval (sec)",
@@ -6606,7 +6736,10 @@
                   "title": "Enable",
                   "type": "boolean",
                   "default": false,
-                  "description": "This enable RESTful server."
+                  "description": "This enable RESTful server.",
+                  "condition": {
+                    "functionBody": "return model.devices[arrayIndices].zoneControl < 3;"
+                  }
                 },
                 "debug": {
                   "title": "Debug",
@@ -6614,7 +6747,7 @@
                   "default": false,
                   "description": "This enable debug mode for RESTFul.",
                   "condition": {
-                    "functionBody": "return model.devices[arrayIndices].restFul.enable === true;"
+                    "functionBody": "return model.devices[arrayIndices].restFul.enable === true && model.devices[arrayIndices].zoneControl < 3;"
                   },
                   "required": false
                 },
@@ -6624,7 +6757,7 @@
                   "placeholder": 3000,
                   "description": "Here set the listening Port for RESTful server.",
                   "condition": {
-                    "functionBody": "return model.devices[arrayIndices].restFul.enable === true;"
+                    "functionBody": "return model.devices[arrayIndices].restFul.enable === true && model.devices[arrayIndices].zoneControl < 3;"
                   },
                   "required": false
                 }
@@ -6638,7 +6771,10 @@
                   "title": "Enable",
                   "type": "boolean",
                   "default": false,
-                  "description": "This enable MQTT client."
+                  "description": "This enable MQTT client.",
+                  "condition": {
+                    "functionBody": "return model.devices[arrayIndices].zoneControl < 3;"
+                  }
                 },
                 "debug": {
                   "title": "Debug",
@@ -6646,7 +6782,7 @@
                   "default": false,
                   "description": "This enable debug mode for MQTT.",
                   "condition": {
-                    "functionBody": "return model.devices[arrayIndices].mqtt.enable === true;"
+                    "functionBody": "return model.devices[arrayIndices].mqtt.enable === true && model.devices[arrayIndices].zoneControl < 3;"
                   },
                   "required": false
                 },
@@ -6657,7 +6793,7 @@
                   "format": "hostname",
                   "description": "Here set the IP/Hostname of MQTT Broker.",
                   "condition": {
-                    "functionBody": "return model.devices[arrayIndices].mqtt.enable === true;"
+                    "functionBody": "return model.devices[arrayIndices].mqtt.enable === true && model.devices[arrayIndices].zoneControl < 3;"
                   },
                   "required": false
                 },
@@ -6667,7 +6803,7 @@
                   "placeholder": 1883,
                   "description": "Here set the port of MQTT Broker.",
                   "condition": {
-                    "functionBody": "return model.devices[arrayIndices].mqtt.enable === true;"
+                    "functionBody": "return model.devices[arrayIndices].mqtt.enable === true && model.devices[arrayIndices].zoneControl < 3;"
                   },
                   "required": false
                 },
@@ -6677,7 +6813,7 @@
                   "placeholder": "client id",
                   "description": "Here optional set the Client ID of MQTT Broker.",
                   "condition": {
-                    "functionBody": "return model.devices[arrayIndices].mqtt.enable === true"
+                    "functionBody": "return model.devices[arrayIndices].mqtt.enable === true && model.devices[arrayIndices].zoneControl < 3;"
                   },
                   "required": false
                 },
@@ -6687,7 +6823,7 @@
                   "placeholder": "home/envoy",
                   "description": "Here set the prefix.",
                   "condition": {
-                    "functionBody": "return model.devices[arrayIndices].mqtt.enable === true;"
+                    "functionBody": "return model.devices[arrayIndices].mqtt.enable === true && model.devices[arrayIndices].zoneControl < 3;"
                   },
                   "required": false
                 },
@@ -6697,7 +6833,7 @@
                   "default": false,
                   "description": "This enable authorization for MQTT Broker.",
                   "condition": {
-                    "functionBody": "return model.devices[arrayIndices].mqtt.enable === true;"
+                    "functionBody": "return model.devices[arrayIndices].mqtt.enable === true && model.devices[arrayIndices].zoneControl < 3;"
                   },
                   "required": false
                 },
@@ -6707,7 +6843,7 @@
                   "placeholder": "user",
                   "description": "Here set the user of MQTT Broker.",
                   "condition": {
-                    "functionBody": "return model.devices[arrayIndices].mqtt.enable === true && model.devices[arrayIndices].mqtt.auth === true;"
+                    "functionBody": "return model.devices[arrayIndices].mqtt.enable === true && model.devices[arrayIndices].mqtt.auth === true && model.devices[arrayIndices].zoneControl < 3;"
                   },
                   "required": false
                 },
@@ -6718,7 +6854,7 @@
                   "description": "Here set the password of MQTT Broker.",
                   "format": "password",
                   "condition": {
-                    "functionBody": "return model.devices[arrayIndices].mqtt.enable === true && model.devices[arrayIndices].mqtt.auth === true;"
+                    "functionBody": "return model.devices[arrayIndices].mqtt.enable === true && model.devices[arrayIndices].mqtt.auth === true && model.devices[arrayIndices].zoneControl < 3;"
                   },
                   "required": false
                 }
@@ -6760,22 +6896,9 @@
                 "devices[].inputs[].reference"
               ],
               "condition": {
-                "functionBody": "return model.devices[arrayIndices].getInputsFromDevice === false;"
+                "functionBody": "return model.devices[arrayIndices].getInputsFromDevice === false && model.devices[arrayIndices].zoneControl <= 2;"
               }
-            }
-          ],
-          "condition": {
-            "functionBody": "return model.devices[arrayIndices].zoneControl <= 2;"
-          }
-        },
-        {
-          "key": "devices[]",
-          "type": "section",
-          "title": "Surrounds",
-          "expandable": true,
-          "expanded": false,
-          "items": [
-            "devices[].inputsDisplayOrder",
+            },
             {
               "key": "devices[].surrounds",
               "type": "tabarray",
@@ -6783,12 +6906,24 @@
               "items": [
                 "devices[].surrounds[].name",
                 "devices[].surrounds[].reference"
-              ]
+              ],
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].zoneControl === 3;"
+              }
+            },
+            {
+              "key": "devices[].passThroughInputs",
+              "type": "tabarray",
+              "title": "{{ value.name || 'input' }}",
+              "items": [
+                "devices[].passThroughInputs[].name",
+                "devices[].passThroughInputs[].reference"
+              ],
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].zoneControl === 4;"
+              }
             }
-          ],
-          "condition": {
-            "functionBody": "return model.devices[arrayIndices].zoneControl === 3;"
-          }
+          ]
         },
         {
           "key": "devices[]",
@@ -6806,20 +6941,11 @@
                 "devices[].buttons[].reference",
                 "devices[].buttons[].displayType",
                 "devices[].buttons[].namePrefix"
-              ]
-            }
-          ],
-          "condition": {
-            "functionBody": "return model.devices[arrayIndices].zoneControl === 0;"
-          }
-        },
-        {
-          "key": "devices[]",
-          "type": "section",
-          "title": "Buttons",
-          "expandable": true,
-          "expanded": false,
-          "items": [
+              ],
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].zoneControl === 0;"
+              }
+            },
             {
               "key": "devices[].buttonsZ2",
               "type": "tabarray",
@@ -6829,20 +6955,11 @@
                 "devices[].buttonsZ2[].reference",
                 "devices[].buttonsZ2[].displayType",
                 "devices[].buttonsZ2[].namePrefix"
-              ]
-            }
-          ],
-          "condition": {
-            "functionBody": "return model.devices[arrayIndices].zoneControl === 1;"
-          }
-        },
-        {
-          "key": "devices[]",
-          "type": "section",
-          "title": "Buttons",
-          "expandable": true,
-          "expanded": false,
-          "items": [
+              ],
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].zoneControl === 1;"
+              }
+            },
             {
               "key": "devices[].buttonsZ3",
               "type": "tabarray",
@@ -6852,11 +6969,14 @@
                 "devices[].buttonsZ3[].reference",
                 "devices[].buttonsZ3[].displayType",
                 "devices[].buttonsZ3[].namePrefix"
-              ]
+              ],
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].zoneControl === 2;"
+              }
             }
           ],
           "condition": {
-            "functionBody": "return model.devices[arrayIndices].zoneControl === 2;"
+            "functionBody": "return model.devices[arrayIndices].zoneControl < 3;"
           }
         },
         {
@@ -6907,20 +7027,11 @@
                             "devices[].sensorInputs[].reference",
                             "devices[].sensorInputs[].displayType",
                             "devices[].sensorInputs[].namePrefix"
-                          ]
-                        }
-                      ],
-                      "condition": {
-                        "functionBody": "return model.devices[arrayIndices].zoneControl <= 2;"
-                      }
-                    },
-                    {
-                      "key": "devices[]",
-                      "type": "section",
-                      "title": "Custom Sensors",
-                      "expandable": true,
-                      "expanded": false,
-                      "items": [
+                          ],
+                          "condition": {
+                            "functionBody": "return model.devices[arrayIndices].zoneControl !== 3;"
+                          }
+                        },
                         {
                           "key": "devices[].sensorSurrounds",
                           "type": "tabarray",
@@ -6930,12 +7041,12 @@
                             "devices[].sensorSurrounds[].reference",
                             "devices[].sensorSurrounds[].displayType",
                             "devices[].sensorSurrounds[].namePrefix"
-                          ]
+                          ],
+                          "condition": {
+                            "functionBody": "return model.devices[arrayIndices].zoneControl === 3;"
+                          }
                         }
-                      ],
-                      "condition": {
-                        "functionBody": "return model.devices[arrayIndices].zoneControl === 3;"
-                      }
+                      ]
                     }
                   ]
                 },

@@ -5,11 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## NOTE!!!
+## NOTE
+
 - after update to 4.9.x all buttons (Sound Mode) need to be configure again using config UI
 - after update to 4.8.x all buttons need to be configure again using config UI
 - after update to 4.7.x buttons, sensors, volume display type need to be configure again using config UI
 - after update to 3.15.x need remove the accessory frome Home app and add it again
+
+## [5.4.0] - (03.03.2025)
+
+## Changes
+
+- add possibility to create extra accessory for Pass Throuh Inputs
+- close [#315](https://github.com/grzegorz914/homebridge-denon-tv/issues/315)
+- config schema updated
+- redme updated
+- cleanup
 
 ## [5.3.8] - (29.01.2025)
 

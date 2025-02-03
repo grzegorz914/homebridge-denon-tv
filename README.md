@@ -33,7 +33,7 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 * RC/Media control is possible after you go to the RC app on iPhone/iPad.
 * Speaker control is possible after you go to RC app on iPhone/iPad `Speaker Service`.
 * Legacy Volume and Mute control is possible throught extra `lightbulb`/`fan` (slider).
-* Inputs/Surrounds can be changed using Inputs selector in the Home app or using extra tile.
+* Inputs/Surrounds/Pass Trough Inputs can be changed using Inputs selector in the Home app or using extra tile.
 * Digital Input Modes can be controlled by creating separate tile in the buttons section.
 * Siri can be used for all functions, some times need create legacy buttons/switches/sensors.
 * Automations can be used for all functions, some times need create legacy buttons/switches/sensors.
@@ -62,7 +62,7 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 | `name` | Here set the accessory *Name* to be displayed in *Homebridge/HomeKit*. |
 | `host` | Here set the `Hostname` or `Address IP` of AVR. |
 | `port` | Here set the API communication port, if `8080` is not working try to use port `80` which some receivers use alternatively. |
-| `zoneControl` | Here choose which zone will be controlled by this section `0 - Main Zone`, `1 - Zone 2`, `2 - Zone 3`, `3 - Surround Mode`. |
+| `zoneControl` | Here choose which zone will be controlled by this section `0 - Main Zone`, `1 - Zone 2`, `2 - Zone 3`, `3 - Surround Mode`, `4 - Pass Through Inputs`. |
 | `generation` | Here choose generation of Your device, old `0 - 2010 - 2012`, middle `1 - 2013 - 2022`, new `2 - 2023 and newer`. |
 | `getInputsFromDevice` | If enabled, `Inputs` will be loaded direct from device. |
 | `getFavoritesFromDevice` | If enabled, `Favorites` will be loaded to the inputs list if exist. |
@@ -74,6 +74,9 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 | `surrounds` | Here create `Surrounds` which You want expose to the `Homebridge/HomeKit`. |
 | `surrounds.name` | Here set `Surround Mode Name`. |
 | `surrounds.reference` | Here choose `Surround Mode`, the mode that should be published to and appear in HomeKit app in the extra tile as Surrounds List. |
+| `passThroughInputs` | Here create `Pass Through Inputs` which You want expose to the `Homebridge/HomeKit`. |
+| `passThroughInputs.name` | Here set `Pass ThroughInput Name`. |
+| `passThroughInputs.reference` | Choose from available inputs, the inputs that should be published to and appear in HomeKit app in the device tile as inputs list. |
 | `buttons` | Here create `Buttons` which You want expose to the `Homebridge/HomeKit` for Main Zone. |
 | `buttons.name` | Here set `Button Name`. |
 | `buttons.reference` | Here choose Function for this button. |
@@ -137,6 +140,7 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 
 ### RESTFul Integration
 
+* Only for Main Zone, Zone 1, Zone 2
 * POST data as a JSON Object `{Power: true}`
 
 | Method | URL | Path | Response | Type |
@@ -154,6 +158,7 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 
 ### MQTT Integration
 
+* Only for Main Zone, Zone 1, Zone 2
 * Subscribe data as a JSON Object `{Power: true}`
 
 | Method | Topic | Message | Type |

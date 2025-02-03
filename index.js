@@ -4,6 +4,7 @@ import MainZone from './src/mainzone.js';
 import Zone2 from './src/zone2.js';
 import Zone3 from './src/zone3.js';
 import Surround from './src/surround.js';
+import PassThroughInputs from './src/passthroughinputs.js';
 import ImpulseGenerator from './src/impulsegenerator.js';
 import { PluginName, PlatformName, ZoneNameShort } from './src/constants.js';
 
@@ -70,7 +71,7 @@ class DenonPlatform {
 						devInfoFile,
 						inputsFile,
 						inputsNamesFile,
-						inputsTargetVisibilityFile,
+						inputsTargetVisibilityFile
 					];
 
 					files.forEach((file) => {
@@ -251,6 +252,51 @@ class DenonPlatform {
 							impulseGenerator.on('start', async () => {
 								try {
 									const startDone = await surround.start();
+									const stopImpulseGenerator = startDone ? await impulseGenerator.stop() : false;
+								} catch (error) {
+									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${deviceName}, ${error}, trying again.`);
+								};
+							}).on('state', (state) => {
+								const emitLog = !enableDebugMode ? false : state ? log.info(`Device: ${host} ${deviceName}, Start impulse generator started.`) : log.info(`Device: ${host} ${deviceName}, Start impulse generator stopped.`);
+							});
+
+							//start impulse generator
+							await impulseGenerator.start([{ name: 'start', sampling: 45000 }]);
+						} catch (error) {
+							throw new Error(`Device: ${host} ${deviceName}, Did finish launching error: ${error}.`);
+						}
+						break;
+					case 4: //pass through inputs
+						try {
+							const passThroughInputs = new PassThroughInputs(api, device, zoneControl, deviceName, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile, refreshInterval);
+							passThroughInputs.on('publishAccessory', (accessory) => {
+								api.publishExternalAccessories(PluginName, [accessory]);
+								const emitLog = disableLogSuccess ? false : log.success(`Device: ${host} ${deviceName}, Published as external accessory.`);
+							})
+								.on('devInfo', (devInfo) => {
+									const emitLog = disableLogDeviceInfo ? false : log.info(devInfo);
+								})
+								.on('success', (success) => {
+									const emitLog = disableLogSuccess ? false : log.success(`Device: ${host} ${deviceName}, ${success}.`);
+								})
+								.on('info', (info) => {
+									const emitLog = disableLogInfo ? false : log.info(`Device: ${host} ${deviceName}, ${info}.`);
+								})
+								.on('debug', (debug) => {
+									const emitLog = !enableDebugMode ? false : log.info(`Device: ${host} ${deviceName}, debug: ${debug}.`);
+								})
+								.on('warn', (warn) => {
+									const emitLog = disableLogWarn ? false : log.warn(`Device: ${host} ${deviceName}, ${warn}.`);
+								})
+								.on('error', (error) => {
+									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${deviceName}, ${error}.`);
+								});
+
+							//create impulse generator
+							const impulseGenerator = new ImpulseGenerator();
+							impulseGenerator.on('start', async () => {
+								try {
+									const startDone = await passThroughInputs.start();
 									const stopImpulseGenerator = startDone ? await impulseGenerator.stop() : false;
 								} catch (error) {
 									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${deviceName}, ${error}, trying again.`);

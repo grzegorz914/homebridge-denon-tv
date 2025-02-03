@@ -103,6 +103,7 @@
                     "getInputsFromDevice": false,
                     "getFavoritesFromDevice": false,
                     "getQuickSmartSelectFromDevice": false,
+                    "inputsDisplayOrder": 0,
                     "inputs": [
                         {
                             "name": "Xbox One",
@@ -172,6 +173,7 @@
                     "getInputsFromDevice": false,
                     "getFavoritesFromDevice": false,
                     "getQuickSmartSelectFromDevice": false,
+                    "inputsDisplayOrder": 0,
                     "inputs": [
                         {
                             "name": "Xbox One",
@@ -238,6 +240,7 @@
                     "port": 8080,
                     "generation": 1,
                     "zoneControl": 3,
+                    "inputsDisplayOrder": 0,
                     "surrounds": [
                         {
                             "name": "MCH Stereo",
@@ -248,9 +251,6 @@
                             "reference": "STEREO"
                         }
                     ],
-                    "sensorPower": false,
-                    "sensorVolume": false,
-                    "sensorMute": false,
                     "sensorInput": false,
                     "sensorSurrounds": [
                         {
@@ -261,36 +261,47 @@
                         }
                     ],
                     "infoButtonCommand": "MNINF",
-                    "masterPower": false,
-                    "masterMute": false,
-                    "masterVolume": false,
-                    "volumeControlNamePrefix": false,
-                    "volumeControlName": "Volume",
-                    "volumeControl": 0,
-                    "volumeMax": 0,
                     "refreshInterval": 5,
                     "disableLogDeviceInfo": false,
                     "disableLogInfo": false,
                     "disableLogSuccess": false,
                     "disableLogWarn": false,
                     "disableLogError": false,
-                    "enableDebugMode": false,
-                    "restFul": {
-                        "enable": false,
-                        "port": 3000,
-                        "debug": false
-                    },
-                    "mqtt": {
-                        "enable": false,
-                        "host": "192.168.1.33",
-                        "port": 1883,
-                        "clientId": "",
-                        "prefix": "home/envoy",
-                        "auth": false,
-                        "user": "user",
-                        "pass": "password",
-                        "debug": false
-                    }
+                    "enableDebugMode": false
+                },
+                {
+                    "name": "AV Pass through Inputs",
+                    "host": "192.168.1.5",
+                    "port": 8080,
+                    "generation": 1,
+                    "zoneControl": 4,
+                    "inputsDisplayOrder": 0,
+                    "passThroughInputs": [
+                        {
+                            "name": "Xbox One",
+                            "reference": "GAME"
+                        },
+                        {
+                            "name": "Television",
+                            "reference": "TV"
+                        }
+                    ],
+                    "sensorInput": false,
+                    "sensorInputs": [
+                        {
+                            "name": "Tuner Sat",
+                            "reference": "CBL/SAT",
+                            "displayType": 0
+                        }
+                    ],
+                    "infoButtonCommand": "MNINF",
+                    "refreshInterval": 5,
+                    "disableLogDeviceInfo": false,
+                    "disableLogInfo": false,
+                    "disableLogSuccess": false,
+                    "disableLogWarn": false,
+                    "disableLogError": false,
+                    "enableDebugMode": false
                 }
             ]
         }
