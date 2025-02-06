@@ -133,6 +133,22 @@ class MainZone extends EventEmitter {
         };
     }
 
+    async sanitizeString(str) {
+        // Replace dots, colons, and semicolons inside words with a space
+        str = str.replace(/(\w)[.:;]+(\w)/g, '$1 $2');
+
+        // Remove remaining dots, colons, semicolons, plus, and minus anywhere in the string
+        str = str.replace(/[.:;+\-]/g, '');
+
+        // Replace all other invalid characters (anything not A-Z, a-z, 0-9, space, or apostrophe) with a space
+        str = str.replace(/[^A-Za-z0-9 ']/g, ' ');
+
+        // Trim leading and trailing spaces
+        str = str.trim();
+
+        return str;
+    }
+
     async setOverExternalIntegration(integration, key, value) {
         try {
             let set = false
@@ -598,8 +614,11 @@ class MainZone extends EventEmitter {
                 const inputReference = input.reference;
 
                 //get input name
-                const savedInputsName = this.savedInputsNames[inputReference] ?? false;
-                input.name = savedInputsName ? savedInputsName : input.name;
+                const name = input.name ?? `Input ${inputIdentifier}`;
+
+                //get input name
+                const savedInputsNames = this.savedInputsNames[inputReference] ?? false;
+                input.name = savedInputsNames ? savedInputsNames.substring(0, 64) : name.substring(0, 64);
 
                 //get type
                 const inputSourceType = 0;
@@ -614,17 +633,18 @@ class MainZone extends EventEmitter {
                 input.identifier = inputIdentifier;
 
                 //input service
-                const inputService = accessory.addService(Service.InputSource, input.name, `Input ${inputIdentifier}`);
+                const sanitizedName = await this.sanitizeString(input.name);
+                const inputService = accessory.addService(Service.InputSource, sanitizedName, `Input ${inputIdentifier}`);
                 inputService
                     .setCharacteristic(Characteristic.Identifier, inputIdentifier)
-                    .setCharacteristic(Characteristic.Name, input.name)
+                    .setCharacteristic(Characteristic.Name, sanitizedName)
                     .setCharacteristic(Characteristic.IsConfigured, isConfigured)
                     .setCharacteristic(Characteristic.InputSourceType, inputSourceType)
                     .setCharacteristic(Characteristic.CurrentVisibilityState, input.visibility)
 
                 inputService.getCharacteristic(Characteristic.ConfiguredName)
                     .onGet(async () => {
-                        return input.name;
+                        return sanitizedName;
                     })
                     .onSet(async (value) => {
                         try {
