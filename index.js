@@ -118,6 +118,9 @@ class DenonPlatform {
 								try {
 									const startDone = await mainZone.start();
 									const stopImpulseGenerator = startDone ? await impulseGenerator.stop() : false;
+
+									//start device impulse generator 
+									const startImpulseGenerator = startDone ? await mainZone.startImpulseGenerator() : false;
 								} catch (error) {
 									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${deviceName}, ${error}, trying again.`);
 								};
@@ -163,6 +166,9 @@ class DenonPlatform {
 								try {
 									const startDone = await zone2.start();
 									const stopImpulseGenerator = startDone ? await impulseGenerator.stop() : false;
+
+									//start device impulse generator 
+									const startImpulseGenerator = startDone ? await zone2.startImpulseGenerator() : false;
 								} catch (error) {
 									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${deviceName}, ${error}, trying again.`);
 								};
@@ -208,6 +214,9 @@ class DenonPlatform {
 								try {
 									const startDone = await zone3.start();
 									const stopImpulseGenerator = startDone ? await impulseGenerator.stop() : false;
+
+									//start device impulse generator 
+									const startImpulseGenerator = startDone ? await zone3.startImpulseGenerator() : false;
 								} catch (error) {
 									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${deviceName}, ${error}, trying again.`);
 								};
@@ -253,6 +262,9 @@ class DenonPlatform {
 								try {
 									const startDone = await surround.start();
 									const stopImpulseGenerator = startDone ? await impulseGenerator.stop() : false;
+
+									//start device impulse generator 
+									const startImpulseGenerator = startDone ? await surround.startImpulseGenerator() : false;
 								} catch (error) {
 									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${deviceName}, ${error}, trying again.`);
 								};
@@ -298,6 +310,9 @@ class DenonPlatform {
 								try {
 									const startDone = await passThroughInputs.start();
 									const stopImpulseGenerator = startDone ? await impulseGenerator.stop() : false;
+
+									//start device impulse generator 
+									const startImpulseGenerator = startDone ? await passThroughInputs.startImpulseGenerator() : false;
 								} catch (error) {
 									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${deviceName}, ${error}, trying again.`);
 								};

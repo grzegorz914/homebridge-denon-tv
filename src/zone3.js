@@ -319,6 +319,16 @@ class Zone3 extends EventEmitter {
         };
     }
 
+    async startImpulseGenerator() {
+        try {
+            //start impulse generator 
+            await this.denon.impulseGenerator.start([{ name: 'checkState', sampling: this.refreshInterval }]);
+            return true;
+        } catch (error) {
+            throw new Error(`Impulse generator start error: ${error}`);
+        };
+    }
+
     async scaleValue(value, inMin, inMax, outMin, outMax) {
         const scaledValue = parseFloat((((Math.max(inMin, Math.min(inMax, value)) - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin).toFixed(0));
         return scaledValue;
@@ -986,9 +996,6 @@ class Zone3 extends EventEmitter {
                 const accessory = await this.prepareAccessory();
                 this.emit('publishAccessory', accessory);
                 this.startPrepareAccessory = false;
-
-                //start impulse generator 
-                await this.denon.impulseGenerator.start([{ name: 'checkState', sampling: this.refreshInterval }]);
             }
 
             return true;

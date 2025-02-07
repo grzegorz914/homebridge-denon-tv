@@ -136,6 +136,16 @@ class MainZone extends EventEmitter {
         };
     }
 
+    async startImpulseGenerator() {
+        try {
+            //start impulse generator 
+            await this.denon.impulseGenerator.start([{ name: 'checkState', sampling: this.refreshInterval }]);
+            return true;
+        } catch (error) {
+            throw new Error(`Impulse generator start error: ${error}`);
+        };
+    }
+
     async prepareDataForAccessory() {
         try {
             //read inputs file
@@ -525,9 +535,6 @@ class MainZone extends EventEmitter {
                 const accessory = await this.prepareAccessory();
                 this.emit('publishAccessory', accessory);
                 this.startPrepareAccessory = false;
-
-                //start impulse generator 
-                await this.denon.impulseGenerator.start([{ name: 'checkState', sampling: this.refreshInterval }]);
             }
 
             return true;

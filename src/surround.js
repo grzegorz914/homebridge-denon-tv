@@ -160,6 +160,16 @@ class Surround extends EventEmitter {
         };
     }
 
+    async startImpulseGenerator() {
+        try {
+            //start impulse generator 
+            await this.denon.impulseGenerator.start([{ name: 'checkState', sampling: this.refreshInterval }]);
+            return true;
+        } catch (error) {
+            throw new Error(`Impulse generator start error: ${error}`);
+        };
+    }
+
     //prepare accessory
     async prepareAccessory() {
         try {
@@ -534,9 +544,6 @@ class Surround extends EventEmitter {
                 const accessory = await this.prepareAccessory();
                 this.emit('publishAccessory', accessory);
                 this.startPrepareAccessory = false;
-
-                //start impulse generator 
-                await this.denon.impulseGenerator.start([{ name: 'checkState', sampling: this.refreshInterval }]);
             }
 
             return true;
