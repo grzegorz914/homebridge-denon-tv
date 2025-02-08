@@ -48,20 +48,12 @@ class MainZone extends EventEmitter {
         this.inputsFile = inputsFile;
         this.inputsNamesFile = inputsNamesFile;
         this.inputsTargetVisibilityFile = inputsTargetVisibilityFile;
-        this.startPrepareAccessory = true;
-
+        
         //external integration
         this.restFul = device.restFul || {};
         this.restFulConnected = false;
         this.mqtt = device.mqtt || {};
         this.mqttConnected = false;
-
-        //services
-        this.allServices = [];
-
-        //inputs variable
-        this.inputsConfigured = [];
-        this.inputIdentifier = 1;
 
         //sensors variable
         this.sensorsInputsConfigured = [];
@@ -79,8 +71,6 @@ class MainZone extends EventEmitter {
             };
         }
         this.sensorsInputsConfiguredCount = this.sensorsInputsConfigured.length || 0;
-        this.sensorVolumeState = false;
-        this.sensorInputState = false;
 
         //buttons variable
         this.buttonsConfigured = [];
@@ -98,8 +88,11 @@ class MainZone extends EventEmitter {
         }
         this.buttonsConfiguredCount = this.buttonsConfigured.length || 0;
 
-        //state variable
+        //variable
         this.startPrepareAccessory = true;
+        this.allServices = [];
+        this.inputsConfigured = [];
+        this.inputIdentifier = 1;
         this.power = false;
         this.reference = '';
         this.volume = 0;
@@ -109,8 +102,8 @@ class MainZone extends EventEmitter {
         this.supportPictureMode = false;
         this.pictureMode = 0;
         this.brightness = 0;
-        this.inputsNamesFile = inputsNamesFile;
-        this.inputsTargetVisibilityFile = inputsTargetVisibilityFile;
+        this.sensorVolumeState = false;
+        this.sensorInputState = false;
     };
 
     async saveData(path, data) {
