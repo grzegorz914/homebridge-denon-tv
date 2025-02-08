@@ -141,7 +141,8 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 ### RESTFul Integration
 
 * Only for Main Zone, Zone 1, Zone 2
-* POST data as a JSON Object `{Power: true}`, content type must be `application/json`
+* POST data as a JSON Object `{Power: true}`
+* Header content type must be `application/json`
 
 | Method | URL | Path | Response | Type |
 | --- | --- | --- | --- | --- |
