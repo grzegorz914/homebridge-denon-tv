@@ -187,21 +187,24 @@ export const ZoneName = [
     "Main Zone",
     "Zone 2",
     "Zone 3",
-    "Sound Mode"
+    "Sound Mode",
+    "Pass Through Input'
 ];
 
 export const ZoneNameShort = [
     "MZ",
     "Z2",
     "Z3",
-    "SM"
+    "SM",
+    "PTI"
 ];
 
 export const ZoneInputSurroundName = [
     "Input",
     "Input",
     "Input",
-    "Surround"
+    "Surround",
+    "Input"
 ];
 
 export const InputSourceType = [
