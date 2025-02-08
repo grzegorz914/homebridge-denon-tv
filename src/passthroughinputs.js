@@ -23,29 +23,21 @@ class MainZone extends EventEmitter {
         this.port = port;
         this.generation = generation;
         this.zone = zone;
-        this.inputs = device.passThroughInputs || [];
         this.inputsDisplayOrder = device.inputsDisplayOrder || 0;
+        this.inputs = device.passThroughInputs || [];
         this.sensorInput = device.sensorInput || false;
         this.sensorInputs = device.sensorInputs || [];
+        this.infoButtonCommand = device.infoButtonCommand || 'MNINF';
+        this.refreshInterval = refreshInterval;
         this.enableDebugMode = device.enableDebugMode || false;
         this.disableLogInfo = device.disableLogInfo || false;
         this.disableLogError = device.disableLogError || false;
-        this.infoButtonCommand = device.infoButtonCommand || 'MNINF';
-        this.refreshInterval = refreshInterval;
         this.devInfoFile = devInfoFile;
         this.inputsFile = inputsFile;
         this.inputsNamesFile = inputsNamesFile;
         this.inputsTargetVisibilityFile = inputsTargetVisibilityFile;
-        this.startPrepareAccessory = true;
 
-        //services
-        this.allServices = [];
-
-        //inputs variable
-        this.inputsConfigured = [];
-        this.inputIdentifier = 1;
-
-        //sensors variable
+        //sensors
         this.sensorsInputsConfigured = [];
         for (const sensor of this.sensorInputs) {
             const sensorInputName = sensor.name ?? false;
@@ -61,14 +53,15 @@ class MainZone extends EventEmitter {
             };
         }
         this.sensorsInputsConfiguredCount = this.sensorsInputsConfigured.length || 0;
-        this.sensorInputState = false;
 
-        //state variable
+        //variable
         this.startPrepareAccessory = true;
+        this.allServices = [];
+        this.inputsConfigured = [];
+        this.inputIdentifier = 1;
         this.power = false;
         this.reference = '';
-        this.inputsNamesFile = inputsNamesFile;
-        this.inputsTargetVisibilityFile = inputsTargetVisibilityFile;
+        this.sensorInputState = false;
     };
 
     async saveData(path, data) {
@@ -348,7 +341,7 @@ class MainZone extends EventEmitter {
                             this.inputsConfigured[index].name = value;
                             await this.displayOrder();
                         } catch (error) {
-                            this.emit('warn', `save Input Name error: ${error}`);
+                            this.emit('warn', `Save Input Name error: ${error}`);
                         }
                     });
 
@@ -361,9 +354,9 @@ class MainZone extends EventEmitter {
                             input.visibility = state;
                             this.savedInputsTargetVisibility[inputReference] = state;
                             await this.saveData(this.inputsTargetVisibilityFile, this.savedInputsTargetVisibility);
-                            const debug = !this.enableDebugMode ? false : this.emit('debug', `Saved  Input: ${input.name} Target Visibility: ${state ? 'HIDEN' : 'SHOWN'}`);
+                            const debug = !this.enableDebugMode ? false : this.emit('debug', `Saved Input: ${input.name} Target Visibility: ${state ? 'HIDEN' : 'SHOWN'}`);
                         } catch (error) {
-                            this.emit('warn', `save Input Target Visibility error: ${error}`);
+                            this.emit('warn', `Save Input Target Visibility error: ${error}`);
                         }
                     });
 
@@ -392,6 +385,7 @@ class MainZone extends EventEmitter {
             const maxSensorInputsCount = this.sensorsInputsConfiguredCount >= possibleSensorInputsCount ? possibleSensorInputsCount : this.sensorsInputsConfiguredCount;
             if (maxSensorInputsCount > 0) {
                 const debug = !this.enableDebugMode ? false : this.emit('debug', `Prepare inputs sensors services`);
+                this.sensorsInputsServices = [];
                 for (let i = 0; i < maxSensorInputsCount; i++) {
                     //get sensor
                     const sensorInput = this.sensorsInputsConfigured[i];

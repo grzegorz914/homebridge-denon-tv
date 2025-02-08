@@ -24,6 +24,7 @@ class Denon extends EventEmitter {
         this.getQuickSmartSelectFromDevice = this.getInputsFromDevice ? config.getQuickSmartSelectFromDevice : false;
         this.enableDebugLog = config.enableDebugLog;
         this.deviceInfoUrl = [ApiUrls.DeviceInfoGen0, ApiUrls.DeviceInfoGen1, ApiUrls.DeviceInfoGen2][this.generation];
+        this.zoneStateUrl = [ApiUrls.MainZoneStatusLite, ApiUrls.Zone2StatusLite, ApiUrls.Zone3StatusLite, ApiUrls.SoundModeStatus, ApiUrls.MainZoneStatusLite][this.zone];
 
         const baseUrl = `http://${host}:${port}`;
         this.axiosInstance = this.generation === 2 ? axios.create({
@@ -265,8 +266,7 @@ class Denon extends EventEmitter {
     async checkState() {
         try {
             //get zones status
-            const zoneStateUrl = [ApiUrls.MainZoneStatusLite, ApiUrls.Zone2StatusLite, ApiUrls.Zone3StatusLite, ApiUrls.SoundModeStatus, ApiUrls.MainZoneStatusLite][this.zone];
-            const deviceState = await this.axiosInstance(zoneStateUrl);
+            const deviceState = await this.axiosInstance(this.zoneStateUrl);
             const parseDeviceState = this.parseString.parse(deviceState.data);
             const devState = parseDeviceState.item;
             const debug = this.enableDebugLog ? this.emit('debug', `State: ${JSON.stringify(devState, null, 2)}`) : false;

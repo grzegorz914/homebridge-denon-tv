@@ -23,30 +23,21 @@ class Surround extends EventEmitter {
         this.port = port;
         this.generation = generation;
         this.zone = zone;
-        this.inputs = device.surrounds || [];
         this.inputsDisplayOrder = device.inputsDisplayOrder || 0;
+        this.inputs = device.surrounds || [];
         this.sensorInput = device.sensorInput || false;
         this.sensorInputs = device.sensorSurrounds || [];
+        this.infoButtonCommand = device.infoButtonCommand || 'MNINF';
+        this.refreshInterval = refreshInterval;
         this.enableDebugMode = device.enableDebugMode || false;
         this.disableLogInfo = device.disableLogInfo || false;
         this.disableLogError = device.disableLogError || false;
-        this.infoButtonCommand = device.infoButtonCommand || 'MNINF';
-        this.refreshInterval = refreshInterval;
         this.devInfoFile = devInfoFile;
         this.inputsFile = inputsFile;
         this.inputsNamesFile = inputsNamesFile;
         this.inputsTargetVisibilityFile = inputsTargetVisibilityFile;
-        this.startPrepareAccessory = true;
 
-        //services
-        this.allServices = [];
-        this.sensorsInputsServices = [];
-
-        //inputs
-        this.inputsConfigured = [];
-        this.inputIdentifier = 1;
-
-        //sensors variable
+        //sensors
         this.sensorsInputsConfigured = [];
         for (const sensor of this.sensorInputs) {
             const sensorInputName = sensor.name ?? false;
@@ -62,14 +53,15 @@ class Surround extends EventEmitter {
             };
         }
         this.sensorsInputsConfiguredCount = this.sensorsInputsConfigured.length || 0;
-        this.sensorInputState = false;
 
-        //state variable
+        //variable
         this.startPrepareAccessory = true;
+        this.allServices = [];
+        this.inputsConfigured = [];
+        this.inputIdentifier = 1;
         this.power = false;
         this.reference = '';
-        this.inputsNamesFile = inputsNamesFile;
-        this.inputsTargetVisibilityFile = inputsTargetVisibilityFile;
+        this.sensorInputState = false;
     };
 
     async saveData(path, data) {
@@ -355,7 +347,7 @@ class Surround extends EventEmitter {
                             this.inputsConfigured[index].name = value;
                             await this.displayOrder();
                         } catch (error) {
-                            this.emit('warn', `save Surround Name error: ${error}`);
+                            this.emit('warn', `Save Surround Name error: ${error}`);
                         }
                     });
 
@@ -370,7 +362,7 @@ class Surround extends EventEmitter {
                             await this.saveData(this.inputsTargetVisibilityFile, this.savedInputsTargetVisibility);
                             const debug = !this.enableDebugMode ? false : this.emit('debug', `Saved  Surround: ${input.name} Target Visibility: ${state ? 'HIDEN' : 'SHOWN'}`);
                         } catch (error) {
-                            this.emit('warn', `save Surround Target Visibility error: ${error}`);
+                            this.emit('warn', `Save Surround Target Visibility error: ${error}`);
                         }
                     });
 
@@ -399,6 +391,7 @@ class Surround extends EventEmitter {
             const maxSensorInputsCount = this.sensorsInputsConfiguredCount >= possibleSensorInputsCount ? possibleSensorInputsCount : this.sensorsInputsConfiguredCount;
             if (maxSensorInputsCount > 0) {
                 const debug = !this.enableDebugMode ? false : this.emit('debug', `Prepare inputs sensors services`);
+                this.sensorsInputsServices = [];
                 for (let i = 0; i < maxSensorInputsCount; i++) {
                     //get sensor
                     const sensorInput = this.sensorsInputsConfigured[i];

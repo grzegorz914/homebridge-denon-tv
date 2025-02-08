@@ -188,7 +188,7 @@ export const ZoneName = [
     "Zone 2",
     "Zone 3",
     "Sound Mode",
-    "Pass Through Input'
+    "Pass Through Input"
 ];
 
 export const ZoneNameShort = [

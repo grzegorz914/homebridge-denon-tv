@@ -26,17 +26,14 @@ class MainZone extends EventEmitter {
         this.getInputsFromDevice = device.getInputsFromDevice || false;
         this.getFavoritesFromDevice = device.getFavoritesFromDevice || false;
         this.getQuickSmartSelectFromDevice = device.getQuickSmartSelectFromDevice || false;
-        this.inputs = device.inputs || [];
         this.inputsDisplayOrder = device.inputsDisplayOrder || 0;
+        this.inputs = device.inputs || [];
         this.buttons = device.buttons || [];
         this.sensorPower = device.sensorPower || false;
         this.sensorVolume = device.sensorVolume || false
         this.sensorMute = device.sensorMute || false;
         this.sensorInput = device.sensorInput || false;
         this.sensorInputs = device.sensorInputs || [];
-        this.enableDebugMode = device.enableDebugMode || false;
-        this.disableLogInfo = device.disableLogInfo || false;
-        this.disableLogError = device.disableLogError || false;
         this.infoButtonCommand = device.infoButtonCommand || 'MNINF';
         this.volumeControlNamePrefix = device.volumeControlNamePrefix || false;
         this.volumeControlName = device.volumeControlName || 'Volume';
@@ -44,18 +41,21 @@ class MainZone extends EventEmitter {
         this.volumeMax = device.volumeMax || 100;
         this.masterPower = device.masterPower || false;
         this.refreshInterval = refreshInterval;
+        this.enableDebugMode = device.enableDebugMode || false;
+        this.disableLogInfo = device.disableLogInfo || false;
+        this.disableLogError = device.disableLogError || false;
         this.devInfoFile = devInfoFile;
         this.inputsFile = inputsFile;
         this.inputsNamesFile = inputsNamesFile;
         this.inputsTargetVisibilityFile = inputsTargetVisibilityFile;
-        
+
         //external integration
         this.restFul = device.restFul || {};
         this.restFulConnected = false;
         this.mqtt = device.mqtt || {};
         this.mqttConnected = false;
 
-        //sensors variable
+        //sensors
         this.sensorsInputsConfigured = [];
         for (const sensor of this.sensorInputs) {
             const sensorInputName = sensor.name ?? false;
@@ -72,7 +72,7 @@ class MainZone extends EventEmitter {
         }
         this.sensorsInputsConfiguredCount = this.sensorsInputsConfigured.length || 0;
 
-        //buttons variable
+        //buttons
         this.buttonsConfigured = [];
         for (const button of this.buttons) {
             const buttonName = button.name ?? false;
@@ -661,7 +661,7 @@ class MainZone extends EventEmitter {
                             this.inputsConfigured[index].name = value;
                             await this.displayOrder();
                         } catch (error) {
-                            this.emit('warn', `save Input Name error: ${error}`);
+                            this.emit('warn', `Save Input Name error: ${error}`);
                         }
                     });
 
@@ -676,7 +676,7 @@ class MainZone extends EventEmitter {
                             await this.saveData(this.inputsTargetVisibilityFile, this.savedInputsTargetVisibility);
                             const debug = !this.enableDebugMode ? false : this.emit('debug', `Saved  Input: ${input.name} Target Visibility: ${state ? 'HIDEN' : 'SHOWN'}`);
                         } catch (error) {
-                            this.emit('warn', `save Input Target Visibility error: ${error}`);
+                            this.emit('warn', `Save Input Target Visibility error: ${error}`);
                         }
                     });
 
@@ -799,8 +799,8 @@ class MainZone extends EventEmitter {
             const possibleSensorInputsCount = 99 - this.allServices.length;
             const maxSensorInputsCount = this.sensorsInputsConfiguredCount >= possibleSensorInputsCount ? possibleSensorInputsCount : this.sensorsInputsConfiguredCount;
             if (maxSensorInputsCount > 0) {
-                this.sensorsInputsServices = [];
                 const debug = !this.enableDebugMode ? false : this.emit('debug', `Prepare inputs sensors services`);
+                this.sensorsInputsServices = [];
                 for (let i = 0; i < maxSensorInputsCount; i++) {
                     //get sensor
                     const sensorInput = this.sensorsInputsConfigured[i];
@@ -836,8 +836,8 @@ class MainZone extends EventEmitter {
             const possibleButtonsCount = 99 - this.allServices.length;
             const maxButtonsCount = this.buttonsConfiguredCount >= possibleButtonsCount ? possibleButtonsCount : this.buttonsConfiguredCount;
             if (maxButtonsCount > 0) {
-                this.buttonsServices = [];
                 const debug = !this.enableDebugMode ? false : this.emit('debug', `Prepare buttons services`);
+                this.buttonsServices = [];
                 for (let i = 0; i < maxButtonsCount; i++) {
                     //get button
                     const button = this.buttonsConfigured[i];
