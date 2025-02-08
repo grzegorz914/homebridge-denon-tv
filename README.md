@@ -149,12 +149,12 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 
 | Method | URL | Key | Value | Type | Description |
 | --- | --- | --- | --- | --- | --- |
-| POST | `http//ip:port` | `Power` | `true`, `false` | boolean | Power On/Off. |
+| POST | `http//ip:port` | `Power` | `true`, `false` | boolean | Set power On/Off. |
 |      | `http//ip:port` | `Input` | `SAT/CBL` | string | Set input. |
 |      | `http//ip:port` | `Surround` | `MUSIC` | string | Set surround mode. |
 |      | `http//ip:port` | `RcControl` | `NS9E` | string | Send RC command. |
 |      | `http//ip:port` | `Volume` | `0 - 98` | integer | Set volume. |
-|      | `http//ip:port` | `Mute` | `true`, `false` | string | Set mute On/Off. |
+|      | `http//ip:port` | `Mute` | `true`, `false` | boolean | Set mute On/Off. |
 
 ### MQTT Integration
 
@@ -167,7 +167,7 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 
 | Method | Topic | Key | Value | Type | Description |
 | --- | --- | --- | --- | --- | --- |
-| Subscribe | `Set` |  `Power` | `true`, `false` | boolean | Power state. |
+| Subscribe | `Set` |  `Power` | `true`, `false` | boolean | Set power On/Off. |
 |     | `Set` |  `Input` | `SAT/CBL` | string | Set input. |
 |     | `Set` |  `Surround` | `MUSIC` | string | Set surround mode. |
 |     | `Set` |  `RcControl` | `NS9E` | string | Send RC command. |
