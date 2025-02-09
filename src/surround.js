@@ -31,7 +31,6 @@ class Surround extends EventEmitter {
         this.refreshInterval = refreshInterval;
         this.enableDebugMode = device.enableDebugMode || false;
         this.disableLogInfo = device.disableLogInfo || false;
-        this.disableLogError = device.disableLogError || false;
         this.devInfoFile = devInfoFile;
         this.inputsFile = inputsFile;
         this.inputsNamesFile = inputsNamesFile;
@@ -447,8 +446,7 @@ class Surround extends EventEmitter {
                 getInputsFromDevice: false,
                 getFavoritesFromDevice: false,
                 getQuickSmartSelectFromDevice: false,
-                enableDebugLog: this.enableDebugMode,
-                disableLogError: this.disableLogError
+                enableDebugLog: this.enableDebugMode
             });
 
             this.denon.on('deviceInfo', (manufacturer, modelName, serialNumber, firmwareRevision, deviceZones, apiVersion, supportPictureMode) => {

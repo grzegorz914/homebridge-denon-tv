@@ -45,7 +45,6 @@ class Zone3 extends EventEmitter {
         this.refreshInterval = refreshInterval;
         this.enableDebugMode = device.enableDebugMode || false;
         this.disableLogInfo = device.disableLogInfo || false;
-        this.disableLogError = device.disableLogError || false;
         this.devInfoFile = devInfoFile;
         this.inputsFile = inputsFile;
         this.inputsNamesFile = inputsNamesFile;
@@ -722,6 +721,7 @@ class Zone3 extends EventEmitter {
             const maxSensorInputsCount = this.sensorsInputsConfiguredCount >= possibleSensorInputsCount ? possibleSensorInputsCount : this.sensorsInputsConfiguredCount;
             if (maxSensorInputsCount > 0) {
                 const debug = !this.enableDebugMode ? false : this.emit('debug', `Prepare inputs sensors services`);
+                this.sensorsInputsServices = [];
                 for (let i = 0; i < maxSensorInputsCount; i++) {
                     //get sensor
                     const sensorInput = this.sensorsInputsConfigured[i];
@@ -758,6 +758,7 @@ class Zone3 extends EventEmitter {
             const maxButtonsCount = this.buttonsConfiguredCount >= possibleButtonsCount ? possibleButtonsCount : this.buttonsConfiguredCount;
             if (maxButtonsCount > 0) {
                 const debug = !this.enableDebugMode ? false : this.emit('debug', `Prepare buttons services`);
+                this.buttonsServices = [];
                 for (let i = 0; i < maxButtonsCount; i++) {
                     //get button
                     const button = this.buttonsConfigured[i];
@@ -823,8 +824,7 @@ class Zone3 extends EventEmitter {
                 getInputsFromDevice: this.getInputsFromDevice,
                 getFavoritesFromDevice: this.getFavoritesFromDevice,
                 getQuickSmartSelectFromDevice: this.getQuickSmartSelectFromDevice,
-                enableDebugLog: this.enableDebugMode,
-                disableLogError: this.disableLogError
+                enableDebugLog: this.enableDebugMode
             });
 
             this.denon.on('deviceInfo', (manufacturer, modelName, serialNumber, firmwareRevision, deviceZones, apiVersion, supportPictureMode) => {
