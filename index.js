@@ -341,5 +341,5 @@ class DenonPlatform {
 };
 
 export default (api) => {
-	api.registerPlatform(PluginName, PlatformName, DenonPlatform, true);
+	api.registerPlatform(PluginName, PlatformName, DenonPlatform);
 };
