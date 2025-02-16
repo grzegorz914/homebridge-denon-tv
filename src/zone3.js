@@ -323,47 +323,47 @@ class Zone3 extends EventEmitter {
         return scaledValue;
     }
 
-    async volumeControl(characteristic, value) {
+    async volumeControl(type, value) {
         try {
-            switch (characteristic) {
+            switch (type) {
                 case 'VolumeSelector': //VolumeSelector
                     switch (this.volumeControlZone) {
                         case 0:
-                            value = `'MV${value}`;
+                            value = `MV${value}`;
                             await this.denon.send(value);
                             break;
                         case 1:
-                            value = `'Z2${value}`;
+                            value = `Z2${value}`;
                             await this.denon.send(value);
                             break;
                         case 2:
-                            value = `'Z3${value}`;
+                            value = `Z3${value}`;
                             await this.denon.send(value);
                             break;
                         case 3:
-                            value = `'Z2${value}`;
+                            value = `Z2${value}`;
                             await this.denon.send(value);
-                            value = `'Z3${value}`;
+                            value = `Z3${value}`;
                             await this.denon.send(value);
                             break;
                         case 4:
-                            value = `'MV${value}`;
+                            value = `MV${value}`;
                             await this.denon.send(value);
-                            value = `'Z2${value}`;
+                            value = `Z2${value}`;
                             await this.denon.send(value);
                             break;
                         case 5:
-                            value = `'MV${value}`;
+                            value = `MV${value}`;
                             await this.denon.send(value);
-                            value = `'Z3${value}`;
+                            value = `Z3${value}`;
                             await this.denon.send(value);
                             break;
                         case 6:
-                            value = `'MV${value}`;
+                            value = `MV${value}`;
                             await this.denon.send(value);
-                            value = `'Z2${value}`;
+                            value = `Z2${value}`;
                             await this.denon.send(value);
-                            value = `'Z3${value}`;
+                            value = `Z3${value}`;
                             await this.denon.send(value);
                             break;
                     }
@@ -371,41 +371,41 @@ class Zone3 extends EventEmitter {
                 case 'Volume': //Volume
                     switch (this.volumeControlZone) {
                         case 0:
-                            value = `'MV${value}`;
+                            value = `MV${value}`;
                             await this.denon.send(value);
                             break;
                         case 1:
-                            value = `'Z2${value}`;
+                            value = `Z2${value}`;
                             await this.denon.send(value);
                             break;
                         case 2:
-                            value = `'Z3${value}`;
+                            value = `Z3${value}`;
                             await this.denon.send(value);
                             break;
                         case 3:
-                            value = `'Z2${value}`;
+                            value = `Z2${value}`;
                             await this.denon.send(value);
-                            value = `'Z3${value}`;
+                            value = `Z3${value}`;
                             await this.denon.send(value);
                             break;
                         case 4:
-                            value = `'MV${value}`;
+                            value = `MV${value}`;
                             await this.denon.send(value);
-                            value = `'Z2${value}`;
+                            value = `Z2${value}`;
                             await this.denon.send(value);
                             break;
                         case 5:
-                            value = `'MV${value}`;
+                            value = `MV${value}`;
                             await this.denon.send(value);
-                            value = `'Z3${value}`;
+                            value = `Z3${value}`;
                             await this.denon.send(value);
                             break;
                         case 6:
-                            value = `'MV${value}`;
+                            value = `MV${value}`;
                             await this.denon.send(value);
-                            value = `'Z2${value}`;
+                            value = `Z2${value}`;
                             await this.denon.send(value);
-                            value = `'Z3${value}`;
+                            value = `Z3${value}`;
                             await this.denon.send(value);
                             break;
                     }
@@ -413,41 +413,41 @@ class Zone3 extends EventEmitter {
                 case 'Mute': //Mute
                     switch (this.volumeControlZone) {
                         case 0:
-                            value = `'MU${value}`;
+                            value = `MU${value}`;
                             await this.denon.send(value);
                             break;
                         case 1:
-                            value = `'Z2MU${value}`;
+                            value = `Z2MU${value}`;
                             await this.denon.send(value);
                             break;
                         case 2:
-                            value = `'Z3MU${value}`;
+                            value = `Z3MU${value}`;
                             await this.denon.send(value);
                             break;
                         case 3:
-                            value = `'Z2MU${value}`;
+                            value = `Z2MU${value}`;
                             await this.denon.send(value);
-                            value = `'Z3MU${value}`;
+                            value = `Z3MU${value}`;
                             await this.denon.send(value);
                             break;
                         case 4:
-                            value = `'MU${value}`;
+                            value = `MU${value}`;
                             await this.denon.send(value);
-                            value = `'Z2MU${value}`;
+                            value = `Z2MU${value}`;
                             await this.denon.send(value);
                             break;
                         case 5:
-                            value = `'MU${value}`;
+                            value = `MU${value}`;
                             await this.denon.send(value);
-                            value = `'Z3MU${value}`;
+                            value = `Z3MU${value}`;
                             await this.denon.send(value);
                             break;
                         case 6:
-                            value = `'MU${value}`;
+                            value = `MU${value}`;
                             await this.denon.send(value);
-                            value = `'Z2MU${value}`;
+                            value = `Z2MU${value}`;
                             await this.denon.send(value);
-                            value = `'Z3MU${value}`;
+                            value = `Z3MU${value}`;
                             await this.denon.send(value);
                             break;
                     }
@@ -630,7 +630,7 @@ class Zone3 extends EventEmitter {
                         let scaledValue = await this.scaleValue(value, 0, 100, 0, this.volumeMax >= 2 ? this.volumeMax - 2 : this.volumeMax);
                         scaledValue = scaledValue < 10 ? `0${scaledValue}` : scaledValue;
                         await this.volumeControl('Volume', scaledValue);
-                        const info = this.disableLogInfo ? false : this.emit('info', `set Volume: ${value}%`);;
+                        const info = this.disableLogInfo ? false : this.emit('info', `set Volume: ${value}%`);
                     } catch (error) {
                         this.emit('warn', `set Volume error: ${error}`);
                     };

@@ -322,47 +322,47 @@ class MainZone extends EventEmitter {
         return scaledValue;
     }
 
-    async volumeControl(characteristic, value) {
+    async volumeControl(type, value) {
         try {
-            switch (characteristic) {
+            switch (type) {
                 case 'VolumeSelector': //VolumeSelector
                     switch (this.volumeControlZone) {
                         case 0:
-                            value = `'MV${value}`;
+                            value = `MV${value}`;
                             await this.denon.send(value);
                             break;
                         case 1:
-                            value = `'Z2${value}`;
+                            value = `Z2${value}`;
                             await this.denon.send(value);
                             break;
                         case 2:
-                            value = `'Z3${value}`;
+                            value = `Z3${value}`;
                             await this.denon.send(value);
                             break;
                         case 3:
-                            value = `'Z2${value}`;
+                            value = `Z2${value}`;
                             await this.denon.send(value);
-                            value = `'Z3${value}`;
+                            value = `Z3${value}`;
                             await this.denon.send(value);
                             break;
                         case 4:
-                            value = `'MV${value}`;
+                            value = `MV${value}`;
                             await this.denon.send(value);
-                            value = `'Z2${value}`;
+                            value = `Z2${value}`;
                             await this.denon.send(value);
                             break;
                         case 5:
-                            value = `'MV${value}`;
+                            value = `MV${value}`;
                             await this.denon.send(value);
-                            value = `'Z3${value}`;
+                            value = `Z3${value}`;
                             await this.denon.send(value);
                             break;
                         case 6:
-                            value = `'MV${value}`;
+                            value = `MV${value}`;
                             await this.denon.send(value);
-                            value = `'Z2${value}`;
+                            value = `Z2${value}`;
                             await this.denon.send(value);
-                            value = `'Z3${value}`;
+                            value = `Z3${value}`;
                             await this.denon.send(value);
                             break;
                     }
@@ -370,41 +370,41 @@ class MainZone extends EventEmitter {
                 case 'Volume': //Volume
                     switch (this.volumeControlZone) {
                         case 0:
-                            value = `'MV${value}`;
+                            value = `MV${value}`;
                             await this.denon.send(value);
                             break;
                         case 1:
-                            value = `'Z2${value}`;
+                            value = `Z2${value}`;
                             await this.denon.send(value);
                             break;
                         case 2:
-                            value = `'Z3${value}`;
+                            value = `Z3${value}`;
                             await this.denon.send(value);
                             break;
                         case 3:
-                            value = `'Z2${value}`;
+                            value = `Z2${value}`;
                             await this.denon.send(value);
-                            value = `'Z3${value}`;
+                            value = `Z3${value}`;
                             await this.denon.send(value);
                             break;
                         case 4:
-                            value = `'MV${value}`;
+                            value = `MV${value}`;
                             await this.denon.send(value);
-                            value = `'Z2${value}`;
+                            value = `Z2${value}`;
                             await this.denon.send(value);
                             break;
                         case 5:
-                            value = `'MV${value}`;
+                            value = `MV${value}`;
                             await this.denon.send(value);
-                            value = `'Z3${value}`;
+                            value = `Z3${value}`;
                             await this.denon.send(value);
                             break;
                         case 6:
-                            value = `'MV${value}`;
+                            value = `MV${value}`;
                             await this.denon.send(value);
-                            value = `'Z2${value}`;
+                            value = `Z2${value}`;
                             await this.denon.send(value);
-                            value = `'Z3${value}`;
+                            value = `Z3${value}`;
                             await this.denon.send(value);
                             break;
                     }
@@ -412,49 +412,51 @@ class MainZone extends EventEmitter {
                 case 'Mute': //Mute
                     switch (this.volumeControlZone) {
                         case 0:
-                            value = `'MU${value}`;
+                            value = `MU${value}`;
                             await this.denon.send(value);
                             break;
                         case 1:
-                            value = `'Z2MU${value}`;
+                            value = `Z2MU${value}`;
                             await this.denon.send(value);
                             break;
                         case 2:
-                            value = `'Z3MU${value}`;
+                            value = `Z3MU${value}`;
                             await this.denon.send(value);
                             break;
                         case 3:
-                            value = `'Z2MU${value}`;
+                            value = `Z2MU${value}`;
                             await this.denon.send(value);
-                            value = `'Z3MU${value}`;
+                            value = `Z3MU${value}`;
                             await this.denon.send(value);
                             break;
                         case 4:
-                            value = `'MU${value}`;
+                            value = `MU${value}`;
                             await this.denon.send(value);
-                            value = `'Z2MU${value}`;
+                            value = `Z2MU${value}`;
                             await this.denon.send(value);
                             break;
                         case 5:
-                            value = `'MU${value}`;
+                            value = `MU${value}`;
                             await this.denon.send(value);
-                            value = `'Z3MU${value}`;
+                            value = `Z3MU${value}`;
                             await this.denon.send(value);
                             break;
                         case 6:
-                            value = `'MU${value}`;
+                            value = `MU${value}`;
                             await this.denon.send(value);
-                            value = `'Z2MU${value}`;
+                            value = `Z2MU${value}`;
                             await this.denon.send(value);
-                            value = `'Z3MU${value}`;
+                            value = `Z3MU${value}`;
                             await this.denon.send(value);
                             break;
                     }
                     break;
+                default:
+                    this.emit('warn', `unknown volume control type: ${type}`);
+                    break;
             }
-            return true;
         } catch (error) {
-            this.emit('warn', `set Volume control error: ${error}`);
+            this.emit('warn', `volume control error: ${error}`);
         };
     }
 
