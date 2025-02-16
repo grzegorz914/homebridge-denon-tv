@@ -181,7 +181,6 @@ class MainZone extends EventEmitter {
                 .setCharacteristic(Characteristic.ConfiguredName, accessoryName);
             this.allServices.push(this.informationService);
 
-
             //prepare television service
             const debug2 = !this.enableDebugMode ? false : this.emit('debug', `Prepare television service`);
             this.televisionService = accessory.addService(Service.Television, `${accessoryName} Television`, 'Television');

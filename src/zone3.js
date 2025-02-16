@@ -478,7 +478,6 @@ class Zone3 extends EventEmitter {
                 .setCharacteristic(Characteristic.FirmwareRevision, this.firmwareRevision);
             this.allServices.push(this.informationService);
 
-
             //prepare television service
             const debug2 = !this.enableDebugMode ? false : this.emit('debug', `Prepare television service`);
             this.televisionService = accessory.addService(Service.Television, `${accessoryName} Television`, 'Television');
