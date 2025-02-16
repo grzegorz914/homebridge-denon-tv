@@ -29,10 +29,10 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 ## About The Plugin
 
 * Multi Zone control.
-* Power ON/OFF short press tile in HomeKit app.
-* RC/Media control is possible after you go to the RC app on iPhone/iPad.
-* Speaker control is possible after you go to RC app on iPhone/iPad `Speaker Service`.
-* Legacy Volume and Mute control is possible throught extra `lightbulb`/`fan` (slider).
+* Power ON/OFF control with short press the tile in HomeKit app.
+* RC/Media control, RC app on iPhone/iPad.
+* Speaker Volume and Mute control with hardware buttons, RC app on iPhone/iPad.
+* Volume and Mute control with extra tile `lightbulb`/`fan` (slider).
 * Inputs/Surrounds/Pass Trough Inputs can be changed using Inputs selector in the Home app or using extra tile.
 * Digital Input Modes can be controlled by creating separate tile in the buttons section.
 * Siri can be used for all functions, some times need create legacy buttons/switches/sensors.
