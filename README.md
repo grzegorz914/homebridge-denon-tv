@@ -119,12 +119,12 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 | `disableLogSuccess` | If enabled, disable logging device success. |
 | `disableLogWarn` | If enabled, disable logging device warnings. |
 | `disableLogError` | If enabled, disable logging device error. |
-| `enableDebugMode` | If enabled, deep log will be present in homebridge console. |
+| `enableDebugMode` | If enabled, debug log will be present in homebridge console. |
 | `enableRestFul` | If enabled, RESTful server will start automatically and respond to any path request. |
 | `restFul` | This is RSTful server. |
 | `enable` | If enabled, RESTful server will start automatically and respond to any path request. |
 | `port` | Here set the listening `Port` for RESTful server. |
-| `debug` | If enabled, deep log will be present in homebridge console for RESTFul server. |
+| `debug` | If enabled, debug log will be present in homebridge console for RESTFul server. |
 | `mqtt` | This is MQTT Broker. |
 | `enable` | If enabled, MQTT Broker will start automatically and publish all awailable PV data. |
 | `host` | Here set the `IP Address` or `Hostname` for MQTT Broker. |
@@ -134,8 +134,9 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 | `auth` | If enabled, MQTT Broker will use authorization credentials. |
 | `user` | Here set the MQTT Broker user. |
 | `passwd` | Here set the MQTT Broker password. |
-| `debug` | If enabled, deep log will be present in homebridge console for MQTT. |
-| `AV Surround Mode` | This extra Accessory will control all functions of Main Zone except `Inputs` and `Buttons`. |
+| `debug` | If enabled, debug log will be present in homebridge console for MQTT. |
+| `AV Surround Mode` | This extra Accessory supports only `Surrounds Control`, `Surrounds Sensors`. |
+| `AV Pass Tgrough Inputs` | This extra Accessory supports only `Pass Through Inputs Control`, `Pass Through Inputs Sensors`. |
 
 ### RESTFul Integration
 
