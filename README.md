@@ -139,8 +139,8 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 
 ### Extra Accessory Tile
 
-* Surround Mode - This extra accessory supports only `Surrounds Control`, `Surrounds Sensors`.
-* Pass Tgrough Inputs - This extra accessory supports only `Pass Through Inputs Control`, `Pass Through Inputs Sensors`.
+* Surround Mode - supports only `Surrounds Control`, `Surrounds Sensors`.
+* Pass Tgrough Inputs - supports only `Pass Through Inputs Control`, `Pass Through Inputs Sensors` and is always `ON`.
 
 ### RESTFul Integration
 
