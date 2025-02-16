@@ -33,8 +33,9 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 * RC/Media control, RC app on iPhone/iPad.
 * Speaker Volume and Mute control with hardware buttons, RC app on iPhone/iPad.
 * Volume and Mute control with extra tile `lightbulb`/`fan` (slider).
-* Inputs/Surrounds/Pass Trough Inputs control using inputs whell or extra tile (buttons).
-* Digital Input Modes control using extra tile (buttons).
+* Inputs control using inputs whell or extra tile (buttons).
+* Surrounds/Pass Trough Inputs control with [extra accessory tile](https://github.com/grzegorz914/homebridge-denon-tv?tab=readme-ov-file#extra-accessory-tile) or with buttons.
+* Digital Input Modes control using extra buttons.
 * Siri can be used for all functions, some times need to create buttons/switches/sensors.
 * Automations can be used for all functions, some times need to create buttons/switches/sensors.
 * This plugin is based upon the official documentation: [Denon Control Protocol 2020](https://github.com/grzegorz914/homebridge-denon-tv/blob/main/doc/Denon%20Control%20Protocol.xlsx)
@@ -135,8 +136,11 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 | `user` | Here set the MQTT Broker user. |
 | `passwd` | Here set the MQTT Broker password. |
 | `debug` | If enabled, debug log will be present in homebridge console for MQTT. |
-| `AV Surround Mode` | This extra Accessory supports only `Surrounds Control`, `Surrounds Sensors`. |
-| `AV Pass Tgrough Inputs` | This extra Accessory supports only `Pass Through Inputs Control`, `Pass Through Inputs Sensors`. |
+
+### Extra Accessory Tile
+
+* Surround Mode - This extra accessory supports only `Surrounds Control`, `Surrounds Sensors`.
+* Pass Tgrough Inputs - This extra accessory supports only `Pass Through Inputs Control`, `Pass Through Inputs Sensors`.
 
 ### RESTFul Integration
 
