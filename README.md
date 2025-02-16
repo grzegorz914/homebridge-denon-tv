@@ -34,7 +34,7 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 * Speaker Volume and Mute control with hardware buttons, RC app on iPhone/iPad.
 * Volume and Mute control with extra tile `lightbulb`/`fan` (slider).
 * Inputs control using inputs whell or extra tile (buttons).
-* Surrounds/Pass Trough Inputs control with [extra accessory tile](https://github.com/grzegorz914/homebridge-denon-tv?tab=readme-ov-file#extra-accessory-tile) or with buttons.
+* Surrounds/Pass Trough Inputs control as a [extra accessory tile](https://github.com/grzegorz914/homebridge-denon-tv?tab=readme-ov-file#extra-accessory-tile) or with buttons.
 * Digital Input Modes control using extra buttons.
 * Siri can be used for all functions, some times need to create buttons/switches/sensors.
 * Automations can be used for all functions, some times need to create buttons/switches/sensors.
