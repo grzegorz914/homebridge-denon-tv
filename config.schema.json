@@ -6597,26 +6597,6 @@
                 "functionBody": "return model.devices[arrayIndices].zoneControl <= 2;"
               }
             },
-            "masterMute": {
-              "title": "Master Mute Control",
-              "type": "boolean",
-              "default": false,
-              "description": "The mute switch for that zone will muted the entire receiver *ON* or *OFF* rather than just the zone itself.",
-              "condition": {
-                "functionBody": "return model.devices[arrayIndices].zoneControl >= 1 && model.devices[arrayIndices].zoneControl <= 2;"
-              },
-              "required": false
-            },
-            "masterVolume": {
-              "title": "Master Volume Control",
-              "type": "boolean",
-              "default": false,
-              "description": "The volume for that zone will set the entire receiver volume *UP* or *DOWN* rather than just the zone itself.",
-              "condition": {
-                "functionBody": "return model.devices[arrayIndices].zoneControl >= 1 && model.devices[arrayIndices].zoneControl <= 2;"
-              },
-              "required": false
-            },
             "volumeControlNamePrefix": {
               "title": "Volume Control Name Prefix",
               "type": "boolean",
@@ -6637,13 +6617,13 @@
                 "functionBody": "return model.devices[arrayIndices].zoneControl <= 2;"
               }
             },
-            "volumeControl": {
-              "title": "Volume Control Mode",
+            "volumeControlType": {
+              "title": "Volume Control Type",
               "type": "integer",
               "minimum": 0,
               "maximum": 2,
               "default": 0,
-              "description": "Here select what a volume control mode You want to use. If select *None/Disabled* only hardware buttons in RC app can be used to control volume.",
+              "description": "Here select what a extra volume/mute control type You want to use. If select *None/Disabled* only hardware buttons in RC app can be used to control volume.",
               "oneOf": [
                 {
                   "title": "None/Disabled",
@@ -6661,6 +6641,62 @@
                   "title": "Fan",
                   "enum": [
                     2
+                  ]
+                }
+              ],
+              "required": true,
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].zoneControl <= 2;"
+              }
+            },
+            "volumeControlZone": {
+              "title": "Volume Control Zone",
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 6,
+              "default": 0,
+              "description": "Here select which zone the volume/mute want control, this also working with hardware buttons in RC app.",
+              "oneOf": [
+                {
+                  "title": "Main Zone",
+                  "enum": [
+                    0
+                  ]
+                },
+                {
+                  "title": "Zone 2",
+                  "enum": [
+                    1
+                  ]
+                },
+                {
+                  "title": "Zone 3",
+                  "enum": [
+                    2
+                  ]
+                },
+                {
+                  "title": "Zone 2/3",
+                  "enum": [
+                    3
+                  ]
+                },
+                {
+                  "title": "Main Zone + Z2",
+                  "enum": [
+                    4
+                  ]
+                },
+                {
+                  "title": "Main Zone + Z3",
+                  "enum": [
+                    5
+                  ]
+                },
+                {
+                  "title": "Main Zone + Z2/Z3",
+                  "enum": [
+                    6
                   ]
                 }
               ],
@@ -6995,11 +7031,10 @@
                   "key": "devices[]",
                   "title": "Volume",
                   "items": [
-                    "devices[].masterMute",
-                    "devices[].masterVolume",
                     "devices[].volumeControlNamePrefix",
                     "devices[].volumeControlName",
-                    "devices[].volumeControl",
+                    "devices[].volumeControlType",
+                    "devices[].volumeControlZone",
                     "devices[].volumeMax"
                   ]
                 },

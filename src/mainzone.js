@@ -34,12 +34,13 @@ class MainZone extends EventEmitter {
         this.sensorMute = device.sensorMute || false;
         this.sensorInput = device.sensorInput || false;
         this.sensorInputs = device.sensorInputs || [];
-        this.infoButtonCommand = device.infoButtonCommand || 'MNINF';
+        this.masterPower = device.masterPower || false;
         this.volumeControlNamePrefix = device.volumeControlNamePrefix || false;
         this.volumeControlName = device.volumeControlName || 'Volume';
-        this.volumeControl = device.volumeControl || false;
+        this.volumeControlType = device.volumeControlType || 0;
+        this.volumeControlZone = device.volumeControlZone || 0;
         this.volumeMax = device.volumeMax || 100;
-        this.masterPower = device.masterPower || false;
+        this.infoButtonCommand = device.infoButtonCommand || 'MNINF';
         this.refreshInterval = refreshInterval;
         this.enableDebugMode = device.enableDebugMode || false;
         this.disableLogInfo = device.disableLogInfo || false;
@@ -154,13 +155,12 @@ class MainZone extends EventEmitter {
                     set = await this.denon.send(input);
                     break;
                 case 'Volume':
-                    const value1 = (value < 0 || value > 100) ? this.volume : (value < 10 ? `0${value}` : value);
-                    const volume = `MV${value1}`;
-                    set = await this.denon.send(volume);
+                    const volume = (value < 0 || value > 100) ? this.volume : (value < 10 ? `0${value}` : value);
+                    set = await this.volumeControl('Volume', volume);
                     break;
                 case 'Mute':
-                    const mute = value ? 'MUON' : 'MUOFF';
-                    set = await this.denon.send(mute);
+                    const mute = value ? 'ON' : 'OFF';
+                    set = await this.volumeControl('Mute', mute);
                     break;
                 case 'Surround':
                     const surround = `MS${value}`;
@@ -320,6 +320,142 @@ class MainZone extends EventEmitter {
     async scaleValue(value, inMin, inMax, outMin, outMax) {
         const scaledValue = parseFloat((((Math.max(inMin, Math.min(inMax, value)) - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin).toFixed(0));
         return scaledValue;
+    }
+
+    async volumeControl(characteristic, value) {
+        try {
+            switch (characteristic) {
+                case 'VolumeSelector': //VolumeSelector
+                    switch (this.volumeControlZone) {
+                        case 0:
+                            value = `'MV${value}`;
+                            await this.denon.send(value);
+                            break;
+                        case 1:
+                            value = `'Z2${value}`;
+                            await this.denon.send(value);
+                            break;
+                        case 2:
+                            value = `'Z3${value}`;
+                            await this.denon.send(value);
+                            break;
+                        case 3:
+                            value = `'Z2${value}`;
+                            await this.denon.send(value);
+                            value = `'Z3${value}`;
+                            await this.denon.send(value);
+                            break;
+                        case 4:
+                            value = `'MV${value}`;
+                            await this.denon.send(value);
+                            value = `'Z2${value}`;
+                            await this.denon.send(value);
+                            break;
+                        case 5:
+                            value = `'MV${value}`;
+                            await this.denon.send(value);
+                            value = `'Z3${value}`;
+                            await this.denon.send(value);
+                            break;
+                        case 6:
+                            value = `'MV${value}`;
+                            await this.denon.send(value);
+                            value = `'Z2${value}`;
+                            await this.denon.send(value);
+                            value = `'Z3${value}`;
+                            await this.denon.send(value);
+                            break;
+                    }
+                    break;
+                case 'Volume': //Volume
+                    switch (this.volumeControlZone) {
+                        case 0:
+                            value = `'MV${value}`;
+                            await this.denon.send(value);
+                            break;
+                        case 1:
+                            value = `'Z2${value}`;
+                            await this.denon.send(value);
+                            break;
+                        case 2:
+                            value = `'Z3${value}`;
+                            await this.denon.send(value);
+                            break;
+                        case 3:
+                            value = `'Z2${value}`;
+                            await this.denon.send(value);
+                            value = `'Z3${value}`;
+                            await this.denon.send(value);
+                            break;
+                        case 4:
+                            value = `'MV${value}`;
+                            await this.denon.send(value);
+                            value = `'Z2${value}`;
+                            await this.denon.send(value);
+                            break;
+                        case 5:
+                            value = `'MV${value}`;
+                            await this.denon.send(value);
+                            value = `'Z3${value}`;
+                            await this.denon.send(value);
+                            break;
+                        case 6:
+                            value = `'MV${value}`;
+                            await this.denon.send(value);
+                            value = `'Z2${value}`;
+                            await this.denon.send(value);
+                            value = `'Z3${value}`;
+                            await this.denon.send(value);
+                            break;
+                    }
+                    break;
+                case 'Mute': //Mute
+                    switch (this.volumeControlZone) {
+                        case 0:
+                            value = `'MU${value}`;
+                            await this.denon.send(value);
+                            break;
+                        case 1:
+                            value = `'Z2MU${value}`;
+                            await this.denon.send(value);
+                            break;
+                        case 2:
+                            value = `'Z3MU${value}`;
+                            await this.denon.send(value);
+                            break;
+                        case 3:
+                            value = `'Z2MU${value}`;
+                            await this.denon.send(value);
+                            value = `'Z3MU${value}`;
+                            await this.denon.send(value);
+                            break;
+                        case 4:
+                            value = `'MU${value}`;
+                            await this.denon.send(value);
+                            value = `'Z2MU${value}`;
+                            await this.denon.send(value);
+                            break;
+                        case 5:
+                            value = `'MU${value}`;
+                            await this.denon.send(value);
+                            value = `'Z3MU${value}`;
+                            await this.denon.send(value);
+                            break;
+                        case 6:
+                            value = `'MU${value}`;
+                            await this.denon.send(value);
+                            value = `'Z2MU${value}`;
+                            await this.denon.send(value);
+                            value = `'Z3MU${value}`;
+                            await this.denon.send(value);
+                            break;
+                    }
+                    break;
+            }
+            return true;
+        } catch (error) {
+            this.emit('warn', `set Volume control error: ${error}`);
+        };
     }
 
     //prepare accessory
@@ -551,14 +687,14 @@ class MainZone extends EventEmitter {
                     try {
                         switch (command) {
                             case Characteristic.VolumeSelector.INCREMENT:
-                                command = 'MVUP';
+                                command = 'UP';
+                                await this.volumeControl('VolumeSelector', command);
                                 break;
                             case Characteristic.VolumeSelector.DECREMENT:
-                                command = 'MVDOWN';
+                                command = 'DOWN';
+                                await this.volumeControl('VolumeSelector', command);
                                 break;
                         }
-
-                        await this.denon.send(command);
                         const info = this.disableLogInfo ? false : this.emit('info', `set Volume Selector: ${command}`);
                     } catch (error) {
                         this.emit('warn', `set Volume Selector error: ${error}`);
@@ -574,8 +710,7 @@ class MainZone extends EventEmitter {
                     try {
                         let scaledValue = await this.scaleValue(value, 0, 100, 0, this.volumeMax >= 2 ? this.volumeMax - 2 : this.volumeMax);
                         scaledValue = scaledValue < 10 ? `0${scaledValue}` : scaledValue;
-                        const volume = `MV${scaledValue}`;
-                        await this.denon.send(volume);
+                        await this.volumeControl('Volume', scaledValue);
                         const info = this.disableLogInfo ? false : this.emit('info', `set Volume: ${value}%`);
                     } catch (error) {
                         this.emit('warn', `set Volume error: ${error}`);
@@ -589,9 +724,9 @@ class MainZone extends EventEmitter {
                 })
                 .onSet(async (state) => {
                     try {
-                        const muteState = state ? 'MUON' : 'MUOFF';
-                        await this.denon.send(muteState);
-                        const info = this.disableLogInfo ? false : this.emit('info', `set Mute: ${state ? 'ON' : 'OFF'}`);
+                        state = state ? 'ON' : 'OFF';
+                        await this.volumeControl('Mute', state);
+                        const info = this.disableLogInfo ? false : this.emit('info', `set Mute: ${state}`);
                     } catch (error) {
                         this.emit('warn', `set Mute error: ${error}`);
                     };
@@ -685,10 +820,10 @@ class MainZone extends EventEmitter {
             };
 
             //prepare volume service
-            if (this.volumeControl) {
+            if (this.volumeControlType > 0) {
                 const debug = !this.enableDebugMode ? false : this.emit('debug', `Prepare volume service`);
                 const volumeServiceName = this.volumeControlNamePrefix ? `${accessoryName} ${this.volumeControlName}` : this.volumeControlName;
-                if (this.volumeControl === 1) {
+                if (this.volumeControlType === 1) {
                     this.volumeService = accessory.addService(Service.Lightbulb, `${volumeServiceName}`, volumeServiceName);
                     this.volumeService.addOptionalCharacteristic(Characteristic.ConfiguredName);
                     this.volumeService.setCharacteristic(Characteristic.ConfiguredName, `${volumeServiceName}`);
@@ -712,7 +847,7 @@ class MainZone extends EventEmitter {
                     this.allServices.push(this.volumeService);
                 }
 
-                if (this.volumeControl === 2) {
+                if (this.volumeControlType === 2) {
                     this.volumeServiceFan = accessory.addService(Service.Fan, `${volumeServiceName}`, volumeServiceName);
                     this.volumeServiceFan.addOptionalCharacteristic(Characteristic.ConfiguredName);
                     this.volumeServiceFan.setCharacteristic(Characteristic.ConfiguredName, `${volumeServiceName}`);
