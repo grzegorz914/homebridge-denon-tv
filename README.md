@@ -33,7 +33,7 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 * RC/Media control, RC app on iPhone/iPad.
 * Speaker Volume and Mute control with hardware buttons, RC app on iPhone/iPad.
 * Volume and Mute control with extra tile `lightbulb`/`fan` (slider).
-* Inputs/Surrounds/Pass Trough Inputs can be changed using Inputs selector in the Home app or using extra tile.
+* Inputs/Surrounds/Pass Trough Inputs change using Inputs selector or using extra tile (buttons).
 * Digital Input Modes can be controlled by creating separate tile in the buttons section.
 * Siri can be used for all functions, some times need create legacy buttons/switches/sensors.
 * Automations can be used for all functions, some times need create legacy buttons/switches/sensors.
