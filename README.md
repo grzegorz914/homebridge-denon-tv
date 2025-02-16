@@ -33,10 +33,10 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 * RC/Media control, RC app on iPhone/iPad.
 * Speaker Volume and Mute control with hardware buttons, RC app on iPhone/iPad.
 * Volume and Mute control with extra tile `lightbulb`/`fan` (slider).
-* Inputs/Surrounds/Pass Trough Inputs change using Inputs selector or using extra tile (buttons).
-* Digital Input Modes can be controlled by creating separate tile in the buttons section.
-* Siri can be used for all functions, some times need create legacy buttons/switches/sensors.
-* Automations can be used for all functions, some times need create legacy buttons/switches/sensors.
+* Inputs/Surrounds/Pass Trough Inputs control using inputs whell or extra tile (buttons).
+* Digital Input Modes control using extra tile (buttons).
+* Siri can be used for all functions, some times need to create buttons/switches/sensors.
+* Automations can be used for all functions, some times need to create buttons/switches/sensors.
 * This plugin is based upon the official documentation: [Denon Control Protocol 2020](https://github.com/grzegorz914/homebridge-denon-tv/blob/main/doc/Denon%20Control%20Protocol.xlsx)
 * Support external integrations, [RESTFul](https://github.com/grzegorz914/homebridge-denon-tv?tab=readme-ov-file#restful-integration), [MQTT](https://github.com/grzegorz914/homebridge-denon-tv?tab=readme-ov-file#mqtt-integration).
 
