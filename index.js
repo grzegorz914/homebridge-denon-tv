@@ -3,7 +3,7 @@ import { mkdirSync, existsSync, writeFileSync } from 'fs';
 import MainZone from './src/mainzone.js';
 import Zone2 from './src/zone2.js';
 import Zone3 from './src/zone3.js';
-import Surround from './src/surround.js';
+import Surrounds from './src/surrounds.js';
 import PassThroughInputs from './src/passthroughinputs.js';
 import ImpulseGenerator from './src/impulsegenerator.js';
 import { PluginName, PlatformName, ZoneNameShort } from './src/constants.js';
@@ -134,7 +134,7 @@ class DenonPlatform {
 							throw new Error(`Device: ${host} ${deviceName}, Did finish launching error: ${error}.`);
 						}
 						break;
-					case 1: //zone 1
+					case 1: //zone 2
 						try {
 							const zone2 = new Zone2(api, device, zoneControl, deviceName, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile, refreshInterval);
 							zone2.on('publishAccessory', (accessory) => {
@@ -182,7 +182,7 @@ class DenonPlatform {
 							throw new Error(`Device: ${host} ${deviceName}, Did finish launching error: ${error}.`);
 						}
 						break;
-					case 2: //zone 2
+					case 2: //zone 3
 						try {
 							const zone3 = new Zone3(api, device, zoneControl, deviceName, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile, refreshInterval);
 							zone3.on('publishAccessory', (accessory) => {
@@ -230,10 +230,10 @@ class DenonPlatform {
 							throw new Error(`Device: ${host} ${deviceName}, Did finish launching error: ${error}.`);
 						}
 						break;
-					case 3: //surround
+					case 3: //surrounds
 						try {
-							const surround = new Surround(api, device, zoneControl, deviceName, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile, refreshInterval);
-							surround.on('publishAccessory', (accessory) => {
+							const surrounds = new Surrounds(api, device, zoneControl, deviceName, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile, refreshInterval);
+							surrounds.on('publishAccessory', (accessory) => {
 								api.publishExternalAccessories(PluginName, [accessory]);
 								const emitLog = disableLogSuccess ? false : log.success(`Device: ${host} ${deviceName}, Published as external accessory.`);
 							})
@@ -260,11 +260,11 @@ class DenonPlatform {
 							const impulseGenerator = new ImpulseGenerator();
 							impulseGenerator.on('start', async () => {
 								try {
-									const startDone = await surround.start();
+									const startDone = await surrounds.start();
 									const stopImpulseGenerator = startDone ? await impulseGenerator.stop() : false;
 
 									//start device impulse generator 
-									const startImpulseGenerator = startDone ? await surround.startImpulseGenerator() : false;
+									const startImpulseGenerator = startDone ? await surrounds.startImpulseGenerator() : false;
 								} catch (error) {
 									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${deviceName}, ${error}, trying again.`);
 								};

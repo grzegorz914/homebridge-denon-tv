@@ -1,9 +1,6 @@
 import { promises as fsPromises } from 'fs';
 import EventEmitter from 'events';
-import Mqtt from './mqtt.js';
-import RestFul from './restful.js';
 import Denon from './denon.js';
-import { PictureModesConversionToHomeKit, PictureModesDenonNumber, PictureModesDenonString, DirectSoundMode } from './constants.js';
 let Accessory, Characteristic, Service, Categories, Encode, AccessoryUUID;
 
 class MainZone extends EventEmitter {

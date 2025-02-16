@@ -833,7 +833,7 @@
             "surrounds": {
               "type": "array",
               "items": {
-                "title": "Surround",
+                "title": "Surrounds",
                 "type": "object",
                 "properties": {
                   "name": {

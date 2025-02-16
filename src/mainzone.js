@@ -154,6 +154,10 @@ class MainZone extends EventEmitter {
                     const input = `SI${value}`;
                     set = await this.denon.send(input);
                     break;
+                case 'Surround':
+                    const surround = `MS${value}`;
+                    set = await this.denon.send(surround);
+                    break;
                 case 'Volume':
                     const volume = (value < 0 || value > 100) ? this.volume : (value < 10 ? `0${value}` : value);
                     set = await this.volumeControl('Volume', volume);
@@ -161,10 +165,6 @@ class MainZone extends EventEmitter {
                 case 'Mute':
                     const mute = value ? 'ON' : 'OFF';
                     set = await this.volumeControl('Mute', mute);
-                    break;
-                case 'Surround':
-                    const surround = `MS${value}`;
-                    set = await this.denon.send(surround);
                     break;
                 case 'RcControl':
                     set = await this.denon.send(value);

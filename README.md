@@ -63,7 +63,7 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 | `name` | Here set the accessory *Name* to be displayed in *Homebridge/HomeKit*. |
 | `host` | Here set the `Hostname` or `Address IP` of AVR. |
 | `port` | Here set the API communication port, if `8080` is not working try to use port `80` which some receivers use alternatively. |
-| `zoneControl` | Here choose which zone will be controlled by this section `0 - Main Zone`, `1 - Zone 2`, `2 - Zone 3`, `3 - Surround Mode`, `4 - Pass Through Inputs`. |
+| `zoneControl` | Here choose which zone will be controlled by this section `0 - Main Zone`, `1 - Zone 2`, `2 - Zone 3`, `3 - Surrounds`, `4 - Pass Through Inputs`. |
 | `generation` | Here choose generation of Your device, old `0 - 2010 - 2012`, middle `1 - 2013 - 2022`, new `2 - 2023 and newer`. |
 | `getInputsFromDevice` | If enabled, `Inputs` will be loaded direct from device. |
 | `getFavoritesFromDevice` | If enabled, `Favorites` will be loaded to the inputs list if exist. |
@@ -139,7 +139,7 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 
 ### Extra Accessory Tile
 
-* Surround Mode - supports only `Surrounds Control`, `Surrounds Sensors`.
+* Surrounds - supports only `Surrounds Control`, `Surrounds Sensors`.
 * Pass Tgrough Inputs - always `ON`, supports only `Pass Through Inputs Control`, `Pass Through Inputs Sensors`.
 
 ### RESTFul Integration
@@ -155,11 +155,11 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 | Method | URL | Key | Value | Type | Description |
 | --- | --- | --- | --- | --- | --- |
 | POST | `http//ip:port` | `Power` | `true`, `false` | boolean | Set power On/Off. |
-|      | `http//ip:port` | `Input` | `SAT/CBL` | string | Set input. |
+|      | `http//ip:port` | `Input` | `SAT/CBL` | string | Set input/pass through input. |
 |      | `http//ip:port` | `Surround` | `MUSIC` | string | Set surround mode. |
-|      | `http//ip:port` | `RcControl` | `NS9E` | string | Send RC command. |
 |      | `http//ip:port` | `Volume` | `0 - 98` | integer | Set volume. |
 |      | `http//ip:port` | `Mute` | `true`, `false` | boolean | Set mute On/Off. |
+|      | `http//ip:port` | `RcControl` | `NS9E` | string | Send RC command. |
 
 ### MQTT Integration
 
@@ -173,8 +173,8 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 | Method | Topic | Key | Value | Type | Description |
 | --- | --- | --- | --- | --- | --- |
 | Subscribe | `Set` |  `Power` | `true`, `false` | boolean | Set power On/Off. |
-|     | `Set` |  `Input` | `SAT/CBL` | string | Set input. |
+|     | `Set` |  `Input` | `SAT/CBL` | string | Set input/pass through input. |
 |     | `Set` |  `Surround` | `MUSIC` | string | Set surround mode. |
-|     | `Set` |  `RcControl` | `NS9E` | string | Send RC command. |
 |     | `Set` |  `Volume` | `0 - 98` | integer | Set volume. |
-|     | `Set` |  `Mute` | `true`, `false` | boolean | Set mute. |
+|     | `Set` |  `Mute` | `true`, `false` | boolean | Set mute On/Off. |
+|     | `Set` |  `RcControl` | `NS9E` | string | Send RC command. |
