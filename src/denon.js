@@ -491,7 +491,6 @@ class Denon extends EventEmitter {
         try {
             const path = `${ApiUrls.iPhoneDirect}${command}`;
             await this.axiosInstance(path);
-            this.emit('warn', `denon send path: ${path}`);
             return true;
         } catch (error) {
             throw new Error(`Send data error: ${error}`);
