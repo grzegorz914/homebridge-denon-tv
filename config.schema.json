@@ -1120,25 +1120,25 @@
                         ]
                       },
                       {
-                        "title": "ALL ZONE VOLUME UP",
+                        "title": "MASTER VOLUME UP",
                         "enum": [
                           "0MVUP"
                         ]
                       },
                       {
-                        "title": "ALL ZONE VOLUME DOWN",
+                        "title": "MASTER VOLUME DOWN",
                         "enum": [
                           "0MVDOWN"
                         ]
                       },
                       {
-                        "title": "ALL ZONE MUTE ON",
+                        "title": "MASTER MUTE ON",
                         "enum": [
                           "0MUON"
                         ]
                       },
                       {
-                        "title": "ALL ZONE MUTE OFF",
+                        "title": "MASTER MUTE OFF",
                         "enum": [
                           "0MUOFF"
                         ]
