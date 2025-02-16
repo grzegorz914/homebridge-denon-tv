@@ -28,18 +28,18 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 
 ## About The Plugin
 
+* This plugin is based upon the official documentation: [Denon Control Protocol 2020](https://github.com/grzegorz914/homebridge-denon-tv/blob/main/doc/Denon%20Control%20Protocol.xlsx)
 * Multi Zone control.
 * Power ON/OFF control with short press the tile in HomeKit app.
 * RC/Media control, RC app on iPhone/iPad.
 * Speaker Volume and Mute control with hardware buttons, RC app on iPhone/iPad.
 * Volume and Mute control with extra tile `lightbulb`/`fan` (slider).
-* Inputs control using inputs whell or extra tile (buttons).
-* Surrounds/Pass Trough Inputs control as a [extra accessory tile](https://github.com/grzegorz914/homebridge-denon-tv?tab=readme-ov-file#extra-accessory-tile) or with buttons.
+* Inputs control using inputs whell or buttons.
 * Digital Input Modes control using extra buttons.
-* Siri can be used for all functions, some times need to create buttons/switches/sensors.
-* Automations can be used for all functions, some times need to create buttons/switches/sensors.
-* This plugin is based upon the official documentation: [Denon Control Protocol 2020](https://github.com/grzegorz914/homebridge-denon-tv/blob/main/doc/Denon%20Control%20Protocol.xlsx)
-* Support external integrations, [RESTFul](https://github.com/grzegorz914/homebridge-denon-tv?tab=readme-ov-file#restful-integration), [MQTT](https://github.com/grzegorz914/homebridge-denon-tv?tab=readme-ov-file#mqtt-integration).
+* Surrounds/Pass Trough Inputs control as a [extra accessory tile](https://github.com/grzegorz914/homebridge-denon-tv?tab=readme-ov-file#extra-accessory-tile).
+* Siri, some times need to create buttons/switches/sensors.
+* Automations, some times need to create buttons/switches/sensors.
+* External integrations, [RESTFul](https://github.com/grzegorz914/homebridge-denon-tv?tab=readme-ov-file#restful-integration), [MQTT](https://github.com/grzegorz914/homebridge-denon-tv?tab=readme-ov-file#mqtt-integration).
 
 <p align="center">
   <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/main/graphics/homekit.png" width="382"></a>
