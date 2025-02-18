@@ -7,11 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## NOTE
 
-- after update to 5.5.x the volume control need to be configured again
+- after update to 5.6.x the power and volume control need to be configured again
+- after update to 5.5.x the volume control need to be configured again (removed from repo)
 - after update to 4.9.x all buttons (Sound Mode) need to be configure again using config UI
 - after update to 4.8.x all buttons need to be configure again using config UI
 - after update to 4.7.x buttons, sensors, volume display type need to be configure again using config UI
 - after update to 3.15.x need remove the accessory frome Home app and add it again
+
+## [5.6.0] - (17.02.2025)
+
+## Changes
+
+- v5.5.x removed from repo
+- after update to this version the power and volume control need to be configured again
+- fix [#303](https://github.com/grzegorz914/homebridge-denon-tv/issues/303)
+- fix [#320](https://github.com/grzegorz914/homebridge-denon-tv/issues/320)
+- fix [#321](https://github.com/grzegorz914/homebridge-denon-tv/issues/321)
+- fix [#322](https://github.com/grzegorz914/homebridge-denon-tv/issues/322)
+- fix [#324](https://github.com/grzegorz914/homebridge-denon-tv/issues/324)
+- fix set direct surround mode with button
+- fix quick/smart select count
+- bump dependencies
+- config schema updated
+- readme updated
+- cleanup
 
 ## [5.5.2] - (16.02.2025)
 
@@ -24,7 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Changes
 
 - config schema updated
-- redme updated
+- readme updated
 - cleanup
 
 ## [5.5.0] - (16.02.2025)

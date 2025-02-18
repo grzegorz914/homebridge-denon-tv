@@ -52,12 +52,11 @@ class DenonPlatform {
 						passwd: 'removed'
 					}
 				};
-				const debug1 = !enableDebugMode ? false : log.info(`Device: ${host} ${deviceName}, Config: ${JSON.stringify(config, null, 2)}.`);
+				const debug1 = !enableDebugMode ? false : log.info(`Device: ${host} ${deviceName}, debug: Config: ${JSON.stringify(config, null, 2)}.`);
 
 				//zones
 				const zoneControl = device.zoneControl;
 				const generation = device.generation || 0;
-				const refreshInterval = device.refreshInterval * 1000 || 5000;
 
 				//check files exists, if not then create it
 				const postFix = `${ZoneNameShort[zoneControl]}${host.split('.').join('')}`
@@ -88,7 +87,7 @@ class DenonPlatform {
 				switch (zoneControl) {
 					case 0: //main zone
 						try {
-							const mainZone = new MainZone(api, device, zoneControl, deviceName, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile, refreshInterval);
+							const mainZone = new MainZone(api, device, deviceName, host, port, generation, zoneControl, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile);
 							mainZone.on('publishAccessory', (accessory) => {
 								api.publishExternalAccessories(PluginName, [accessory]);
 								const emitLog = disableLogSuccess ? false : log.success(`Device: ${host} ${deviceName}, Published as external accessory.`);
@@ -136,7 +135,7 @@ class DenonPlatform {
 						break;
 					case 1: //zone 2
 						try {
-							const zone2 = new Zone2(api, device, zoneControl, deviceName, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile, refreshInterval);
+							const zone2 = new Zone2(api, device, deviceName, host, port, generation, zoneControl, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile);
 							zone2.on('publishAccessory', (accessory) => {
 								api.publishExternalAccessories(PluginName, [accessory]);
 								const emitLog = disableLogSuccess ? false : log.success(`Device: ${host} ${deviceName}, Published as external accessory.`);
@@ -184,7 +183,7 @@ class DenonPlatform {
 						break;
 					case 2: //zone 3
 						try {
-							const zone3 = new Zone3(api, device, zoneControl, deviceName, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile, refreshInterval);
+							const zone3 = new Zone3(api, device, deviceName, host, port, generation, zoneControl, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile);
 							zone3.on('publishAccessory', (accessory) => {
 								api.publishExternalAccessories(PluginName, [accessory]);
 								const emitLog = disableLogSuccess ? false : log.success(`Device: ${host} ${deviceName}, Published as external accessory.`);
@@ -232,7 +231,7 @@ class DenonPlatform {
 						break;
 					case 3: //surrounds
 						try {
-							const surrounds = new Surrounds(api, device, zoneControl, deviceName, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile, refreshInterval);
+							const surrounds = new Surrounds(api, device, deviceName, host, port, generation, zoneControl, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile);
 							surrounds.on('publishAccessory', (accessory) => {
 								api.publishExternalAccessories(PluginName, [accessory]);
 								const emitLog = disableLogSuccess ? false : log.success(`Device: ${host} ${deviceName}, Published as external accessory.`);
@@ -280,7 +279,7 @@ class DenonPlatform {
 						break;
 					case 4: //pass through inputs
 						try {
-							const passThroughInputs = new PassThroughInputs(api, device, zoneControl, deviceName, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile, refreshInterval);
+							const passThroughInputs = new PassThroughInputs(api, device, deviceName, host, port, generation, zoneControl, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile);
 							passThroughInputs.on('publishAccessory', (accessory) => {
 								api.publishExternalAccessories(PluginName, [accessory]);
 								const emitLog = disableLogSuccess ? false : log.success(`Device: ${host} ${deviceName}, Published as external accessory.`);

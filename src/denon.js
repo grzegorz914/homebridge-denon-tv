@@ -404,8 +404,8 @@ class Denon extends EventEmitter {
             //add quick and smart select
             const deviceQuickSmartSelect = getQuickSmartSelectFromDevice && supportQuickSmartSelect ? zoneCapabilities.Operation.QuickSelect : {};
             const quickSelectCount = getQuickSmartSelectFromDevice && supportQuickSmartSelect ? deviceQuickSmartSelect.MaxQuickSelect : 0;
-            for (let j = 1; j < quickSelectCount; j++) {
-                const quickSelect = deviceQuickSmartSelect[`QuickSelect${j}`];
+            for (let j = 0; j < quickSelectCount; j++) {
+                const quickSelect = deviceQuickSmartSelect[`QuickSelect${j + 1}`];
                 const quickSelectName = quickSelect.Name ?? false;
                 const quickSelectReference = quickSelect.FuncName ?? false;
 
@@ -491,6 +491,7 @@ class Denon extends EventEmitter {
         try {
             const path = `${ApiUrls.iPhoneDirect}${command}`;
             await this.axiosInstance(path);
+            const debug = this.enableDebugLog ? this.emit('debug', `Send path: ${path}`) : false;
             return true;
         } catch (error) {
             throw new Error(`Send data error: ${error}`);

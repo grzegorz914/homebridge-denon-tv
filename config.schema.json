@@ -6560,39 +6560,64 @@
               },
               "required": false
             },
-            "infoButtonCommand": {
-              "title": "Info Button",
-              "type": "string",
-              "default": "MNMEN ON",
+            "powerControlZone": {
+              "title": "Power Control Zone",
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 7,
+              "default": 0,
+              "description": "Here select which zone the power want control, this also working with power button in RC app.",
               "oneOf": [
                 {
-                  "title": "MENU",
+                  "title": "Main Zone",
                   "enum": [
-                    "MNMEN ON"
+                    0
                   ]
                 },
                 {
-                  "title": "OPTION",
+                  "title": "Zone 2",
                   "enum": [
-                    "MNOPT"
+                    1
                   ]
                 },
                 {
-                  "title": "INFO",
+                  "title": "Zone 3",
                   "enum": [
-                    "MNINF"
+                    2
+                  ]
+                },
+                {
+                  "title": "Zone 2/3",
+                  "enum": [
+                    3
+                  ]
+                },
+                {
+                  "title": "Main Zone + Z2",
+                  "enum": [
+                    4
+                  ]
+                },
+                {
+                  "title": "Main Zone + Z3",
+                  "enum": [
+                    5
+                  ]
+                },
+                {
+                  "title": "Main Zone + Z2/Z3",
+                  "enum": [
+                    6
+                  ]
+                },
+                {
+                  "title": "Master Power",
+                  "enum": [
+                    7
                   ]
                 }
               ],
-              "description": "Here select the function of info button in RC.",
-              "required": false
-            },
-            "masterPower": {
-              "title": "Master Power Control",
-              "type": "boolean",
-              "default": false,
-              "description": "The power switch for that zone will turn the entire receiver *ON* or *OFF/STANDBY* rather than just the zone itself.",
-              "required": false,
+              "required": true,
               "condition": {
                 "functionBody": "return model.devices[arrayIndices].zoneControl <= 2;"
               }
@@ -6716,6 +6741,33 @@
               "condition": {
                 "functionBody": "return model.devices[arrayIndices].zoneControl <= 2;"
               }
+            },
+            "infoButtonCommand": {
+              "title": "Info Button",
+              "type": "string",
+              "default": "MNMEN ON",
+              "oneOf": [
+                {
+                  "title": "MENU",
+                  "enum": [
+                    "MNMEN ON"
+                  ]
+                },
+                {
+                  "title": "OPTION",
+                  "enum": [
+                    "MNOPT"
+                  ]
+                },
+                {
+                  "title": "INFO",
+                  "enum": [
+                    "MNINF"
+                  ]
+                }
+              ],
+              "description": "Here select the function of info button in RC.",
+              "required": false
             },
             "refreshInterval": {
               "title": "Refresh interval (sec)",
@@ -7012,7 +7064,7 @@
             }
           ],
           "condition": {
-            "functionBody": "return model.devices[arrayIndices].zoneControl < 3;"
+            "functionBody": "return model.devices[arrayIndices].zoneControl <= 2;"
           }
         },
         {
@@ -7027,6 +7079,13 @@
               "type": "tabarray",
               "title": "{{ value.title }}",
               "items": [
+                {
+                  "key": "devices[]",
+                  "title": "Power",
+                  "items": [
+                    "devices[].powerControlZone"
+                  ]
+                },
                 {
                   "key": "devices[]",
                   "title": "Volume",
@@ -7089,7 +7148,6 @@
                   "key": "devices[]",
                   "title": "Device",
                   "items": [
-                    "devices[].masterPower",
                     "devices[].infoButtonCommand",
                     "devices[].refreshInterval"
                   ]

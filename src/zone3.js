@@ -7,7 +7,7 @@ import { PictureModesConversionToHomeKit, PictureModesDenonNumber } from './cons
 let Accessory, Characteristic, Service, Categories, Encode, AccessoryUUID;
 
 class Zone3 extends EventEmitter {
-    constructor(api, device, zone, name, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile, refreshInterval) {
+    constructor(api, device, name, host, port, generation, zone, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile) {
         super();
 
         Accessory = api.platformAccessory;
@@ -34,14 +34,14 @@ class Zone3 extends EventEmitter {
         this.sensorMute = device.sensorMute || false;
         this.sensorInput = device.sensorInput || false;
         this.sensorInputs = device.sensorInputs || [];
-        this.masterPower = device.masterPower || false;
+        this.powerControlZone = device.powerControlZone || 0;
         this.volumeControlNamePrefix = device.volumeControlNamePrefix || false;
         this.volumeControlName = device.volumeControlName || 'Volume';
         this.volumeControlType = device.volumeControlType || 0;
         this.volumeControlZone = device.volumeControlZone || 0;
         this.volumeMax = device.volumeMax || 100;
         this.infoButtonCommand = device.infoButtonCommand || 'MNINF';
-        this.refreshInterval = refreshInterval;
+        this.refreshInterval = device.refreshInterval * 1000 || 5000;
         this.enableDebugMode = device.enableDebugMode || false;
         this.disableLogInfo = device.disableLogInfo || false;
         this.devInfoFile = devInfoFile;
@@ -100,9 +100,6 @@ class Zone3 extends EventEmitter {
         this.volumeDisplay = false;
         this.mute = true;
         this.mediaState = false;
-        this.supportPictureMode = false;
-        this.pictureMode = 0;
-        this.brightness = 0;
         this.sensorVolumeState = false;
         this.sensorInputState = false;
     };
@@ -148,8 +145,8 @@ class Zone3 extends EventEmitter {
             let set = false
             switch (key) {
                 case 'Power':
-                    const powerState = this.masterPower ? (value ? 'PWON' : 'PWSTANDBY') : (value ? 'Z3ON' : 'Z3OFF');
-                    set = await this.denon.send(powerState)
+                    const powerState = value ? 'ON' : 'OFF';
+                    set = await this.stateControl('Power', powerState);
                     break;
                 case 'Input':
                     const input = `Z3${value}`;
@@ -161,11 +158,11 @@ class Zone3 extends EventEmitter {
                     break;
                 case 'Volume':
                     const volume = (value < 0 || value > 100) ? this.volume : (value < 10 ? `0${value}` : value);
-                    set = await this.volumeControl('Volume', volume);
+                    set = await this.stateControl('Volume', volume);
                     break;
                 case 'Mute':
                     const mute = value ? 'ON' : 'OFF';
-                    set = await this.volumeControl('Mute', mute);
+                    set = await this.stateControl('Mute', mute);
                     break;
                 case 'RcControl':
                     set = await this.denon.send(value);
@@ -323,140 +320,52 @@ class Zone3 extends EventEmitter {
         return scaledValue;
     }
 
-    async volumeControl(type, value) {
+    async stateControl(type, value) {
         try {
-            switch (type) {
-                case 'VolumeSelector': //VolumeSelector
-                    switch (this.volumeControlZone) {
-                        case 0:
-                            value = `MV${value}`;
-                            await this.denon.send(value);
-                            break;
-                        case 1:
-                            value = `Z2${value}`;
-                            await this.denon.send(value);
-                            break;
-                        case 2:
-                            value = `Z3${value}`;
-                            await this.denon.send(value);
-                            break;
-                        case 3:
-                            value = `Z2${value}`;
-                            await this.denon.send(value);
-                            value = `Z3${value}`;
-                            await this.denon.send(value);
-                            break;
-                        case 4:
-                            value = `MV${value}`;
-                            await this.denon.send(value);
-                            value = `Z2${value}`;
-                            await this.denon.send(value);
-                            break;
-                        case 5:
-                            value = `MV${value}`;
-                            await this.denon.send(value);
-                            value = `Z3${value}`;
-                            await this.denon.send(value);
-                            break;
-                        case 6:
-                            value = `MV${value}`;
-                            await this.denon.send(value);
-                            value = `Z2${value}`;
-                            await this.denon.send(value);
-                            value = `Z3${value}`;
-                            await this.denon.send(value);
-                            break;
-                    }
-                    break;
-                case 'Volume': //Volume
-                    switch (this.volumeControlZone) {
-                        case 0:
-                            value = `MV${value}`;
-                            await this.denon.send(value);
-                            break;
-                        case 1:
-                            value = `Z2${value}`;
-                            await this.denon.send(value);
-                            break;
-                        case 2:
-                            value = `Z3${value}`;
-                            await this.denon.send(value);
-                            break;
-                        case 3:
-                            value = `Z2${value}`;
-                            await this.denon.send(value);
-                            value = `Z3${value}`;
-                            await this.denon.send(value);
-                            break;
-                        case 4:
-                            value = `MV${value}`;
-                            await this.denon.send(value);
-                            value = `Z2${value}`;
-                            await this.denon.send(value);
-                            break;
-                        case 5:
-                            value = `MV${value}`;
-                            await this.denon.send(value);
-                            value = `Z3${value}`;
-                            await this.denon.send(value);
-                            break;
-                        case 6:
-                            value = `MV${value}`;
-                            await this.denon.send(value);
-                            value = `Z2${value}`;
-                            await this.denon.send(value);
-                            value = `Z3${value}`;
-                            await this.denon.send(value);
-                            break;
-                    }
-                    break;
-                case 'Mute': //Mute
-                    switch (this.volumeControlZone) {
-                        case 0:
-                            value = `MU${value}`;
-                            await this.denon.send(value);
-                            break;
-                        case 1:
-                            value = `Z2MU${value}`;
-                            await this.denon.send(value);
-                            break;
-                        case 2:
-                            value = `Z3MU${value}`;
-                            await this.denon.send(value);
-                            break;
-                        case 3:
-                            value = `Z2MU${value}`;
-                            await this.denon.send(value);
-                            value = `Z3MU${value}`;
-                            await this.denon.send(value);
-                            break;
-                        case 4:
-                            value = `MU${value}`;
-                            await this.denon.send(value);
-                            value = `Z2MU${value}`;
-                            await this.denon.send(value);
-                            break;
-                        case 5:
-                            value = `MU${value}`;
-                            await this.denon.send(value);
-                            value = `Z3MU${value}`;
-                            await this.denon.send(value);
-                            break;
-                        case 6:
-                            value = `MU${value}`;
-                            await this.denon.send(value);
-                            value = `Z2MU${value}`;
-                            await this.denon.send(value);
-                            value = `Z3MU${value}`;
-                            await this.denon.send(value);
-                            break;
-                    }
-                    break;
+            // Normalize value for Power type
+            if (type === 'Power' && value === 'OFF' && this.volumeControlZone === 7) {
+                value = 'STANDBY';
             }
+
+            // Define main zone
+            const mainZone = type === 'Power' ? 'ZM' : 'MV';
+            const zoneMap = {
+                0: [mainZone],
+                1: ['Z2'],
+                2: ['Z3'],
+                3: ['Z2', 'Z3'],
+                4: [mainZone, 'Z2'],
+                5: [mainZone, 'Z3'],
+                6: [mainZone, 'Z2', 'Z3'],
+                7: ['PW']
+            };
+
+            // Reuse volume control zones for better readability
+            const typeMap = {
+                'Power': zoneMap[this.powerControlZone],
+                'VolumeSelector': zoneMap[this.volumeControlZone],
+                'Volume': zoneMap[this.volumeControlZone],
+                'Mute': zoneMap[this.volumeControlZone].map(zone => zone ? `${zone}MU` : 'MU')
+            };
+
+            // Get the commands for the specified type
+            const commands = typeMap[type];
+            if (commands) {
+                const commandsCount = commands.length;
+                for (let i = 0; i < commandsCount; i++) {
+                    const cmd = commands[i];
+                    await this.denon.send(`${cmd}${value}`);
+                    const pauseTime = type === 'Power' && value === 'ON' && commandsCount > 1 && i === 0 ? 4000 : 75;
+                    const pause = i < commandsCount - 1 ? await new Promise(resolve => setTimeout(resolve, pauseTime)) : false;
+                }
+            } else {
+                this.emit('warn', `Unknown control type: ${type}`);
+            }
+
             return true;
         } catch (error) {
-            this.emit('warn', `set Volume control error: ${error}`);
-        };
+            this.emit('warn', `State control error for type ${type} with value ${value}: ${error}`);
+        }
     }
 
     //prepare accessory
@@ -495,8 +404,8 @@ class Zone3 extends EventEmitter {
                     }
 
                     try {
-                        const powerState = this.masterPower ? (state ? 'PWON' : 'PWSTANDBY') : (state ? 'Z3ON' : 'Z3OFF');
-                        await this.denon.send(powerState);
+                        const powerState = state ? 'ON' : 'OFF';
+                        await this.stateControl('Power', powerState);
                         const info = this.disableLogInfo ? false : this.emit('info', `set Power: ${powerState}`);
                     } catch (error) {
                         this.emit('warn', `set Power error: ${error}`);
@@ -607,11 +516,11 @@ class Zone3 extends EventEmitter {
                         switch (command) {
                             case Characteristic.VolumeSelector.INCREMENT:
                                 command = 'UP';
-                                await this.volumeControl('VolumeSelector', command);
+                                await this.stateControl('VolumeSelector', command);
                                 break;
                             case Characteristic.VolumeSelector.DECREMENT:
                                 command = 'DOWN';
-                                await this.volumeControl('VolumeSelector', command);
+                                await this.stateControl('VolumeSelector', command);
                                 break;
                         }
                         const info = this.disableLogInfo ? false : this.emit('info', `set Volume Selector: ${command}`);
@@ -629,7 +538,7 @@ class Zone3 extends EventEmitter {
                     try {
                         let scaledValue = await this.scaleValue(value, 0, 100, 0, this.volumeMax >= 2 ? this.volumeMax - 2 : this.volumeMax);
                         scaledValue = scaledValue < 10 ? `0${scaledValue}` : scaledValue;
-                        await this.volumeControl('Volume', scaledValue);
+                        await this.stateControl('Volume', scaledValue);
                         const info = this.disableLogInfo ? false : this.emit('info', `set Volume: ${value}%`);
                     } catch (error) {
                         this.emit('warn', `set Volume error: ${error}`);
@@ -644,7 +553,7 @@ class Zone3 extends EventEmitter {
                 .onSet(async (state) => {
                     try {
                         state = state ? 'ON' : 'OFF';
-                        await this.volumeControl('Mute', state);
+                        await this.stateControl('Mute', state);
                         const info = this.disableLogInfo ? false : this.emit('info', `set Mute: ${state}`);
                     } catch (error) {
                         this.emit('warn', `set Mute error: ${error}`);
@@ -673,8 +582,8 @@ class Zone3 extends EventEmitter {
                 const name = input.name ?? `Input ${inputIdentifier}`;
 
                 //get input name
-                const savedInputsNames = this.savedInputsNames[inputReference] ?? false;
-                input.name = savedInputsNames ? savedInputsNames.substring(0, 64) : name.substring(0, 64);
+                const savedInputsName = this.savedInputsNames[inputReference] ?? false;
+                input.name = savedInputsName ? savedInputsName.substring(0, 64) : name.substring(0, 64);
 
                 //get type
                 const inputSourceType = 0;
@@ -883,7 +792,7 @@ class Zone3 extends EventEmitter {
                     this.allServices.push(sensorInputService);
                     accessory.addService(sensorInputService);
                 }
-            }
+            };
 
             //prepare buttons services
             const possibleButtonsCount = 99 - this.allServices.length;
@@ -970,7 +879,6 @@ class Zone3 extends EventEmitter {
                 this.modelName = modelName;
                 this.serialNumber = serialNumber;
                 this.firmwareRevision = firmwareRevision;
-                this.supportPictureMode = supportPictureMode;
             })
                 .on('stateChanged', async (power, reference, volume, volumeDisplay, mute, pictureMode) => {
                     const input = this.inputsConfigured.find(input => input.reference === reference) ?? false;

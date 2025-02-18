@@ -64,13 +64,13 @@
                             "namePrefix": false
                         }
                     ],
-                    "infoButtonCommand": "MNINF",
-                    "masterPower": false,
+                    "powerControlZone": 0,
                     "volumeControlNamePrefix": false,
                     "volumeControlName": "Volume",
                     "volumeControlType": 0,
                     "volumeControlZone": 0,
                     "volumeMax": 0,
+                    "infoButtonCommand": "MNINF",
                     "refreshInterval": 5,
                     "disableLogDeviceInfo": false,
                     "disableLogInfo": false,
@@ -133,13 +133,13 @@
                             "displayType": 0
                         }
                     ],
-                    "infoButtonCommand": "MNINF",
-                    "masterPower": false,
+                    "powerControlZone": 0,
                     "volumeControlNamePrefix": false,
                     "volumeControlName": "Volume",
                     "volumeControlType": 0,
                     "volumeControlZone": 0,
                     "volumeMax": 0,
+                    "infoButtonCommand": "MNINF",
                     "refreshInterval": 5,
                     "disableLogDeviceInfo": false,
                     "disableLogInfo": false,
@@ -202,13 +202,13 @@
                             "displayType": 0
                         }
                     ],
-                    "infoButtonCommand": "MNINF",
-                    "masterPower": false,
+                    "powerControlZone": 0,
                     "volumeControlNamePrefix": false,
                     "volumeControlName": "Volume",
                     "volumeControlType": 0,
                     "volumeControlZone": 0,
                     "volumeMax": 0,
+                    "infoButtonCommand": "MNINF",
                     "refreshInterval": 5,
                     "disableLogDeviceInfo": false,
                     "disableLogInfo": false,

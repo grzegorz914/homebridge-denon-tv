@@ -4,7 +4,7 @@ import Denon from './denon.js';
 let Accessory, Characteristic, Service, Categories, Encode, AccessoryUUID;
 
 class MainZone extends EventEmitter {
-    constructor(api, device, zone, name, host, port, generation, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile, refreshInterval) {
+    constructor(api, device, name, host, port, generation, zone, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile) {
         super();
 
         Accessory = api.platformAccessory;
@@ -25,7 +25,7 @@ class MainZone extends EventEmitter {
         this.sensorInput = device.sensorInput || false;
         this.sensorInputs = device.sensorInputs || [];
         this.infoButtonCommand = device.infoButtonCommand || 'MNINF';
-        this.refreshInterval = refreshInterval;
+        this.refreshInterval = device.refreshInterval * 1000 || 5000;
         this.enableDebugMode = device.enableDebugMode || false;
         this.disableLogInfo = device.disableLogInfo || false;
         this.devInfoFile = devInfoFile;
@@ -57,6 +57,7 @@ class MainZone extends EventEmitter {
         this.inputIdentifier = 1;
         this.power = false;
         this.reference = '';
+        this.mediaState = false;
         this.sensorInputState = false;
     };
 
@@ -211,8 +212,6 @@ class MainZone extends EventEmitter {
                         const inputMode = input.mode;
                         const inputReference = input.reference;
                         const reference = `${inputMode}${inputReference}`;
-
-
                         await this.denon.send(reference);
                         const info = this.disableLogInfo ? false : this.emit('info', `set Input Name: ${inputName}, Reference: ${reference}`);
                     } catch (error) {
@@ -295,8 +294,8 @@ class MainZone extends EventEmitter {
                 const name = input.name ?? `Input ${inputIdentifier}`;
 
                 //get input name
-                const savedInputsNames = this.savedInputsNames[inputReference] ?? false;
-                input.name = savedInputsNames ? savedInputsNames.substring(0, 64) : name.substring(0, 64);
+                const savedInputsName = this.savedInputsNames[inputReference] ?? false;
+                input.name = savedInputsName ? savedInputsName.substring(0, 64) : name.substring(0, 64);
 
                 //get type
                 const inputSourceType = 0;
@@ -410,7 +409,7 @@ class MainZone extends EventEmitter {
                     this.allServices.push(sensorInputService);
                     accessory.addService(sensorInputService);
                 }
-            }
+            };
 
             //sort inputs list
             await this.displayOrder();
@@ -450,7 +449,6 @@ class MainZone extends EventEmitter {
                 this.modelName = modelName;
                 this.serialNumber = serialNumber;
                 this.firmwareRevision = firmwareRevision;
-                this.supportPictureMode = supportPictureMode;
             })
                 .on('stateChanged', async (power, reference, volume, volumeDisplay, mute, pictureMode) => {
                     const input = this.inputsConfigured.find(input => input.reference === reference) ?? false;
