@@ -14,6 +14,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - after update to 4.7.x buttons, sensors, volume display type need to be configure again using config UI
 - after update to 3.15.x need remove the accessory frome Home app and add it again
 
+## [5.7.0] - (13.03.2025)
+
+## Changes
+
+- added possibility to disable indyvidual accessory
+- improvements in volume scale function
+- bump dependencies
+- config schema updated
+- redme updated
+- cleanup
+
 ## [5.6.0] - (17.02.2025)
 
 ## Changes

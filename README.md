@@ -63,8 +63,9 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 | `name` | Here set the accessory *Name* to be displayed in *Homebridge/HomeKit*. |
 | `host` | Here set the `Hostname` or `Address IP` of AVR. |
 | `port` | Here set the API communication port, if `8080` is not working try to use port `80` which some receivers use alternatively. |
-| `zoneControl` | Here choose which zone will be controlled by this section `0 - Main Zone`, `1 - Zone 2`, `2 - Zone 3`, `3 - Surrounds`, `4 - Pass Through Inputs`. |
 | `generation` | Here choose generation of Your device, old `0 - 2010 - 2012`, middle `1 - 2013 - 2022`, new `2 - 2023 and newer`. |
+| `zoneControl` | Here choose which zone will be controlled by this section `0 - Main Zone`, `1 - Zone 2`, `2 - Zone 3`, `3 - Surrounds`, `4 - Pass Through Inputs`. |
+| `disableAccessory` | If enabled, the accessory will be disabled. |
 | `getInputsFromDevice` | If enabled, `Inputs` will be loaded direct from device. |
 | `getFavoritesFromDevice` | If enabled, `Favorites` will be loaded to the inputs list if exist. |
 | `getQuickSmartSelectFromDevice` | If enabled, `Quick/Smart Select` will be loaded to the inputs list if exist. |

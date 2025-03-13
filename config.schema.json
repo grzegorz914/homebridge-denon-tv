@@ -104,6 +104,13 @@
               ],
               "required": true
             },
+            "disableAccessory": {
+              "title": "Disable Accessory",
+              "type": "boolean",
+              "default": false,
+              "description": "Here You can disable this accessory.",
+              "required": true
+            },
             "getInputsFromDevice": {
               "title": "Load Inputs From Device",
               "type": "boolean",
@@ -6964,6 +6971,7 @@
         "devices[].port",
         "devices[].generation",
         "devices[].zoneControl",
+        "devices[].disableAccessory",
         {
           "key": "devices[]",
           "type": "section",
@@ -7011,7 +7019,10 @@
                 "functionBody": "return model.devices[arrayIndices].zoneControl === 4;"
               }
             }
-          ]
+          ],
+          "condition": {
+            "functionBody": "return model.devices[arrayIndices].disableAccessory === false;"
+          }
         },
         {
           "key": "devices[]",
@@ -7064,7 +7075,7 @@
             }
           ],
           "condition": {
-            "functionBody": "return model.devices[arrayIndices].zoneControl <= 2;"
+            "functionBody": "return model.devices[arrayIndices].disableAccessory === false && model.devices[arrayIndices].zoneControl <= 2;"
           }
         },
         {
@@ -7206,7 +7217,10 @@
                 }
               ]
             }
-          ]
+          ],
+          "condition": {
+            "functionBody": "return model.devices[arrayIndices].disableAccessory === false;"
+          }
         }
       ]
     }

@@ -536,7 +536,8 @@ class Zone3 extends EventEmitter {
                 })
                 .onSet(async (value) => {
                     try {
-                        let scaledValue = await this.scaleValue(value, 0, 100, 0, this.volumeMax >= 2 ? this.volumeMax - 2 : this.volumeMax);
+                        value = value > this.volumeMax ? this.volumeMax : value;
+                        let scaledValue = await this.scaleValue(value, 0, 100, 0, 98);
                         scaledValue = scaledValue < 10 ? `0${scaledValue}` : scaledValue;
                         await this.stateControl('Volume', scaledValue);
                         const info = this.disableLogInfo ? false : this.emit('info', `set Volume: ${value}%`);
