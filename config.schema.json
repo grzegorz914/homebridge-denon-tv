@@ -198,6 +198,7 @@
                   "reference": {
                     "title": "Reference",
                     "type": "string",
+                    "default": "SAT/CBL",
                     "description": "Here select input.",
                     "oneOf": [
                       {
@@ -853,6 +854,7 @@
                   "reference": {
                     "title": "Surround",
                     "type": "string",
+                    "default": "STEREO",
                     "description": "Here select surround mode.",
                     "oneOf": [
                       {
@@ -1016,6 +1018,7 @@
                   "reference": {
                     "title": "Reference",
                     "type": "string",
+                    "default": "SAT/CBL",
                     "description": "Here select input.",
                     "oneOf": [
                       {
@@ -1113,6 +1116,7 @@
                   "reference": {
                     "title": "Function",
                     "type": "string",
+                    "default": "0PEON",
                     "oneOf": [
                       {
                         "title": "MASTER POWER ON",
@@ -4393,6 +4397,7 @@
                   "reference": {
                     "title": "Function",
                     "type": "string",
+                    "default": "1ON",
                     "oneOf": [
                       {
                         "title": "Z2 HDMI OUT THROUGH",
@@ -5105,6 +5110,7 @@
                   "reference": {
                     "title": "Function",
                     "type": "string",
+                    "default": "1ON",
                     "oneOf": [
                       {
                         "title": "Z3 POWER ON",
@@ -5843,6 +5849,7 @@
                   "reference": {
                     "title": "Reference",
                     "type": "string",
+                    "default": "SAT/CBL",
                     "oneOf": [
                       {
                         "title": "SOURCE (Only Z2/Z3)",
