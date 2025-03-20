@@ -835,8 +835,7 @@
                     "required": false
                   }
                 }
-              },
-              "required": false
+              }
             },
             "surrounds": {
               "type": "array",
@@ -999,8 +998,7 @@
                     "required": false
                   }
                 }
-              },
-              "required": false
+              }
             },
             "passThroughInputs": {
               "type": "array",
@@ -1097,8 +1095,7 @@
                     "required": false
                   }
                 }
-              },
-              "required": false
+              }
             },
             "buttons": {
               "type": "array",
@@ -1116,7 +1113,7 @@
                   "reference": {
                     "title": "Function",
                     "type": "string",
-                    "default": "0PEON",
+                    "default": "0PWON",
                     "oneOf": [
                       {
                         "title": "MASTER POWER ON",
@@ -4378,8 +4375,7 @@
                     "required": false
                   }
                 }
-              },
-              "required": false
+              }
             },
             "buttonsZ2": {
               "type": "array",
@@ -5091,8 +5087,7 @@
                     "required": false
                   }
                 }
-              },
-              "required": false
+              }
             },
             "buttonsZ3": {
               "type": "array",
@@ -5792,8 +5787,7 @@
                     "required": false
                   }
                 }
-              },
-              "required": false
+              }
             },
             "sensorPower": {
               "title": "Power",
@@ -6338,6 +6332,7 @@
                   "displayType": {
                     "title": "Type",
                     "type": "integer",
+                    "default": 0,
                     "oneOf": [
                       {
                         "title": "None/Disabled",
@@ -6374,8 +6369,7 @@
                     "required": false
                   }
                 }
-              },
-              "required": false
+              }
             },
             "sensorSurrounds": {
               "type": "array",
@@ -6394,6 +6388,7 @@
                   "reference": {
                     "title": "Reference",
                     "type": "string",
+                    "default": "STEREO",
                     "oneOf": [
                       {
                         "title": "MOVIE",
@@ -6571,8 +6566,7 @@
                     "required": false
                   }
                 }
-              },
-              "required": false
+              }
             },
             "powerControlZone": {
               "title": "Power Control Zone",
