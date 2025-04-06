@@ -32,9 +32,9 @@ class DenonPlatform {
 				//check accessory is enabled
 				const disableAccessory = device.disableAccessory || false;
 				if (disableAccessory) {
-				  continue;
+					continue;
 				}
-				
+
 				const deviceName = device.name;
 				const host = device.host;
 				const port = device.port;
@@ -137,7 +137,7 @@ class DenonPlatform {
 							//start impulse generator
 							await impulseGenerator.start([{ name: 'start', sampling: 45000 }]);
 						} catch (error) {
-							throw new Error(`Device: ${host} ${deviceName}, Did finish launching error: ${error}.`);
+							const emitLog = disableLogError ? false : log.error(`Device: ${host} ${deviceName}, Did finish launching error: ${error}.`);
 						}
 						break;
 					case 1: //zone 2
@@ -185,7 +185,7 @@ class DenonPlatform {
 							//start impulse generator
 							await impulseGenerator.start([{ name: 'start', sampling: 45000 }]);
 						} catch (error) {
-							throw new Error(`Device: ${host} ${deviceName}, Did finish launching error: ${error}.`);
+							const emitLog = disableLogError ? false : log.error(`Device: ${host} ${deviceName}, Did finish launching error: ${error}.`);
 						}
 						break;
 					case 2: //zone 3
@@ -233,7 +233,7 @@ class DenonPlatform {
 							//start impulse generator
 							await impulseGenerator.start([{ name: 'start', sampling: 45000 }]);
 						} catch (error) {
-							throw new Error(`Device: ${host} ${deviceName}, Did finish launching error: ${error}.`);
+							const emitLog = disableLogError ? false : log.error(`Device: ${host} ${deviceName}, Did finish launching error: ${error}.`);
 						}
 						break;
 					case 3: //surrounds
@@ -281,7 +281,7 @@ class DenonPlatform {
 							//start impulse generator
 							await impulseGenerator.start([{ name: 'start', sampling: 45000 }]);
 						} catch (error) {
-							throw new Error(`Device: ${host} ${deviceName}, Did finish launching error: ${error}.`);
+							const emitLog = disableLogError ? false : log.error(`Device: ${host} ${deviceName}, Did finish launching error: ${error}.`);
 						}
 						break;
 					case 4: //pass through inputs
@@ -329,7 +329,7 @@ class DenonPlatform {
 							//start impulse generator
 							await impulseGenerator.start([{ name: 'start', sampling: 45000 }]);
 						} catch (error) {
-							throw new Error(`Device: ${host} ${deviceName}, Did finish launching error: ${error}.`);
+							const emitLog = disableLogError ? false : log.error(`Device: ${host} ${deviceName}, Did finish launching error: ${error}.`);
 						}
 						break;
 					default:
