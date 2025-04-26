@@ -412,6 +412,12 @@
                         ]
                       },
                       {
+                        "title": "DIGITAL IN",
+                        "enum": [
+                          "DIGITALIN1"
+                        ]
+                      },
+                      {
                         "title": "iRADIO",
                         "enum": [
                           "IRADIO"

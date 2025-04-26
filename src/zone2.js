@@ -323,12 +323,10 @@ class Zone2 extends EventEmitter {
     async stateControl(type, value) {
         try {
             // Normalize value for Power type
-            if (type === 'Power' && value === 'OFF' && this.volumeControlZone === 7) {
-                value = 'STANDBY';
-            }
+            value = type === 'Power' && value === 'OFF' && this.powerControlZone === 7 ? 'STANDBY' : value;
 
             // Define main zone
-            const mainZone = type === 'Power' ? 'ZM' : 'MV';
+            const mainZone = type === 'Power' ? 'ZM' : (type === 'Volume' || type === 'VolumeSelector') ? 'MV' : 'MU';
             const zoneMap = {
                 0: [mainZone],
                 1: ['Z2'],
@@ -345,7 +343,7 @@ class Zone2 extends EventEmitter {
                 'Power': zoneMap[this.powerControlZone],
                 'VolumeSelector': zoneMap[this.volumeControlZone],
                 'Volume': zoneMap[this.volumeControlZone],
-                'Mute': zoneMap[this.volumeControlZone].map(zone => zone ? `${zone}MU` : 'MU')
+                'Mute': zoneMap[this.volumeControlZone]
             };
 
             // Get the commands for the specified type
@@ -353,7 +351,7 @@ class Zone2 extends EventEmitter {
             if (commands) {
                 const commandsCount = commands.length;
                 for (let i = 0; i < commandsCount; i++) {
-                    const cmd = commands[i];
+                    const cmd = type === 'Mute' && commands[i] !== 'MU' ? `${commands[i]}MU` : commands[i];
                     await this.denon.send(`${cmd}${value}`);
                     const pauseTime = type === 'Power' && value === 'ON' && commandsCount > 1 && i === 0 ? 4000 : 75;
                     const pause = i < commandsCount - 1 ? await new Promise(resolve => setTimeout(resolve, pauseTime)) : false;
