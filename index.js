@@ -30,17 +30,18 @@ class DenonPlatform {
 			for (const device of config.devices) {
 
 				//check accessory is enabled
-				const disableAccessory = device.disableAccessory || false;
-				if (disableAccessory) {
+				const zoneControl = device.zoneControl ?? -1;
+				if (zoneControl === -1) {
 					continue;
 				}
 
-				const deviceName = device.name;
+				const name = device.name;
 				const host = device.host;
 				const port = device.port;
+				const generation = device.generation ?? 0;
 
-				if (!deviceName || !host || !port) {
-					log.warn(`Name: ${deviceName ? 'OK' : deviceName}, host: ${host ? 'OK' : host}, port: ${port ? 'OK' : port}}, in config wrong or missing.`);
+				if (!name || !host || !port) {
+					log.warn(`Name: ${name ? 'OK' : name}, host: ${host ? 'OK' : host}, port: ${port ? 'OK' : port}}, in config wrong or missing.`);
 					return;
 				}
 
@@ -51,7 +52,7 @@ class DenonPlatform {
 				const disableLogSuccess = device.disableLogSuccess || false;
 				const disableLogWarn = device.disableLogWarn || false;
 				const disableLogError = device.disableLogError || false;
-				const debug = enableDebugMode ? log.info(`Device: ${host} ${deviceName}, debug: Did finish launching.`) : false;
+				const debug = enableDebugMode ? log.info(`Device: ${host} ${name}, debug: Did finish launching.`) : false;
 				const config = {
 					...device,
 					mqtt: {
@@ -59,11 +60,7 @@ class DenonPlatform {
 						passwd: 'removed'
 					}
 				};
-				const debug1 = !enableDebugMode ? false : log.info(`Device: ${host} ${deviceName}, debug: Config: ${JSON.stringify(config, null, 2)}.`);
-
-				//zones
-				const zoneControl = device.zoneControl;
-				const generation = device.generation || 0;
+				const debug1 = !enableDebugMode ? false : log.info(`Device: ${host} ${name}, debug: Config: ${JSON.stringify(config, null, 2)}.`);
 
 				//check files exists, if not then create it
 				const postFix = `${ZoneNameShort[zoneControl]}${host.split('.').join('')}`
@@ -86,7 +83,7 @@ class DenonPlatform {
 						}
 					});
 				} catch (error) {
-					const emitLog = disableLogError ? false : log.error(`Device: ${host} ${deviceName}, Prepare files error: ${error}.`);
+					const emitLog = disableLogError ? false : log.error(`Device: ${host} ${name}, Prepare files error: ${error}.`);
 					return;
 				}
 
@@ -94,28 +91,28 @@ class DenonPlatform {
 				switch (zoneControl) {
 					case 0: //main zone
 						try {
-							const mainZone = new MainZone(api, device, deviceName, host, port, generation, zoneControl, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile);
+							const mainZone = new MainZone(api, device, name, host, port, generation, zoneControl, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile);
 							mainZone.on('publishAccessory', (accessory) => {
 								api.publishExternalAccessories(PluginName, [accessory]);
-								const emitLog = disableLogSuccess ? false : log.success(`Device: ${host} ${deviceName}, Published as external accessory.`);
+								const emitLog = disableLogSuccess ? false : log.success(`Device: ${host} ${name}, Published as external accessory.`);
 							})
 								.on('devInfo', (devInfo) => {
 									const emitLog = disableLogDeviceInfo ? false : log.info(devInfo);
 								})
 								.on('success', (success) => {
-									const emitLog = disableLogSuccess ? false : log.success(`Device: ${host} ${deviceName}, ${success}.`);
+									const emitLog = disableLogSuccess ? false : log.success(`Device: ${host} ${name}, ${success}.`);
 								})
 								.on('info', (info) => {
-									const emitLog = disableLogInfo ? false : log.info(`Device: ${host} ${deviceName}, ${info}.`);
+									const emitLog = disableLogInfo ? false : log.info(`Device: ${host} ${name}, ${info}.`);
 								})
 								.on('debug', (debug) => {
-									const emitLog = !enableDebugMode ? false : log.info(`Device: ${host} ${deviceName}, debug: ${debug}.`);
+									const emitLog = !enableDebugMode ? false : log.info(`Device: ${host} ${name}, debug: ${debug}.`);
 								})
 								.on('warn', (warn) => {
-									const emitLog = disableLogWarn ? false : log.warn(`Device: ${host} ${deviceName}, ${warn}.`);
+									const emitLog = disableLogWarn ? false : log.warn(`Device: ${host} ${name}, ${warn}.`);
 								})
 								.on('error', (error) => {
-									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${deviceName}, ${error}.`);
+									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${name}, ${error}.`);
 								});
 
 							//create impulse generator
@@ -126,44 +123,44 @@ class DenonPlatform {
 									const stopImpulseGenerator = startDone ? await impulseGenerator.stop() : false;
 
 									//start device impulse generator 
-									const startImpulseGenerator = startDone ? await mainZone.startImpulseGenerator() : false;
+									const startImpulseGenerator = stopImpulseGenerator ? await mainZone.startImpulseGenerator() : false;
 								} catch (error) {
-									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${deviceName}, ${error}, trying again.`);
+									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${name}, ${error}, trying again.`);
 								};
 							}).on('state', (state) => {
-								const emitLog = !enableDebugMode ? false : state ? log.info(`Device: ${host} ${deviceName}, Start impulse generator started.`) : log.info(`Device: ${host} ${deviceName}, Start impulse generator stopped.`);
+								const emitLog = !enableDebugMode ? false : state ? log.info(`Device: ${host} ${name}, Start impulse generator started.`) : log.info(`Device: ${host} ${name}, Start impulse generator stopped.`);
 							});
 
 							//start impulse generator
 							await impulseGenerator.start([{ name: 'start', sampling: 45000 }]);
 						} catch (error) {
-							const emitLog = disableLogError ? false : log.error(`Device: ${host} ${deviceName}, Did finish launching error: ${error}.`);
+							const emitLog = disableLogError ? false : log.error(`Device: ${host} ${name}, Did finish launching error: ${error}.`);
 						}
 						break;
 					case 1: //zone 2
 						try {
-							const zone2 = new Zone2(api, device, deviceName, host, port, generation, zoneControl, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile);
+							const zone2 = new Zone2(api, device, name, host, port, generation, zoneControl, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile);
 							zone2.on('publishAccessory', (accessory) => {
 								api.publishExternalAccessories(PluginName, [accessory]);
-								const emitLog = disableLogSuccess ? false : log.success(`Device: ${host} ${deviceName}, Published as external accessory.`);
+								const emitLog = disableLogSuccess ? false : log.success(`Device: ${host} ${name}, Published as external accessory.`);
 							})
 								.on('devInfo', (devInfo) => {
 									const emitLog = disableLogDeviceInfo ? false : log.info(devInfo);
 								})
 								.on('success', (success) => {
-									const emitLog = disableLogSuccess ? false : log.success(`Device: ${host} ${deviceName}, ${success}.`);
+									const emitLog = disableLogSuccess ? false : log.success(`Device: ${host} ${name}, ${success}.`);
 								})
 								.on('info', (info) => {
-									const emitLog = disableLogInfo ? false : log.info(`Device: ${host} ${deviceName}, ${info}.`);
+									const emitLog = disableLogInfo ? false : log.info(`Device: ${host} ${name}, ${info}.`);
 								})
 								.on('debug', (debug) => {
-									const emitLog = !enableDebugMode ? false : log.info(`Device: ${host} ${deviceName}, debug: ${debug}.`);
+									const emitLog = !enableDebugMode ? false : log.info(`Device: ${host} ${name}, debug: ${debug}.`);
 								})
 								.on('warn', (warn) => {
-									const emitLog = disableLogWarn ? false : log.warn(`Device: ${host} ${deviceName}, ${warn}.`);
+									const emitLog = disableLogWarn ? false : log.warn(`Device: ${host} ${name}, ${warn}.`);
 								})
 								.on('error', (error) => {
-									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${deviceName}, ${error}.`);
+									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${name}, ${error}.`);
 								});
 
 							//create impulse generator
@@ -174,44 +171,44 @@ class DenonPlatform {
 									const stopImpulseGenerator = startDone ? await impulseGenerator.stop() : false;
 
 									//start device impulse generator 
-									const startImpulseGenerator = startDone ? await zone2.startImpulseGenerator() : false;
+									const startImpulseGenerator = stopImpulseGenerator ? await zone2.startImpulseGenerator() : false;
 								} catch (error) {
-									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${deviceName}, ${error}, trying again.`);
+									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${name}, ${error}, trying again.`);
 								};
 							}).on('state', (state) => {
-								const emitLog = !enableDebugMode ? false : state ? log.info(`Device: ${host} ${deviceName}, Start impulse generator started.`) : log.info(`Device: ${host} ${deviceName}, Start impulse generator stopped.`);
+								const emitLog = !enableDebugMode ? false : state ? log.info(`Device: ${host} ${name}, Start impulse generator started.`) : log.info(`Device: ${host} ${name}, Start impulse generator stopped.`);
 							});
 
 							//start impulse generator
 							await impulseGenerator.start([{ name: 'start', sampling: 45000 }]);
 						} catch (error) {
-							const emitLog = disableLogError ? false : log.error(`Device: ${host} ${deviceName}, Did finish launching error: ${error}.`);
+							const emitLog = disableLogError ? false : log.error(`Device: ${host} ${name}, Did finish launching error: ${error}.`);
 						}
 						break;
 					case 2: //zone 3
 						try {
-							const zone3 = new Zone3(api, device, deviceName, host, port, generation, zoneControl, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile);
+							const zone3 = new Zone3(api, device, name, host, port, generation, zoneControl, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile);
 							zone3.on('publishAccessory', (accessory) => {
 								api.publishExternalAccessories(PluginName, [accessory]);
-								const emitLog = disableLogSuccess ? false : log.success(`Device: ${host} ${deviceName}, Published as external accessory.`);
+								const emitLog = disableLogSuccess ? false : log.success(`Device: ${host} ${name}, Published as external accessory.`);
 							})
 								.on('devInfo', (devInfo) => {
 									const emitLog = disableLogDeviceInfo ? false : log.info(devInfo);
 								})
 								.on('success', (success) => {
-									const emitLog = disableLogSuccess ? false : log.success(`Device: ${host} ${deviceName}, ${success}.`);
+									const emitLog = disableLogSuccess ? false : log.success(`Device: ${host} ${name}, ${success}.`);
 								})
 								.on('info', (info) => {
-									const emitLog = disableLogInfo ? false : log.info(`Device: ${host} ${deviceName}, ${info}.`);
+									const emitLog = disableLogInfo ? false : log.info(`Device: ${host} ${name}, ${info}.`);
 								})
 								.on('debug', (debug) => {
-									const emitLog = !enableDebugMode ? false : log.info(`Device: ${host} ${deviceName}, debug: ${debug}.`);
+									const emitLog = !enableDebugMode ? false : log.info(`Device: ${host} ${name}, debug: ${debug}.`);
 								})
 								.on('warn', (warn) => {
-									const emitLog = disableLogWarn ? false : log.warn(`Device: ${host} ${deviceName}, ${warn}.`);
+									const emitLog = disableLogWarn ? false : log.warn(`Device: ${host} ${name}, ${warn}.`);
 								})
 								.on('error', (error) => {
-									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${deviceName}, ${error}.`);
+									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${name}, ${error}.`);
 								});
 
 							//create impulse generator
@@ -222,44 +219,44 @@ class DenonPlatform {
 									const stopImpulseGenerator = startDone ? await impulseGenerator.stop() : false;
 
 									//start device impulse generator 
-									const startImpulseGenerator = startDone ? await zone3.startImpulseGenerator() : false;
+									const startImpulseGenerator = stopImpulseGenerator ? await zone3.startImpulseGenerator() : false;
 								} catch (error) {
-									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${deviceName}, ${error}, trying again.`);
+									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${name}, ${error}, trying again.`);
 								};
 							}).on('state', (state) => {
-								const emitLog = !enableDebugMode ? false : state ? log.info(`Device: ${host} ${deviceName}, Start impulse generator started.`) : log.info(`Device: ${host} ${deviceName}, Start impulse generator stopped.`);
+								const emitLog = !enableDebugMode ? false : state ? log.info(`Device: ${host} ${name}, Start impulse generator started.`) : log.info(`Device: ${host} ${name}, Start impulse generator stopped.`);
 							});
 
 							//start impulse generator
 							await impulseGenerator.start([{ name: 'start', sampling: 45000 }]);
 						} catch (error) {
-							const emitLog = disableLogError ? false : log.error(`Device: ${host} ${deviceName}, Did finish launching error: ${error}.`);
+							const emitLog = disableLogError ? false : log.error(`Device: ${host} ${name}, Did finish launching error: ${error}.`);
 						}
 						break;
 					case 3: //surrounds
 						try {
-							const surrounds = new Surrounds(api, device, deviceName, host, port, generation, zoneControl, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile);
+							const surrounds = new Surrounds(api, device, name, host, port, generation, zoneControl, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile);
 							surrounds.on('publishAccessory', (accessory) => {
 								api.publishExternalAccessories(PluginName, [accessory]);
-								const emitLog = disableLogSuccess ? false : log.success(`Device: ${host} ${deviceName}, Published as external accessory.`);
+								const emitLog = disableLogSuccess ? false : log.success(`Device: ${host} ${name}, Published as external accessory.`);
 							})
 								.on('devInfo', (devInfo) => {
 									const emitLog = disableLogDeviceInfo ? false : log.info(devInfo);
 								})
 								.on('success', (success) => {
-									const emitLog = disableLogSuccess ? false : log.success(`Device: ${host} ${deviceName}, ${success}.`);
+									const emitLog = disableLogSuccess ? false : log.success(`Device: ${host} ${name}, ${success}.`);
 								})
 								.on('info', (info) => {
-									const emitLog = disableLogInfo ? false : log.info(`Device: ${host} ${deviceName}, ${info}.`);
+									const emitLog = disableLogInfo ? false : log.info(`Device: ${host} ${name}, ${info}.`);
 								})
 								.on('debug', (debug) => {
-									const emitLog = !enableDebugMode ? false : log.info(`Device: ${host} ${deviceName}, debug: ${debug}.`);
+									const emitLog = !enableDebugMode ? false : log.info(`Device: ${host} ${name}, debug: ${debug}.`);
 								})
 								.on('warn', (warn) => {
-									const emitLog = disableLogWarn ? false : log.warn(`Device: ${host} ${deviceName}, ${warn}.`);
+									const emitLog = disableLogWarn ? false : log.warn(`Device: ${host} ${name}, ${warn}.`);
 								})
 								.on('error', (error) => {
-									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${deviceName}, ${error}.`);
+									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${name}, ${error}.`);
 								});
 
 							//create impulse generator
@@ -270,44 +267,44 @@ class DenonPlatform {
 									const stopImpulseGenerator = startDone ? await impulseGenerator.stop() : false;
 
 									//start device impulse generator 
-									const startImpulseGenerator = startDone ? await surrounds.startImpulseGenerator() : false;
+									const startImpulseGenerator = stopImpulseGenerator ? await surrounds.startImpulseGenerator() : false;
 								} catch (error) {
-									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${deviceName}, ${error}, trying again.`);
+									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${name}, ${error}, trying again.`);
 								};
 							}).on('state', (state) => {
-								const emitLog = !enableDebugMode ? false : state ? log.info(`Device: ${host} ${deviceName}, Start impulse generator started.`) : log.info(`Device: ${host} ${deviceName}, Start impulse generator stopped.`);
+								const emitLog = !enableDebugMode ? false : state ? log.info(`Device: ${host} ${name}, Start impulse generator started.`) : log.info(`Device: ${host} ${name}, Start impulse generator stopped.`);
 							});
 
 							//start impulse generator
 							await impulseGenerator.start([{ name: 'start', sampling: 45000 }]);
 						} catch (error) {
-							const emitLog = disableLogError ? false : log.error(`Device: ${host} ${deviceName}, Did finish launching error: ${error}.`);
+							const emitLog = disableLogError ? false : log.error(`Device: ${host} ${name}, Did finish launching error: ${error}.`);
 						}
 						break;
 					case 4: //pass through inputs
 						try {
-							const passThroughInputs = new PassThroughInputs(api, device, deviceName, host, port, generation, zoneControl, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile);
+							const passThroughInputs = new PassThroughInputs(api, device, name, host, port, generation, zoneControl, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile);
 							passThroughInputs.on('publishAccessory', (accessory) => {
 								api.publishExternalAccessories(PluginName, [accessory]);
-								const emitLog = disableLogSuccess ? false : log.success(`Device: ${host} ${deviceName}, Published as external accessory.`);
+								const emitLog = disableLogSuccess ? false : log.success(`Device: ${host} ${name}, Published as external accessory.`);
 							})
 								.on('devInfo', (devInfo) => {
 									const emitLog = disableLogDeviceInfo ? false : log.info(devInfo);
 								})
 								.on('success', (success) => {
-									const emitLog = disableLogSuccess ? false : log.success(`Device: ${host} ${deviceName}, ${success}.`);
+									const emitLog = disableLogSuccess ? false : log.success(`Device: ${host} ${name}, ${success}.`);
 								})
 								.on('info', (info) => {
-									const emitLog = disableLogInfo ? false : log.info(`Device: ${host} ${deviceName}, ${info}.`);
+									const emitLog = disableLogInfo ? false : log.info(`Device: ${host} ${name}, ${info}.`);
 								})
 								.on('debug', (debug) => {
-									const emitLog = !enableDebugMode ? false : log.info(`Device: ${host} ${deviceName}, debug: ${debug}.`);
+									const emitLog = !enableDebugMode ? false : log.info(`Device: ${host} ${name}, debug: ${debug}.`);
 								})
 								.on('warn', (warn) => {
-									const emitLog = disableLogWarn ? false : log.warn(`Device: ${host} ${deviceName}, ${warn}.`);
+									const emitLog = disableLogWarn ? false : log.warn(`Device: ${host} ${name}, ${warn}.`);
 								})
 								.on('error', (error) => {
-									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${deviceName}, ${error}.`);
+									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${name}, ${error}.`);
 								});
 
 							//create impulse generator
@@ -318,22 +315,22 @@ class DenonPlatform {
 									const stopImpulseGenerator = startDone ? await impulseGenerator.stop() : false;
 
 									//start device impulse generator 
-									const startImpulseGenerator = startDone ? await passThroughInputs.startImpulseGenerator() : false;
+									const startImpulseGenerator = stopImpulseGenerator ? await passThroughInputs.startImpulseGenerator() : false;
 								} catch (error) {
-									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${deviceName}, ${error}, trying again.`);
+									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${name}, ${error}, trying again.`);
 								};
 							}).on('state', (state) => {
-								const emitLog = !enableDebugMode ? false : state ? log.info(`Device: ${host} ${deviceName}, Start impulse generator started.`) : log.info(`Device: ${host} ${deviceName}, Start impulse generator stopped.`);
+								const emitLog = !enableDebugMode ? false : state ? log.info(`Device: ${host} ${name}, Start impulse generator started.`) : log.info(`Device: ${host} ${name}, Start impulse generator stopped.`);
 							});
 
 							//start impulse generator
 							await impulseGenerator.start([{ name: 'start', sampling: 45000 }]);
 						} catch (error) {
-							const emitLog = disableLogError ? false : log.error(`Device: ${host} ${deviceName}, Did finish launching error: ${error}.`);
+							const emitLog = disableLogError ? false : log.error(`Device: ${host} ${name}, Did finish launching error: ${error}.`);
 						}
 						break;
 					default:
-						const emitLog = disableLogWarn ? false : log.warn(`Device: ${host} ${deviceName}, unknown zone: ${zoneControl}.`);
+						const emitLog = disableLogWarn ? false : log.warn(`Device: ${host} ${name}, unknown zone: ${zoneControl}.`);
 						break;
 				}
 				await new Promise(resolve => setTimeout(resolve, 500));

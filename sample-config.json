@@ -24,7 +24,6 @@
                     "port": 8080,
                     "generation": 1,
                     "zoneControl": 0,
-                    "disableAccessory": false,
                     "getInputsFromDevice": false,
                     "getFavoritesFromDevice": false,
                     "getQuickSmartSelectFromDevice": false,
@@ -102,7 +101,6 @@
                     "port": 8080,
                     "generation": 1,
                     "zoneControl": 1,
-                    "disableAccessory": false,
                     "getInputsFromDevice": false,
                     "getFavoritesFromDevice": false,
                     "getQuickSmartSelectFromDevice": false,
@@ -172,7 +170,6 @@
                     "port": 8080,
                     "generation": 1,
                     "zoneControl": 2,
-                    "disableAccessory": false,
                     "getInputsFromDevice": false,
                     "getFavoritesFromDevice": false,
                     "getQuickSmartSelectFromDevice": false,
@@ -242,7 +239,6 @@
                     "port": 8080,
                     "generation": 1,
                     "zoneControl": 3,
-                    "disableAccessory": false,
                     "inputsDisplayOrder": 0,
                     "surrounds": [
                         {
@@ -278,7 +274,6 @@
                     "port": 8080,
                     "generation": 1,
                     "zoneControl": 4,
-                    "disableAccessory": false,
                     "inputsDisplayOrder": 0,
                     "passThroughInputs": [
                         {
