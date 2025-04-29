@@ -49,7 +49,7 @@ class Surrounds extends EventEmitter {
                 sensor.state = false;
                 this.sensorsInputsConfigured.push(sensor);
             } else {
-                const log = displayType === 0 ? false : this.emit('info', `Sensor Name: ${sensor.name}, Reference: Missing`);
+                this.emit('info', `Sensor Name: ${sensor.name}, Reference: Missing`);
             };
         }
         this.sensorsInputsConfiguredCount = this.sensorsInputsConfigured.length || 0;
@@ -211,10 +211,9 @@ class Surrounds extends EventEmitter {
                 .onSet(async (activeIdentifier) => {
                     try {
                         const input = this.inputsConfigured.find(input => input.identifier === activeIdentifier);
-                        const inputName = input.name;
-                        const inputMode = input.mode;
-                        const inputReference = input.reference;
-                        const reference = `${inputMode}${inputReference}`;
+                        const name = input.name;
+                        const mode = input.mode;
+                        const reference = `${mode}${input.reference}`;
 
                         switch (this.power) {
                             case false:
@@ -223,7 +222,7 @@ class Surrounds extends EventEmitter {
                                 break;
                             case true:
                                 await this.denon.send(reference);
-                                const info = this.disableLogInfo ? false : this.emit('info', `set Surround Name: ${inputName}, Reference: ${reference}`);
+                                const info = this.disableLogInfo ? false : this.emit('info', `set Surround Name: ${name}, Reference: ${reference}`);
                                 break;
                         }
                     } catch (error) {
@@ -300,23 +299,23 @@ class Surrounds extends EventEmitter {
                 const inputIdentifier = i + 1;
 
                 //get input reference
-                const inputReference = input.reference;
+                const reference = input.reference;
 
                 //get input name
                 const name = input.name ?? `Input ${inputIdentifier}`;
 
                 //get input name
-                const savedInputsName = this.savedInputsNames[inputReference] ?? false;
-                input.name = savedInputsName ? savedInputsName.substring(0, 64) : name.substring(0, 64);
+                const savedName = this.savedInputsNames[reference] ?? false;
+                input.name = savedName ? savedName.substring(0, 64) : name.substring(0, 64);
 
                 //get type
-                const inputSourceType = 0;
+                const sourceType = 0;
 
                 //get configured
                 const isConfigured = 1;
 
                 //get visibility
-                input.visibility = this.savedInputsTargetVisibility[inputReference] ?? 0;
+                input.visibility = this.savedInputsTargetVisibility[reference] ?? 0;
 
                 //add identifier to the input
                 input.identifier = inputIdentifier;
@@ -328,7 +327,7 @@ class Surrounds extends EventEmitter {
                     .setCharacteristic(Characteristic.Identifier, inputIdentifier)
                     .setCharacteristic(Characteristic.Name, sanitizedName)
                     .setCharacteristic(Characteristic.IsConfigured, isConfigured)
-                    .setCharacteristic(Characteristic.InputSourceType, inputSourceType)
+                    .setCharacteristic(Characteristic.InputSourceType, sourceType)
                     .setCharacteristic(Characteristic.CurrentVisibilityState, input.visibility)
 
                 inputService.getCharacteristic(Characteristic.ConfiguredName)
@@ -338,12 +337,12 @@ class Surrounds extends EventEmitter {
                     .onSet(async (value) => {
                         try {
                             input.name = value;
-                            this.savedInputsNames[inputReference] = value;
+                            this.savedInputsNames[reference] = value;
                             await this.saveData(this.inputsNamesFile, this.savedInputsNames);
-                            const debug = !this.enableDebugMode ? false : this.emit('debug', `Saved Surround Name: ${value}, Reference: ${inputReference}`);
+                            const debug = !this.enableDebugMode ? false : this.emit('debug', `Saved Surround Name: ${value}, Reference: ${reference}`);
 
                             //sort inputs
-                            const index = this.inputsConfigured.findIndex(input => input.reference === inputReference);
+                            const index = this.inputsConfigured.findIndex(input => input.reference === reference);
                             this.inputsConfigured[index].name = value;
                             await this.displayOrder();
                         } catch (error) {
@@ -358,7 +357,7 @@ class Surrounds extends EventEmitter {
                     .onSet(async (state) => {
                         try {
                             input.visibility = state;
-                            this.savedInputsTargetVisibility[inputReference] = state;
+                            this.savedInputsTargetVisibility[reference] = state;
                             await this.saveData(this.inputsTargetVisibilityFile, this.savedInputsTargetVisibility);
                             const debug = !this.enableDebugMode ? false : this.emit('debug', `Saved  Surround: ${input.name} Target Visibility: ${state ? 'HIDEN' : 'SHOWN'}`);
                         } catch (error) {
