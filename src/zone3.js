@@ -71,7 +71,7 @@ class Zone3 extends EventEmitter {
                 sensor.state = false;
                 this.sensorsInputsConfigured.push(sensor);
             } else {
-            this.emit('info', `Sensor Name: ${sensor.name}, Reference: Missing`);
+                this.emit('info', `Sensor Name: ${sensor.name}, Reference: Missing`);
             };
         }
         this.sensorsInputsConfiguredCount = this.sensorsInputsConfigured.length || 0;
@@ -91,7 +91,7 @@ class Zone3 extends EventEmitter {
                 button.state = false;
                 this.buttonsConfigured.push(button);
             } else {
-               this.emit('info', `Button Name: ${button.name}, Reference: Missing`);
+                this.emit('info', `Button Name: ${button.name}, Reference: Missing`);
             };
         }
         this.buttonsConfiguredCount = this.buttonsConfigured.length || 0;
@@ -432,8 +432,10 @@ class Zone3 extends EventEmitter {
 
                         switch (this.power) {
                             case false:
-                                await new Promise(resolve => setTimeout(resolve, 4000));
-                                const tryAgain = this.power ? this.televisionService.setCharacteristic(Characteristic.ActiveIdentifier, activeIdentifier) : false;
+                                for (let attempt = 0; attempt < 2; attempt++) {
+                                    await new Promise(resolve => setTimeout(resolve, 4000));
+                                    const setInput = this.power && this.inputIdentifier !== activeIdentifier ? this.televisionService.setCharacteristic(Characteristic.ActiveIdentifier, activeIdentifier) : false;
+                                }
                                 break;
                             case true:
                                 await this.denon.send(reference);
