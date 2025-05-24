@@ -106,7 +106,7 @@ class Zone2 extends EventEmitter {
         this.reference = '';
         this.volume = 0;
         this.volumeDisplay = false;
-        this.mute = true;
+        this.mute = false;
         this.mediaState = false;
         this.sensorVolumeState = false;
         this.sensorInputState = false;
@@ -744,7 +744,7 @@ class Zone2 extends EventEmitter {
                 this.sensorMuteService.setCharacteristic(Characteristic.ConfiguredName, `${accessoryName} Mute Sensor`);
                 this.sensorMuteService.getCharacteristic(Characteristic.ContactSensorState)
                     .onGet(async () => {
-                        const state = this.power ? this.mute : false;
+                        const state = this.mute;
                         return state;
                     });
 
