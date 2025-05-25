@@ -225,8 +225,8 @@ class MainZone extends EventEmitter {
                 this.mqtt1 = new Mqtt({
                     host: this.mqtt.host,
                     port: this.mqtt.port || 1883,
-                    clientId: this.mqtt.clientId || `denon_${Math.random().toString(16).slice(3)}`,
-                    prefix: `${this.mqtt.prefix}/${this.name}`,
+                    clientId: this.mqtt.clientId || `${this.manufacturer}_${Math.random().toString(16).slice(3)}`,
+                    prefix: this.mqtt.prefix || `${this.manufacturer}/${this.name}`,
                     user: this.mqtt.user,
                     passwd: this.mqtt.passwd,
                     debug: this.mqtt.debug || false
