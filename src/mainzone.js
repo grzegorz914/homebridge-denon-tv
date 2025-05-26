@@ -118,7 +118,6 @@ class MainZone extends EventEmitter {
         try {
             data = JSON.stringify(data, null, 2);
             await fsPromises.writeFile(path, data);
-            const debug = this.enableDebugLog ? this.emit('debug', `Saved data: ${data}`) : false;
             return true;
         } catch (error) {
             throw new Error(`Save data error: ${error}`);
@@ -757,7 +756,7 @@ class MainZone extends EventEmitter {
                         });
                     this.volumeService.getCharacteristic(Characteristic.On)
                         .onGet(async () => {
-                            const state = !this.mute;
+                            const state = this.power ? !this.mute : false;
                             return state;
                         })
                         .onSet(async (state) => {
@@ -781,7 +780,7 @@ class MainZone extends EventEmitter {
                         });
                     this.volumeServiceFan.getCharacteristic(Characteristic.On)
                         .onGet(async () => {
-                            const state = !this.mute;
+                            const state = this.power ? !this.mute : false;
                             return state;
                         })
                         .onSet(async (state) => {
@@ -1004,15 +1003,17 @@ class MainZone extends EventEmitter {
                             .updateCharacteristic(Characteristic.Mute, mute);
 
                         if (this.volumeService) {
+                            const muteV = this.power ? !mute : false;
                             this.volumeService
                                 .updateCharacteristic(Characteristic.Brightness, scaledVolume)
-                                .updateCharacteristic(Characteristic.On, !mute);
+                                .updateCharacteristic(Characteristic.On, muteV);
                         }
 
                         if (this.volumeServiceFan) {
+                            const muteV = this.power ? !mute : false;
                             this.volumeServiceFan
                                 .updateCharacteristic(Characteristic.RotationSpeed, scaledVolume)
-                                .updateCharacteristic(Characteristic.On, !mute);
+                                .updateCharacteristic(Characteristic.On, muteV);
                         }
                     }
 

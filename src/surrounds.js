@@ -69,7 +69,6 @@ class Surrounds extends EventEmitter {
         try {
             data = JSON.stringify(data, null, 2);
             await fsPromises.writeFile(path, data);
-            const debug = this.enableDebugLog ? this.emit('debug', `Saved data: ${data}`) : false;
             return true;
         } catch (error) {
             throw new Error(`Save data error: ${error}`);
