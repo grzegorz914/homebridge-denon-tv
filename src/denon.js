@@ -84,7 +84,7 @@ class Denon extends EventEmitter {
             }
         }).on('state', (state) => {
             const emitState = state ? this.emit('success', `Impulse generator started`) : this.emit('warn', `Impulse generator stopped`);
-        })
+        });
     }
 
     async connect() {
@@ -244,7 +244,7 @@ class Denon extends EventEmitter {
                         reference: "SAT/CBL",
                         mode: inputMode
                     }
-                ]
+                ];
             }
 
             //save inputs if exist
@@ -359,7 +359,7 @@ class Denon extends EventEmitter {
                 const obj = {
                     'name': inputName,
                     'reference': inputReference
-                }
+                };
                 tempInputs.push(obj);
             }
 
@@ -378,7 +378,7 @@ class Denon extends EventEmitter {
                 const obj = {
                     'name': shortcutName,
                     'reference': shortcutReference
-                }
+                };
                 tempInputs.push(obj);
             }
 
@@ -396,7 +396,7 @@ class Denon extends EventEmitter {
                 const obj = {
                     'name': favoriteName,
                     'reference': favoriteReference
-                }
+                };
                 tempInputs.push(obj);
             }
 
@@ -416,7 +416,7 @@ class Denon extends EventEmitter {
                 const obj = {
                     'name': quickSelectName,
                     'reference': quickSelectReference
-                }
+                };
                 tempInputs.push(obj);
             }
 
@@ -464,7 +464,7 @@ class Denon extends EventEmitter {
                     'name': inputName,
                     'reference': inputReference,
                     'mode': inputMode
-                }
+                };
                 allInputs.push(obj);
             }
             const debug = this.enableDebugLog ? this.emit('info', `All Inputs: ${JSON.stringify(allInputs, null, 2)}`) : false;

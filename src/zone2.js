@@ -939,28 +939,28 @@ class Zone2 extends EventEmitter {
                     if (this.volumeServiceTvSpeaker) {
                         this.volumeServiceTvSpeaker
                             .updateCharacteristic(Characteristic.Active, power)
-                            .updateCharacteristic(Characteristic.Volume, volume)
+                            .updateCharacteristic(Characteristic.Volume, scaledVolume)
                             .updateCharacteristic(Characteristic.Mute, mute);
                     }
 
                     if (this.volumeServiceLightbulb) {
                         const muteV = this.power ? !mute : false;
                         this.volumeServiceLightbulb
-                            .updateCharacteristic(Characteristic.Brightness, volume)
+                            .updateCharacteristic(Characteristic.Brightness, scaledVolume)
                             .updateCharacteristic(Characteristic.On, muteV);
                     }
 
                     if (this.volumeServiceFan) {
                         const muteV = this.power ? !mute : false;
                         this.volumeServiceFan
-                            .updateCharacteristic(Characteristic.RotationSpeed, volume)
+                            .updateCharacteristic(Characteristic.RotationSpeed, scaledVolume)
                             .updateCharacteristic(Characteristic.On, muteV);
                     }
 
                     if (this.volumeServiceSpeaker) {
                         this.volumeServiceSpeaker
                             .updateCharacteristic(Characteristic.Active, power)
-                            .updateCharacteristic(Characteristic.Volume, volume)
+                            .updateCharacteristic(Characteristic.Volume, scaledVolume)
                             .updateCharacteristic(Characteristic.Mute, mute);
                     }
 

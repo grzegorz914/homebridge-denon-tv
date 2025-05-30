@@ -9,7 +9,7 @@ class Mqtt extends EventEmitter {
             clientId: config.clientId,
             username: config.user,
             password: config.passwd
-        }
+        };
         const url = `mqtt://${config.host}:${config.port}`;
         const subscribeTopic = `${config.prefix}/Set`;
 
