@@ -59,7 +59,7 @@ class DenonPlatform {
 						...device.mqtt,
 						passwd: 'removed'
 					}
-				};
+				}
 				const debug1 = !enableDebugMode ? false : log.info(`Device: ${host} ${name}, debug: Config: ${JSON.stringify(config, null, 2)}.`);
 
 				//check files exists, if not then create it
@@ -126,7 +126,7 @@ class DenonPlatform {
 									const startImpulseGenerator = stopImpulseGenerator ? await mainZone.startImpulseGenerator() : false;
 								} catch (error) {
 									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${name}, ${error}, trying again.`);
-								};
+								}
 							}).on('state', (state) => {
 								const emitLog = !enableDebugMode ? false : state ? log.info(`Device: ${host} ${name}, Start impulse generator started.`) : log.info(`Device: ${host} ${name}, Start impulse generator stopped.`);
 							});
@@ -174,7 +174,7 @@ class DenonPlatform {
 									const startImpulseGenerator = stopImpulseGenerator ? await zone2.startImpulseGenerator() : false;
 								} catch (error) {
 									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${name}, ${error}, trying again.`);
-								};
+								}
 							}).on('state', (state) => {
 								const emitLog = !enableDebugMode ? false : state ? log.info(`Device: ${host} ${name}, Start impulse generator started.`) : log.info(`Device: ${host} ${name}, Start impulse generator stopped.`);
 							});
@@ -222,7 +222,7 @@ class DenonPlatform {
 									const startImpulseGenerator = stopImpulseGenerator ? await zone3.startImpulseGenerator() : false;
 								} catch (error) {
 									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${name}, ${error}, trying again.`);
-								};
+								}
 							}).on('state', (state) => {
 								const emitLog = !enableDebugMode ? false : state ? log.info(`Device: ${host} ${name}, Start impulse generator started.`) : log.info(`Device: ${host} ${name}, Start impulse generator stopped.`);
 							});
@@ -270,7 +270,7 @@ class DenonPlatform {
 									const startImpulseGenerator = stopImpulseGenerator ? await surrounds.startImpulseGenerator() : false;
 								} catch (error) {
 									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${name}, ${error}, trying again.`);
-								};
+								}
 							}).on('state', (state) => {
 								const emitLog = !enableDebugMode ? false : state ? log.info(`Device: ${host} ${name}, Start impulse generator started.`) : log.info(`Device: ${host} ${name}, Start impulse generator stopped.`);
 							});
@@ -318,7 +318,7 @@ class DenonPlatform {
 									const startImpulseGenerator = stopImpulseGenerator ? await passThroughInputs.startImpulseGenerator() : false;
 								} catch (error) {
 									const emitLog = disableLogError ? false : log.error(`Device: ${host} ${name}, ${error}, trying again.`);
-								};
+								}
 							}).on('state', (state) => {
 								const emitLog = !enableDebugMode ? false : state ? log.info(`Device: ${host} ${name}, Start impulse generator started.`) : log.info(`Device: ${host} ${name}, Start impulse generator stopped.`);
 							});
@@ -341,8 +341,8 @@ class DenonPlatform {
 	configureAccessory(accessory) {
 		this.accessories.push(accessory);
 	}
-};
+}
 
 export default (api) => {
 	api.registerPlatform(PluginName, PlatformName, DenonPlatform);
-};
+}

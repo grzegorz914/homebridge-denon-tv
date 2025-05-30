@@ -6686,12 +6686,12 @@
               }
             },
             "volumeControlType": {
-              "title": "Volume Control Type",
+              "title": "Volume Control",
               "type": "integer",
               "minimum": 0,
-              "maximum": 2,
+              "maximum": 3,
               "default": 0,
-              "description": "Here select what a extra volume/mute control type You want to use. If select *None/Disabled* only hardware buttons in RC app can be used to control volume.",
+              "description": "Here select what a extra volume/mute control type You want to use.",
               "oneOf": [
                 {
                   "title": "None/Disabled",
@@ -6710,6 +6710,12 @@
                   "enum": [
                     2
                   ]
+                },
+                {
+                  "title": "Speaker",
+                  "enum": [
+                    3
+                  ]
                 }
               ],
               "required": true,
@@ -6723,7 +6729,7 @@
               "minimum": 0,
               "maximum": 6,
               "default": 0,
-              "description": "Here select which zone the volume/mute want control, this also working with hardware buttons in RC app.",
+              "description": "Here select which zone the volume/mute want control.",
               "oneOf": [
                 {
                   "title": "Main Zone",
@@ -6802,7 +6808,7 @@
               "description": "Here set the max possible volume to set.",
               "required": false,
               "condition": {
-                "functionBody": "return model.devices[arrayIndices].zoneControl <= 2;"
+                "functionBody": "return model.devices[arrayIndices].volumeControlType > 0 && model.devices[arrayIndices].zoneControl <= 2;"
               }
             },
             "infoButtonCommand": {
@@ -7156,21 +7162,11 @@
                   "key": "devices[]",
                   "title": "Volume",
                   "items": [
-                    "devices[].volumeMax",
-                    {
-                      "key": "devices[]",
-                      "type": "section",
-                      "title": "Legacy Control",
-                      "description": "Section for additional volume control",
-                      "expandable": true,
-                      "expanded": false,
-                      "items": [
-                        "devices[].volumeControlType",
-                        "devices[].volumeControlZone",
-                        "devices[].volumeControlName",
-                        "devices[].volumeControlNamePrefix"
-                      ]
-                    }
+                    "devices[].volumeControlType",
+                    "devices[].volumeControlZone",
+                    "devices[].volumeControlName",
+                    "devices[].volumeControlNamePrefix",
+                    "devices[].volumeMax"
                   ]
                 },
                 {

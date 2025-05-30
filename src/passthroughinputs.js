@@ -39,7 +39,7 @@ class MainZone extends EventEmitter {
             const displayType = sensor.displayType ?? 0;
             if (displayType === 0) {
                 continue;
-            };
+            }
 
             sensor.name = sensor.name || 'Sensor Input';
             sensor.reference = sensor.reference ?? false;
@@ -50,7 +50,7 @@ class MainZone extends EventEmitter {
                 this.sensorsInputsConfigured.push(sensor);
             } else {
                 this.emit('info', `Sensor Name: ${sensor.name}, Reference: Missing`);
-            };
+            }
         }
         this.sensorsInputsConfiguredCount = this.sensorsInputsConfigured.length || 0;
 
@@ -72,7 +72,7 @@ class MainZone extends EventEmitter {
             return true;
         } catch (error) {
             throw new Error(`Save data error: ${error}`);
-        };
+        }
     }
 
     async readData(path) {
@@ -81,7 +81,7 @@ class MainZone extends EventEmitter {
             return data;
         } catch (error) {
             throw new Error(`Read data error: ${error}`);
-        };
+        }
     }
 
     async sanitizeString(str) {
@@ -126,7 +126,7 @@ class MainZone extends EventEmitter {
             return true;
         } catch (error) {
             throw new Error(`Display order error: ${error}`);
-        };
+        }
     }
 
     async startImpulseGenerator() {
@@ -136,7 +136,7 @@ class MainZone extends EventEmitter {
             return true;
         } catch (error) {
             throw new Error(`Impulse generator start error: ${error}`);
-        };
+        }
     }
 
     async prepareDataForAccessory() {
@@ -200,7 +200,7 @@ class MainZone extends EventEmitter {
                         //const info = this.disableLogInfo ? false : this.emit('info', `set Power: ${powerState}`);
                     } catch (error) {
                         this.emit('warn', `set Power error: ${error}`);
-                    };
+                    }
                 });
 
             this.televisionService.getCharacteristic(Characteristic.ActiveIdentifier)
@@ -218,7 +218,7 @@ class MainZone extends EventEmitter {
                         const info = this.disableLogInfo ? false : this.emit('info', `set Input Name: ${name}, Reference: ${reference}`);
                     } catch (error) {
                         this.emit('warn', `set Input error: ${error}`);
-                    };
+                    }
                 });
 
             this.televisionService.getCharacteristic(Characteristic.RemoteKey)
@@ -272,7 +272,7 @@ class MainZone extends EventEmitter {
                         const info = this.disableLogInfo ? false : this.emit('info', `set Remote Key: ${command}`);
                     } catch (error) {
                         this.emit('warn', `set Remote Key error: ${error}`);
-                    };
+                    }
                 });
             this.allServices.push(this.televisionService);
 
@@ -319,7 +319,7 @@ class MainZone extends EventEmitter {
                     .setCharacteristic(Characteristic.Name, sanitizedName)
                     .setCharacteristic(Characteristic.IsConfigured, isConfigured)
                     .setCharacteristic(Characteristic.InputSourceType, sourceType)
-                    .setCharacteristic(Characteristic.CurrentVisibilityState, input.visibility)
+                    .setCharacteristic(Characteristic.CurrentVisibilityState, input.visibility);
 
                 inputService.getCharacteristic(Characteristic.ConfiguredName)
                     .onGet(async () => {
@@ -359,7 +359,7 @@ class MainZone extends EventEmitter {
                 this.inputsConfigured.push(input);
                 this.televisionService.addLinkedService(inputService);
                 this.allServices.push(inputService);
-            };
+            }
 
             //prepare sonsor input service
             if (this.sensorInput) {
@@ -374,7 +374,7 @@ class MainZone extends EventEmitter {
                     });
 
                 this.allServices.push(this.sensorInputService);
-            };
+            }
 
             //prepare sonsor inputs service
             const possibleSensorInputsCount = 99 - this.allServices.length;
@@ -411,7 +411,7 @@ class MainZone extends EventEmitter {
                     this.allServices.push(sensorInputService);
                     accessory.addService(sensorInputService);
                 }
-            };
+            }
 
             //sort inputs list
             await this.displayOrder();
@@ -419,7 +419,7 @@ class MainZone extends EventEmitter {
             return accessory;
         } catch (error) {
             throw new Error(error)
-        };
+        }
     }
 
     //start
@@ -458,8 +458,8 @@ class MainZone extends EventEmitter {
 
                     if (this.televisionService) {
                         this.televisionService
-                            .updateCharacteristic(Characteristic.Active, 1)
-                            .updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier)
+                            .updateCharacteristic(Characteristic.Active, power)
+                            .updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
                     }
 
                     if (this.sensorInputService && reference !== this.reference) {
@@ -491,7 +491,7 @@ class MainZone extends EventEmitter {
                         this.emit('info', `Power: ${power ? 'ON' : 'OFF'}`);
                         this.emit('info', `Pass Through Input Name: ${name}`);
                         this.emit('info', `Reference: ${reference}`);
-                    };
+                    }
                 })
                 .on('success', (success) => {
                     this.emit('success', success);
@@ -528,8 +528,8 @@ class MainZone extends EventEmitter {
             return true;
         } catch (error) {
             throw new Error(`Start error: ${error}`);
-        };
-    };
-};
+        }
+    }
+}
 
 export default MainZone;

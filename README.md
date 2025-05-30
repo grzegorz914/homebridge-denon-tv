@@ -110,7 +110,7 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 | `powerControlZone` | Here select which zone the power want control, `0 - Main Zone`, `1 - Zone 2`, `2 - Zone 3`, `3 - Zone 2/3`, `4 - Main Zone + Z2`, `5 - Main Zone + Z3`, `6 - Main Zone + Z2/Z3`, `7 - Master Power`, this also working with power button in RC app. |
 | `volumeControlNamePrefix` | Here enable/disable the accessory name as a prefix for volume control name. |
 | `volumeControlName` | Here set Your own volume/mute control name or leave empty. |
-| `volumeControlType` | Here choose what a additional volume/mute control type You want to use, `0 - None/Disabled`, `1 - Lightbulb`, `2 - Fan`. |
+| `volumeControlType` | Here choose what a additional volume/mute control type You want to use, `0 - None/Disabled`, `1 - Lightbulb`, `2 - Fan`, `3 - Speaker`.. |
 | `volumeControlZone` | Here select which zone the volume/mute want control, `0 - Main Zone`, `1 - Zone 2`, `2 - Zone 3`, `3 - Zone 2/3`, `4 - Main Zone + Z2`, `5 - Main Zone + Z3`, `6 - Main Zone + Z2/Z3`, this also working with hardware buttons in RC app. |
 | `volumeMax` | Here set the maximum possible volume to set, `0 - 100`. |
 | `infoButtonCommand` | Here choose the function for `I` button in RC app. |

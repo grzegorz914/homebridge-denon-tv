@@ -39,7 +39,7 @@ class Surrounds extends EventEmitter {
             const displayType = sensor.displayType ?? 0;
             if (displayType === 0) {
                 continue;
-            };
+            }
 
             sensor.name = sensor.name || 'Sensor Input';
             sensor.reference = sensor.reference ?? false;
@@ -50,7 +50,7 @@ class Surrounds extends EventEmitter {
                 this.sensorsInputsConfigured.push(sensor);
             } else {
                 this.emit('info', `Sensor Name: ${sensor.name}, Reference: Missing`);
-            };
+            }
         }
         this.sensorsInputsConfiguredCount = this.sensorsInputsConfigured.length || 0;
 
@@ -72,7 +72,7 @@ class Surrounds extends EventEmitter {
             return true;
         } catch (error) {
             throw new Error(`Save data error: ${error}`);
-        };
+        }
     }
 
     async readData(path) {
@@ -81,7 +81,7 @@ class Surrounds extends EventEmitter {
             return data;
         } catch (error) {
             throw new Error(`Read saved data error: ${error}`);
-        };
+        }
     }
 
     async sanitizeString(str) {
@@ -149,7 +149,7 @@ class Surrounds extends EventEmitter {
             return true;
         } catch (error) {
             throw new Error(`Display order error: ${error}`);
-        };
+        }
     }
 
     async startImpulseGenerator() {
@@ -159,7 +159,7 @@ class Surrounds extends EventEmitter {
             return true;
         } catch (error) {
             throw new Error(`Impulse generator start error: ${error}`);
-        };
+        }
     }
 
     //prepare accessory
@@ -199,7 +199,7 @@ class Surrounds extends EventEmitter {
                         //const info = this.disableLogInfo ? false : this.emit('info', `set Power: ${powerState}`);
                     } catch (error) {
                         this.emit('warn', `set Power error: ${error}`);
-                    };
+                    }
                 });
 
             this.televisionService.getCharacteristic(Characteristic.ActiveIdentifier)
@@ -228,7 +228,7 @@ class Surrounds extends EventEmitter {
                         }
                     } catch (error) {
                         this.emit('warn', `set Surround error: ${error}`);
-                    };
+                    }
                 });
 
             this.televisionService.getCharacteristic(Characteristic.RemoteKey)
@@ -282,7 +282,7 @@ class Surrounds extends EventEmitter {
                         const info = this.disableLogInfo ? false : this.emit('info', `set Remote Key: ${command}`);
                     } catch (error) {
                         this.emit('warn', `set Remote Key error: ${error}`);
-                    };
+                    }
                 });
             this.allServices.push(this.televisionService);
 
@@ -369,7 +369,7 @@ class Surrounds extends EventEmitter {
                 this.inputsConfigured.push(input);
                 this.televisionService.addLinkedService(inputService);
                 this.allServices.push(inputService);
-            };
+            }
 
             //prepare sonsor input service
             if (this.sensorInput) {
@@ -384,7 +384,7 @@ class Surrounds extends EventEmitter {
                     });
 
                 this.allServices.push(this.sensorInputService);
-            };
+            }
 
             //prepare sonsor inputs service
             const possibleSensorInputsCount = 99 - this.allServices.length;
@@ -421,7 +421,7 @@ class Surrounds extends EventEmitter {
                     this.allServices.push(sensorInputService);
                     accessory.addService(sensorInputService);
                 }
-            };
+            }
 
             //sort inputs list
             await this.displayOrder();
@@ -429,7 +429,7 @@ class Surrounds extends EventEmitter {
             return accessory;
         } catch (error) {
             throw new Error(error)
-        };
+        }
     }
 
     //start
@@ -469,7 +469,7 @@ class Surrounds extends EventEmitter {
                     if (this.televisionService) {
                         this.televisionService
                             .updateCharacteristic(Characteristic.Active, power ? 1 : 0)
-                            .updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier)
+                            .updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
                     }
 
 
@@ -502,7 +502,7 @@ class Surrounds extends EventEmitter {
                         this.emit('info', `Power: ${power ? 'ON' : 'OFF'}`);
                         this.emit('info', `Surround Name: ${name}`);
                         this.emit('info', `Reference: ${reference}`);
-                    };
+                    }
                 })
                 .on('success', (success) => {
                     this.emit('success', success);
@@ -540,8 +540,8 @@ class Surrounds extends EventEmitter {
             return true;
         } catch (error) {
             throw new Error(`Start error: ${error}`);
-        };
-    };
-};
+        }
+    }
+}
 
 export default Surrounds;

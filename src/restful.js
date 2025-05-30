@@ -56,7 +56,7 @@ class RestFul extends EventEmitter {
         } catch (error) {
             this.emit('warn', `RESTful Connect error: ${error}`)
         }
-    };
+    }
 
     update(path, data) {
         switch (path) {
@@ -75,8 +75,8 @@ class RestFul extends EventEmitter {
             default:
                 this.emit('warn', `RESTFul update unknown path: ${path}, data: ${JSON.stringify(data, null, 2)}`)
                 break;
-        };
+        }
         const emitDebug = this.restFulDebug ? this.emit('debug', `RESTFul update path: ${path}, data: ${JSON.stringify(data, null, 2)}`) : false;
-    };
-};
+    }
+}
 export default RestFul;

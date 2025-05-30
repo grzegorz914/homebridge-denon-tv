@@ -81,11 +81,11 @@ class Denon extends EventEmitter {
                 await this.checkState();
             } catch (error) {
                 const logError = config.disableLogError ? false : this.emit('error', `Impulse generator error: ${error}`);
-            };
+            }
         }).on('state', (state) => {
             const emitState = state ? this.emit('success', `Impulse generator started`) : this.emit('warn', `Impulse generator stopped`);
-        });
-    };
+        })
+    }
 
     async connect() {
         try {
@@ -259,9 +259,8 @@ class Denon extends EventEmitter {
             return true;
         } catch (error) {
             throw new Error(`Connect error: ${error}`);
-
-        };
-    };
+        }
+    }
 
     async checkState() {
         try {
@@ -319,7 +318,7 @@ class Denon extends EventEmitter {
             //update only if value change
             if (power === this.power && reference === this.reference && volume === this.volume && volumeDisplay === this.volumeDisplay && mute === this.mute && pictureMode === this.pictureMode && soundMode === this.soundMode) {
                 return;
-            };
+            }
 
             this.power = power;
             this.reference = reference;
@@ -336,8 +335,8 @@ class Denon extends EventEmitter {
             return true;
         } catch (error) {
             throw new Error(`Check state error: ${error}`);
-        };
-    };
+        }
+    }
 
     async getInputs(devInfo, generation, zone, inputs, zoneCapabilities, getInputsFromDevice, getFavoritesFromDevice, getQuickSmartSelectFromDevice, supportFavorites, supportShortcut, supportQuickSmartSelect) {
         try {
@@ -362,7 +361,7 @@ class Denon extends EventEmitter {
                     'reference': inputReference
                 }
                 tempInputs.push(obj);
-            };
+            }
 
             //add schortcuts
             const deviceSchortcuts = getInputsFromDevice && supportShortcut && Array.isArray(zoneCapabilities.ShortcutControl.EntryList.Shortcut) ? zoneCapabilities.ShortcutControl.EntryList.Shortcut : [];
@@ -381,7 +380,7 @@ class Denon extends EventEmitter {
                     'reference': shortcutReference
                 }
                 tempInputs.push(obj);
-            };
+            }
 
             //add favorites
             const deviceFavorites = getFavoritesFromDevice && supportFavorites && Array.isArray(devInfo.DeviceCapabilities.Operation.Favorites) ? devInfo.DeviceCapabilities.Operation.Favorites : [];
@@ -399,7 +398,7 @@ class Denon extends EventEmitter {
                     'reference': favoriteReference
                 }
                 tempInputs.push(obj);
-            };
+            }
 
             //add quick and smart select
             const deviceQuickSmartSelect = getQuickSmartSelectFromDevice && supportQuickSmartSelect ? zoneCapabilities.Operation.QuickSelect : {};
@@ -419,7 +418,7 @@ class Denon extends EventEmitter {
                     'reference': quickSelectReference
                 }
                 tempInputs.push(obj);
-            };
+            }
 
             //chack duplicated inputs and convert reference
             const allInputs = [];
@@ -474,7 +473,7 @@ class Denon extends EventEmitter {
         } catch (error) {
             throw new Error(`Get inputus error: ${error}`);
         }
-    };
+    }
 
     async saveData(path, data) {
         try {
@@ -484,8 +483,8 @@ class Denon extends EventEmitter {
             return true;
         } catch (error) {
             throw new Error(`Save data error: ${error}`);
-        };
-    };
+        }
+    }
 
     async send(command) {
         try {
@@ -495,7 +494,7 @@ class Denon extends EventEmitter {
             return true;
         } catch (error) {
             throw new Error(`Send data error: ${error}`);
-        };
-    };
-};
+        }
+    }
+}
 export default Denon;
