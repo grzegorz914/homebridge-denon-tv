@@ -146,6 +146,7 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 * Only for Main Zone, Zone 2, Zone 3
 * POST data as a JSON Object `{Power: true}`
 * Header content type must be `application/json`
+* Path `status` response all available paths.
 
 | Method | URL | Path | Response | Type |
 | --- | --- | --- | --- | --- |
