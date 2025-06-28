@@ -89,7 +89,7 @@ class Denon extends EventEmitter {
                 this.emit('error', `Inpulse generator error: ${error}`);
             };
         }).on('state', (state) => {
-            const emitState = state ? this.emit('success', `Impulse generator started`) : this.emit('warn', `Impulse generator stopped`); js
+            const emitState = state ? this.emit('success', `Impulse generator started`) : this.emit('warn', `Impulse generator stopped`);
         });
     }
 
