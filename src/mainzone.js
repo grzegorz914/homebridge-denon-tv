@@ -437,8 +437,8 @@ class MainZone extends EventEmitter {
                         const { mode: mode, name: name, reference: reference } = input;
 
                         if (!this.power) {
-                            for (let attempt = 0; attempt < 10; attempt++) {
-                                await new Promise(resolve => setTimeout(resolve, 2000));
+                            for (let attempt = 0; attempt < 2; attempt++) {
+                                await new Promise(resolve => setTimeout(resolve, 4000));
                                 if (this.power && this.inputIdentifier !== activeIdentifier) {
                                     this.televisionService.setCharacteristic(Characteristic.ActiveIdentifier, activeIdentifier);
                                     break;
