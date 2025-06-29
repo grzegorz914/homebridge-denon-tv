@@ -210,11 +210,26 @@ class MainZone extends EventEmitter {
                 })
                 .onSet(async (activeIdentifier) => {
                     try {
-                        const input = this.inputsConfigured.find(input => input.identifier === activeIdentifier);
-                        const name = input.name;
-                        const mode = input.mode;
-                        const reference = `${mode}${input.reference}`;
-                        await this.denon.send(reference);
+                        const input = this.inputsConfigured.find(i => i.identifier === activeIdentifier);
+                        if (!input) {
+                            this.emit('warn', `Input with identifier ${activeIdentifier} not found`);
+                            return;
+                        }
+
+                        const { mode: mode, name: name, reference: reference } = input;
+
+                        if (!this.power) {
+                            for (let attempt = 0; attempt < 10; attempt++) {
+                                await new Promise(resolve => setTimeout(resolve, 2000));
+                                if (this.power && this.inputIdentifier !== activeIdentifier) {
+                                    this.televisionService.setCharacteristic(Characteristic.ActiveIdentifier, activeIdentifier);
+                                    break;
+                                }
+                            }
+                            return;
+                        }
+
+                        await this.denon.send(`${mode}${reference}`);
                         const info = this.disableLogInfo ? false : this.emit('info', `set Input Name: ${name}, Reference: ${reference}`);
                     } catch (error) {
                         this.emit('warn', `set Input error: ${error}`);
@@ -455,6 +470,9 @@ class MainZone extends EventEmitter {
                 .on('stateChanged', async (power, reference, volume, volumeDisplay, mute, pictureMode) => {
                     const input = this.inputsConfigured.find(input => input.reference === reference) ?? false;
                     const inputIdentifier = input ? input.identifier : this.inputIdentifier;
+                    this.inputIdentifier = inputIdentifier;
+                    this.power = power;
+                    this.reference = reference;
 
                     if (this.televisionService) {
                         this.televisionService
@@ -481,10 +499,6 @@ class MainZone extends EventEmitter {
                                 .updateCharacteristic(characteristicType, state);
                         }
                     }
-
-                    this.inputIdentifier = inputIdentifier;
-                    this.power = power;
-                    this.reference = reference;
 
                     if (!this.disableLogInfo) {
                         const name = input ? input.name : reference;

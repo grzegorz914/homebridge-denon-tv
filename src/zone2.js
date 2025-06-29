@@ -424,23 +424,27 @@ class Zone2 extends EventEmitter {
                 })
                 .onSet(async (activeIdentifier) => {
                     try {
-                        const input = this.inputsConfigured.find(input => input.identifier === activeIdentifier);
-                        const name = input.name;
-                        const mode = input.mode;
-                        const reference = `${mode}${input.reference}`;
-
-                        switch (this.power) {
-                            case false:
-                                for (let attempt = 0; attempt < 2; attempt++) {
-                                    await new Promise(resolve => setTimeout(resolve, 4000));
-                                    const setInput = this.power && this.inputIdentifier !== activeIdentifier ? this.televisionService.setCharacteristic(Characteristic.ActiveIdentifier, activeIdentifier) : false;
-                                }
-                                break;
-                            case true:
-                                await this.denon.send(reference);
-                                const info = this.disableLogInfo ? false : this.emit('info', `set Input Name: ${name}, Reference: ${reference}`);
-                                break;
+                        const input = this.inputsConfigured.find(i => i.identifier === activeIdentifier);
+                        if (!input) {
+                            this.emit('warn', `Input with identifier ${activeIdentifier} not found`);
+                            return;
                         }
+
+                        const { mode: mode, name: name, reference: reference } = input;
+
+                        if (!this.power) {
+                            for (let attempt = 0; attempt < 10; attempt++) {
+                                await new Promise(resolve => setTimeout(resolve, 2000));
+                                if (this.power && this.inputIdentifier !== activeIdentifier) {
+                                    this.televisionService.setCharacteristic(Characteristic.ActiveIdentifier, activeIdentifier);
+                                    break;
+                                }
+                            }
+                            return;
+                        }
+
+                        await this.denon.send(`${mode}${reference}`);
+                        const info = this.disableLogInfo ? false : this.emit('info', `set Input Name: ${name}, Reference: ${reference}`);
                     } catch (error) {
                         this.emit('warn', `set Input error: ${error}`);
                     }
@@ -929,6 +933,14 @@ class Zone2 extends EventEmitter {
                     mute = power ? mute : true;
                     const pictureModeHomeKit = PictureModesConversionToHomeKit[pictureMode] ?? this.pictureMode;
 
+                    this.inputIdentifier = inputIdentifier;
+                    this.power = power;
+                    this.reference = reference;
+                    this.volume = scaledVolume;
+                    this.mute = mute;
+                    this.volumeDisplay = volumeDisplay;
+                    this.pictureMode = pictureModeHomeKit;
+
                     if (this.televisionService) {
                         this.televisionService
                             .updateCharacteristic(Characteristic.Active, power)
@@ -1015,14 +1027,6 @@ class Zone2 extends EventEmitter {
                                 .updateCharacteristic(Characteristic.On, state);
                         }
                     }
-
-                    this.inputIdentifier = inputIdentifier;
-                    this.power = power;
-                    this.reference = reference;
-                    this.volume = scaledVolume;
-                    this.mute = mute;
-                    this.volumeDisplay = volumeDisplay;
-                    this.pictureMode = pictureModeHomeKit;
 
                     if (!this.disableLogInfo) {
                         const name = input ? input.name : reference;
