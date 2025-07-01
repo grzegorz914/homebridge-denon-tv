@@ -126,9 +126,6 @@ class Surrounds extends EventEmitter {
     async displayOrder() {
         try {
             switch (this.inputsDisplayOrder) {
-                case 0:
-                    this.inputsConfigured.sort((a, b) => a.identifier - b.identifier);
-                    break;
                 case 1:
                     this.inputsConfigured.sort((a, b) => a.name.localeCompare(b.name));
                     break;
@@ -141,12 +138,14 @@ class Surrounds extends EventEmitter {
                 case 4:
                     this.inputsConfigured.sort((a, b) => b.reference.localeCompare(a.reference));
                     break;
+                default:
+                    return;
             }
-            const debug = !this.enableDebugMode ? false : this.emit('debug', `Surrounds display order: ${JSON.stringify(this.inputsConfigured, null, 2)}`);
+            const debug = this.enableDebugMode ? this.emit('debug', `Inputs display order: ${JSON.stringify(this.inputsConfigured, null, 2)}`) : false;
 
             const displayOrder = this.inputsConfigured.map(input => input.identifier);
             this.televisionService.setCharacteristic(Characteristic.DisplayOrder, Encode(1, displayOrder).toString('base64'));
-            return true;
+            return;
         } catch (error) {
             throw new Error(`Display order error: ${error}`);
         }
