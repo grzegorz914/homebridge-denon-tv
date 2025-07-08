@@ -432,13 +432,20 @@ class Zone2 extends EventEmitter {
                         const { mode: mode, name: name, reference: reference } = input;
 
                         if (!this.power) {
-                            for (let attempt = 0; attempt < 2; attempt++) {
-                                await new Promise(resolve => setTimeout(resolve, 4000));
-                                if (this.power && this.inputIdentifier !== activeIdentifier) {
-                                    this.televisionService.setCharacteristic(Characteristic.ActiveIdentifier, activeIdentifier);
-                                    break;
+                            // Schedule retry attempts without blocking Homebridge
+                            this.emit('debug', `TV is off, deferring input switch to '${activeIdentifier}'`);
+
+                            (async () => {
+                                for (let attempt = 0; attempt < 3; attempt++) {
+                                    await new Promise(resolve => setTimeout(resolve, 4000));
+                                    if (this.power && this.inputIdentifier !== activeIdentifier) {
+                                        this.emit('debug', `TV powered on, retrying input switch`);
+                                        this.televisionService.setCharacteristic(Characteristic.ActiveIdentifier, activeIdentifier);
+                                        break;
+                                    }
                                 }
-                            }
+                            })();
+
                             return;
                         }
 
