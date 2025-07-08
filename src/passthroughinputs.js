@@ -102,31 +102,31 @@ class MainZone extends EventEmitter {
 
     async displayOrder() {
         try {
-            switch (this.inputsDisplayOrder) {
-                case 1:
-                    this.inputsConfigured.sort((a, b) => a.name.localeCompare(b.name));
-                    break;
-                case 2:
-                    this.inputsConfigured.sort((a, b) => b.name.localeCompare(a.name));
-                    break;
-                case 3:
-                    this.inputsConfigured.sort((a, b) => a.reference.localeCompare(b.reference));
-                    break;
-                case 4:
-                    this.inputsConfigured.sort((a, b) => b.reference.localeCompare(a.reference));
-                    break;
-                default:
-                    return;
+            const sortStrategies = {
+                1: (a, b) => a.name.localeCompare(b.name),
+                2: (a, b) => b.name.localeCompare(a.name),
+                3: (a, b) => a.reference.localeCompare(b.reference),
+                4: (a, b) => b.reference.localeCompare(a.reference),
+            };
+
+            const sortFn = sortStrategies[this.inputsDisplayOrder];
+            if (!sortFn) return;
+
+            this.inputsConfigured.sort(sortFn);
+
+            if (this.enableDebugMode) {
+                this.emit('debug', `Inputs display order:\n${JSON.stringify(this.inputsConfigured, null, 2)}`);
             }
-            const debug = this.enableDebugMode ? this.emit('debug', `Inputs display order: ${JSON.stringify(this.inputsConfigured, null, 2)}`) : false;
 
             const displayOrder = this.inputsConfigured.map(input => input.identifier);
-            this.televisionService.setCharacteristic(Characteristic.DisplayOrder, Encode(1, displayOrder).toString('base64'));
-            return;
+            const encodedOrder = Encode(1, displayOrder).toString('base64');
+
+            this.televisionService.setCharacteristic(Characteristic.DisplayOrder, encodedOrder);
         } catch (error) {
             throw new Error(`Display order error: ${error}`);
         }
     }
+
 
     async startImpulseGenerator() {
         try {
@@ -300,87 +300,74 @@ class MainZone extends EventEmitter {
             //prepare inputs service
             const debug8 = !this.enableDebugMode ? false : this.emit('debug', `Prepare inputs services`);
 
-            //check possible inputs count (max 85)
-            const inputs = this.savedInputs;
-            const inputsCount = inputs.length;
-            const possibleInputsCount = 85 - this.allServices.length;
-            const maxInputsCount = inputsCount >= possibleInputsCount ? possibleInputsCount : inputsCount;
-            for (let i = 0; i < maxInputsCount; i++) {
-                //input
-                const input = inputs[i];
+            // Prepare inputs (max 85 total services)
+            const maxInputs = Math.min(this.savedInputs.length, 85 - this.allServices.length);
+            for (let i = 0; i < maxInputs; i++) {
+                const input = this.savedInputs[i];
                 const inputIdentifier = i + 1;
-
-                //get input reference
                 const reference = input.reference;
 
-                //get input name
-                const name = input.name ?? `Input ${inputIdentifier}`;
+                // Determine display name
+                const defaultName = input.name || `Input ${inputIdentifier}`;
+                const savedName = this.savedInputsNames[reference];
+                input.name = (savedName || defaultName).substring(0, 64);
 
-                //get input name
-                const savedName = this.savedInputsNames[reference] ?? false;
-                input.name = savedName ? savedName.substring(0, 64) : name.substring(0, 64);
-
-                //get type
-                const sourceType = 0;
-
-                //get configured
-                const isConfigured = 1;
-
-                //get visibility
+                // Set defaults and identifiers
+                input.identifier = inputIdentifier;
                 input.visibility = this.savedInputsTargetVisibility[reference] ?? 0;
 
-                //add identifier to the input
-                input.identifier = inputIdentifier;
-
-                //input service
+                // Create InputSource service
                 const sanitizedName = await this.sanitizeString(input.name);
                 const inputService = accessory.addService(Service.InputSource, sanitizedName, `Input ${inputIdentifier}`);
+
                 inputService
                     .setCharacteristic(Characteristic.Identifier, inputIdentifier)
                     .setCharacteristic(Characteristic.Name, sanitizedName)
-                    .setCharacteristic(Characteristic.IsConfigured, isConfigured)
-                    .setCharacteristic(Characteristic.InputSourceType, sourceType)
+                    .setCharacteristic(Characteristic.IsConfigured, 1)
+                    .setCharacteristic(Characteristic.InputSourceType, 0)
                     .setCharacteristic(Characteristic.CurrentVisibilityState, input.visibility);
 
+                // Handle name configuration
                 inputService.getCharacteristic(Characteristic.ConfiguredName)
-                    .onGet(async () => {
-                        return sanitizedName;
-                    })
+                    .onGet(async () => sanitizedName)
                     .onSet(async (value) => {
                         try {
                             input.name = value;
                             this.savedInputsNames[reference] = value;
                             await this.saveData(this.inputsNamesFile, this.savedInputsNames);
-                            const debug = !this.enableDebugMode ? false : this.emit('debug', `Saved Input Name: ${value}, Reference: ${reference}`);
 
-                            //sort inputs
-                            const index = this.inputsConfigured.findIndex(input => input.reference === reference);
-                            this.inputsConfigured[index].name = value;
+                            const index = this.inputsConfigured.findIndex(i => i.reference === reference);
+                            if (index !== -1) this.inputsConfigured[index].name = value;
+
                             await this.displayOrder();
+                            if (this.enableDebugMode) this.emit('debug', `Saved Input Name: ${value}, Reference: ${reference}`);
                         } catch (error) {
                             this.emit('warn', `Save Input Name error: ${error}`);
                         }
                     });
 
+                // Handle visibility configuration
                 inputService.getCharacteristic(Characteristic.TargetVisibilityState)
-                    .onGet(async () => {
-                        return input.visibility;
-                    })
+                    .onGet(async () => input.visibility)
                     .onSet(async (state) => {
                         try {
                             input.visibility = state;
                             this.savedInputsTargetVisibility[reference] = state;
                             await this.saveData(this.inputsTargetVisibilityFile, this.savedInputsTargetVisibility);
-                            const debug = !this.enableDebugMode ? false : this.emit('debug', `Saved Input: ${input.name} Target Visibility: ${state ? 'HIDEN' : 'SHOWN'}`);
+
+                            if (this.enableDebugMode)
+                                this.emit('debug', `Saved Input: ${input.name}, Target Visibility: ${state ? 'HIDDEN' : 'SHOWN'}`);
                         } catch (error) {
                             this.emit('warn', `Save Input Target Visibility error: ${error}`);
                         }
                     });
 
+                // Final registration
                 this.inputsConfigured.push(input);
                 this.televisionService.addLinkedService(inputService);
                 this.allServices.push(inputService);
             }
+
 
             //prepare sonsor input service
             if (this.sensorInput) {
