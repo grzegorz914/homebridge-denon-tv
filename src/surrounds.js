@@ -300,60 +300,69 @@ class Surrounds extends EventEmitter {
             //prepare inputs service
             const debug8 = !this.enableDebugMode ? false : this.emit('debug', `Prepare surrounds services`);
 
-            const maxInputsCount = Math.min(this.savedInputs.length, 85 - this.allServices.length);
-
-            for (let i = 0; i < maxInputsCount; i++) {
+            const maxInputs = Math.min(this.savedInputs.length, 85 - this.allServices.length);
+            for (let i = 0; i < maxInputs; i++) {
                 const input = this.savedInputs[i];
+                if (!input) continue;
+
                 const inputIdentifier = i + 1;
-                const reference = input.reference;
+                const inputReference = input.reference;
 
-                // Determine input name, prioritizing saved name
-                const defaultName = input.name ?? `Input ${inputIdentifier}`;
-                const savedName = this.savedInputsNames[reference];
-                input.name = (savedName || defaultName).substring(0, 64);
+                // Load or fallback to default name
+                const savedName = this.savedInputsNames[inputReference] ?? input.name;
+                input.name = savedName; // Sanitization will be handled later
 
-                // Set defaults
+                // Load visibility state
+                input.visibility = this.savedInputsTargetVisibility[inputReference] ?? 0;
+
+                // Add identifier
                 input.identifier = inputIdentifier;
-                input.visibility = this.savedInputsTargetVisibility[reference] ?? 0;
 
+                // Sanitize and create service
                 const sanitizedName = await this.sanitizeString(input.name);
+                const inputService = accessory.addService(Service.InputSource, sanitizedName, `Input ${inputIdentifier}`);
 
-                const inputService = accessory.addService(Service.InputSource, sanitizedName, `Surround ${inputIdentifier}`);
                 inputService
                     .setCharacteristic(Characteristic.Identifier, inputIdentifier)
                     .setCharacteristic(Characteristic.Name, sanitizedName)
+                    .setCharacteristic(Characteristic.ConfiguredName, sanitizedName)
                     .setCharacteristic(Characteristic.IsConfigured, 1)
                     .setCharacteristic(Characteristic.InputSourceType, 0)
-                    .setCharacteristic(Characteristic.CurrentVisibilityState, input.visibility);
+                    .setCharacteristic(Characteristic.CurrentVisibilityState, input.visibility)
+                    .setCharacteristic(Characteristic.TargetVisibilityState, input.visibility);
 
                 inputService.getCharacteristic(Characteristic.ConfiguredName)
-                    .onGet(async () => sanitizedName)
                     .onSet(async (value) => {
                         try {
                             input.name = value;
-                            this.savedInputsNames[reference] = value;
+                            this.savedInputsNames[inputReference] = value;
                             await this.saveData(this.inputsNamesFile, this.savedInputsNames);
 
-                            const index = this.inputsConfigured.findIndex(i => i.reference === reference);
+                            if (this.enableDebugMode) {
+                                this.emit('debug', `Saved Input Name: ${value}, Reference: ${inputReference}`);
+                            }
+
+                            const index = this.inputsConfigured.findIndex(i => i.reference === inputReference);
                             if (index !== -1) this.inputsConfigured[index].name = value;
 
                             await this.displayOrder();
-                            if (this.enableDebugMode) this.emit('debug', `Saved Surround Name: ${value}, Reference: ${reference}`);
                         } catch (error) {
-                            this.emit('warn', `Save Surround Name error: ${error}`);
+                            this.emit('warn', `Save Input Name error: ${error}`);
                         }
                     });
 
                 inputService.getCharacteristic(Characteristic.TargetVisibilityState)
-                    .onGet(async () => input.visibility)
                     .onSet(async (state) => {
                         try {
                             input.visibility = state;
-                            this.savedInputsTargetVisibility[reference] = state;
+                            this.savedInputsTargetVisibility[inputReference] = state;
                             await this.saveData(this.inputsTargetVisibilityFile, this.savedInputsTargetVisibility);
-                            if (this.enableDebugMode) this.emit('debug', `Saved Surround: ${input.name} Target Visibility: ${state ? 'HIDDEN' : 'SHOWN'}`);
+
+                            if (this.enableDebugMode) {
+                                this.emit('debug', `Saved Input: ${input.name}, Target Visibility: ${state ? 'HIDDEN' : 'SHOWN'}`);
+                            }
                         } catch (error) {
-                            this.emit('warn', `Save Surround Target Visibility error: ${error}`);
+                            this.emit('warn', `Save Target Visibility error: ${error}`);
                         }
                     });
 
@@ -361,7 +370,6 @@ class Surrounds extends EventEmitter {
                 this.televisionService.addLinkedService(inputService);
                 this.allServices.push(inputService);
             }
-
 
             //prepare sonsor input service
             if (this.sensorInput) {
@@ -440,20 +448,19 @@ class Surrounds extends EventEmitter {
                 getFavoritesFromDevice: false,
                 getQuickSmartSelectFromDevice: false,
                 enableDebugLog: this.enableDebugMode
-            });
-
-            this.denon.on('deviceInfo', (manufacturer, modelName, serialNumber, firmwareRevision, deviceZones, apiVersion, supportPictureMode) => {
-                this.emit('devInfo', `-------- ${this.name} --------`);
-                this.emit('devInfo', `Manufacturer: ${manufacturer}`);
-                this.emit('devInfo', `Model: ${modelName}`);
-                this.emit('devInfo', `Control: Sound Modes`);
-                this.emit('devInfo', `----------------------------------`);
-
-                this.manufacturer = manufacturer;
-                this.modelName = modelName;
-                this.serialNumber = serialNumber;
-                this.firmwareRevision = firmwareRevision;
             })
+                .on('deviceInfo', (manufacturer, modelName, serialNumber, firmwareRevision, deviceZones, apiVersion, supportPictureMode) => {
+                    this.emit('devInfo', `-------- ${this.name} --------`);
+                    this.emit('devInfo', `Manufacturer: ${manufacturer}`);
+                    this.emit('devInfo', `Model: ${modelName}`);
+                    this.emit('devInfo', `Control: Sound Modes`);
+                    this.emit('devInfo', `----------------------------------`);
+
+                    this.manufacturer = manufacturer;
+                    this.modelName = modelName;
+                    this.serialNumber = serialNumber;
+                    this.firmwareRevision = firmwareRevision;
+                })
                 .on('stateChanged', async (power, reference, volume, volumeDisplay, mute, pictureMode) => {
                     const input = this.inputsConfigured.find(input => input.reference === reference) ?? false;
                     const inputIdentifier = input ? input.identifier : this.inputIdentifier;
