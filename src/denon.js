@@ -74,23 +74,36 @@ class Denon extends EventEmitter {
         this.audysseyMode = '';
         this.devInfo = {};
         this.object = {};
+        this.firstRun = true;
 
         this.call = false;
-        this.impulseGenerator = new ImpulseGenerator();
-        this.impulseGenerator.on('checkState', async () => {
-            try {
-                if (this.call) return;
+        this.impulseGenerator = new ImpulseGenerator()
+            .on('connect', async () => {
+                try {
+                    if (this.call) return;
 
-                this.call = true;
-                await this.checkState();
-                this.call = false;
-            } catch (error) {
-                this.call = false;
-                this.emit('error', `Inpulse generator error: ${error}`);
-            };
-        }).on('state', (state) => {
-            const emitState = state ? this.emit('success', `Impulse generator started`) : this.emit('warn', `Impulse generator stopped`);
-        });
+                    this.call = true;
+                    await this.connect();
+                    this.call = false;
+                } catch (error) {
+                    this.call = false;
+                    this.emit('error', `Inpulse generator error: ${error}`);
+                };
+            })
+            .on('checkState', async () => {
+                try {
+                    if (this.call) return;
+
+                    this.call = true;
+                    await this.checkState();
+                    this.call = false;
+                } catch (error) {
+                    this.call = false;
+                    this.emit('error', `Inpulse generator error: ${error}`);
+                };
+            }).on('state', (state) => {
+                const emitState = state ? this.emit('success', `Impulse generator started`) : this.emit('warn', `Impulse generator stopped`);
+            });
     }
 
     async connect() {
@@ -99,7 +112,7 @@ class Denon extends EventEmitter {
             const deviceInfo = await this.axiosInstance(this.deviceInfoUrl);
             const parseData = this.parseString.parse(deviceInfo.data);
             const devInfo = [parseData.item, parseData.Device_Info, parseData.Device_Info][this.generation];
-            const debug = this.enableDebugLog ? this.emit('debug', `Connect data: ${JSON.stringify(devInfo, null, 2)}`) : false;
+            if (this.enableDebugLog) this.emit('debug', `Connect data: ${JSON.stringify(devInfo, null, 2)}`);
             this.devInfo = devInfo;
 
             //device info
@@ -253,14 +266,23 @@ class Denon extends EventEmitter {
                 ];
             }
 
+            for (const input of allInputs) {
+                if (!input?.name || !input?.reference) continue;
+
+                this.emit('addRemoveOrUpdateInput', input, false);
+            }
+
             //save inputs if exist
             await this.saveData(this.inputsFile, allInputs);
 
             //connect to deice success
-            this.emit('success', `Connect Success`)
+            if (this.firstRun) {
+                this.emit('success', `Connect Success`)
 
-            //emit device info
-            this.emit('deviceInfo', manufacturer, modelName, serialNumber, firmwareRevision, deviceZones, apiVersion, supportPictureMode);
+                //emit device info
+                this.emit('deviceInfo', manufacturer, modelName, serialNumber, firmwareRevision, deviceZones, apiVersion, supportPictureMode);
+                this.firstRun = false;
+            }
 
             return true;
         } catch (error) {
@@ -274,7 +296,7 @@ class Denon extends EventEmitter {
             const deviceState = await this.axiosInstance(this.zoneStateUrl);
             const parseDeviceState = this.parseString.parse(deviceState.data);
             const devState = parseDeviceState.item;
-            const debug = this.enableDebugLog ? this.emit('debug', `State: ${JSON.stringify(devState, null, 2)}`) : false;
+            if (this.enableDebugLog) this.emit('debug', `State: ${JSON.stringify(devState, null, 2)}`);
 
             //get receiver status
             const statusKeys = Object.keys(devState);
@@ -473,7 +495,7 @@ class Denon extends EventEmitter {
                 };
                 allInputs.push(obj);
             }
-            const debug = this.enableDebugLog ? this.emit('info', `All Inputs: ${JSON.stringify(allInputs, null, 2)}`) : false;
+            if (this.enableDebugLog) this.emit('info', `All Inputs: ${JSON.stringify(allInputs, null, 2)}`);
 
             return allInputs;
         } catch (error) {
@@ -485,7 +507,7 @@ class Denon extends EventEmitter {
         try {
             data = JSON.stringify(data, null, 2);
             await fsPromises.writeFile(path, data);
-            const debug = this.enableDebugLog ? this.emit('debug', `Saved data: ${data}`) : false;
+            if (this.enableDebugLog) this.emit('debug', `Saved data: ${data}`);
             return true;
         } catch (error) {
             throw new Error(`Save data error: ${error}`);
@@ -496,7 +518,7 @@ class Denon extends EventEmitter {
         try {
             const path = `${ApiUrls.iPhoneDirect}${command}`;
             await this.axiosInstance(path);
-            const debug = this.enableDebugLog ? this.emit('debug', `Send path: ${path}`) : false;
+            if (this.enableDebugLog) this.emit('debug', `Send path: ${path}`);
             return true;
         } catch (error) {
             throw new Error(`Send data error: ${error}`);
