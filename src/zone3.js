@@ -407,6 +407,7 @@ class Zone3 extends EventEmitter {
             let inputService = this.inputsServices.find(s => s.reference === inputReference);
 
             const savedName = this.savedInputsNames[inputReference] ?? input.name;
+            const inputMode = input.mode;
             const sanitizedName = await this.sanitizeString(savedName);
             const inputVisibility = this.savedInputsTargetVisibility[inputReference] ?? 0;
 
@@ -431,6 +432,7 @@ class Zone3 extends EventEmitter {
                 inputService.identifier = identifier;
                 inputService.reference = inputReference;
                 inputService.name = sanitizedName;
+                inputService.mode = inputMode;
                 inputService.visibility = inputVisibility;
 
                 inputService

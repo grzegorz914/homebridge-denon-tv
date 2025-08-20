@@ -102,7 +102,7 @@ class MainZone extends EventEmitter {
     async startImpulseGenerator() {
         try {
             //start impulse generator 
-            await this.denon.impulseGenerator.start([{ name: 'connect', sampling: 50000 }, { name: 'checkState', sampling: this.refreshInterval}]);
+            await this.denon.impulseGenerator.start([{ name: 'connect', sampling: 50000 }, { name: 'checkState', sampling: this.refreshInterval }]);
             return true;
         } catch (error) {
             throw new Error(`Impulse generator start error: ${error}`);
@@ -198,6 +198,7 @@ class MainZone extends EventEmitter {
             let inputService = this.inputsServices.find(s => s.reference === inputReference);
 
             const savedName = this.savedInputsNames[inputReference] ?? input.name;
+            const inputMode = input.mode;
             const sanitizedName = await this.sanitizeString(savedName);
             const inputVisibility = this.savedInputsTargetVisibility[inputReference] ?? 0;
 
@@ -222,6 +223,7 @@ class MainZone extends EventEmitter {
                 inputService.identifier = identifier;
                 inputService.reference = inputReference;
                 inputService.name = sanitizedName;
+                inputService.mode = inputMode;
                 inputService.visibility = inputVisibility;
 
                 inputService
