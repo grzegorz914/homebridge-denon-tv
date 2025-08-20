@@ -56,7 +56,6 @@ class MainZone extends EventEmitter {
 
         //variable
         this.startPrepareAccessory = true;
-        this.allServices = [];
         this.inputIdentifier = 1;
         this.power = false;
         this.reference = '';
@@ -271,7 +270,6 @@ class MainZone extends EventEmitter {
 
                 this.inputsServices.push(inputService);
                 this.televisionService.addLinkedService(inputService);
-                this.allServices.push(inputService);
 
                 if (this.enableDebugMode) this.emit('debug', `Added new input: ${input.name} (${inputReference})`);
             }
@@ -303,7 +301,6 @@ class MainZone extends EventEmitter {
                 .setCharacteristic(Characteristic.SerialNumber, this.serialNumber)
                 .setCharacteristic(Characteristic.FirmwareRevision, this.firmwareRevision)
                 .setCharacteristic(Characteristic.ConfiguredName, accessoryName);
-            this.allServices.push(this.informationService);
 
             //prepare television service
             if (this.enableDebugMode) this.emit('debug', `Prepare television service`);
@@ -419,7 +416,6 @@ class MainZone extends EventEmitter {
                         this.emit('warn', `set Remote Key error: ${error}`);
                     }
                 });
-            this.allServices.push(this.televisionService);
 
             //prepare inputs service
             if (this.enableDebugMode) this.emit('debug', `Prepare inputs services`);
@@ -441,12 +437,10 @@ class MainZone extends EventEmitter {
                         const state = this.sensorInputState;
                         return state;
                     });
-
-                this.allServices.push(this.sensorInputService);
             }
 
             //prepare sonsor inputs service
-            const possibleSensorInputsCount = 99 - this.allServices.length;
+            const possibleSensorInputsCount = 99 - this.accessory.services.length.length;
             const maxSensorInputsCount = this.sensorsInputsConfiguredCount >= possibleSensorInputsCount ? possibleSensorInputsCount : this.sensorsInputsConfiguredCount;
             if (maxSensorInputsCount > 0) {
                 if (this.enableDebugMode) this.emit('debug', `Prepare inputs sensors services`);
@@ -477,7 +471,6 @@ class MainZone extends EventEmitter {
                             return state;
                         });
                     this.sensorInputServices.push(sensorInputService);
-                    this.allServices.push(sensorInputService);
                     accessory.addService(sensorInputService);
                 }
             }

@@ -98,7 +98,6 @@ class Zone2 extends EventEmitter {
 
         //variable
         this.startPrepareAccessory = true;
-        this.allServices = [];
         this.inputIdentifier = 1;
         this.startPrepareAccessory = true;
         this.power = false;
@@ -480,7 +479,6 @@ class Zone2 extends EventEmitter {
 
                 this.inputsServices.push(inputService);
                 this.televisionService.addLinkedService(inputService);
-                this.allServices.push(inputService);
 
                 if (this.enableDebugMode) this.emit('debug', `Added new input: ${input.name} (${inputReference})`);
             }
@@ -511,7 +509,6 @@ class Zone2 extends EventEmitter {
                 .setCharacteristic(Characteristic.Model, this.modelName)
                 .setCharacteristic(Characteristic.SerialNumber, this.serialNumber)
                 .setCharacteristic(Characteristic.FirmwareRevision, this.firmwareRevision);
-            this.allServices.push(this.informationService);
 
             //prepare television service
             if (this.enableDebugMode) this.emit('debug', `Prepare television service`);
@@ -631,7 +628,15 @@ class Zone2 extends EventEmitter {
                         this.emit('warn', `set Remote Key error: ${error}`);
                     }
                 });
-            this.allServices.push(this.televisionService);
+
+            //prepare inputs service
+            if (this.enableDebugMode) this.emit('debug', `Prepare inputs services`);
+
+            // Prepare inputs (max 85 total services)
+            this.inputsServices = [];
+            for (const input of this.savedInputs) {
+                await this.addRemoveOrUpdateInput(input, false);
+            }
 
             //Prepare volume service
             if (this.volumeControl > 0) {
@@ -703,8 +708,6 @@ class Zone2 extends EventEmitter {
                         }
                     });
 
-                this.allServices.push(this.volumeServiceTvSpeaker);
-
                 //legacy control
                 switch (this.volumeControl) {
                     case 1: //lightbulb
@@ -728,8 +731,6 @@ class Zone2 extends EventEmitter {
                             .onSet(async (state) => {
                                 this.volumeServiceTvSpeaker.setCharacteristic(Characteristic.Mute, !state);
                             });
-
-                        this.allServices.push(this.volumeServiceLightbulb);
                         break;
                     case 2: //fan
                         if (!this.enableDebugMode) this.emit('debug', `Prepare volume service fan`);
@@ -752,8 +753,6 @@ class Zone2 extends EventEmitter {
                             .onSet(async (state) => {
                                 this.volumeServiceTvSpeaker.setCharacteristic(Characteristic.Mute, !state);
                             });
-
-                        this.allServices.push(this.volumeServiceFan);
                         break;
                     case 3: // speaker
                         if (!this.enableDebugMode) this.emit('debug', `Prepare volume service speaker`);
@@ -783,21 +782,9 @@ class Zone2 extends EventEmitter {
                             .onSet(async (value) => {
                                 this.volumeServiceTvSpeaker.setCharacteristic(Characteristic.Volume, value);
                             });
-
-                        this.allServices.push(this.volumeServiceSpeaker);
                         break;
                 }
             }
-
-            //prepare inputs service
-            if (this.enableDebugMode) this.emit('debug', `Prepare inputs services`);
-
-            // Prepare inputs (max 85 total services)
-            this.inputsServices = [];
-            for (const input of this.savedInputs) {
-                await this.addRemoveOrUpdateInput(input, false);
-            }
-
 
             //prepare sensor service
             if (this.sensorPower) {
@@ -810,8 +797,6 @@ class Zone2 extends EventEmitter {
                         const state = this.power;
                         return state;
                     });
-
-                this.allServices.push(this.sensorPowerService);
             }
 
             if (this.sensorVolume) {
@@ -824,8 +809,6 @@ class Zone2 extends EventEmitter {
                         const state = this.sensorVolumeState;
                         return state;
                     });
-
-                this.allServices.push(this.sensorVolumeService);
             }
 
             if (this.sensorMute) {
@@ -838,8 +821,6 @@ class Zone2 extends EventEmitter {
                         const state = this.mute;
                         return state;
                     });
-
-                this.allServices.push(this.sensorMuteService);
             }
 
             if (this.sensorInput) {
@@ -852,12 +833,10 @@ class Zone2 extends EventEmitter {
                         const state = this.sensorInputState;
                         return state;
                     });
-
-                this.allServices.push(this.sensorInputService);
             }
 
             //prepare sonsor service
-            const possibleSensorInputsCount = 99 - this.allServices.length;
+            const possibleSensorInputsCount = 99 - this.accessory.services.length.length;
             const maxSensorInputsCount = this.sensorsInputsConfiguredCount >= possibleSensorInputsCount ? possibleSensorInputsCount : this.sensorsInputsConfiguredCount;
             if (maxSensorInputsCount > 0) {
                 if (this.enableDebugMode) this.emit('debug', `Prepare inputs sensors services`);
@@ -888,13 +867,12 @@ class Zone2 extends EventEmitter {
                             return state;
                         });
                     this.sensorInputServices.push(sensorInputService);
-                    this.allServices.push(sensorInputService);
                     accessory.addService(sensorInputService);
                 }
             }
 
             //prepare buttons services
-            const possibleButtonsCount = 99 - this.allServices.length;
+            const possibleButtonsCount = 99 - this.accessory.services.length.length;
             const maxButtonsCount = this.buttonsConfiguredCount >= possibleButtonsCount ? possibleButtonsCount : this.buttonsConfiguredCount;
             if (maxButtonsCount > 0) {
                 if (this.enableDebugMode) this.emit('debug', `Prepare buttons services`);
@@ -935,7 +913,6 @@ class Zone2 extends EventEmitter {
                         });
 
                     this.buttonServices.push(buttonService);
-                    this.allServices.push(buttonService);
                     accessory.addService(buttonService);
                 }
             }
