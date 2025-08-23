@@ -13,7 +13,7 @@ class ImpulseGenerator extends EventEmitter {
         }
 
         //update state
-        const updateState = timers.length > 0 ? this.state(true) : false;
+        if (timers.length > 0) this.state(true);
 
         //add timers
         this.timers = [];

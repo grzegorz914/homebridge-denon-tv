@@ -55,9 +55,7 @@ class RestFul extends EventEmitter {
                     this.emit('set', key, value);
                     this.update(key, value);
 
-                    if (this.restFulDebug) {
-                        this.emit('debug', `RESTFul post data: ${JSON.stringify(obj, null, 2)}`);
-                    }
+                    if (this.restFulDebug) this.emit('debug', `RESTFul post data: ${JSON.stringify(obj, null, 2)}`);
 
                     res.json({ success: true, received: obj });
                 } catch (error) {
@@ -83,9 +81,7 @@ class RestFul extends EventEmitter {
             return;
         }
 
-        if (this.restFulDebug) {
-            this.emit('debug', `RESTFul update path: ${path}, data: ${JSON.stringify(data)}`);
-        }
+        if (this.restFulDebug) this.emit('debug', `RESTFul update path: ${path}, data: ${JSON.stringify(data)}`);
     }
 }
 export default RestFul;

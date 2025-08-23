@@ -90,11 +90,7 @@ class DenonPlatform {
 							return;
 					}
 
-					zone.on('publishAccessory', (accessory) => {
-						api.publishExternalAccessories(PluginName, [accessory]);
-						if (logLevel.success) log.success(`Device: ${host} ${name}, Published as external accessory.`);
-					})
-						.on('devInfo', (msg) => logLevel.devInfo && log.info(msg))
+					zone.on('devInfo', (msg) => logLevel.devInfo && log.info(msg))
 						.on('success', (msg) => logLevel.success && log.success(`Device: ${host} ${name}, ${msg}`))
 						.on('info', (msg) => logLevel.info && log.info(`Device: ${host} ${name}, ${msg}`))
 						.on('debug', (msg) => logLevel.debug && log.info(`Device: ${host} ${name}, debug: ${msg}`))
@@ -104,7 +100,11 @@ class DenonPlatform {
 					const impulseGenerator = new ImpulseGenerator()
 						.on('start', async () => {
 							try {
-								if (await zone.start()) {
+								const accessory = await zone.start()
+								if (accessory) {
+									api.publishExternalAccessories(PluginName, [accessory]);
+									if (logLevel.success) log.success(`Device: ${host} ${name}, Published as external accessory.`);
+
 									await impulseGenerator.stop();
 									await zone.startImpulseGenerator();
 								}
@@ -113,9 +113,7 @@ class DenonPlatform {
 							}
 						})
 						.on('state', (state) => {
-							if (logLevel.debug) {
-								log.info(`Device: ${host} ${name}, Start impulse generator ${state ? 'started' : 'stopped'}.`);
-							}
+							if (logLevel.debug) log.info(`Device: ${host} ${name}, Start impulse generator ${state ? 'started' : 'stopped'}.`);
 						});
 
 					await impulseGenerator.start([{ name: 'start', sampling: 45000 }]);
@@ -123,7 +121,7 @@ class DenonPlatform {
 					if (logLevel.error) log.error(`Device: ${host} ${name}, Did finish launching error: ${err}`);
 				}
 
-				await new Promise((resolve) => setTimeout(resolve, 500));
+				await new Promise((resolve) => setTimeout(resolve, 300));
 			}
 		});
 	}

@@ -14,6 +14,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - after update to 4.7.x buttons, sensors, volume display type need to be configure again using config UI
 - after update to 3.15.x need remove the accessory frome Home app and add it again
 
+## [5.10.2] - (23.08.2025)
+
+## Changes
+
+- fix [#347](https://github.com/grzegorz914/homebridge-denon-tv/issues/347)
+- fix [#345](https://github.com/grzegorz914/homebridge-denon-tv/issues/345)
+- sanitse name function update
+- log level code refactor
+- stability and performance improvements
+- cleanup
+
 ## [5.10.1] - (20.08.2025)
 
 ## Changes
