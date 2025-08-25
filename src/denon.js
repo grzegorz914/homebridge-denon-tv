@@ -92,7 +92,7 @@ class Denon extends EventEmitter {
                 };
             })
             .on('state', (state) => {
-                const emitState = state ? this.emit('success', `Impulse generator started`) : this.emit('warn', `Impulse generator stopped`);
+                this.emit('success', `Impulse generator ${state ? 'started' : 'stopped'}`);
             });
     }
 
@@ -157,11 +157,6 @@ class Denon extends EventEmitter {
             const allInputs = await this.prepareInputs(devInfo, this.generation, this.zone, inputs, zoneCaps, this.getInputsFromDevice, this.getFavoritesFromDevice, this.getQuickSmartSelectFromDevice, caps.Operation?.Favorites?.Control === 1, zoneCaps.ShortcutControl?.Control === 1, zoneCaps.Operation?.QuickSelect?.Control === 1
             );
 
-            // Emit inputs
-            for (const input of allInputs) {
-                this.emit('addRemoveOrUpdateInput', input, false);
-            }
-
             //  Success event
             if (this.firstRun) {
                 await this.saveData(this.devInfoFile, info);
@@ -169,6 +164,9 @@ class Denon extends EventEmitter {
                 this.emit('deviceInfo', info);
                 this.firstRun = false;
             }
+
+            // Emit inputs
+            this.emit('addRemoveOrUpdateInput', allInputs, false);
 
             // REST & MQTT events
             if (this.zone < 3) {
