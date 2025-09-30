@@ -97,6 +97,9 @@ export const BodyXml = {
     "GetAudyssey": {
         "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetAudyssey</cmd> </tx>"
     },
+    "GetAudysseyInfo": {
+        "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetAudysseyInfo</cmd> </tx>"
+    },
     "GetAudysseyEQCurveType": {
         "data": "<?xml version='1.0' encoding='utf-8'?> <tx> <cmd id='1'>GetAudysseyEQCurveType</cmd> </tx>"
     },
@@ -643,4 +646,18 @@ export const DiacriticsMap = {
 
     // Other common
     'Š': 'S', 'š': 's', 'Ž': 'Z', 'ž': 'z'
+};
+
+export const ManufacturerMap = {
+    0: 'Denon',
+    1: 'Marantz',
+    2: 'Denon/Marantz'
+};
+
+export const ZonePrefixMap = {
+    0: 'SI',
+    1: 'Z2',
+    2: 'Z3',
+    3: 'MS',
+    4: 'SI'
 };

@@ -1,7 +1,6 @@
-import { promises as fsPromises } from 'fs';
 import EventEmitter from 'events';
 import Denon from './denon.js';
-import { DiacriticsMap } from './constants.js';
+import Functions from './functions.js';
 let Accessory, Characteristic, Service, Categories, Encode, AccessoryUUID;
 
 class Surrounds extends EventEmitter {
@@ -21,14 +20,15 @@ class Surrounds extends EventEmitter {
         this.port = port;
         this.generation = generation;
         this.zone = zone;
-        this.inputsDisplayOrder = device.inputsDisplayOrder || 0;
-        this.inputs = device.surrounds || [];
-        this.sensorInput = device.sensorInput || false;
-        this.sensorInputs = device.sensorSurrounds || [];
+        this.inputsDisplayOrder = device.surrounds.displayOrder || 0;
+        this.inputs = device.surrounds.data || [];
+        this.sensorInput = device.sensors.surround || false;
+        this.sensorInputs = device.sensors.surrounds || [];
+        this.logInfo = device.log.info || false;
+        this.logWarn = device.log.warn || true;
+        this.logDebug = device.log.debug || false;
+        this.refreshInterval = (device.refreshInterval ?? 5) * 1000;
         this.infoButtonCommand = device.infoButtonCommand || 'MNINF';
-        this.refreshInterval = device.refreshInterval * 1000 || 5000;
-        this.enableDebugMode = device.enableDebugMode || false;
-        this.disableLogInfo = device.disableLogInfo || false;
         this.devInfoFile = devInfoFile;
         this.inputsFile = inputsFile;
         this.inputsNamesFile = inputsNamesFile;
@@ -37,8 +37,8 @@ class Surrounds extends EventEmitter {
         //sensors
         this.sensorsInputsConfigured = [];
         for (const sensor of this.sensorInputs) {
-            const displayType = sensor.displayType ?? 0;
-            if (displayType === 0) {
+            const displayType = sensor.displayType;
+            if (!displayType) {
                 continue;
             }
 
@@ -56,6 +56,7 @@ class Surrounds extends EventEmitter {
         this.sensorsInputsConfiguredCount = this.sensorsInputsConfigured.length || 0;
 
         //variable
+        this.functions = new Functions();
         this.inputIdentifier = 1;
         this.power = false;
         this.reference = '';
@@ -63,82 +64,41 @@ class Surrounds extends EventEmitter {
         this.sensorInputState = false;
     };
 
-    async saveData(path, data) {
+    async startImpulseGenerator() {
         try {
-            data = JSON.stringify(data, null, 2);
-            await fsPromises.writeFile(path, data);
+            //start impulse generator 
+            await this.denon.impulseGenerator.start([{ name: 'connect', sampling: 79000 }, { name: 'checkState', sampling: this.refreshInterval }]);
             return true;
         } catch (error) {
-            throw new Error(`Save data error: ${error}`);
+            throw new Error(`Impulse generator start error: ${error}`);
         }
-    }
-
-    async readData(path) {
-        try {
-            const data = await fsPromises.readFile(path);
-            return data;
-        } catch (error) {
-            throw new Error(`Read saved data error: ${error}`);
-        }
-    }
-
-    async sanitizeString(str) {
-        if (!str) return '';
-
-        // Replace diacritics using map
-        str = str.replace(/[^\u0000-\u007E]/g, ch => DiacriticsMap[ch] || ch);
-
-        // Replace separators between words with space
-        str = str.replace(/(\w)[.:;+\-\/]+(\w)/g, '$1 $2');
-
-        // Replace remaining standalone separators with space
-        str = str.replace(/[.:;+\-\/]/g, ' ');
-
-        // Remove remaining invalid characters (keep letters, digits, space, apostrophe)
-        str = str.replace(/[^A-Za-z0-9 ']/g, ' ');
-
-        // Collapse multiple spaces
-        str = str.replace(/\s+/g, ' ');
-
-        // Trim
-        return str.trim();
     }
 
     async prepareDataForAccessory() {
         try {
             //read dev info from file
-            const savedInfo = await this.readData(this.devInfoFile);
+            const savedInfo = await this.functions.readData(this.devInfoFile);
             this.savedInfo = savedInfo.toString().trim() !== '' ? JSON.parse(savedInfo) : {};
-            if (this.enableDebugMode) this.emit('debug', `Read saved Info: ${JSON.stringify(this.savedInfo, null, 2)}`);
+            if (this.logDebug) this.emit('debug', `Read saved Info: ${JSON.stringify(this.savedInfo, null, 2)}`);
 
             //read inputs file
-            const savedInputs = await this.readData(this.inputsFile);
-            this.savedInputs = savedInputs.toString().trim() !== '' ? JSON.parse(savedInputs) : this.inputs;
-            if (!this.enableDebugMode) this.emit('debug', `Read saved Inputs: ${JSON.stringify(this.savedInputs, null, 2)}`);
+            const savedInputs = await this.functions.readData(this.inputsFile);
+            this.savedInputs = savedInputs.toString().trim() !== '' ? JSON.parse(savedInputs) : [];
+            if (!this.logDebug) this.emit('debug', `Read saved Inputs: ${JSON.stringify(this.savedInputs, null, 2)}`);
 
             //read inputs names from file
-            const savedInputsNames = await this.readData(this.inputsNamesFile);
+            const savedInputsNames = await this.functions.readData(this.inputsNamesFile);
             this.savedInputsNames = savedInputsNames.toString().trim() !== '' ? JSON.parse(savedInputsNames) : {};
-            if (this.enableDebugMode) this.emit('debug', `Read saved Inputs Names: ${JSON.stringify(this.savedInputsNames, null, 2)}`);
+            if (this.logDebug) this.emit('debug', `Read saved Inputs Names: ${JSON.stringify(this.savedInputsNames, null, 2)}`);
 
             //read inputs visibility from file
-            const savedInputsTargetVisibility = await this.readData(this.inputsTargetVisibilityFile);
+            const savedInputsTargetVisibility = await this.functions.readData(this.inputsTargetVisibilityFile);
             this.savedInputsTargetVisibility = savedInputsTargetVisibility.toString().trim() !== '' ? JSON.parse(savedInputsTargetVisibility) : {};
-            if (this.enableDebugMode) this.emit('debug', `Read saved Inputs Target Visibility: ${JSON.stringify(this.savedInputsTargetVisibility, null, 2)}`);
+            if (this.logDebug) this.emit('debug', `Read saved Inputs Target Visibility: ${JSON.stringify(this.savedInputsTargetVisibility, null, 2)}`);
 
             return true;
         } catch (error) {
             throw new Error(`Prepare data for accessory error: ${error}`);
-        }
-    }
-
-    async startImpulseGenerator() {
-        try {
-            //start impulse generator 
-            await this.denon.impulseGenerator.start([{ name: 'connect', sampling: 55000 }, { name: 'checkState', sampling: this.refreshInterval }]);
-            return true;
-        } catch (error) {
-            throw new Error(`Impulse generator start error: ${error}`);
         }
     }
 
@@ -158,7 +118,7 @@ class Surrounds extends EventEmitter {
             this.inputsServices.sort(sortFn);
 
             // Debug dump
-            if (this.enableDebugMode) {
+            if (this.logDebug) {
                 const orderDump = this.inputsServices.map(svc => ({ name: svc.name, reference: svc.reference, identifier: svc.identifier, }));
                 this.emit('debug', `Inputs display order:\n${JSON.stringify(orderDump, null, 2)}`);
             }
@@ -180,11 +140,16 @@ class Surrounds extends EventEmitter {
                 if (this.inputsServices.length >= 85 && !remove) continue;
 
                 const inputReference = input.reference;
+                const savedName = this.savedInputsNames[inputReference] ?? input.name;
+                const sanitizedName = await this.functions.sanitizeString(savedName);
+                const inputMode = input.mode ?? 0;
+                const inputZonePrefix = input.zonePrefix;
+                const inputVisibility = this.savedInputsTargetVisibility[inputReference] ?? 0;
 
                 if (remove) {
                     const svc = this.inputsServices.find(s => s.reference === inputReference);
                     if (svc) {
-                        if (this.enableDebugMode) this.emit('debug', `Removing input: ${input.name}, reference: ${inputReference}`);
+                        if (this.logDebug) this.emit('debug', `Removing input: ${input.name}, reference: ${inputReference}`);
                         this.accessory.removeService(svc);
                         this.inputsServices = this.inputsServices.filter(s => s.reference !== inputReference);
                         await this.displayOrder();
@@ -193,13 +158,6 @@ class Surrounds extends EventEmitter {
                 }
 
                 let inputService = this.inputsServices.find(s => s.reference === inputReference);
-
-                const savedName = this.savedInputsNames[inputReference] ?? input.name;
-                const sanitizedName = await this.sanitizeString(savedName);
-                const inputMode = input.mode ?? 0;
-                const inputZonePrefix = input.zonePrefix;
-                const inputVisibility = this.savedInputsTargetVisibility[inputReference] ?? 0;
-
                 if (inputService) {
                     const nameChanged = inputService.name !== sanitizedName;
                     if (nameChanged) {
@@ -207,7 +165,7 @@ class Surrounds extends EventEmitter {
                         inputService
                             .updateCharacteristic(Characteristic.Name, sanitizedName)
                             .updateCharacteristic(Characteristic.ConfiguredName, sanitizedName);
-                        if (this.enableDebugMode) this.emit('debug', `Updated Input: ${input.name}, reference: ${inputReference}`);
+                        if (this.logDebug) this.emit('debug', `Updated Input: ${input.name}, reference: ${inputReference}`);
                     }
                 } else {
                     const identifier = this.inputsServices.length + 1;
@@ -232,14 +190,14 @@ class Surrounds extends EventEmitter {
                     inputService.getCharacteristic(Characteristic.ConfiguredName)
                         .onSet(async (value) => {
                             try {
-                                value = await this.sanitizeString(value);
+                                value = await this.functions.sanitizeString(value);
                                 inputService.name = value;
                                 this.savedInputsNames[inputReference] = value;
-                                await this.saveData(this.inputsNamesFile, this.savedInputsNames);
-                                if (this.enableDebugMode) this.emit('debug', `Saved Input: ${input.name}, reference: ${inputReference}`);
+                                await this.functions.saveData(this.inputsNamesFile, this.savedInputsNames);
+                                if (this.logDebug) this.emit('debug', `Saved Input: ${input.name}, reference: ${inputReference}`);
                                 await this.displayOrder();
                             } catch (error) {
-                                this.emit('warn', `Save Input Name error: ${error}`);
+                                if (this.logWarn) this.emit('warn', `Save Input Name error: ${error}`);
                             }
                         });
 
@@ -249,17 +207,17 @@ class Surrounds extends EventEmitter {
                             try {
                                 inputService.visibility = state;
                                 this.savedInputsTargetVisibility[inputReference] = state;
-                                await this.saveData(this.inputsTargetVisibilityFile, this.savedInputsTargetVisibility);
-                                if (this.enableDebugMode) this.emit('debug', `Saved Input: ${input.name}, reference: ${inputReference}, target visibility: ${state ? 'HIDDEN' : 'SHOWN'}`);
+                                await this.functions.saveData(this.inputsTargetVisibilityFile, this.savedInputsTargetVisibility);
+                                if (this.logDebug) this.emit('debug', `Saved Input: ${input.name}, reference: ${inputReference}, target visibility: ${state ? 'HIDDEN' : 'SHOWN'}`);
                             } catch (error) {
-                                this.emit('warn', `Save Target Visibility error: ${error}`);
+                                if (this.logWarn) this.emit('warn', `Save Target Visibility error: ${error}`);
                             }
                         });
 
                     this.inputsServices.push(inputService);
                     this.televisionService.addLinkedService(inputService);
 
-                    if (this.enableDebugMode) this.emit('debug', `Added Input: ${input.name}, reference: ${inputReference}`);
+                    if (this.logDebug) this.emit('debug', `Added Input: ${input.name}, reference: ${inputReference}`);
                 }
             }
 
@@ -274,7 +232,7 @@ class Surrounds extends EventEmitter {
     async prepareAccessory() {
         try {
             //accessory
-            if (this.enableDebugMode) this.emit('debug', `Prepare accessory`);
+            if (this.logDebug) this.emit('debug', `Prepare accessory`);
             const accessoryName = this.name;
             const accessoryUUID = AccessoryUUID.generate(this.savedInfo.serialNumber + this.zone);
             const accessoryCategory = Categories.AUDIO_RECEIVER;
@@ -282,7 +240,7 @@ class Surrounds extends EventEmitter {
             this.accessory = accessory;
 
             //information service
-            if (this.enableDebugMode) this.emit('debug', `Prepare information service`);
+            if (this.logDebug) this.emit('debug', `Prepare information service`);
             this.informationService = accessory.getService(Service.AccessoryInformation)
                 .setCharacteristic(Characteristic.Manufacturer, this.savedInfo.manufacturer)
                 .setCharacteristic(Characteristic.Model, this.savedInfo.modelName)
@@ -290,7 +248,7 @@ class Surrounds extends EventEmitter {
                 .setCharacteristic(Characteristic.FirmwareRevision, this.savedInfo.firmwareRevision);
 
             //prepare television service
-            if (this.enableDebugMode) this.emit('debug', `Prepare television service`);
+            if (this.logDebug) this.emit('debug', `Prepare television service`);
             this.televisionService = accessory.addService(Service.Television, `${accessoryName} Television`, 'Television');
             this.televisionService.setCharacteristic(Characteristic.ConfiguredName, accessoryName);
             this.televisionService.setCharacteristic(Characteristic.SleepDiscoveryMode, 1);
@@ -304,9 +262,9 @@ class Surrounds extends EventEmitter {
                     try {
                         //const powerState = this.masterPower ? (state ? 'PWON' : 'PWSTANDBY') : (state ? 'ZMON' : 'ZMOFF');
                         //await this.denon.send(powerState);
-                        //if (!this.disableLogInfo) this.emit('info', `set Power: ${powerState}`);
+                        //if (this.logInfo) this.emit('info', `set Power: ${powerState}`);
                     } catch (error) {
-                        this.emit('warn', `set Power error: ${error}`);
+                        if (this.logWarn) this.emit('warn', `set Power error: ${error}`);
                     }
                 });
 
@@ -319,7 +277,7 @@ class Surrounds extends EventEmitter {
                     try {
                         const input = this.inputsServices.find(i => i.identifier === activeIdentifier);
                         if (!input) {
-                            this.emit('warn', `Input with identifier ${activeIdentifier} not found`);
+                            if (this.logWarn) this.emit('warn', `Input with identifier ${activeIdentifier} not found`);
                             return;
                         }
 
@@ -344,9 +302,9 @@ class Surrounds extends EventEmitter {
                         }
 
                         await this.denon.send(`${zonePrefix}${reference}`);
-                        if (!this.disableLogInfo) this.emit('info', `set Input Name: ${name}, Reference: ${reference}`);
+                        if (this.logInfo) this.emit('info', `set Input Name: ${name}, Reference: ${reference}`);
                     } catch (error) {
-                        this.emit('warn', `set Surround error: ${error}`);
+                        if (this.logWarn) this.emit('warn', `set Surround error: ${error}`);
                     }
                 });
 
@@ -398,20 +356,20 @@ class Surrounds extends EventEmitter {
                         }
 
                         await this.denon.send(command);
-                        if (!this.disableLogInfo) this.emit('info', `set Remote Key: ${command}`);
+                        if (this.logInfo) this.emit('info', `set Remote Key: ${command}`);
                     } catch (error) {
-                        this.emit('warn', `set Remote Key error: ${error}`);
+                        if (this.logWarn) this.emit('warn', `set Remote Key error: ${error}`);
                     }
                 });
 
             //prepare inputs service
-            if (this.enableDebugMode) this.emit('debug', `Prepare surrounds services`);
+            if (this.logDebug) this.emit('debug', `Prepare surrounds services`);
             this.inputsServices = [];
             await this.addRemoveOrUpdateInput(this.savedInputs, false);
 
             //prepare sonsor input service
             if (this.sensorInput) {
-                if (this.enableDebugMode) this.emit('debug', `Prepare input sensor service`);
+                if (this.logDebug) this.emit('debug', `Prepare input sensor service`);
                 this.sensorInputService = accessory.addService(Service.ContactSensor, `${this.sZoneName} Input Sensor`, `Input Sensor`);
                 this.sensorInputService.addOptionalCharacteristic(Characteristic.ConfiguredName);
                 this.sensorInputService.setCharacteristic(Characteristic.ConfiguredName, `${accessoryName} Input Sensor`);
@@ -423,10 +381,10 @@ class Surrounds extends EventEmitter {
             }
 
             //prepare sonsor inputs service
-            const possibleSensorInputsCount = 99 - this.accessory.services.length.length;
+            const possibleSensorInputsCount = 99 - this.accessory.services.length;
             const maxSensorInputsCount = this.sensorsInputsConfiguredCount >= possibleSensorInputsCount ? possibleSensorInputsCount : this.sensorsInputsConfiguredCount;
             if (maxSensorInputsCount > 0) {
-                if (this.enableDebugMode) this.emit('debug', `Prepare inputs sensors services`);
+                if (this.logDebug) this.emit('debug', `Prepare inputs sensors services`);
                 this.sensorInputServices = [];
                 for (let i = 0; i < maxSensorInputsCount; i++) {
                     //get sensor
@@ -479,7 +437,7 @@ class Surrounds extends EventEmitter {
                 getInputsFromDevice: false,
                 getFavoritesFromDevice: false,
                 getQuickSmartSelectFromDevice: false,
-                enableDebugLog: this.enableDebugMode
+                logDebug: this.logDebug
             })
                 .on('deviceInfo', (info) => {
                     this.emit('devInfo', `-------- ${this.name} --------`);
@@ -494,41 +452,35 @@ class Surrounds extends EventEmitter {
                     await this.addRemoveOrUpdateInput(inputs, remove);
                 })
                 .on('stateChanged', async (power, reference) => {
-                    const input = this.inputsServices.find(input => input.reference === reference) ?? false;
+                    const input = this.inputsServices?.find(input => input.reference === reference);
                     const inputIdentifier = input ? input.identifier : this.inputIdentifier;
 
                     this.inputIdentifier = inputIdentifier;
                     this.power = power;
                     this.reference = reference;
 
-                    if (this.televisionService) {
-                        this.televisionService
-                            .updateCharacteristic(Characteristic.Active, power ? 1 : 0)
-                            .updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
-                    }
+                    this.televisionService
+                        ?.updateCharacteristic(Characteristic.Active, power ? 1 : 0)
+                        .updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
 
 
-                    if (this.sensorInputService && reference !== this.reference) {
+                    if (reference !== this.reference) {
                         for (let i = 0; i < 2; i++) {
                             const state = power ? [true, false][i] : false;
-                            this.sensorInputService
-                                .updateCharacteristic(Characteristic.ContactSensorState, state)
+                            this.sensorInputService?.updateCharacteristic(Characteristic.ContactSensorState, state);
                             this.sensorInputState = state;
                         }
                     }
 
-                    if (this.sensorInputServices) {
-                        for (let i = 0; i < this.sensorsInputsConfiguredCount; i++) {
-                            const sensor = this.sensorsInputsConfigured[i];
-                            const state = power ? sensor.reference === reference : false;
-                            sensor.state = state;
-                            const characteristicType = sensor.characteristicType;
-                            this.sensorInputServices[i]
-                                .updateCharacteristic(characteristicType, state);
-                        }
+                    for (let i = 0; i < this.sensorsInputsConfiguredCount; i++) {
+                        const sensor = this.sensorsInputsConfigured[i];
+                        const state = power ? sensor.reference === reference : false;
+                        sensor.state = state;
+                        const characteristicType = sensor.characteristicType;
+                        this.sensorInputServices?.[i]?.updateCharacteristic(characteristicType, state);
                     }
 
-                    if (!this.disableLogInfo) {
+                    if (this.logInfo) {
                         const name = input ? input.name : reference;
                         this.emit('info', `Power: ${power ? 'ON' : 'OFF'}`);
                         this.emit('info', `Surround Name: ${name}`);

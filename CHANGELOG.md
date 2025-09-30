@@ -7,12 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## NOTE
 
+- after update to 5.11.x and above from previous versions the plugin need to be reconfigured first, in other case will crash!!!
 - after update to 5.6.x the power and volume control need to be configured again
 - after update to 5.5.x the volume control need to be configured again (removed from repo)
 - after update to 4.9.x all buttons (Sound Mode) need to be configure again using config UI
 - after update to 4.8.x all buttons need to be configure again using config UI
 - after update to 4.7.x buttons, sensors, volume display type need to be configure again using config UI
 - after update to 3.15.x need remove the accessory frome Home app and add it again
+
+## [5.11.0] - (30.09.2025)
+
+## Changes
+
+- config schema and config.json refactor
+  - after update to 5.11.x and above from previous versions the plugin need to be reconfigured first, in other case will crash!!!
+- bump dependencies
+- redme updated
+- cleanup
 
 ## [5.10.2] - (23.08.2025)
 
@@ -73,7 +84,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - stability improvements
 - config UI updated
 - cleanup
-
 
 ## [5.8.2] - (24.05.2025)
 

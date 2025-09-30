@@ -20,8 +20,8 @@ class DenonPlatform {
 		const prefDir = join(api.user.storagePath(), 'denonTv');
 		try {
 			mkdirSync(prefDir, { recursive: true });
-		} catch (err) {
-			log.error(`Prepare directory error: ${err}`);
+		} catch (error) {
+			log.error(`Prepare directory error: ${error.message ?? error}`);
 			return;
 		}
 
@@ -33,26 +33,28 @@ class DenonPlatform {
 				const { name, host, port, generation = 0 } = device;
 				if (!name || !host || !port) {
 					log.warn(`Invalid config for device. Name: ${name || 'missing'}, Host: ${host || 'missing'}, Port: ${port || 'missing'}`);
-					return;
+					continue;
 				}
 
-				const enableDebugMode = !!device.enableDebugMode;
+				//log config
 				const logLevel = {
-					debug: enableDebugMode,
-					info: !device.disableLogInfo,
-					success: !device.disableLogSuccess,
-					warn: !device.disableLogWarn,
-					error: !device.disableLogError,
-					devInfo: !device.disableLogDeviceInfo,
+					devInfo: device.log.deviceInfo,
+					success: device.log.success,
+					info: device.log.info,
+					warn: device.log.warn,
+					error: device.log.error,
+					debug: device.log.debug
 				};
 
-				if (enableDebugMode) {
+				if (logLevel.debug) {
 					log.info(`Device: ${host} ${name}, debug: Did finish launching.`);
 					const safeConfig = {
 						...device,
 						mqtt: {
-							...device.mqtt,
-							passwd: 'removed',
+							auth: {
+								...device.mqtt?.auth,
+								passwd: 'removed',
+							}
 						},
 					};
 					log.info(`Device: ${host} ${name}, debug: Config: ${JSON.stringify(safeConfig, null, 2)}`);
@@ -72,35 +74,36 @@ class DenonPlatform {
 							writeFileSync(file, '');
 						}
 					});
-				} catch (err) {
-					if (logLevel.error) log.error(`Device: ${host} ${name}, Prepare files error: ${err}`);
-					return;
+				} catch (error) {
+					if (logLevel.error) log.error(`Device: ${host} ${name}, Prepare files error: ${error.message ?? error}`);
+					continue;
 				}
 
 				try {
-					let zone;
-					switch (zoneControl) {
-						case 0: zone = new MainZone(api, device, name, host, port, generation, zoneControl, ...Object.values(files)); break;
-						case 1: zone = new Zone2(api, device, name, host, port, generation, zoneControl, ...Object.values(files)); break;
-						case 2: zone = new Zone3(api, device, name, host, port, generation, zoneControl, ...Object.values(files)); break;
-						case 3: zone = new Surrounds(api, device, name, host, port, generation, zoneControl, ...Object.values(files)); break;
-						case 4: zone = new PassThroughInputs(api, device, name, host, port, generation, zoneControl, ...Object.values(files)); break;
-						default:
-							if (logLevel.warn) log.warn(`Device: ${host} ${name}, unknown zone: ${zoneControl}`);
-							return;
-					}
-
-					zone.on('devInfo', (msg) => logLevel.devInfo && log.info(msg))
-						.on('success', (msg) => logLevel.success && log.success(`Device: ${host} ${name}, ${msg}`))
-						.on('info', (msg) => logLevel.info && log.info(`Device: ${host} ${name}, ${msg}`))
-						.on('debug', (msg) => logLevel.debug && log.info(`Device: ${host} ${name}, debug: ${msg}`))
-						.on('warn', (msg) => logLevel.warn && log.warn(`Device: ${host} ${name}, ${msg}`))
-						.on('error', (msg) => logLevel.error && log.error(`Device: ${host} ${name}, ${msg}`));
-
+					// create impulse generator
 					const impulseGenerator = new ImpulseGenerator()
 						.on('start', async () => {
 							try {
-								const accessory = await zone.start()
+								let zone;
+								switch (zoneControl) {
+									case 0: zone = new MainZone(api, device, name, host, port, generation, zoneControl, ...Object.values(files)); break;
+									case 1: zone = new Zone2(api, device, name, host, port, generation, zoneControl, ...Object.values(files)); break;
+									case 2: zone = new Zone3(api, device, name, host, port, generation, zoneControl, ...Object.values(files)); break;
+									case 3: zone = new Surrounds(api, device, name, host, port, generation, zoneControl, ...Object.values(files)); break;
+									case 4: zone = new PassThroughInputs(api, device, name, host, port, generation, zoneControl, ...Object.values(files)); break;
+									default:
+										if (logLevel.warn) log.warn(`Device: ${host} ${name}, unknown zone: ${zoneControl}`);
+										return;
+								}
+
+								zone.on('devInfo', (msg) => logLevel.devInfo && log.info(msg))
+									.on('success', (msg) => logLevel.success && log.success(`Device: ${host} ${name}, ${msg}`))
+									.on('info', (msg) => logLevel.info && log.info(`Device: ${host} ${name}, ${msg}`))
+									.on('debug', (msg) => logLevel.debug && log.info(`Device: ${host} ${name}, debug: ${msg}`))
+									.on('warn', (msg) => logLevel.warn && log.warn(`Device: ${host} ${name}, ${msg}`))
+									.on('error', (msg) => logLevel.error && log.error(`Device: ${host} ${name}, ${msg}`));
+
+								const accessory = await zone.start();
 								if (accessory) {
 									api.publishExternalAccessories(PluginName, [accessory]);
 									if (logLevel.success) log.success(`Device: ${host} ${name}, Published as external accessory.`);
@@ -108,20 +111,19 @@ class DenonPlatform {
 									await impulseGenerator.stop();
 									await zone.startImpulseGenerator();
 								}
-							} catch (err) {
-								if (logLevel.error) log.error(`Device: ${host} ${name}, ${err}, trying again.`);
+							} catch (error) {
+								if (logLevel.error) log.error(`Device: ${host} ${name}, Start impulse generator error: ${error.message ?? error}, trying again.`);
 							}
 						})
 						.on('state', (state) => {
 							if (logLevel.debug) log.info(`Device: ${host} ${name}, Start impulse generator ${state ? 'started' : 'stopped'}.`);
 						});
 
-					await impulseGenerator.start([{ name: 'start', sampling: 45000 }]);
-				} catch (err) {
-					if (logLevel.error) log.error(`Device: ${host} ${name}, Did finish launching error: ${err}`);
+					// start impulse generator
+					await impulseGenerator.start([{ name: 'start', sampling: 60000 }]);
+				} catch (error) {
+					if (logLevel.error) log.error(`Device: ${host} ${name}, Did finish launching error: ${error.message ?? error}`);
 				}
-
-				await new Promise((resolve) => setTimeout(resolve, 300));
 			}
 		});
 	}
@@ -134,3 +136,4 @@ class DenonPlatform {
 export default (api) => {
 	api.registerPlatform(PluginName, PlatformName, DenonPlatform);
 };
+

@@ -1,9 +1,9 @@
-import { promises as fsPromises } from 'fs';
 import EventEmitter from 'events';
 import Mqtt from './mqtt.js';
 import RestFul from './restful.js';
 import Denon from './denon.js';
-import { PictureModesConversionToHomeKit, PictureModesDenonNumber, PictureModesDenonString, DirectSoundMode, DiacriticsMap } from './constants.js';
+import Functions from './functions.js';
+import { PictureModesConversionToHomeKit, PictureModesDenonNumber, PictureModesDenonString, DirectSoundMode } from './constants.js';
 let Accessory, Characteristic, Service, Categories, Encode, AccessoryUUID;
 
 class MainZone extends EventEmitter {
@@ -23,27 +23,28 @@ class MainZone extends EventEmitter {
         this.port = port;
         this.generation = generation;
         this.zone = zone;
-        this.getInputsFromDevice = device.getInputsFromDevice || false;
-        this.getFavoritesFromDevice = device.getFavoritesFromDevice || false;
-        this.getQuickSmartSelectFromDevice = device.getQuickSmartSelectFromDevice || false;
-        this.inputsDisplayOrder = device.inputsDisplayOrder || 0;
-        this.inputs = device.inputs || [];
+        this.getInputsFromDevice = device.inputs.getFromDevice || false;
+        this.getFavoritesFromDevice = device.inputs.getFavoritesFromDevice || false;
+        this.getQuickSmartSelectFromDevice = device.inputs.getQuickSmartSelectFromDevice || false;
+        this.inputsDisplayOrder = device.inputs.displayOrder || 0;
+        this.inputs = device.inputs.data || [];
         this.buttons = device.buttons || [];
-        this.sensorPower = device.sensorPower || false;
-        this.sensorVolume = device.sensorVolume || false
-        this.sensorMute = device.sensorMute || false;
-        this.sensorInput = device.sensorInput || false;
-        this.sensorInputs = device.sensorInputs || [];
-        this.powerControlZone = device.powerControlZone || 0;
-        this.volumeControl = device.volumeControlType || 0;
-        this.volumeControlZone = device.volumeControlZone || 0;
-        this.volumeControlName = device.volumeControlName || 'Volume';
-        this.volumeControlNamePrefix = device.volumeControlNamePrefix || false;
-        this.volumeMax = device.volumeMax || 100;
+        this.sensorPower = device.sensors.power || false;
+        this.sensorVolume = device.sensors.volume || false
+        this.sensorMute = device.sensors.mute || false;
+        this.sensorInput = device.sensors.input || false;
+        this.sensorInputs = device.sensors.inputs || [];
+        this.powerControlZone = device.power.zone || 0;
+        this.volumeControl = device.volume.displayType || 0;
+        this.volumeControlZone = device.volume.zone || 0;
+        this.volumeControlName = device.volume.name || 'Volume';
+        this.volumeControlNamePrefix = device.volume.namePrefix || false;
+        this.volumeControlMax = device.volume.max || 100;
+        this.logInfo = device.log.info || false;
+        this.logWarn = device.log.warn || true;
+        this.logDebug = device.log.debug || false;
         this.infoButtonCommand = device.infoButtonCommand || 'MNINF';
-        this.refreshInterval = device.refreshInterval * 1000 || 5000;
-        this.enableDebugMode = device.enableDebugMode || false;
-        this.disableLogInfo = device.disableLogInfo || false;
+        this.refreshInterval = (device.refreshInterval ?? 5) * 1000;
         this.devInfoFile = devInfoFile;
         this.inputsFile = inputsFile;
         this.inputsNamesFile = inputsNamesFile;
@@ -58,13 +59,13 @@ class MainZone extends EventEmitter {
         //sensors
         this.sensorsInputsConfigured = [];
         for (const sensor of this.sensorInputs) {
-            const displayType = sensor.displayType ?? 0;
-            if (displayType === 0) {
+            const displayType = sensor.displayType;
+            if (!displayType) {
                 continue;
             }
 
             sensor.name = sensor.name || 'Sensor Input';
-            sensor.reference = sensor.reference ?? false;
+            sensor.reference = sensor.reference;
             if (sensor.reference) {
                 sensor.serviceType = ['', Service.MotionSensor, Service.OccupancySensor, Service.ContactSensor][displayType];
                 sensor.characteristicType = ['', Characteristic.MotionDetected, Characteristic.OccupancyDetected, Characteristic.ContactSensorState][displayType];
@@ -79,13 +80,13 @@ class MainZone extends EventEmitter {
         //buttons
         this.buttonsConfigured = [];
         for (const button of this.buttons) {
-            const displayType = button.displayType ?? 0;
-            if (displayType === 0) {
+            const displayType = button.displayType;
+            if (!displayType) {
                 continue;
             }
 
             button.name = button.name || 'Button';
-            button.reference = button.reference ?? false;
+            button.reference = button.reference;
             if (button.reference) {
                 button.serviceType = ['', Service.Outlet, Service.Switch][displayType];
                 button.state = false;
@@ -97,6 +98,7 @@ class MainZone extends EventEmitter {
         this.buttonsConfiguredCount = this.buttonsConfigured.length || 0;
 
         //variable
+        this.functions = new Functions();
         this.inputIdentifier = 1;
         this.power = false;
         this.reference = '';
@@ -110,45 +112,88 @@ class MainZone extends EventEmitter {
         this.sensorInputState = false;
     }
 
-    async saveData(path, data) {
+    async startImpulseGenerator() {
         try {
-            data = JSON.stringify(data, null, 2);
-            await fsPromises.writeFile(path, data);
+            //start impulse generator 
+            await this.denon.impulseGenerator.start([{ name: 'connect', sampling: 60000 }, { name: 'checkState', sampling: this.refreshInterval }]);
             return true;
         } catch (error) {
-            throw new Error(`Save data error: ${error}`);
+            throw new Error(`Impulse generator start error: ${error}`);
         }
     }
 
-    async readData(path) {
+    async stateControl(type, value) {
         try {
-            const data = await fsPromises.readFile(path);
-            return data;
+            // Normalize value for Power type
+            value = this.powerControlZone === 7 && type === 'Power' && value === 'OFF' ? 'STANDBY' : value;
+
+            // Define main zone
+            const mainZone = type === 'Power' ? 'ZM' : (type === 'Volume' || type === 'VolumeSelector') ? 'MV' : 'MU';
+            const zoneMap = {
+                0: [mainZone],
+                1: ['Z2'],
+                2: ['Z3'],
+                3: ['Z2', 'Z3'],
+                4: [mainZone, 'Z2'],
+                5: [mainZone, 'Z3'],
+                6: [mainZone, 'Z2', 'Z3'],
+                7: ['PW']
+            };
+
+            // Reuse volume control zones for better readability
+            const typeMap = {
+                'Power': zoneMap[this.powerControlZone],
+                'VolumeSelector': zoneMap[this.volumeControlZone],
+                'Volume': zoneMap[this.volumeControlZone],
+                'Mute': zoneMap[this.volumeControlZone]
+            };
+
+            // Get the commands for the specified type
+            const commands = typeMap[type];
+            if (commands) {
+                const commandsCount = commands.length;
+                for (let i = 0; i < commandsCount; i++) {
+                    const cmd = type === 'Mute' && commands[i] !== 'MU' ? `${commands[i]}MU` : commands[i];
+                    await this.denon.send(`${cmd}${value}`);
+                    const pauseTime = type === 'Power' && value === 'ON' && commandsCount > 1 && i === 0 ? 4000 : 75;
+                    const pause = i < commandsCount - 1 ? await new Promise(resolve => setTimeout(resolve, pauseTime)) : false;
+                }
+            } else {
+                if (this.logWarn) this.emit('warn', `Unknown control type: ${type}`);
+            }
+
+            return true;
         } catch (error) {
-            throw new Error(`Read data error: ${error}`);
+            if (this.logWarn) this.emit('warn', `State control error for type ${type} with value ${value}: ${error}`);
         }
     }
 
-    async sanitizeString(str) {
-        if (!str) return '';
+    async prepareDataForAccessory() {
+        try {
+            //read dev info from file
+            const savedInfo = await this.functions.readData(this.devInfoFile);
+            this.savedInfo = savedInfo.toString().trim() !== '' ? JSON.parse(savedInfo) : {};
+            if (this.logDebug) this.emit('debug', `Read saved Info: ${JSON.stringify(this.savedInfo, null, 2)}`);
 
-        // Replace diacritics using map
-        str = str.replace(/[^\u0000-\u007E]/g, ch => DiacriticsMap[ch] || ch);
+            //read inputs file
+            const savedInputs = await this.functions.readData(this.inputsFile);
+            this.savedInputs = savedInputs.toString().trim() !== '' ? JSON.parse(savedInputs) : [];
+            if (!this.logDebug) this.emit('debug', `Read saved Inputs: ${JSON.stringify(this.savedInputs, null, 2)}`);
 
-        // Replace separators between words with space
-        str = str.replace(/(\w)[.:;+\-\/]+(\w)/g, '$1 $2');
+            //read inputs names from file
+            const savedInputsNames = await this.functions.readData(this.inputsNamesFile);
+            this.savedInputsNames = savedInputsNames.toString().trim() !== '' ? JSON.parse(savedInputsNames) : {};
+            if (this.logDebug) this.emit('debug', `Read saved Inputs Names: ${JSON.stringify(this.savedInputsNames, null, 2)}`);
 
-        // Replace remaining standalone separators with space
-        str = str.replace(/[.:;+\-\/]/g, ' ');
+            //read inputs visibility from file
+            const savedInputsTargetVisibility = await this.functions.readData(this.inputsTargetVisibilityFile);
+            this.savedInputsTargetVisibility = savedInputsTargetVisibility.toString().trim() !== '' ? JSON.parse(savedInputsTargetVisibility) : {};
+            if (this.logDebug) this.emit('debug', `Read saved Inputs Target Visibility: ${JSON.stringify(this.savedInputsTargetVisibility, null, 2)}`);
 
-        // Remove remaining invalid characters (keep letters, digits, space, apostrophe)
-        str = str.replace(/[^A-Za-z0-9 ']/g, ' ');
-
-        // Collapse multiple spaces
-        str = str.replace(/\s+/g, ' ');
-
-        // Trim
-        return str.trim();
+            return true;
+        } catch (error) {
+            throw new Error(`Prepare data for accessory error: ${error}`);
+        }
     }
 
     async setOverExternalIntegration(integration, key, value) {
@@ -208,15 +253,9 @@ class MainZone extends EventEmitter {
                             this.emit('warn', `RESTFul set error: ${error}`);
                         };
                     })
-                    .on('debug', (debug) => {
-                        this.emit('debug', debug);
-                    })
-                    .on('warn', (warn) => {
-                        this.emit('warn', warn);
-                    })
-                    .on('error', (error) => {
-                        this.emit('error', error);
-                    });
+                    .on('debug', (debug) => this.emit('debug', debug))
+                    .on('warn', (warn) => this.emit('warn', warn))
+                    .on('error', (error) => this.emit('error', error));
             }
 
             //mqtt client
@@ -225,10 +264,10 @@ class MainZone extends EventEmitter {
                 this.mqtt1 = new Mqtt({
                     host: this.mqtt.host,
                     port: this.mqtt.port || 1883,
-                    clientId: this.mqtt.clientId ? `${this.manufacturer}_${this.mqtt.clientId}_${Math.random().toString(16).slice(3)}` : `${this.manufacturer}_${Math.random().toString(16).slice(3)}`,
-                    prefix: this.mqtt.prefix ? `${this.manufacturer}/${this.mqtt.prefix}/${this.name}` : `${this.manufacturer}/${this.name}`,
-                    user: this.mqtt.user,
-                    passwd: this.mqtt.passwd,
+                    clientId: this.mqtt.clientId ? `${this.savedInfo.manufacturer}_${this.mqtt.clientId}_${Math.random().toString(16).slice(3)}` : `${this.savedInfo.manufacturer}_${Math.random().toString(16).slice(3)}`,
+                    prefix: this.mqtt.prefix ? `${this.savedInfo.manufacturer}/${this.mqtt.prefix}/${this.name}` : `${this.savedInfo.manufacturer}/${this.name}`,
+                    user: this.mqtt.auth.user,
+                    passwd: this.mqtt.auth.passwd,
                     debug: this.mqtt.debug || false
                 })
                     .on('connected', (message) => {
@@ -245,109 +284,14 @@ class MainZone extends EventEmitter {
                             this.emit('warn', `MQTT set error: ${error}`);
                         }
                     })
-                    .on('debug', (debug) => {
-                        this.emit('debug', debug);
-                    })
-                    .on('warn', (warn) => {
-                        this.emit('warn', warn);
-                    })
-                    .on('error', (error) => {
-                        this.emit('error', error);
-                    });
+                    .on('debug', (debug) => this.emit('debug', debug))
+                    .on('warn', (warn) => this.emit('warn', warn))
+                    .on('error', (error) => this.emit('error', error));
             }
 
             return true;
         } catch (error) {
             this.emit('warn', `External integration start error: ${error}`);
-        }
-    }
-
-    async prepareDataForAccessory() {
-        try {
-            //read dev info from file
-            const savedInfo = await this.readData(this.devInfoFile);
-            this.savedInfo = savedInfo.toString().trim() !== '' ? JSON.parse(savedInfo) : {};
-            if (this.enableDebugMode) this.emit('debug', `Read saved Info: ${JSON.stringify(this.savedInfo, null, 2)}`);
-
-            //read inputs file
-            const savedInputs = await this.readData(this.inputsFile);
-            this.savedInputs = savedInputs.toString().trim() !== '' ? JSON.parse(savedInputs) : this.inputs;
-            if (!this.enableDebugMode) this.emit('debug', `Read saved Inputs: ${JSON.stringify(this.savedInputs, null, 2)}`);
-
-            //read inputs names from file
-            const savedInputsNames = await this.readData(this.inputsNamesFile);
-            this.savedInputsNames = savedInputsNames.toString().trim() !== '' ? JSON.parse(savedInputsNames) : {};
-            if (this.enableDebugMode) this.emit('debug', `Read saved Inputs Names: ${JSON.stringify(this.savedInputsNames, null, 2)}`);
-
-            //read inputs visibility from file
-            const savedInputsTargetVisibility = await this.readData(this.inputsTargetVisibilityFile);
-            this.savedInputsTargetVisibility = savedInputsTargetVisibility.toString().trim() !== '' ? JSON.parse(savedInputsTargetVisibility) : {};
-            if (this.enableDebugMode) this.emit('debug', `Read saved Inputs Target Visibility: ${JSON.stringify(this.savedInputsTargetVisibility, null, 2)}`);
-
-            return true;
-        } catch (error) {
-            throw new Error(`Prepare data for accessory error: ${error}`);
-        }
-    }
-
-    async startImpulseGenerator() {
-        try {
-            //start impulse generator 
-            await this.denon.impulseGenerator.start([{ name: 'connect', sampling: 45000 }, { name: 'checkState', sampling: this.refreshInterval }]);
-            return true;
-        } catch (error) {
-            throw new Error(`Impulse generator start error: ${error}`);
-        }
-    }
-
-    async scaleValue(value, inMin, inMax, outMin, outMax) {
-        const scaledValue = parseFloat((((Math.max(inMin, Math.min(inMax, value)) - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin).toFixed(0));
-        return scaledValue;
-    }
-
-    async stateControl(type, value) {
-        try {
-            // Normalize value for Power type
-            value = this.powerControlZone === 7 && type === 'Power' && value === 'OFF' ? 'STANDBY' : value;
-
-            // Define main zone
-            const mainZone = type === 'Power' ? 'ZM' : (type === 'Volume' || type === 'VolumeSelector') ? 'MV' : 'MU';
-            const zoneMap = {
-                0: [mainZone],
-                1: ['Z2'],
-                2: ['Z3'],
-                3: ['Z2', 'Z3'],
-                4: [mainZone, 'Z2'],
-                5: [mainZone, 'Z3'],
-                6: [mainZone, 'Z2', 'Z3'],
-                7: ['PW']
-            };
-
-            // Reuse volume control zones for better readability
-            const typeMap = {
-                'Power': zoneMap[this.powerControlZone],
-                'VolumeSelector': zoneMap[this.volumeControlZone],
-                'Volume': zoneMap[this.volumeControlZone],
-                'Mute': zoneMap[this.volumeControlZone]
-            };
-
-            // Get the commands for the specified type
-            const commands = typeMap[type];
-            if (commands) {
-                const commandsCount = commands.length;
-                for (let i = 0; i < commandsCount; i++) {
-                    const cmd = type === 'Mute' && commands[i] !== 'MU' ? `${commands[i]}MU` : commands[i];
-                    await this.denon.send(`${cmd}${value}`);
-                    const pauseTime = type === 'Power' && value === 'ON' && commandsCount > 1 && i === 0 ? 4000 : 75;
-                    const pause = i < commandsCount - 1 ? await new Promise(resolve => setTimeout(resolve, pauseTime)) : false;
-                }
-            } else {
-                this.emit('warn', `Unknown control type: ${type}`);
-            }
-
-            return true;
-        } catch (error) {
-            this.emit('warn', `State control error for type ${type} with value ${value}: ${error}`);
         }
     }
 
@@ -367,7 +311,7 @@ class MainZone extends EventEmitter {
             this.inputsServices.sort(sortFn);
 
             // Debug dump
-            if (this.enableDebugMode) {
+            if (this.logDebug) {
                 const orderDump = this.inputsServices.map(svc => ({ name: svc.name, reference: svc.reference, identifier: svc.identifier, }));
                 this.emit('debug', `Inputs display order:\n${JSON.stringify(orderDump, null, 2)}`);
             }
@@ -389,11 +333,16 @@ class MainZone extends EventEmitter {
                 if (this.inputsServices.length >= 85 && !remove) continue;
 
                 const inputReference = input.reference;
+                const savedName = this.savedInputsNames[inputReference] ?? input.name;
+                const sanitizedName = await this.functions.sanitizeString(savedName);
+                const inputMode = input.mode ?? 0;
+                const inputZonePrefix = input.zonePrefix;
+                const inputVisibility = this.savedInputsTargetVisibility[inputReference] ?? 0;
 
                 if (remove) {
                     const svc = this.inputsServices.find(s => s.reference === inputReference);
                     if (svc) {
-                        if (this.enableDebugMode) this.emit('debug', `Removing input: ${input.name}, reference: ${inputReference}`);
+                        if (this.logDebug) this.emit('debug', `Removing input: ${input.name}, reference: ${inputReference}`);
                         this.accessory.removeService(svc);
                         this.inputsServices = this.inputsServices.filter(s => s.reference !== inputReference);
                         await this.displayOrder();
@@ -402,13 +351,6 @@ class MainZone extends EventEmitter {
                 }
 
                 let inputService = this.inputsServices.find(s => s.reference === inputReference);
-
-                const savedName = this.savedInputsNames[inputReference] ?? input.name;
-                const sanitizedName = await this.sanitizeString(savedName);
-                const inputMode = input.mode ?? 0;
-                const inputZonePrefix = input.zonePrefix;
-                const inputVisibility = this.savedInputsTargetVisibility[inputReference] ?? 0;
-
                 if (inputService) {
                     const nameChanged = inputService.name !== sanitizedName;
                     if (nameChanged) {
@@ -416,7 +358,7 @@ class MainZone extends EventEmitter {
                         inputService
                             .updateCharacteristic(Characteristic.Name, sanitizedName)
                             .updateCharacteristic(Characteristic.ConfiguredName, sanitizedName);
-                        if (this.enableDebugMode) this.emit('debug', `Updated Input: ${input.name}, reference: ${inputReference}`);
+                        if (this.logDebug) this.emit('debug', `Updated Input: ${input.name}, reference: ${inputReference}`);
                     }
                 } else {
                     const identifier = this.inputsServices.length + 1;
@@ -441,14 +383,14 @@ class MainZone extends EventEmitter {
                     inputService.getCharacteristic(Characteristic.ConfiguredName)
                         .onSet(async (value) => {
                             try {
-                                value = await this.sanitizeString(value);
+                                value = await this.functions.sanitizeString(value);
                                 inputService.name = value;
                                 this.savedInputsNames[inputReference] = value;
-                                await this.saveData(this.inputsNamesFile, this.savedInputsNames);
-                                if (this.enableDebugMode) this.emit('debug', `Saved Input: ${input.name}, reference: ${inputReference}`);
+                                await this.functions.saveData(this.inputsNamesFile, this.savedInputsNames);
+                                if (this.logDebug) this.emit('debug', `Saved Input: ${input.name}, reference: ${inputReference}`);
                                 await this.displayOrder();
                             } catch (error) {
-                                this.emit('warn', `Save Input Name error: ${error}`);
+                                if (this.logWarn) this.emit('warn', `Save Input Name error: ${error}`);
                             }
                         });
 
@@ -458,17 +400,17 @@ class MainZone extends EventEmitter {
                             try {
                                 inputService.visibility = state;
                                 this.savedInputsTargetVisibility[inputReference] = state;
-                                await this.saveData(this.inputsTargetVisibilityFile, this.savedInputsTargetVisibility);
-                                if (this.enableDebugMode) this.emit('debug', `Saved Input: ${input.name}, reference: ${inputReference}, target visibility: ${state ? 'HIDDEN' : 'SHOWN'}`);
+                                await this.functions.saveData(this.inputsTargetVisibilityFile, this.savedInputsTargetVisibility);
+                                if (this.logDebug) this.emit('debug', `Saved Input: ${input.name}, reference: ${inputReference}, target visibility: ${state ? 'HIDDEN' : 'SHOWN'}`);
                             } catch (error) {
-                                this.emit('warn', `Save Target Visibility error: ${error}`);
+                                if (this.logWarn) this.emit('warn', `Save Target Visibility error: ${error}`);
                             }
                         });
 
                     this.inputsServices.push(inputService);
                     this.televisionService.addLinkedService(inputService);
 
-                    if (this.enableDebugMode) this.emit('debug', `Added Input: ${input.name}, reference: ${inputReference}`);
+                    if (this.logDebug) this.emit('debug', `Added Input: ${input.name}, reference: ${inputReference}`);
                 }
             }
 
@@ -483,7 +425,7 @@ class MainZone extends EventEmitter {
     async prepareAccessory() {
         try {
             //accessory
-            if (this.enableDebugMode) this.emit('debug', `Prepare accessory`);
+            if (this.logDebug) this.emit('debug', `Prepare accessory`);
             const accessoryName = this.name;
             const accessoryUUID = AccessoryUUID.generate(this.savedInfo.serialNumber + this.zone);
             const accessoryCategory = Categories.AUDIO_RECEIVER;
@@ -491,7 +433,7 @@ class MainZone extends EventEmitter {
             this.accessory = accessory;
 
             //information service
-            if (this.enableDebugMode) this.emit('debug', `Prepare information service`);
+            if (this.logDebug) this.emit('debug', `Prepare information service`);
             this.informationService = accessory.getService(Service.AccessoryInformation)
                 .setCharacteristic(Characteristic.Manufacturer, this.savedInfo.manufacturer)
                 .setCharacteristic(Characteristic.Model, this.savedInfo.modelName)
@@ -499,7 +441,7 @@ class MainZone extends EventEmitter {
                 .setCharacteristic(Characteristic.FirmwareRevision, this.savedInfo.firmwareRevision);
 
             //prepare television service
-            if (this.enableDebugMode) this.emit('debug', `Prepare television service`);
+            if (this.logDebug) this.emit('debug', `Prepare television service`);
             this.televisionService = accessory.addService(Service.Television, `${accessoryName} Television`, 'Television');
             this.televisionService.setCharacteristic(Characteristic.ConfiguredName, accessoryName);
             this.televisionService.setCharacteristic(Characteristic.SleepDiscoveryMode, 1);
@@ -517,9 +459,9 @@ class MainZone extends EventEmitter {
                     try {
                         const powerState = state ? 'ON' : 'OFF';
                         await this.stateControl('Power', powerState);
-                        if (!this.disableLogInfo) this.emit('info', `set Power: ${powerState}`);
+                        if (this.logInfo) this.emit('info', `set Power: ${powerState}`);
                     } catch (error) {
-                        this.emit('warn', `set Power error: ${error}`);
+                        if (this.logWarn) this.emit('warn', `set Power error: ${error}`);
                     }
                 });
 
@@ -532,7 +474,7 @@ class MainZone extends EventEmitter {
                     try {
                         const input = this.inputsServices.find(i => i.identifier === activeIdentifier);
                         if (!input) {
-                            this.emit('warn', `Input with identifier ${activeIdentifier} not found`);
+                            if (this.logWarn) this.emit('warn', `Input with identifier ${activeIdentifier} not found`);
                             return;
                         }
 
@@ -557,9 +499,9 @@ class MainZone extends EventEmitter {
                         }
 
                         await this.denon.send(`${zonePrefix}${reference}`);
-                        if (!this.disableLogInfo) this.emit('info', `set Input Name: ${name}, Reference: ${reference}`);
+                        if (this.logInfo) this.emit('info', `set Input Name: ${name}, Reference: ${reference}`);
                     } catch (error) {
-                        this.emit('warn', `set Input error: ${error}`);
+                        if (this.logWarn) this.emit('warn', `set Input error: ${error}`);
                     }
                 });
 
@@ -611,9 +553,9 @@ class MainZone extends EventEmitter {
                         }
 
                         await this.denon.send(command);
-                        if (!this.disableLogInfo) this.emit('info', `set Remote Key: ${command}`);
+                        if (this.logInfo) this.emit('info', `set Remote Key: ${command}`);
                     } catch (error) {
-                        this.emit('warn', `set Remote Key error: ${error}`);
+                        if (this.logWarn) this.emit('warn', `set Remote Key error: ${error}`);
                     }
                 });
 
@@ -628,9 +570,9 @@ class MainZone extends EventEmitter {
                         const newValue = (value / 100) * 12;
                         const brightness = `PVBR ${(newValue)}`;
                         await this.denon.send(brightness);
-                        if (!this.disableLogInfo) this.emit('info', `set Brightness: ${value}`);
+                        if (this.logInfo) this.emit('info', `set Brightness: ${value}`);
                     } catch (error) {
-                        this.emit('warn', `set Brightness error: ${error}`);
+                        if (this.logWarn) this.emit('warn', `set Brightness error: ${error}`);
                     }
                 });
 
@@ -670,9 +612,9 @@ class MainZone extends EventEmitter {
                             }
 
                             await this.denon.send(command);
-                            if (!this.disableLogInfo) this.emit('info', `set Picture Mode: ${PictureModesDenonString[command]}`);
+                            if (this.logInfo) this.emit('info', `set Picture Mode: ${PictureModesDenonString[command]}`);
                         } catch (error) {
-                            this.emit('warn', `set Picture Mode error: ${error}`);
+                            if (this.logWarn) this.emit('warn', `set Picture Mode error: ${error}`);
                         }
                     });
             }
@@ -690,20 +632,20 @@ class MainZone extends EventEmitter {
                         }
 
                         await this.denon.send(command);
-                        if (!this.disableLogInfo) this.emit('info', `set Power Mode Selection: ${command === 'MNOPT' ? 'SHOW' : 'HIDE'}`);
+                        if (this.logInfo) this.emit('info', `set Power Mode Selection: ${command === 'MNOPT' ? 'SHOW' : 'HIDE'}`);
                     } catch (error) {
-                        this.emit('warn', `set Power Mode Selection error: ${error}`);
+                        if (this.logWarn) this.emit('warn', `set Power Mode Selection error: ${error}`);
                     };
                 });
 
             //prepare inputs service
-            if (this.enableDebugMode) this.emit('debug', `Prepare inputs services`);
+            if (this.logDebug) this.emit('debug', `Prepare inputs services`);
             this.inputsServices = [];
             await this.addRemoveOrUpdateInput(this.savedInputs, false);
 
             //Prepare volume service
             if (this.volumeControl > 0) {
-                if (!this.enableDebugMode) this.emit('debug', `Prepare television speaker service`);
+                if (!this.logDebug) this.emit('debug', `Prepare television speaker service`);
                 const volumeServiceName = this.volumeControlNamePrefix ? `${accessoryName} ${this.volumeControlName}` : this.volumeControlName;
                 this.volumeServiceTvSpeaker = accessory.addService(Service.TelevisionSpeaker, volumeServiceName, 'TV Speaker');
                 this.volumeServiceTvSpeaker.addOptionalCharacteristic(Characteristic.ConfiguredName);
@@ -733,9 +675,9 @@ class MainZone extends EventEmitter {
                                     await this.stateControl('VolumeSelector', command);
                                     break;
                             }
-                            if (!this.disableLogInfo) this.emit('info', `set Volume Selector: ${command}`);
+                            if (this.logInfo) this.emit('info', `set Volume Selector: ${command}`);
                         } catch (error) {
-                            this.emit('warn', `set Volume Selector error: ${error}`);
+                            if (this.logWarn) this.emit('warn', `set Volume Selector error: ${error}`);
                         };
                     });
 
@@ -746,13 +688,13 @@ class MainZone extends EventEmitter {
                     })
                     .onSet(async (value) => {
                         try {
-                            value = value > this.volumeMax ? this.volumeMax : value;
-                            let scaledValue = await this.scaleValue(value, 0, 100, 0, 98);
+                            value = value > this.volumeControlMax ? this.volumeControlMax : value;
+                            let scaledValue = await this.functions.scaleValue(value, 0, 100, 0, 98);
                             scaledValue = scaledValue < 10 ? `0${scaledValue}` : scaledValue;
                             await this.stateControl('Volume', scaledValue);
-                            if (!this.disableLogInfo) this.emit('info', `set Volume: ${value}%`);
+                            if (this.logInfo) this.emit('info', `set Volume: ${value}%`);
                         } catch (error) {
-                            this.emit('warn', `set Volume error: ${error}`);
+                            if (this.logWarn) this.emit('warn', `set Volume error: ${error}`);
                         };
                     });
 
@@ -765,16 +707,16 @@ class MainZone extends EventEmitter {
                         try {
                             state = state ? 'ON' : 'OFF';
                             await this.stateControl('Mute', state);
-                            if (!this.disableLogInfo) this.emit('info', `set Mute: ${state}`);
+                            if (this.logInfo) this.emit('info', `set Mute: ${state}`);
                         } catch (error) {
-                            this.emit('warn', `set Mute error: ${error}`);
+                            if (this.logWarn) this.emit('warn', `set Mute error: ${error}`);
                         };
                     });
 
                 //legacy control
                 switch (this.volumeControl) {
                     case 1: //lightbulb
-                        if (!this.enableDebugMode) this.emit('debug', `Prepare volume service lightbulb`);
+                        if (!this.logDebug) this.emit('debug', `Prepare volume service lightbulb`);
                         this.volumeServiceLightbulb = accessory.addService(Service.Lightbulb, volumeServiceName, 'Lightbulb Speaker');
                         this.volumeServiceLightbulb.addOptionalCharacteristic(Characteristic.ConfiguredName);
                         this.volumeServiceLightbulb.setCharacteristic(Characteristic.ConfiguredName, `${volumeServiceName}`);
@@ -796,7 +738,7 @@ class MainZone extends EventEmitter {
                             });
                         break;
                     case 2: //fan
-                        if (!this.enableDebugMode) this.emit('debug', `Prepare volume service fan`);
+                        if (!this.logDebug) this.emit('debug', `Prepare volume service fan`);
                         this.volumeServiceFan = accessory.addService(Service.Fan, volumeServiceName, 'Fan Speaker');
                         this.volumeServiceFan.addOptionalCharacteristic(Characteristic.ConfiguredName);
                         this.volumeServiceFan.setCharacteristic(Characteristic.ConfiguredName, `${volumeServiceName}`);
@@ -818,7 +760,7 @@ class MainZone extends EventEmitter {
                             });
                         break;
                     case 3: // speaker
-                        if (!this.enableDebugMode) this.emit('debug', `Prepare volume service speaker`);
+                        if (!this.logDebug) this.emit('debug', `Prepare volume service speaker`);
                         this.volumeServiceSpeaker = accessory.addService(Service.Speaker, volumeServiceName, 'Speaker');
                         this.volumeServiceSpeaker.addOptionalCharacteristic(Characteristic.ConfiguredName);
                         this.volumeServiceSpeaker.setCharacteristic(Characteristic.ConfiguredName, volumeServiceName);
@@ -851,7 +793,7 @@ class MainZone extends EventEmitter {
 
             //prepare sensor service
             if (this.sensorPower) {
-                if (this.enableDebugMode) this.emit('debug', `Prepare power sensor service`);
+                if (this.logDebug) this.emit('debug', `Prepare power sensor service`);
                 this.sensorPowerService = accessory.addService(Service.ContactSensor, `${this.sZoneName} Power Sensor`, `Power Sensor`);
                 this.sensorPowerService.addOptionalCharacteristic(Characteristic.ConfiguredName);
                 this.sensorPowerService.setCharacteristic(Characteristic.ConfiguredName, `${accessoryName} Power Sensor`);
@@ -863,7 +805,7 @@ class MainZone extends EventEmitter {
             }
 
             if (this.sensorVolume) {
-                if (this.enableDebugMode) this.emit('debug', `Prepare volume sensor service`);
+                if (this.logDebug) this.emit('debug', `Prepare volume sensor service`);
                 this.sensorVolumeService = accessory.addService(Service.ContactSensor, `${this.sZoneName} Volume Sensor`, `Volume Sensor`);
                 this.sensorVolumeService.addOptionalCharacteristic(Characteristic.ConfiguredName);
                 this.sensorVolumeService.setCharacteristic(Characteristic.ConfiguredName, `${accessoryName} Volume Sensor`);
@@ -875,7 +817,7 @@ class MainZone extends EventEmitter {
             }
 
             if (this.sensorMute) {
-                if (this.enableDebugMode) this.emit('debug', `Prepare mute sensor service`);
+                if (this.logDebug) this.emit('debug', `Prepare mute sensor service`);
                 this.sensorMuteService = accessory.addService(Service.ContactSensor, `${this.sZoneName} Mute Sensor`, `Mute Sensor`);
                 this.sensorMuteService.addOptionalCharacteristic(Characteristic.ConfiguredName);
                 this.sensorMuteService.setCharacteristic(Characteristic.ConfiguredName, `${accessoryName} Mute Sensor`);
@@ -887,7 +829,7 @@ class MainZone extends EventEmitter {
             }
 
             if (this.sensorInput) {
-                if (this.enableDebugMode) this.emit('debug', `Prepare input sensor service`);
+                if (this.logDebug) this.emit('debug', `Prepare input sensor service`);
                 this.sensorInputService = accessory.addService(Service.ContactSensor, `${this.sZoneName} Input Sensor`, `Input Sensor`);
                 this.sensorInputService.addOptionalCharacteristic(Characteristic.ConfiguredName);
                 this.sensorInputService.setCharacteristic(Characteristic.ConfiguredName, `${accessoryName} Input Sensor`);
@@ -899,10 +841,10 @@ class MainZone extends EventEmitter {
             }
 
             //prepare sonsor service
-            const possibleSensorInputsCount = 99 - this.accessory.services.length.length;
+            const possibleSensorInputsCount = 99 - this.accessory.services.length;
             const maxSensorInputsCount = this.sensorsInputsConfiguredCount >= possibleSensorInputsCount ? possibleSensorInputsCount : this.sensorsInputsConfiguredCount;
             if (maxSensorInputsCount > 0) {
-                if (this.enableDebugMode) this.emit('debug', `Prepare inputs sensors services`);
+                if (this.logDebug) this.emit('debug', `Prepare inputs sensors services`);
                 this.sensorInputServices = [];
                 for (let i = 0; i < maxSensorInputsCount; i++) {
                     //get sensor
@@ -935,10 +877,10 @@ class MainZone extends EventEmitter {
             }
 
             //prepare buttons services
-            const possibleButtonsCount = 99 - this.accessory.services.length.length;
+            const possibleButtonsCount = 99 - this.accessory.services.length;
             const maxButtonsCount = this.buttonsConfiguredCount >= possibleButtonsCount ? possibleButtonsCount : this.buttonsConfiguredCount;
             if (maxButtonsCount > 0) {
-                if (this.enableDebugMode) this.emit('debug', `Prepare buttons services`);
+                if (this.logDebug) this.emit('debug', `Prepare buttons services`);
                 this.buttonServices = [];
                 for (let i = 0; i < maxButtonsCount; i++) {
                     //get button
@@ -975,9 +917,9 @@ class MainZone extends EventEmitter {
                                 const set = state ? await this.denon.send(command) : false;
                                 const set1 = state && directSound ? await new Promise(resolve => setTimeout(resolve, 75)) : false;
                                 const set2 = state && directSound ? await this.denon.send(directSoundModeSurround) : false;
-                                if (!this.disableLogInfo && state) this.emit('info', `set Button Name: ${name}, Reference: ${command}`);
+                                if (this.logInfo && state) this.emit('info', `set Button Name: ${name}, Reference: ${command}`);
                             } catch (error) {
-                                this.emit('warn', `set Button error: ${error}`);
+                                if (this.logWarn) this.emit('warn', `set Button error: ${error}`);
                             }
                         });
 
@@ -1007,7 +949,7 @@ class MainZone extends EventEmitter {
                 getInputsFromDevice: this.getInputsFromDevice,
                 getFavoritesFromDevice: this.getFavoritesFromDevice,
                 getQuickSmartSelectFromDevice: this.getQuickSmartSelectFromDevice,
-                enableDebugLog: this.enableDebugMode
+                logDebug: this.logDebug
             })
                 .on('deviceInfo', (info) => {
                     this.emit('devInfo', `-------- ${this.name} --------`);
@@ -1026,9 +968,9 @@ class MainZone extends EventEmitter {
                     await this.addRemoveOrUpdateInput(inputs, remove);
                 })
                 .on('stateChanged', async (power, reference, volume, volumeDisplay, mute, pictureMode) => {
-                    const input = this.inputsServices.find(input => input.reference === reference) ?? false;
+                    const input = this.inputsServices?.find(input => input.reference === reference);
                     const inputIdentifier = input ? input.identifier : this.inputIdentifier;
-                    const scaledVolume = await this.scaleValue(volume, -80, 18, 0, 100);
+                    const scaledVolume = await this.functions.scaleValue(volume, -80, 18, 0, 100);
                     mute = power ? mute : true;
                     const pictureModeHomeKit = PictureModesConversionToHomeKit[pictureMode] ?? this.pictureMode;
 
@@ -1040,67 +982,47 @@ class MainZone extends EventEmitter {
                     this.volumeDisplay = volumeDisplay;
                     this.pictureMode = pictureModeHomeKit;
 
-                    if (this.televisionService) {
-                        this.televisionService
-                            .updateCharacteristic(Characteristic.Active, power)
-                            .updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier)
-                            .updateCharacteristic(Characteristic.PictureMode, pictureModeHomeKit);
-                    }
+                    this.televisionService
+                        ?.updateCharacteristic(Characteristic.Active, power)
+                        .updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier)
+                        .updateCharacteristic(Characteristic.PictureMode, pictureModeHomeKit);
 
-                    if (this.volumeServiceTvSpeaker) {
-                        this.volumeServiceTvSpeaker
-                            .updateCharacteristic(Characteristic.Active, power)
-                            .updateCharacteristic(Characteristic.Volume, scaledVolume)
-                            .updateCharacteristic(Characteristic.Mute, mute);
-                    }
+                    this.volumeServiceTvSpeaker
+                        ?.updateCharacteristic(Characteristic.Active, power)
+                        .updateCharacteristic(Characteristic.Volume, scaledVolume)
+                        .updateCharacteristic(Characteristic.Mute, mute);
 
-                    if (this.volumeServiceLightbulb) {
-                        const muteV = this.power ? !mute : false;
-                        this.volumeServiceLightbulb
-                            .updateCharacteristic(Characteristic.Brightness, scaledVolume)
-                            .updateCharacteristic(Characteristic.On, muteV);
-                    }
+                    const muteV = this.power ? !mute : false;
+                    this.volumeServiceLightbulb
+                        ?.updateCharacteristic(Characteristic.Brightness, scaledVolume)
+                        .updateCharacteristic(Characteristic.On, muteV);
 
-                    if (this.volumeServiceFan) {
-                        const muteV = this.power ? !mute : false;
-                        this.volumeServiceFan
-                            .updateCharacteristic(Characteristic.RotationSpeed, scaledVolume)
-                            .updateCharacteristic(Characteristic.On, muteV);
-                    }
+                    this.volumeServiceFan
+                        ?.updateCharacteristic(Characteristic.RotationSpeed, scaledVolume)
+                        .updateCharacteristic(Characteristic.On, muteV);
 
-                    if (this.volumeServiceSpeaker) {
-                        this.volumeServiceSpeaker
-                            .updateCharacteristic(Characteristic.Active, power)
-                            .updateCharacteristic(Characteristic.Volume, scaledVolume)
-                            .updateCharacteristic(Characteristic.Mute, mute);
-                    }
+                    this.volumeServiceSpeaker
+                        ?.updateCharacteristic(Characteristic.Active, power)
+                        .updateCharacteristic(Characteristic.Volume, scaledVolume)
+                        .updateCharacteristic(Characteristic.Mute, mute);
 
                     //sensors
-                    if (this.sensorPowerService) {
-                        this.sensorPowerService
-                            .updateCharacteristic(Characteristic.ContactSensorState, power)
-                    }
+                    this.sensorPowerService?.updateCharacteristic(Characteristic.ContactSensorState, power);
 
-                    if (this.sensorVolumeService && scaledVolume !== this.volume) {
+                    if (scaledVolume !== this.volume) {
                         for (let i = 0; i < 2; i++) {
                             const state = power ? [true, false][i] : false;
-                            this.sensorVolumeService
-                                .updateCharacteristic(Characteristic.ContactSensorState, state)
+                            this.sensorVolumeService?.updateCharacteristic(Characteristic.ContactSensorState, state);
                             this.sensorVolumeState = state;
                         }
                     }
 
-                    if (this.sensorMuteService) {
-                        const state = power ? mute : false;
-                        this.sensorMuteService
-                            .updateCharacteristic(Characteristic.ContactSensorState, state)
-                    }
+                    this.sensorMuteService?.updateCharacteristic(Characteristic.ContactSensorState, power ? mute : false);
 
-                    if (this.sensorInputService && reference !== this.reference) {
+                    if (reference !== this.reference) {
                         for (let i = 0; i < 2; i++) {
                             const state = power ? [true, false][i] : false;
-                            this.sensorInputService
-                                .updateCharacteristic(Characteristic.ContactSensorState, state)
+                            this.sensorInputService?.updateCharacteristic(Characteristic.ContactSensorState, state);
                             this.sensorInputState = state;
                         }
                     }
@@ -1110,11 +1032,8 @@ class MainZone extends EventEmitter {
                             const sensor = this.sensorsInputsConfigured[i];
                             const state = power ? sensor.reference === reference : false;
                             sensor.state = state;
-                            if (this.sensorInputServices) {
-                                const characteristicType = sensor.characteristicType;
-                                this.sensorInputServices[i]
-                                    .updateCharacteristic(characteristicType, state);
-                            }
+                            const characteristicType = sensor.characteristicType;
+                            this.sensorInputServices?.[i]?.updateCharacteristic(characteristicType, state);
                         }
                     }
 
@@ -1124,14 +1043,11 @@ class MainZone extends EventEmitter {
                             const button = this.buttonsConfigured[i];
                             const state = this.power ? button.reference === reference : false;
                             button.state = state;
-                            if (this.buttonServices) {
-                                this.buttonServices[i]
-                                    .updateCharacteristic(Characteristic.On, state);
-                            }
+                            this.buttonServices?.[i]?.updateCharacteristic(Characteristic.On, state);
                         }
                     }
 
-                    if (!this.disableLogInfo) {
+                    if (this.logInfo) {
                         const name = input ? input.name : reference;
                         this.emit('info', `Power: ${power ? 'ON' : 'OFF'}`);
                         this.emit('info', `Input Name: ${name}`);
@@ -1160,11 +1076,11 @@ class MainZone extends EventEmitter {
                 return false;
             }
 
-            //start external integrations
-            if (this.restFul.enable || this.mqtt.enable) await this.externalIntegrations();
-
             //prepare data for accessory
             await this.prepareDataForAccessory();
+
+            //start external integrations
+            if (this.restFul.enable || this.mqtt.enable) await this.externalIntegrations();
 
             //prepare accessory
             const accessory = await this.prepareAccessory();

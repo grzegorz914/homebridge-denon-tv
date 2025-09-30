@@ -24,20 +24,22 @@
                     "port": 8080,
                     "generation": 1,
                     "zoneControl": 0,
-                    "getInputsFromDevice": false,
-                    "getFavoritesFromDevice": false,
-                    "getQuickSmartSelectFromDevice": false,
-                    "inputsDisplayOrder": 0,
-                    "inputs": [
-                        {
-                            "name": "Xbox One",
-                            "reference": "GAME"
-                        },
-                        {
-                            "name": "Television",
-                            "reference": "TV"
-                        }
-                    ],
+                    "inputs": {
+                        "getFromDevice": false,
+                        "getFavoritesFromDevice": false,
+                        "getQuickSmartSelectFromDevice": false,
+                        "displayOrder": 0,
+                        "inputs": [
+                            {
+                                "name": "Xbox One",
+                                "reference": "GAME"
+                            },
+                            {
+                                "name": "Television",
+                                "reference": "TV"
+                            }
+                        ]
+                    },
                     "buttons": [
                         {
                             "name": "MASTER POWER ON",
@@ -52,32 +54,40 @@
                             "namePrefix": false
                         }
                     ],
-                    "sensorPower": false,
-                    "sensorVolume": false,
-                    "sensorMute": false,
-                    "sensorInput": false,
-                    "sensorInputs": [
-                        {
-                            "name": "Tuner Sat",
-                            "reference": "CBL/SAT",
-                            "displayType": 0,
-                            "namePrefix": false
-                        }
-                    ],
-                    "powerControlZone": 0,
-                    "volumeControlNamePrefix": false,
-                    "volumeControlName": "Volume",
-                    "volumeControlType": 0,
-                    "volumeControlZone": 0,
-                    "volumeMax": 0,
+                    "sensor": {
+                        "power": false,
+                        "volume": false,
+                        "mute": false,
+                        "input": false,
+                        "inputs": [
+                            {
+                                "name": "Tuner Sat",
+                                "reference": "CBL/SAT",
+                                "displayType": 0,
+                                "namePrefix": false
+                            }
+                        ]
+                    },
+                    "power": {
+                        "zone": 0
+                    },
+                    "volume": {
+                        "displayType": 0,
+                        "zone": 0,
+                        "name": "Volume",
+                        "namePrefix": false,
+                        "max": 0
+                    },
                     "infoButtonCommand": "MNINF",
                     "refreshInterval": 5,
-                    "disableLogDeviceInfo": false,
-                    "disableLogInfo": false,
-                    "disableLogSuccess": false,
-                    "disableLogWarn": false,
-                    "disableLogError": false,
-                    "enableDebugMode": false,
+                    "log": {
+                        "deviceInfo": true,
+                        "success": true,
+                        "info": false,
+                        "warn": true,
+                        "error": true,
+                        "debug": false
+                    },
                     "restFul": {
                         "enable": false,
                         "port": 3000,
@@ -85,14 +95,16 @@
                     },
                     "mqtt": {
                         "enable": false,
-                        "host": "192.168.1.33",
+                        "host": "",
                         "port": 1883,
                         "clientId": "",
-                        "prefix": "home/envoy",
-                        "auth": false,
-                        "user": "user",
-                        "pass": "password",
-                        "debug": false
+                        "prefix": "",
+                        "debug": false,
+                        "auth": {
+                            "enable": false,
+                            "user": "",
+                            "passwd": ""
+                        }
                     }
                 },
                 {
@@ -101,20 +113,22 @@
                     "port": 8080,
                     "generation": 1,
                     "zoneControl": 1,
-                    "getInputsFromDevice": false,
-                    "getFavoritesFromDevice": false,
-                    "getQuickSmartSelectFromDevice": false,
-                    "inputsDisplayOrder": 0,
-                    "inputs": [
-                        {
-                            "name": "Xbox One",
-                            "reference": "GAME"
-                        },
-                        {
-                            "name": "Television",
-                            "reference": "TV"
-                        }
-                    ],
+                    "inputs": {
+                        "getFromDevice": false,
+                        "getFavoritesFromDevice": false,
+                        "getQuickSmartSelectFromDevice": false,
+                        "displayOrder": 0,
+                        "inputs": [
+                            {
+                                "name": "Xbox One",
+                                "reference": "GAME"
+                            },
+                            {
+                                "name": "Television",
+                                "reference": "TV"
+                            }
+                        ]
+                    },
                     "buttonsZ1": [
                         {
                             "name": "Z2 POWER ON",
@@ -122,31 +136,40 @@
                             "displayType": 0
                         }
                     ],
-                    "sensorPower": false,
-                    "sensorVolume": false,
-                    "sensorMute": false,
-                    "sensorInput": false,
-                    "sensorInputs": [
-                        {
-                            "name": "Tuner Sat",
-                            "reference": "CBL/SAT",
-                            "displayType": 0
-                        }
-                    ],
-                    "powerControlZone": 0,
-                    "volumeControlNamePrefix": false,
-                    "volumeControlName": "Volume",
-                    "volumeControlType": 0,
-                    "volumeControlZone": 0,
-                    "volumeMax": 0,
+                    "sensor": {
+                        "power": false,
+                        "volume": false,
+                        "mute": false,
+                        "input": false,
+                        "inputs": [
+                            {
+                                "name": "Tuner Sat",
+                                "reference": "CBL/SAT",
+                                "displayType": 0,
+                                "namePrefix": false
+                            }
+                        ]
+                    },
+                    "power": {
+                        "zone": 0
+                    },
+                    "volume": {
+                        "displayType": 0,
+                        "zone": 0,
+                        "name": "Volume",
+                        "namePrefix": false,
+                        "max": 0
+                    },
                     "infoButtonCommand": "MNINF",
                     "refreshInterval": 5,
-                    "disableLogDeviceInfo": false,
-                    "disableLogInfo": false,
-                    "disableLogSuccess": false,
-                    "disableLogWarn": false,
-                    "disableLogError": false,
-                    "enableDebugMode": false,
+                    "log": {
+                        "deviceInfo": true,
+                        "success": true,
+                        "info": false,
+                        "warn": true,
+                        "error": true,
+                        "debug": false
+                    },
                     "restFul": {
                         "enable": false,
                         "port": 3001,
@@ -170,20 +193,22 @@
                     "port": 8080,
                     "generation": 1,
                     "zoneControl": 2,
-                    "getInputsFromDevice": false,
-                    "getFavoritesFromDevice": false,
-                    "getQuickSmartSelectFromDevice": false,
-                    "inputsDisplayOrder": 0,
-                    "inputs": [
-                        {
-                            "name": "Xbox One",
-                            "reference": "GAME"
-                        },
-                        {
-                            "name": "Television",
-                            "reference": "TV"
-                        }
-                    ],
+                    "inputs": {
+                        "getFromDevice": false,
+                        "getFavoritesFromDevice": false,
+                        "getQuickSmartSelectFromDevice": false,
+                        "displayOrder": 0,
+                        "inputs": [
+                            {
+                                "name": "Xbox One",
+                                "reference": "GAME"
+                            },
+                            {
+                                "name": "Television",
+                                "reference": "TV"
+                            }
+                        ]
+                    },
                     "buttonsZ3": [
                         {
                             "name": "Z3 POWER ON",
@@ -191,31 +216,40 @@
                             "displayType": 0
                         }
                     ],
-                    "sensorPower": false,
-                    "sensorVolume": false,
-                    "sensorMute": false,
-                    "sensorInput": false,
-                    "sensorInputs": [
-                        {
-                            "name": "Tuner Sat",
-                            "reference": "CBL/SAT",
-                            "displayType": 0
-                        }
-                    ],
-                    "powerControlZone": 0,
-                    "volumeControlNamePrefix": false,
-                    "volumeControlName": "Volume",
-                    "volumeControlType": 0,
-                    "volumeControlZone": 0,
-                    "volumeMax": 0,
+                    "sensor": {
+                        "power": false,
+                        "volume": false,
+                        "mute": false,
+                        "input": false,
+                        "inputs": [
+                            {
+                                "name": "Tuner Sat",
+                                "reference": "CBL/SAT",
+                                "displayType": 0,
+                                "namePrefix": false
+                            }
+                        ]
+                    },
+                    "power": {
+                        "zone": 0
+                    },
+                    "volume": {
+                        "displayType": 0,
+                        "zone": 0,
+                        "name": "Volume",
+                        "namePrefix": false,
+                        "max": 0
+                    },
                     "infoButtonCommand": "MNINF",
                     "refreshInterval": 5,
-                    "disableLogDeviceInfo": false,
-                    "disableLogInfo": false,
-                    "disableLogSuccess": false,
-                    "disableLogWarn": false,
-                    "disableLogError": false,
-                    "enableDebugMode": false,
+                    "log": {
+                        "deviceInfo": true,
+                        "success": true,
+                        "info": false,
+                        "warn": true,
+                        "error": true,
+                        "debug": false
+                    },
                     "restFul": {
                         "enable": false,
                         "port": 3002,
