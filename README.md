@@ -72,12 +72,10 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 | `inputs.data` | Here create `Inputs` which You want expose to the `Homebridge/HomeKit`. |
 | `inputs.data.name` | Here set `Input Name`. |
 | `inputs.data.reference` | Choose from available inputs, the inputs that should be published to and appear in HomeKit app in the device tile as inputs list. |
+| `surrounds.displayOrder` | Here choose display order of the surrounds list, `0 - None`, `1 - Ascending by Name`, `2 - Descending by Name`, `3 - Ascending by Reference`, `4 - Ascending by Reference`. |
 | `surrounds.data` | Here create `Surrounds` which You want expose to the `Homebridge/HomeKit`. |
 | `surrounds.data.name` | Here set `Surround Mode Name`. |
 | `surrounds.data.reference` | Here choose `Surround Mode`, the mode that should be published to and appear in HomeKit app in the extra tile as Surrounds List. |
-| `passThrough.data` | Here create `Pass Through Inputs` which You want expose to the `Homebridge/HomeKit`. |
-| `passThrough.data.name` | Here set `Pass ThroughInput Name`. |
-| `passThrough.data.reference` | Choose from available inputs, the inputs that should be published to and appear in HomeKit app in the device tile as inputs list. |
 | `buttons` | Here create `Buttons` which You want expose to the `Homebridge/HomeKit` for Main Zone. |
 | `buttons.name` | Here set `Button Name`. |
 | `buttons.reference` | Here choose Function for this button. |
