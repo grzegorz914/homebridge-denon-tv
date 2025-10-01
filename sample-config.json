@@ -136,7 +136,7 @@
                             "displayType": 0
                         }
                     ],
-                    "sensor": {
+                    "sensors": {
                         "power": false,
                         "volume": false,
                         "mute": false,
