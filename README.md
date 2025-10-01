@@ -65,13 +65,13 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 | `port` | Here set the API communication port, if `8080` is not working try to use port `80` which some receivers use alternatively. |
 | `generation` | Here choose generation of Your device, old `0 - 2010 - 2012`, middle `1 - 2013 - 2022`, new `2 - 2023 and newer`. |
 | `zoneControl` | Here choose which zone will be controlled by this section `-1 - None/Disabled`,`0 - Main Zone`, `1 - Zone 2`, `2 - Zone 3`, `3 - Surrounds`, `4 - Pass Through Inputs`. |
-| `getInputsFromDevice` | If enabled, `Inputs` will be loaded direct from device. |
-| `getFavoritesFromDevice` | If enabled, `Favorites` will be loaded to the inputs list if exist. |
-| `getQuickSmartSelectFromDevice` | If enabled, `Quick/Smart Select` will be loaded to the inputs list if exist. |
-| `inputsDisplayOrder` | Here choose display order of the inputs list, `0 - None`, `1 - Ascending by Name`, `2 - Descending by Name`, `3 - Ascending by Reference`, `4 - Ascending by Reference`. |
-| `inputs` | Here create `Inputs` which You want expose to the `Homebridge/HomeKit`. |
-| `inputs.name` | Here set `Input Name`. |
-| `inputs.reference` | Choose from available inputs, the inputs that should be published to and appear in HomeKit app in the device tile as inputs list. |
+| `inputs.getFromDevice` | If enabled, `Inputs` will be loaded direct from device. |
+| `inputs.getFavoritesFromDevice` | If enabled, `Favorites` will be loaded to the inputs list if exist. |
+| `inputs.getQuickSmartSelectFromDevice` | If enabled, `Quick/Smart Select` will be loaded to the inputs list if exist. |
+| `inputs.displayOrder` | Here choose display order of the inputs list, `0 - None`, `1 - Ascending by Name`, `2 - Descending by Name`, `3 - Ascending by Reference`, `4 - Ascending by Reference`. |
+| `inputs.data` | Here create `Inputs` which You want expose to the `Homebridge/HomeKit`. |
+| `inputs.data.name` | Here set `Input Name`. |
+| `inputs.data.reference` | Choose from available inputs, the inputs that should be published to and appear in HomeKit app in the device tile as inputs list. |
 | `surrounds` | Here create `Surrounds` which You want expose to the `Homebridge/HomeKit`. |
 | `surrounds.name` | Here set `Surround Mode Name`. |
 | `surrounds.reference` | Here choose `Surround Mode`, the mode that should be published to and appear in HomeKit app in the extra tile as Surrounds List. |
@@ -93,26 +93,26 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 | `buttonsZ3.reference` | Here choose function for this button. |
 | `buttonsZ3.displayType` | Here choose characteristic type to be exposed in HomeKit app, possible `0 - None/Disabled`, `1 - Outlet`, `2 - Switch`. |
 | `buttonsZ3.namePrefix` | Here enable/disable the accessory name as a prefix for button name. |
-| `sensorPower`| If enabled, then the Power will be exposed as a `Contact Sensor`, fired if power ON. |
-| `sensorVolume`| If enabled, then the Volume will be exposed as a `Contact Sensor`, fired on every Volume change. |
-| `sensorMute`| If enabled, then the Mute will be exposed as a `Contact Sensor`, fired if Mmute ON. |
-| `sensorInput`| If enabled, then the Input will be exposed as a `Contact Sensor`, fired on every Input change. |
-| `sensorInputs`| Here create custom `Inputs Sensor` which You want expose to the `Homebridge/HomeKit`. |
-| `sensorInputs.name` | Here set own `Sensor Name`. |
-| `sensorInputs.reference` | Here choose `Input Reference`, sensor fired if switch to this reference. |
-| `sensorInputs.displayType` | Here choose characteristic type to be exposed in HomeKit app, `0 - None/Disabled`, `1 - Motion Sensor`, `2 - Occupancy Sensor`, `3 - Contact Sensor`. |
-| `sensorInputs.namePrefix` | Here enable/disable the accessory name as a prefix for sensor name. |
+| `sensors.power`| If enabled, then the Power will be exposed as a `Contact Sensor`, fired if power ON. |
+| `sensors.volume`| If enabled, then the Volume will be exposed as a `Contact Sensor`, fired on every Volume change. |
+| `sensors.mute`| If enabled, then the Mute will be exposed as a `Contact Sensor`, fired if Mmute ON. |
+| `sensors.input`| If enabled, then the Input will be exposed as a `Contact Sensor`, fired on every Input change. |
+| `sensors.inputs`| Here create custom `Inputs Sensor` which You want expose to the `Homebridge/HomeKit`. |
+| `sensors.inputs.name` | Here set own `Sensor Name`. |
+| `sensors.inputs.reference` | Here choose `Input Reference`, sensor fired if switch to this reference. |
+| `sensors.inputs.displayType` | Here choose characteristic type to be exposed in HomeKit app, `0 - None/Disabled`, `1 - Motion Sensor`, `2 - Occupancy Sensor`, `3 - Contact Sensor`. |
+| `sensors.inputs.namePrefix` | Here enable/disable the accessory name as a prefix for sensor name. |
 | `sensorSurrounds`| Here create custom `Surrounds Sensor` which You want expose to the `Homebridge/HomeKit`. |
 | `sensorSurrounds.name` | Here set own `Sensor Name`. |
 | `sensorSurrounds.reference` | Here choose `Sensor Reference`, sensor fired if switch to this reference. |
 | `sensorSurrounds.displayType` | Here choose characteristic type to be exposed in HomeKit app, `0 - None/Disabled`, `1 - Motion Sensor`, `2 - Occupancy Sensor`, `3 - Contact Sensor`. |
 | `sensorSurrounds.namePrefix` | Here enable/disable the accessory name as a prefix for sensor name. |
-| `powerControlZone` | Here select which zone the power want control, `0 - Main Zone`, `1 - Zone 2`, `2 - Zone 3`, `3 - Zone 2/3`, `4 - Main Zone + Z2`, `5 - Main Zone + Z3`, `6 - Main Zone + Z2/Z3`, `7 - Master Power`, this also working with power button in RC app. |
-| `volumeControl.namePrefix` | Here enable/disable the accessory name as a prefix for volume control name. |
-| `volumeControl.name` | Here set Your own volume/mute control name or leave empty. |
-| `volumeControl.type` | Here choose what a additional volume/mute control type You want to use, `0 - None/Disabled`, `1 - Lightbulb`, `2 - Fan`, `3 - Speaker`.. |
-| `volumeControl.zone` | Here select which zone the volume/mute want control, `0 - Main Zone`, `1 - Zone 2`, `2 - Zone 3`, `3 - Zone 2/3`, `4 - Main Zone + Z2`, `5 - Main Zone + Z3`, `6 - Main Zone + Z2/Z3`, this also working with hardware buttons in RC app. |
-| `volumeControl.max` | Here set the maximum possible volume to set, `0 - 100`. |
+| `power.zone` | Here select which zone the power want control, `0 - Main Zone`, `1 - Zone 2`, `2 - Zone 3`, `3 - Zone 2/3`, `4 - Main Zone + Z2`, `5 - Main Zone + Z3`, `6 - Main Zone + Z2/Z3`, `7 - Master Power`, this also working with power button in RC app. |
+| `volume.namePrefix` | Here enable/disable the accessory name as a prefix for volume control name. |
+| `volume.name` | Here set Your own volume/mute control name or leave empty. |
+| `volume.displayTtype` | Here choose what a additional volume/mute control type You want to use, `0 - None/Disabled`, `1 - Lightbulb`, `2 - Fan`, `3 - Speaker`.. |
+| `volume.zone` | Here select which zone the volume/mute want control, `0 - Main Zone`, `1 - Zone 2`, `2 - Zone 3`, `3 - Zone 2/3`, `4 - Main Zone + Z2`, `5 - Main Zone + Z3`, `6 - Main Zone + Z2/Z3`, this also working with hardware buttons in RC app. |
+| `volume.max` | Here set the maximum possible volume to set, `0 - 100`. |
 | `infoButtonCommand` | Here choose the function for `I` button in RC app. |
 | `refreshInterval` | Here set the data refresh interval. |
 | `log.deviceInfo` | If enabled, add ability to disable log device info by every connections device to the network. |
