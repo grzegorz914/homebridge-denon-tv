@@ -54,7 +54,7 @@
                             "namePrefix": false
                         }
                     ],
-                    "sensor": {
+                    "sensors": {
                         "power": false,
                         "volume": false,
                         "mute": false,
@@ -216,7 +216,7 @@
                             "displayType": 0
                         }
                     ],
-                    "sensor": {
+                    "sensors": {
                         "power": false,
                         "volume": false,
                         "mute": false,
@@ -266,75 +266,6 @@
                         "pass": "password",
                         "debug": false
                     }
-                },
-                {
-                    "name": "AV Surround Mode",
-                    "host": "192.168.1.5",
-                    "port": 8080,
-                    "generation": 1,
-                    "zoneControl": 3,
-                    "inputsDisplayOrder": 0,
-                    "surrounds": [
-                        {
-                            "name": "MCH Stereo",
-                            "reference": "MCH STEREO"
-                        },
-                        {
-                            "name": "Stereo",
-                            "reference": "STEREO"
-                        }
-                    ],
-                    "sensorInput": false,
-                    "sensorSurrounds": [
-                        {
-                            "name": "Movie",
-                            "reference": "MOVIE",
-                            "displayType": 0,
-                            "namePrefix": false
-                        }
-                    ],
-                    "infoButtonCommand": "MNINF",
-                    "refreshInterval": 5,
-                    "disableLogDeviceInfo": false,
-                    "disableLogInfo": false,
-                    "disableLogSuccess": false,
-                    "disableLogWarn": false,
-                    "disableLogError": false,
-                    "enableDebugMode": false
-                },
-                {
-                    "name": "AV Pass through Inputs",
-                    "host": "192.168.1.5",
-                    "port": 8080,
-                    "generation": 1,
-                    "zoneControl": 4,
-                    "inputsDisplayOrder": 0,
-                    "passThroughInputs": [
-                        {
-                            "name": "Xbox One",
-                            "reference": "GAME"
-                        },
-                        {
-                            "name": "Television",
-                            "reference": "TV"
-                        }
-                    ],
-                    "sensorInput": false,
-                    "sensorInputs": [
-                        {
-                            "name": "Tuner Sat",
-                            "reference": "CBL/SAT",
-                            "displayType": 0
-                        }
-                    ],
-                    "infoButtonCommand": "MNINF",
-                    "refreshInterval": 5,
-                    "disableLogDeviceInfo": false,
-                    "disableLogInfo": false,
-                    "disableLogSuccess": false,
-                    "disableLogWarn": false,
-                    "disableLogError": false,
-                    "enableDebugMode": false
                 }
             ]
         }
