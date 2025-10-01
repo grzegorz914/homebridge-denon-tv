@@ -29,7 +29,7 @@
                         "getFavoritesFromDevice": false,
                         "getQuickSmartSelectFromDevice": false,
                         "displayOrder": 0,
-                        "inputs": [
+                        "data": [
                             {
                                 "name": "Xbox One",
                                 "reference": "GAME"
@@ -118,7 +118,7 @@
                         "getFavoritesFromDevice": false,
                         "getQuickSmartSelectFromDevice": false,
                         "displayOrder": 0,
-                        "inputs": [
+                        "data": [
                             {
                                 "name": "Xbox One",
                                 "reference": "GAME"
@@ -198,7 +198,7 @@
                         "getFavoritesFromDevice": false,
                         "getQuickSmartSelectFromDevice": false,
                         "displayOrder": 0,
-                        "inputs": [
+                        "data": [
                             {
                                 "name": "Xbox One",
                                 "reference": "GAME"
