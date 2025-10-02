@@ -23,26 +23,26 @@ class Zone3 extends EventEmitter {
         this.port = port;
         this.generation = generation;
         this.zone = zone;
-        this.getInputsFromDevice = device.inputs.getFromDevice || false;
-        this.getFavoritesFromDevice = device.inputs.getFavoritesFromDevice || false;
-        this.getQuickSmartSelectFromDevice = device.inputs.getQuickSmartSelectFromDevice || false;
-        this.inputsDisplayOrder = device.inputs.displayOrder || 0;
-        this.inputs = device.inputs.data || [];
+        this.getInputsFromDevice = device.inputs?.getFromDevice || false;
+        this.getFavoritesFromDevice = device.inputs?.getFavoritesFromDevice || false;
+        this.getQuickSmartSelectFromDevice = device.inputs?.getQuickSmartSelectFromDevice || false;
+        this.inputsDisplayOrder = device.inputs?.displayOrder || 0;
+        this.inputs = device.inputs?.data || [];
         this.buttons = device.buttonsZ3 || [];
-        this.sensorPower = device.sensors.power || false;
-        this.sensorVolume = device.sensors.volume || false
-        this.sensorMute = device.sensors.mute || false;
-        this.sensorInput = device.sensors.input || false;
-        this.sensorInputs = device.sensors.inputs || [];
-        this.powerControlZone = device.power.zone || 0;
-        this.volumeControl = device.volume.displayType || 0;
-        this.volumeControlZone = device.volume.zone || 0;
-        this.volumeControlName = device.volume.name || 'Volume';
-        this.volumeControlNamePrefix = device.volume.namePrefix || false;
-        this.volumeControlMax = device.volume.max || 100;
-        this.logInfo = device.log.info || false;
-        this.logWarn = device.log.warn || true;
-        this.logDebug = device.log.debug || false;
+        this.sensorPower = device.sensors?.power || false;
+        this.sensorVolume = device.sensors?.volume || false
+        this.sensorMute = device.sensors?.mute || false;
+        this.sensorInput = device.sensors?.input || false;
+        this.sensorInputs = device.sensors?.inputs || [];
+        this.powerControlZone = device.power?.zone || 0;
+        this.volumeControl = device.volume?.displayType || 0;
+        this.volumeControlZone = device.volume?.zone || 0;
+        this.volumeControlName = device.volume?.name || 'Volume';
+        this.volumeControlNamePrefix = device.volume?.namePrefix || false;
+        this.volumeControlMax = device.volume?.max || 100;
+        this.logInfo = device.log?.info || false;
+        this.logWarn = device.log?.warn || true;
+        this.logDebug = device.log?.debug || false;
         this.infoButtonCommand = device.infoButtonCommand || 'MNINF';
         this.refreshInterval = (device.refreshInterval ?? 5) * 1000;
         this.devInfoFile = devInfoFile;
@@ -264,8 +264,8 @@ class Zone3 extends EventEmitter {
                     port: this.mqtt.port || 1883,
                     clientId: this.mqtt.clientId ? `${this.savedInfo.manufacturer}_${this.mqtt.clientId}_${Math.random().toString(16).slice(3)}` : `${this.savedInfo.manufacturer}_${Math.random().toString(16).slice(3)}`,
                     prefix: this.mqtt.prefix ? `${this.savedInfo.manufacturer}/${this.mqtt.prefix}/${this.name}` : `${this.savedInfo.manufacturer}/${this.name}`,
-                    user: this.mqtt.auth.user,
-                    passwd: this.mqtt.auth.passwd,
+                    user: this.mqtt.auth?.user,
+                    passwd: this.mqtt.auth?.passwd,
                     debug: this.mqtt.debug || false
                 })
                     .on('connected', (message) => {

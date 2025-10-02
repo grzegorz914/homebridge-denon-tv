@@ -64,7 +64,7 @@
               "type": "integer",
               "minimum": -1,
               "maximum": 4,
-              "default": -1,
+              "default": 0,
               "description": "Here select which Zone You want control.",
               "oneOf": [
                 {
@@ -1089,7 +1089,10 @@
                     "title": "Name",
                     "type": "string",
                     "placeholder": "Button name",
-                    "description": "Here set Your own name."
+                    "description": "Here set Your own name.",
+                    "condition": {
+                      "functionBody": "return model.devices[arrayIndices[0]].buttons[arrayIndices[1]].displayType > 0;"
+                    }
                   },
                   "reference": {
                     "title": "Function",
@@ -4318,13 +4321,19 @@
                           "0DAODR MLT"
                         ]
                       }
-                    ]
+                    ],
+                    "condition": {
+                      "functionBody": "return model.devices[arrayIndices[0]].buttons[arrayIndices[1]].displayType > 0;"
+                    }
                   },
                   "namePrefix": {
                     "title": "Prefix",
                     "type": "boolean",
                     "default": false,
-                    "description": "Here enable/disable the accessory name as a prefix for button name."
+                    "description": "Here enable/disable the accessory name as a prefix for button name.",
+                    "condition": {
+                      "functionBody": "return model.devices[arrayIndices[0]].buttons[arrayIndices[1]].displayType > 0;"
+                    }
                   }
                 },
                 "required": [
@@ -4370,7 +4379,10 @@
                     "title": "Name",
                     "type": "string",
                     "placeholder": "Button name",
-                    "description": "Here set Your own name."
+                    "description": "Here set Your own name.",
+                    "condition": {
+                      "functionBody": "return model.devices[arrayIndices[0]].buttonsZ2[arrayIndices[1]].displayType > 0;"
+                    }
                   },
                   "reference": {
                     "title": "Function",
@@ -5031,13 +5043,19 @@
                           "1PSTRE DOWN"
                         ]
                       }
-                    ]
+                    ],
+                    "condition": {
+                      "functionBody": "return model.devices[arrayIndices[0]].buttonsZ2[arrayIndices[1]].displayType > 0;"
+                    }
                   },
                   "namePrefix": {
                     "title": "Prefix",
                     "type": "boolean",
                     "default": false,
-                    "description": "Here enable/disable the accessory name as a prefix for button name."
+                    "description": "Here enable/disable the accessory name as a prefix for button name.",
+                    "condition": {
+                      "functionBody": "return model.devices[arrayIndices[0]].buttonsZ2[arrayIndices[1]].displayType > 0;"
+                    }
                   }
                 },
                 "required": [
@@ -5086,7 +5104,10 @@
                     "title": "Name",
                     "type": "string",
                     "placeholder": "Button name",
-                    "description": "Here set Your own name."
+                    "description": "Here set Your own name.",
+                    "condition": {
+                      "functionBody": "return model.devices[arrayIndices[0]].buttonsZ3[arrayIndices[1]].displayType > 0;"
+                    }
                   },
                   "reference": {
                     "title": "Function",
@@ -5735,13 +5756,19 @@
                           "1PSTRE DOWN"
                         ]
                       }
-                    ]
+                    ],
+                    "condition": {
+                      "functionBody": "return model.devices[arrayIndices[0]].buttonsZ3[arrayIndices[1]].displayType > 0;"
+                    }
                   },
                   "namePrefix": {
                     "title": "Prefix",
                     "type": "boolean",
                     "default": false,
-                    "description": "Here enable/disable the accessory name as a prefix for button name."
+                    "description": "Here enable/disable the accessory name as a prefix for button name.",
+                    "condition": {
+                      "functionBody": "return model.devices[arrayIndices[0]].buttonsZ3[arrayIndices[1]].displayType > 0;"
+                    }
                   }
                 },
                 "required": [
@@ -5834,7 +5861,7 @@
                         "placeholder": "Name",
                         "description": "Here set Your own name.",
                         "condition": {
-                          "functionBody": "return model.devices[arrayIndices].sensorInputs[arrayIndices].displayType > 0;"
+                          "functionBody": "return model.devices[arrayIndices[0]].sensors.inputs[arrayIndices[1]].displayType > 0;"
                         }
                       },
                       "reference": {
@@ -6322,7 +6349,10 @@
                               "SMART5 MEMORY"
                             ]
                           }
-                        ]
+                        ],
+                        "condition": {
+                          "functionBody": "return model.devices[arrayIndices[0]].sensors.inputs[arrayIndices[1]].displayType > 0;"
+                        }
                       },
                       "namePrefix": {
                         "title": "Prefix",
@@ -6330,7 +6360,7 @@
                         "default": false,
                         "description": "Here enable/disable the accessory name as a prefix for sensor name.",
                         "condition": {
-                          "functionBody": "return model.devices[arrayIndices].sensorInputs[arrayIndices].displayType > 0;"
+                          "functionBody": "return model.devices[arrayIndices[0]].sensors.inputs[arrayIndices[1]].displayType > 0;"
                         }
                       }
                     },
@@ -6395,7 +6425,7 @@
                         "placeholder": "Name",
                         "description": "Here set Your own name.",
                         "condition": {
-                          "functionBody": "return model.devices[arrayIndices].sensorSurrounds[arrayIndices].displayType > 0;"
+                          "functionBody": "return model.devices[arrayIndices[0]].sensors.surrounds[arrayIndices[1]].displayType > 0;"
                         }
                       },
                       "reference": {
@@ -6535,13 +6565,19 @@
                               "STANDARD"
                             ]
                           }
-                        ]
+                        ],
+                        "condition": {
+                          "functionBody": "return model.devices[arrayIndices[0]].sensors.surrounds[arrayIndices[1]].displayType > 0;"
+                        }
                       },
                       "namePrefix": {
                         "title": "Prefix",
                         "type": "boolean",
                         "default": false,
-                        "description": "Here enable/disable the accessory name as a prefix for sensor name."
+                        "description": "Here enable/disable the accessory name as a prefix for sensor name.",
+                        "condition": {
+                          "functionBody": "return model.devices[arrayIndices[0]].sensors.surrounds[arrayIndices[1]].displayType > 0;"
+                        }
                       }
                     },
                     "required": [
@@ -6720,7 +6756,7 @@
                     }
                   ],
                   "condition": {
-                    "functionBody": "return model.devices[arrayIndices].zoneControl <= 2;"
+                    "functionBody": "return model.devices[arrayIndices].zoneControl <= 2 && model.devices[arrayIndices[0]].volume.displayType > 0;"
                   }
                 },
                 "name": {
@@ -6729,7 +6765,7 @@
                   "placeholder": "Volume Control Name",
                   "description": "Here set Your own volume control name or leave empty.",
                   "condition": {
-                    "functionBody": "return model.devices[arrayIndices].zoneControl <= 2;"
+                    "functionBody": "return model.devices[arrayIndices].zoneControl <= 2 && model.devices[arrayIndices[0]].volume.displayType > 0;"
                   }
                 },
                 "namePrefix": {
@@ -6738,7 +6774,7 @@
                   "default": false,
                   "description": "Here enable/disable the accessory name as a prefix for volume control name.",
                   "condition": {
-                    "functionBody": "return model.devices[arrayIndices].zoneControl <= 2;"
+                    "functionBody": "return model.devices[arrayIndices].zoneControl <= 2 && model.devices[arrayIndices[0]].volume.displayType > 0;"
                   }
                 },
                 "max": {
@@ -6749,7 +6785,7 @@
                   "default": 100,
                   "description": "Here set the max possible volume to set.",
                   "condition": {
-                    "functionBody": "return model.devices[arrayIndices].zoneControl <= 2;"
+                    "functionBody": "return model.devices[arrayIndices].zoneControl <= 2 && model.devices[arrayIndices[0]].volume.displayType > 0;"
                   }
                 }
               },
@@ -7005,7 +7041,7 @@
             }
           ],
           "condition": {
-            "functionBody": "return model.devices[arrayIndices].zoneControl != 3;"
+            "functionBody": "return model.devices[arrayIndices].zoneControl >= 0 && model.devices[arrayIndices].zoneControl != 3;"
           }
         },
         {
@@ -7027,7 +7063,7 @@
             }
           ],
           "condition": {
-            "functionBody": "return model.devices[arrayIndices].zoneControl == 3;"
+            "functionBody": "return model.devices[arrayIndices].zoneControl >= 0 && model.devices[arrayIndices].zoneControl == 3;"
           }
         },
         {
@@ -7081,7 +7117,7 @@
             }
           ],
           "condition": {
-            "functionBody": "return model.devices[arrayIndices].zoneControl <= 2;"
+            "functionBody": "return model.devices[arrayIndices].zoneControl >= 0 && model.devices[arrayIndices].zoneControl <= 2;"
           }
         },
         {
@@ -7239,7 +7275,10 @@
                 }
               ]
             }
-          ]
+          ],
+          "condition": {
+            "functionBody": "return model.devices[arrayIndices].zoneControl >= 0;"
+          }
         }
       ]
     }
