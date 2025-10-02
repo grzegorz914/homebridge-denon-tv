@@ -188,57 +188,33 @@
                     }
                 },
                 {
-                    "name": "AV Zone 2",
+                    "name": "AV Surrounds",
                     "host": "192.168.1.5",
                     "port": 8080,
                     "generation": 1,
-                    "zoneControl": 2,
-                    "inputs": {
-                        "getFromDevice": false,
-                        "getFavoritesFromDevice": false,
-                        "getQuickSmartSelectFromDevice": false,
+                    "zoneControl": 3,
+                    "surrounds": {
                         "displayOrder": 0,
                         "data": [
                             {
-                                "name": "Xbox One",
-                                "reference": "GAME"
-                            },
-                            {
-                                "name": "Television",
-                                "reference": "TV"
+                                "name": "Stereo",
+                                "reference": "STEREO"
                             }
                         ]
                     },
-                    "buttonsZ3": [
-                        {
-                            "name": "Z3 POWER ON",
-                            "reference": "1ON",
-                            "displayType": 0
-                        }
-                    ],
                     "sensors": {
                         "power": false,
                         "volume": false,
                         "mute": false,
                         "input": false,
-                        "inputs": [
+                        "surrounds": [
                             {
-                                "name": "Tuner Sat",
-                                "reference": "CBL/SAT",
+                                "name": "Stereo",
+                                "reference": "STEREO",
                                 "displayType": 0,
                                 "namePrefix": false
                             }
                         ]
-                    },
-                    "power": {
-                        "zone": 0
-                    },
-                    "volume": {
-                        "displayType": 0,
-                        "zone": 0,
-                        "name": "Volume",
-                        "namePrefix": false,
-                        "max": 0
                     },
                     "infoButtonCommand": "MNINF",
                     "refreshInterval": 5,
@@ -248,22 +224,6 @@
                         "info": false,
                         "warn": true,
                         "error": true,
-                        "debug": false
-                    },
-                    "restFul": {
-                        "enable": false,
-                        "port": 3002,
-                        "debug": false
-                    },
-                    "mqtt": {
-                        "enable": false,
-                        "host": "192.168.1.33",
-                        "port": 1883,
-                        "clientId": "",
-                        "prefix": "home/envoy",
-                        "auth": false,
-                        "user": "user",
-                        "pass": "password",
                         "debug": false
                     }
                 }
