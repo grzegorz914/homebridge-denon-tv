@@ -112,7 +112,7 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 | `volume{}` | Volume object. |
 | `volume.namePrefix` | Here enable/disable the accessory name as a prefix for volume control name. |
 | `volume.name` | Here set Your own volume/mute control name or leave empty. |
-| `volume.displayTtype` | Here choose what a additional volume/mute control type You want to use, `0 - None/Disabled`, `1 - Lightbulb`, `2 - Fan`, `3 - Speaker`.. |
+| `volume.displayTtype` | Here choice what a additional volume control mode You want to use `0 - None/Disabled`, `1 - Lightbulb`, `2 - Fan`, `3 - TV Speaker`, `4 - TV Speaker / Lightbulb`, `5 - TV Speaker / Fan`.  |
 | `volume.zone` | Here select which zone the volume/mute want control, `0 - Main Zone`, `1 - Zone 2`, `2 - Zone 3`, `3 - Zone 2/3`, `4 - Main Zone + Z2`, `5 - Main Zone + Z3`, `6 - Main Zone + Z2/Z3`, this also working with hardware buttons in RC app. |
 | `volume.max` | Here set the maximum possible volume to set, `0 - 100`. |
 | `infoButtonCommand` | Here choose the function for `I` button in RC app. |
@@ -127,14 +127,12 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 | `restFul{}` | RESTFul object. |
 | `restFul.enable` | If enabled, RESTful server will start automatically and respond to any path request. |
 | `restFul.port` | Here set the listening `Port` for RESTful server. |
-| `restFul.debug` | If enabled, deep log will be present in homebridge console for RESTFul server. |
 | `mqtt{}` | MQTT object. |
 | `mqtt.enable` | If enabled, MQTT Broker will start automatically and publish all awailable PV data. |
 | `mqtt.host` | Here set the `IP Address` or `Hostname` for MQTT Broker. |
 | `mqtt.port` | Here set the `Port` for MQTT Broker, default 1883. |
 | `mqtt.clientId` | Here optional set the `Client Id` of MQTT Broker. |
 | `mqtt.prefix` | Here set the `Prefix` for `Topic` or leave empty. |
-| `mqtt.debug` | If enabled, deep log will be present in homebridge console for MQTT. |
 | `mqtt.auth{}` | MQTT authorization object. |
 | `mqtt.auth.enable` | Here enable authorization for MQTT Broker. |
 | `mqtt.auth.user` | Here set the MQTT Broker user. |

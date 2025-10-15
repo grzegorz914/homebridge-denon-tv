@@ -23,7 +23,7 @@ class PassThroughInputs extends EventEmitter {
         this.inputsDisplayOrder = device.inputs?.displayOrder || 0;
         this.inputs = device.inputs?.data || [];
         this.sensorInput = device.sensors?.input || false;
-        this.sensorInputs = device.sensors?.inputs || [];
+        this.sensorInputs = (device.sensors?.inputs || []).filter(sensor => (sensor.displayType ?? 0) > 0);
         this.refreshInterval = (device.refreshInterval ?? 5) * 1000;
         this.infoButtonCommand = device.infoButtonCommand || 'MNINF';
         this.logInfo = device.log?.info || false;
@@ -35,25 +35,12 @@ class PassThroughInputs extends EventEmitter {
         this.inputsTargetVisibilityFile = inputsTargetVisibilityFile;
 
         //sensors
-        this.sensorsInputsConfigured = [];
         for (const sensor of this.sensorInputs) {
-            const displayType = sensor.displayType;
-            if (!displayType) {
-                continue;
-            }
-
-            sensor.name = sensor.name || 'Sensor Input';
-            sensor.reference = sensor.reference ?? false;
-            if (sensor.reference) {
-                sensor.serviceType = ['', Service.MotionSensor, Service.OccupancySensor, Service.ContactSensor][displayType];
-                sensor.characteristicType = ['', Characteristic.MotionDetected, Characteristic.OccupancyDetected, Characteristic.ContactSensorState][displayType];
-                sensor.state = false;
-                this.sensorsInputsConfigured.push(sensor);
-            } else {
-                this.emit('info', `Sensor Name: ${sensor.name}, Reference: Missing`);
-            }
+            sensor.name = button.name || 'Sensor Input';
+            sensor.serviceType = ['', Service.MotionSensor, Service.OccupancySensor, Service.ContactSensor][sensor.displayType];
+            sensor.characteristicType = ['', Characteristic.MotionDetected, Characteristic.OccupancyDetected, Characteristic.ContactSensorState][sensor.displayType];
+            sensor.state = false;
         }
-        this.sensorsInputsConfiguredCount = this.sensorsInputsConfigured.length || 0;
 
         //variable
         this.functions = new Functions();
@@ -382,13 +369,13 @@ class PassThroughInputs extends EventEmitter {
 
             //prepare sonsor inputs service
             const possibleSensorInputsCount = 99 - this.accessory.services.length;
-            const maxSensorInputsCount = this.sensorsInputsConfiguredCount >= possibleSensorInputsCount ? possibleSensorInputsCount : this.sensorsInputsConfiguredCount;
+            const maxSensorInputsCount = this.sensorInputs.length >= possibleSensorInputsCount ? possibleSensorInputsCount : this.sensorInputs.length;
             if (maxSensorInputsCount > 0) {
                 if (this.logDebug) this.emit('debug', `Prepare inputs sensors services`);
                 this.sensorInputServices = [];
                 for (let i = 0; i < maxSensorInputsCount; i++) {
                     //get sensor
-                    const sensor = this.sensorsInputsConfigured[i];
+                    const sensor = this.sensorInputs[i];
 
                     //get sensor name		
                     const name = sensor.name;
@@ -470,8 +457,8 @@ class PassThroughInputs extends EventEmitter {
                         }
                     }
 
-                    for (let i = 0; i < this.sensorsInputsConfiguredCount; i++) {
-                        const sensor = this.sensorsInputsConfigured[i];
+                    for (let i = 0; i < this.sensorInputs.length; i++) {
+                        const sensor = this.sensorInputs[i];
                         const state = power ? sensor.reference === reference : false;
                         sensor.state = state;
                         const characteristicType = sensor.characteristicType;
