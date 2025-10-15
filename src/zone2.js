@@ -58,7 +58,7 @@ class Zone2 extends EventEmitter {
 
         //sensors
         for (const sensor of this.sensorInputs) {
-            sensor.name = button.name || 'Sensor Input';
+            sensor.name = sensor.name || 'Sensor Input';
             sensor.serviceType = ['', Service.MotionSensor, Service.OccupancySensor, Service.ContactSensor][sensor.displayType];
             sensor.characteristicType = ['', Characteristic.MotionDetected, Characteristic.OccupancyDetected, Characteristic.ContactSensorState][sensor.displayType];
             sensor.state = false;
