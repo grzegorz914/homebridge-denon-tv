@@ -572,10 +572,9 @@ class Zone3 extends EventEmitter {
                             })
                             .onSet(async (state) => {
                                 try {
-                                    const payload = { mute: !state };
-                                    const cid = await this.lgWebOsSocket.getCid('Audio');
-                                    await this.lgWebOsSocket.send('request', ApiUrls.SetMute, payload, cid);
-                                    if (this.logInfo) this.emit('info', `set Mute: ${!state ? 'ON' : 'OFF'}`);
+                                    state = !state ? 'ON' : 'OFF';
+                                    await this.stateControl('Mute', state);
+                                    if (this.logInfo) this.emit('info', `set Mute: ${state}`);
                                 } catch (error) {
                                     if (this.logWarn) this.emit('warn', `set Mute error: ${error}`);
                                 }
@@ -609,10 +608,9 @@ class Zone3 extends EventEmitter {
                             })
                             .onSet(async (state) => {
                                 try {
-                                    const payload = { mute: !state };
-                                    const cid = await this.lgWebOsSocket.getCid('Audio');
-                                    await this.lgWebOsSocket.send('request', ApiUrls.SetMute, payload, cid);
-                                    if (this.logInfo) this.emit('info', `set Mute: ${!state ? 'ON' : 'OFF'}`);
+                                    state = !state ? 'ON' : 'OFF';
+                                    await this.stateControl('Mute', state);
+                                    if (this.logInfo) this.emit('info', `set Mute: ${state}`);
                                 } catch (error) {
                                     if (this.logWarn) this.emit('warn', `set Mute error: ${error}`);
                                 }
@@ -678,7 +676,7 @@ class Zone3 extends EventEmitter {
                                 try {
                                     state = state ? 'ON' : 'OFF';
                                     await this.stateControl('Mute', state);
-                                    if (this.logInfo) this.emit('info', `set Mute: ${state ? 'ON' : 'OFF'}`);
+                                    if (this.logInfo) this.emit('info', `set Mute: ${state}`);
                                 } catch (error) {
                                     if (this.logWarn) this.emit('warn', `set Mute error: ${error}`);
                                 }
@@ -743,7 +741,7 @@ class Zone3 extends EventEmitter {
                                 try {
                                     state = state ? 'ON' : 'OFF';
                                     await this.stateControl('Mute', state);
-                                    if (this.logInfo) this.emit('info', `set Mute: ${state ? 'ON' : 'OFF'}`);
+                                    if (this.logInfo) this.emit('info', `set Mute: ${state}`);
                                 } catch (error) {
                                     if (this.logWarn) this.emit('warn', `set Mute error: ${error}`);
                                 }
@@ -830,7 +828,7 @@ class Zone3 extends EventEmitter {
                                 try {
                                     state = state ? 'ON' : 'OFF';
                                     await this.stateControl('Mute', state);
-                                    if (this.logInfo) this.emit('info', `set Mute: ${!state ? 'ON' : 'OFF'}`);
+                                    if (this.logInfo) this.emit('info', `set Mute: ${state}`);
                                 } catch (error) {
                                     if (this.logWarn) this.emit('warn', `set Mute error: ${error}`);
                                 }
