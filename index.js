@@ -30,7 +30,7 @@ class DenonPlatform {
 				const zoneControl = device.zoneControl ?? -1;
 				if (zoneControl === -1) continue;
 
-				const { name, host, port, generation = 0 } = device;
+				const { name, host, port } = device;
 				if (!name || !host || !port) {
 					log.warn(`Invalid config for device. Name: ${name || 'missing'}, Host: ${host || 'missing'}, Port: ${port || 'missing'}`);
 					continue;
@@ -86,11 +86,11 @@ class DenonPlatform {
 							try {
 								let zone;
 								switch (zoneControl) {
-									case 0: zone = new MainZone(api, device, name, host, port, generation, zoneControl, ...Object.values(files)); break;
-									case 1: zone = new Zone2(api, device, name, host, port, generation, zoneControl, ...Object.values(files)); break;
-									case 2: zone = new Zone3(api, device, name, host, port, generation, zoneControl, ...Object.values(files)); break;
-									case 3: zone = new Surrounds(api, device, name, host, port, generation, zoneControl, ...Object.values(files)); break;
-									case 4: zone = new PassThroughInputs(api, device, name, host, port, generation, zoneControl, ...Object.values(files)); break;
+									case 0: zone = new MainZone(api, device, ...Object.values(files)); break;
+									case 1: zone = new Zone2(api, device, ...Object.values(files)); break;
+									case 2: zone = new Zone3(api, device, ...Object.values(files)); break;
+									case 3: zone = new Surrounds(api, device, ...Object.values(files)); break;
+									case 4: zone = new PassThroughInputs(api, device, ...Object.values(files)); break;
 									default:
 										if (logLevel.warn) log.warn(`Device: ${host} ${name}, unknown zone: ${zoneControl}`);
 										return;
@@ -108,8 +108,8 @@ class DenonPlatform {
 									api.publishExternalAccessories(PluginName, [accessory]);
 									if (logLevel.success) log.success(`Device: ${host} ${name}, Published as external accessory.`);
 
-									await impulseGenerator.stop();
-									await zone.startImpulseGenerator();
+									await impulseGenerator.state(false);
+									await zone.startStopImpulseGenerator(true);
 								}
 							} catch (error) {
 								if (logLevel.error) log.error(`Device: ${host} ${name}, Start impulse generator error: ${error.message ?? error}, trying again.`);
@@ -120,7 +120,7 @@ class DenonPlatform {
 						});
 
 					// start impulse generator
-					await impulseGenerator.start([{ name: 'start', sampling: 60000 }]);
+					impulseGenerator.state(true, [{ name: 'start', sampling: 60000 }]);
 				} catch (error) {
 					if (logLevel.error) log.error(`Device: ${host} ${name}, Did finish launching error: ${error.message ?? error}`);
 				}

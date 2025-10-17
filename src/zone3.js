@@ -7,7 +7,7 @@ import { PictureModesConversionToHomeKit, PictureModesDenonNumber } from './cons
 let Accessory, Characteristic, Service, Categories, Encode, AccessoryUUID;
 
 class Zone3 extends EventEmitter {
-    constructor(api, device, name, host, port, generation, zone, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile) {
+    constructor(api, device, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile) {
         super();
 
         Accessory = api.platformAccessory;
@@ -18,14 +18,9 @@ class Zone3 extends EventEmitter {
         AccessoryUUID = api.hap.uuid;
 
         //device configuration
-        this.name = name;
-        this.host = host;
-        this.port = port;
-        this.generation = generation;
-        this.zone = zone;
-        this.getInputsFromDevice = device.inputs?.getFromDevice || false;
-        this.getFavoritesFromDevice = device.inputs?.getFavoritesFromDevice || false;
-        this.getQuickSmartSelectFromDevice = device.inputs?.getQuickSmartSelectFromDevice || false;
+        this.device = device;
+        this.name = device.name;
+        this.zone = device.zoneControl;
         this.inputsDisplayOrder = device.inputs?.displayOrder || 0;
         this.inputs = device.inputs?.data || [];
         this.buttons = (device.buttonsZ3 || []).filter(button => (button.displayType ?? 0) > 0);
@@ -59,15 +54,15 @@ class Zone3 extends EventEmitter {
         //sensors
         for (const sensor of this.sensorInputs) {
             sensor.name = sensor.name || 'Sensor Input';
-            sensor.serviceType = ['', Service.MotionSensor, Service.OccupancySensor, Service.ContactSensor][sensor.displayType];
-            sensor.characteristicType = ['', Characteristic.MotionDetected, Characteristic.OccupancyDetected, Characteristic.ContactSensorState][sensor.displayType];
+            sensor.serviceType = [null, Service.MotionSensor, Service.OccupancySensor, Service.ContactSensor][sensor.displayType];
+            sensor.characteristicType = [null, Characteristic.MotionDetected, Characteristic.OccupancyDetected, Characteristic.ContactSensorState][sensor.displayType];
             sensor.state = false;
         }
 
         //buttons
         for (const button of this.buttons) {
             button.name = button.name || 'Button';
-            button.serviceType = ['', Service.Outlet, Service.Switch][button.displayType];
+            button.serviceType = [null, Service.Outlet, Service.Switch][button.displayType];
             button.state = false;
         }
 
@@ -84,10 +79,11 @@ class Zone3 extends EventEmitter {
         this.sensorInputState = false;
     }
 
-    async startImpulseGenerator() {
+    async startStopImpulseGenerator(state) {
         try {
             //start impulse generator 
-            await this.denon.impulseGenerator.start([{ name: 'connect', sampling: 73000 }, { name: 'checkState', sampling: this.refreshInterval }]);
+            const timers = state ? this.timers : [];
+            await this.denon.impulseGenerator.state(state, timers)
             return true;
         } catch (error) {
             throw new Error(`Impulse generator start error: ${error}`);
@@ -913,7 +909,7 @@ class Zone3 extends EventEmitter {
             const maxSensorInputsCount = this.sensorInputs.length >= possibleSensorInputsCount ? possibleSensorInputsCount : this.sensorInputs.length;
             if (maxSensorInputsCount > 0) {
                 if (this.logDebug) this.emit('debug', `Prepare inputs sensors services`);
-                this.sensorInputServices = [];
+                this.sensorInputsServices = [];
                 for (let i = 0; i < maxSensorInputsCount; i++) {
                     //get sensor
                     const sensor = this.sensorInputs[i];
@@ -939,7 +935,7 @@ class Zone3 extends EventEmitter {
                             const state = sensor.state
                             return state;
                         });
-                    this.sensorInputServices.push(sensorInputService);
+                    this.sensorInputsServices.push(sensorInputService);
                     accessory.addService(sensorInputService);
                 }
             }
@@ -949,7 +945,7 @@ class Zone3 extends EventEmitter {
             const maxButtonsCount = this.buttons.length >= possibleButtonsCount ? possibleButtonsCount : this.buttons.length;
             if (maxButtonsCount > 0) {
                 if (this.logDebug) this.emit('debug', `Prepare buttons services`);
-                this.buttonServices = [];
+                this.buttonsServices = [];
                 for (let i = 0; i < maxButtonsCount; i++) {
                     //get button
                     const button = this.buttons[i];
@@ -985,7 +981,7 @@ class Zone3 extends EventEmitter {
                             }
                         });
 
-                    this.buttonServices.push(buttonService);
+                    this.buttonsServices.push(buttonService);
                     accessory.addService(buttonService);
                 }
             }
@@ -1000,19 +996,7 @@ class Zone3 extends EventEmitter {
     async start() {
         try {
             //denon client
-            this.denon = new Denon({
-                host: this.host,
-                port: this.port,
-                generation: this.generation,
-                zone: this.zone,
-                inputs: this.inputs,
-                devInfoFile: this.devInfoFile,
-                inputsFile: this.inputsFile,
-                getInputsFromDevice: this.getInputsFromDevice,
-                getFavoritesFromDevice: this.getFavoritesFromDevice,
-                getQuickSmartSelectFromDevice: this.getQuickSmartSelectFromDevice,
-                logDebug: this.logDebug
-            })
+            this.denon = new Denon(this.device, this.inputs, this.devInfoFile, this.inputsFile)
                 .on('deviceInfo', (info) => {
                     this.emit('devInfo', `-------- ${this.name} --------`);
                     this.emit('devInfo', `Manufacturer: ${info.manufacturer}`);
@@ -1059,11 +1043,6 @@ class Zone3 extends EventEmitter {
                         ?.updateCharacteristic(Characteristic.RotationSpeed, scaledVolume)
                         .updateCharacteristic(Characteristic.On, muteV);
 
-                    this.volumeServiceSpeaker
-                        ?.updateCharacteristic(Characteristic.Active, power)
-                        .updateCharacteristic(Characteristic.Volume, scaledVolume)
-                        .updateCharacteristic(Characteristic.Mute, mute);
-
                     //sensors
                     this.sensorPowerService?.updateCharacteristic(Characteristic.ContactSensorState, power);
 
@@ -1090,7 +1069,7 @@ class Zone3 extends EventEmitter {
                         const state = power ? sensor.reference === reference : false;
                         sensor.state = state;
                         const characteristicType = sensor.characteristicType;
-                        this.sensorInputServices?.[i]?.updateCharacteristic(characteristicType, state);
+                        this.sensorInputsServices?.[i]?.updateCharacteristic(characteristicType, state);
                     }
 
                     //buttons
@@ -1098,7 +1077,7 @@ class Zone3 extends EventEmitter {
                         const button = this.buttons[i];
                         const state = this.power ? button.reference === reference : false;
                         button.state = state;
-                        this.buttonServices?.[i]?.updateCharacteristic(Characteristic.On, state);
+                        this.buttonsServices?.[i]?.updateCharacteristic(Characteristic.On, state);
                     }
 
                     if (this.logInfo) {
@@ -1126,15 +1105,16 @@ class Zone3 extends EventEmitter {
 
             //connect to avr and check state
             const connect = await this.denon.connect();
-            if (!connect) {
-                return false;
-            }
+            if (!connect) return false;
 
             //prepare data for accessory
             await this.prepareDataForAccessory();
 
             //start external integrations
             if (this.restFul.enable || this.mqtt.enable) await this.externalIntegrations();
+
+            //set timers
+            this.timers = [{ name: 'connect', sampling: 60000 }, { name: 'checkState', sampling: this.refreshInterval }]
 
             //prepare accessory
             const accessory = await this.prepareAccessory();

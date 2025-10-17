@@ -9,28 +9,26 @@ const INPUTS_CONVERSION_KEYS = Object.keys(InputConversion);
 const SOUND_MODES_CONVERSION_KEYS = Object.keys(SoundModeConversion);
 
 class Denon extends EventEmitter {
-    constructor(config) {
+    constructor(config, inputs, devInfoFile, inputsFile) {
         super();
-        const host = config.host;
-        const port = config.port;
-        this.host = host;
-        this.generation = config.generation;
-        this.zone = config.zone;
-        this.inputs = config.inputs;
-        this.devInfoFile = config.devInfoFile;
-        this.inputsFile = config.inputsFile;
-        this.getInputsFromDevice = this.zone < 3 ? config.getInputsFromDevice : false;
-        this.getFavoritesFromDevice = this.getInputsFromDevice ? config.getFavoritesFromDevice : false;
-        this.getQuickSmartSelectFromDevice = this.getInputsFromDevice ? config.getQuickSmartSelectFromDevice : false;
-        this.logDebug = config.logDebug;
+        this.host = config.host;
+        this.generation = config.generation || 0;
+        this.zone = config.zoneControl;
+        this.getInputsFromDevice = this.zone !== 3 ? (config.inputs?.getFromDevice || false) : false;
+        this.getFavoritesFromDevice = this.zone < 3 && this.generation > 0 ? (config.inputs?.getFavoritesFromDevice || false) : false;
+        this.getQuickSmartSelectFromDevice = this.zone < 3 && this.generation > 0 ? (config.inputs?.getQuickSmartSelectFromDevice || false) : false;
+        this.inputs = inputs;
+        this.logDebug = config.log?.debug || false;
+        this.devInfoFile = devInfoFile;
+        this.inputsFile = inputsFile;
 
-        const baseUrl = `http://${host}:${port}`;
+        const baseUrl = `http://${config.host}:${config.port}`;
         const commonConfig = {
             baseURL: baseUrl,
             timeout: 20000
         };
 
-        const httpsConfig = this.generation === 2 ? { httpsAgent: new HttpsAgent({ rejectUnauthorized: false, keepAlive: false }) } : {};
+        const httpsConfig = this.generation === 2 ? { httpsAgent: new HttpsAgent({ rejectUnauthorized: false, keepAlive: true }) } : {};
         this.axiosInstance = axios.create({
             ...commonConfig,
             ...httpsConfig,
@@ -140,7 +138,7 @@ class Denon extends EventEmitter {
                 const inputMode = 0;
                 let zonePrefix = ZonePrefixMap[zone] ?? 'SI';
 
-                if (zone === 0) {
+                if (zone === 0 || zone === 4) {
                     const sub5 = inputReference.substring(0, 5);
                     const sub2 = inputReference.substring(0, 2);
 
@@ -157,16 +155,10 @@ class Denon extends EventEmitter {
                 }
             }
 
-            const finalInputs = allInputs.length > 0 ? allInputs : [{
-                name: this.zone === 3 ? 'STEREO' : 'CBL/SAT',
-                reference: this.zone === 3 ? 'STEREO' : 'SAT/CBL',
-                mode: ['SI', 'Z2', 'Z3', 'MS', 'SI'][this.zone] ?? 'SI'
-            }];
-
             // Save inputs
-            await this.functions.saveData(this.inputsFile, finalInputs);
+            await this.functions.saveData(this.inputsFile, allInputs);
 
-            return finalInputs;
+            return allInputs;
         } catch (error) {
             throw new Error(`Get inputs error: ${error}`);
         }
@@ -230,10 +222,10 @@ class Denon extends EventEmitter {
             const mute = devState.Mute.value === 'on';
 
             // Picture mode
-            const pictureMode = this.info.supportPictureMode && power && this.zone === 0 ? await this.getPictureMode() : this.pictureMode;
+            const pictureMode = this.info.supportPictureMode && power ? await this.getPictureMode() : this.pictureMode;
 
             // Sound mode
-            const soundMode = this.info.supportSoundMode && power && (this.zone === 0 || this.zone === 3) ? await this.getSoundMode() : this.soundMode;
+            const soundMode = this.info.supportSoundMode && power ? await this.getSoundMode() : this.soundMode;
 
             // Audyssey mode (disabled for now)
             const audysseyMode = this.audysseyMode;
@@ -246,13 +238,13 @@ class Denon extends EventEmitter {
                 this.emit('restFul', 'state', devState);
                 this.emit('mqtt', 'State', devState);
 
-                if (this.info.supportPictureMode && power && this.zone === 0) {
+                if (this.info.supportPictureMode && power) {
                     const payload = { 'Picture Mode': PictureModesDenonNumber[pictureMode] };
                     this.emit('restFul', 'picture', payload);
                     this.emit('mqtt', 'Picture', payload);
                 }
 
-                if (this.info.supportSoundMode && power && (this.zone === 0 || this.zone === 3)) {
+                if (this.info.supportSoundMode && power) {
                     const payload = { 'Sound Mode': soundMode };
                     this.emit('restFul', 'surround', payload);
                     this.emit('mqtt', 'Surround', payload);
@@ -311,15 +303,16 @@ class Denon extends EventEmitter {
             // Capabilities
             const caps = devInfo.DeviceCapabilities || {};
             const setup = caps.Setup || {};
-            info.supportPictureMode = setup.PictureMode?.Control === 1;
-            info.supportSoundMode = setup.SoundMode?.Control === 1;
+            info.supportPictureMode = this.zone === 0 && setup.PictureMode?.Control === 1;
+            info.supportSoundMode = (this.zone === 0 || this.zone === 3) && setup.SoundMode?.Control === 1;
             this.info = info;
 
             // Zone capabilities
             let zoneCaps = {};
-            if (this.zone < 3 && keys.includes('DeviceZoneCapabilities')) {
+            if (this.zone !== 3 && keys.includes('DeviceZoneCapabilities')) {
                 const zones = Array.isArray(devInfo.DeviceZoneCapabilities) ? devInfo.DeviceZoneCapabilities : [devInfo.DeviceZoneCapabilities];
-                zoneCaps = zones[this.zone] || {};
+                const zone = this.zone === 4 ? 0 : this.zone;
+                zoneCaps = zones[zone] || {};
             }
 
             // Inputs
@@ -332,8 +325,7 @@ class Denon extends EventEmitter {
                 2: inputsNewDevice
             };
             const inputs = this.getInputsFromDevice ? inputsMap[this.generation] : this.inputs;
-            const allInputs = await this.prepareInputs(devInfo, this.generation, this.zone, inputs, zoneCaps, this.getInputsFromDevice, this.getFavoritesFromDevice, this.getQuickSmartSelectFromDevice, caps.Operation?.Favorites?.Control === 1, zoneCaps.ShortcutControl?.Control === 1, zoneCaps.Operation?.QuickSelect?.Control === 1
-            );
+            const allInputs = await this.prepareInputs(devInfo, this.generation, this.zone, inputs, zoneCaps, this.getInputsFromDevice, this.getFavoritesFromDevice, this.getQuickSmartSelectFromDevice, caps.Operation?.Favorites?.Control === 1, zoneCaps.ShortcutControl?.Control === 1, zoneCaps.Operation?.QuickSelect?.Control === 1);
 
             //  Success event
             if (this.firstRun) {

@@ -15,6 +15,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - after update to 4.7.x buttons, sensors, volume display type need to be configure again using config UI
 - after update to 3.15.x need remove the accessory frome Home app and add it again
 
+## [5.11.6] - (17.10.2025)
+
+## Changes
+
+- fix [#357](https://github.com/grzegorz914/homebridge-denon-tv/issues/357)
+- fix [#352](https://github.com/grzegorz914/homebridge-denon-tv/issues/352)
+- add possibility to load inputs from device for Pass Through Inputs
+- add possibility lo load smart/quick select and favorites from device independent from inputs
+- config schema updated
+- cleanup
+
 ## [5.11.5] - (16.10.2025)
 
 ## Changes

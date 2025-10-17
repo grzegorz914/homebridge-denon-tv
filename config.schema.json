@@ -4,7 +4,7 @@
   "singular": true,
   "fixArrays": true,
   "strictValidation": true,
-  "headerDisplay": "This plugin works with Denon/Marantz AV Receivers. Devices are exposed to HomeKit as separate accessories and each needs to be manually paired.",
+  "headerDisplay": "This plugin works with Denon/Marantz AV Receivers. Devices are exposed to HomeKit as separate accessories and each needs to be manually [paired](https://github.com/grzegorz914/homebridge-denon-tv/wiki#adding-to-homekit).",
   "footerDisplay": "For documentation please see [GitHub repository](https://github.com/grzegorz914/homebridge-denon-tv).",
   "schema": {
     "type": "object",
@@ -115,7 +115,7 @@
                   "default": false,
                   "description": "If enabled, all Inputs will be loaded direct from device.",
                   "condition": {
-                    "functionBody": "return model.devices[arrayIndices].zoneControl <= 2;"
+                    "functionBody": "return model.devices[arrayIndices].zoneControl !== 3;"
                   }
                 },
                 "getFavoritesFromDevice": {
@@ -124,7 +124,7 @@
                   "default": false,
                   "description": "If enabled, all Favorites will be loaded direct from device, only if exist.",
                   "condition": {
-                    "functionBody": "return model.devices[arrayIndices].inputs.getFromDevice == true && model.devices[arrayIndices].generation >= 1 && model.devices[arrayIndices].zoneControl <= 2;"
+                    "functionBody": "return model.devices[arrayIndices].generation > 0 && model.devices[arrayIndices].zoneControl < 3;"
                   }
                 },
                 "getQuickSmartSelectFromDevice": {
@@ -133,7 +133,7 @@
                   "default": false,
                   "description": "If enabled, all Quick/Smart Select will be loaded direct from device, only if exist.",
                   "condition": {
-                    "functionBody": "return model.devices[arrayIndices].inputs.getFromDevice == true && model.devices[arrayIndices].generation >= 1 && model.devices[arrayIndices].zoneControl <= 2;"
+                    "functionBody": "return  model.devices[arrayIndices].generation > 0 && model.devices[arrayIndices].zoneControl < 3;"
                   }
                 },
                 "displayOrder": {
@@ -834,7 +834,7 @@
                     }
                   },
                   "condition": {
-                    "functionBody": "return model.devices[arrayIndices].inputs.getFromDevice == false || model.devices[arrayIndices].zoneControl == 4;"
+                    "functionBody": "return model.devices[arrayIndices].inputs.getFromDevice === false && model.devices[arrayIndices].zoneControl !== 3;"
                   }
                 }
               },
@@ -5813,7 +5813,7 @@
                   "default": false,
                   "description": "This expose Input as a Contact Sensor, fired on every Input change.",
                   "condition": {
-                    "functionBody": "return model.devices[arrayIndices].zoneControl != 3;"
+                    "functionBody": "return model.devices[arrayIndices].zoneControl !== 3;"
                   }
                 },
                 "inputs": {
@@ -5853,7 +5853,10 @@
                               3
                             ]
                           }
-                        ]
+                        ],
+                        "condition": {
+                          "functionBody": "return model.devices[arrayIndices].zoneControl !== 3;"
+                        }
                       },
                       "name": {
                         "title": "Name",
@@ -6375,7 +6378,7 @@
                   "default": false,
                   "description": "This expose Surround as a Contact Sensor, fired on every Surround change.",
                   "condition": {
-                    "functionBody": "return model.devices[arrayIndices].zoneControl == 3;"
+                    "functionBody": "return model.devices[arrayIndices].zoneControl === 3;"
                   }
                 },
                 "surrounds": {
@@ -6388,8 +6391,6 @@
                       "displayType": {
                         "title": "Type",
                         "type": "integer",
-                        "minimum": 0,
-                        "maximum": 3,
                         "default": 0,
                         "description": "Here select characteristic type to be exposed in HomeKit app.",
                         "oneOf": [
@@ -6417,7 +6418,10 @@
                               3
                             ]
                           }
-                        ]
+                        ],
+                        "condition": {
+                          "functionBody": "return model.devices[arrayIndices].zoneControl === 3;"
+                        }
                       },
                       "name": {
                         "title": "Name",
@@ -6703,7 +6707,10 @@
                         5
                       ]
                     }
-                  ]
+                  ],
+                  "condition": {
+                    "functionBody": "return model.devices[arrayIndices].zoneControl <= 2;"
+                  }
                 },
                 "zone": {
                   "title": "Zone",
@@ -6763,7 +6770,7 @@
                     }
                   ],
                   "condition": {
-                    "functionBody": "return model.devices[arrayIndices].zoneControl <= 2 && model.devices[arrayIndices[0]].volume.displayType > 0;"
+                    "functionBody": "return model.devices[arrayIndices].volume.displayType > 0;"
                   }
                 },
                 "name": {
@@ -6772,7 +6779,7 @@
                   "placeholder": "Volume Control Name",
                   "description": "Here set Your own volume control name or leave empty.",
                   "condition": {
-                    "functionBody": "return model.devices[arrayIndices].zoneControl <= 2 && model.devices[arrayIndices[0]].volume.displayType > 0;"
+                    "functionBody": "return model.devices[arrayIndices].volume.displayType > 0;"
                   }
                 },
                 "namePrefix": {
@@ -6781,7 +6788,7 @@
                   "default": false,
                   "description": "Here enable/disable the accessory name as a prefix for volume control name.",
                   "condition": {
-                    "functionBody": "return model.devices[arrayIndices].zoneControl <= 2 && model.devices[arrayIndices[0]].volume.displayType > 0;"
+                    "functionBody": "return model.devices[arrayIndices].volume.displayType > 0;"
                   }
                 },
                 "max": {
@@ -6792,7 +6799,7 @@
                   "default": 100,
                   "description": "Here set the max possible volume to set.",
                   "condition": {
-                    "functionBody": "return model.devices[arrayIndices].zoneControl <= 2 && model.devices[arrayIndices[0]].volume.displayType > 0;"
+                    "functionBody": "return model.devices[arrayIndices].volume.displayType > 0;"
                   }
                 }
               },
@@ -7030,7 +7037,7 @@
             }
           ],
           "condition": {
-            "functionBody": "return model.devices[arrayIndices].zoneControl >= 0 && model.devices[arrayIndices].zoneControl != 3;"
+            "functionBody": "return model.devices[arrayIndices].zoneControl >= 0 && model.devices[arrayIndices].zoneControl !== 3;"
           }
         },
         {
@@ -7052,7 +7059,7 @@
             }
           ],
           "condition": {
-            "functionBody": "return model.devices[arrayIndices].zoneControl >= 0 && model.devices[arrayIndices].zoneControl == 3;"
+            "functionBody": "return model.devices[arrayIndices].zoneControl >= 0 && model.devices[arrayIndices].zoneControl === 3;"
           }
         },
         {
@@ -7117,7 +7124,7 @@
           "expanded": false,
           "items": [
             {
-              "key": "devices[]",
+              "key": "devices[].power",
               "type": "tabarray",
               "title": "{{ value.title }}",
               "items": [
@@ -7126,7 +7133,10 @@
                   "title": "Power",
                   "items": [
                     "devices[].power.zone"
-                  ]
+                  ],
+                  "condition": {
+                    "functionBody": "return model.devices[arrayIndices].zoneControl <= 2;"
+                  }
                 },
                 {
                   "key": "devices[].volume",
@@ -7137,7 +7147,10 @@
                     "devices[].volume.name",
                     "devices[].volume.namePrefix",
                     "devices[].volume.max"
-                  ]
+                  ],
+                  "condition": {
+                    "functionBody": "return model.devices[arrayIndices].zoneControl <= 2;"
+                  }
                 },
                 {
                   "key": "devices[].sensors",
@@ -7167,7 +7180,7 @@
                         }
                       ],
                       "condition": {
-                        "functionBody": "return model.devices[arrayIndices].zoneControl != 3;"
+                        "functionBody": "return model.devices[arrayIndices].zoneControl !== 3;"
                       }
                     },
                     "devices[].sensors.surround",
@@ -7191,7 +7204,7 @@
                         }
                       ],
                       "condition": {
-                        "functionBody": "return model.devices[arrayIndices].zoneControl == 3;"
+                        "functionBody": "return model.devices[arrayIndices].zoneControl === 3;"
                       }
                     }
                   ]

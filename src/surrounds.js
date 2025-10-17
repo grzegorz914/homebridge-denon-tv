@@ -4,7 +4,7 @@ import Functions from './functions.js';
 let Accessory, Characteristic, Service, Categories, Encode, AccessoryUUID;
 
 class Surrounds extends EventEmitter {
-    constructor(api, device, name, host, port, generation, zone, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile) {
+    constructor(api, device, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile) {
         super();
 
         Accessory = api.platformAccessory;
@@ -15,11 +15,9 @@ class Surrounds extends EventEmitter {
         AccessoryUUID = api.hap.uuid;
 
         //device configuration
-        this.name = name;
-        this.host = host;
-        this.port = port;
-        this.generation = generation;
-        this.zone = zone;
+        this.device = device;
+        this.name = device.name;
+        this.zone = device.zoneControl;
         this.inputsDisplayOrder = device.surrounds?.displayOrder || 0;
         this.inputs = device.surrounds?.data || [];
         this.sensorInput = device.sensors?.surround || false;
@@ -37,8 +35,8 @@ class Surrounds extends EventEmitter {
         //sensors
         for (const sensor of this.sensorInputs) {
             sensor.name = sensor.name || 'Sensor Input';
-            sensor.serviceType = ['', Service.MotionSensor, Service.OccupancySensor, Service.ContactSensor][sensor.displayType];
-            sensor.characteristicType = ['', Characteristic.MotionDetected, Characteristic.OccupancyDetected, Characteristic.ContactSensorState][sensor.displayType];
+            sensor.serviceType = [null, Service.MotionSensor, Service.OccupancySensor, Service.ContactSensor][sensor.displayType];
+            sensor.characteristicType = [null, Characteristic.MotionDetected, Characteristic.OccupancyDetected, Characteristic.ContactSensorState][sensor.displayType];
             sensor.state = false;
         }
 
@@ -51,10 +49,11 @@ class Surrounds extends EventEmitter {
         this.sensorInputState = false;
     };
 
-    async startImpulseGenerator() {
+    async startStopImpulseGenerator(state) {
         try {
             //start impulse generator 
-            await this.denon.impulseGenerator.start([{ name: 'connect', sampling: 79000 }, { name: 'checkState', sampling: this.refreshInterval }]);
+            const timers = state ? this.timers : [];
+            await this.denon.impulseGenerator.state(state, timers)
             return true;
         } catch (error) {
             throw new Error(`Impulse generator start error: ${error}`);
@@ -372,7 +371,7 @@ class Surrounds extends EventEmitter {
             const maxSensorInputsCount = this.sensorInputs.length >= possibleSensorInputsCount ? possibleSensorInputsCount : this.sensorInputs.length;
             if (maxSensorInputsCount > 0) {
                 if (this.logDebug) this.emit('debug', `Prepare inputs sensors services`);
-                this.sensorInputServices = [];
+                this.sensorInputsServices = [];
                 for (let i = 0; i < maxSensorInputsCount; i++) {
                     //get sensor
                     const sensor = this.sensorInputs[i];
@@ -381,7 +380,7 @@ class Surrounds extends EventEmitter {
                     const name = sensor.name;
 
                     //get sensor name prefix
-                    const namePrefix = sensor.namePrefix || false;
+                    const namePrefix = sensor.namePrefix;
 
                     //get service type
                     const serviceType = sensor.serviceType;
@@ -398,7 +397,7 @@ class Surrounds extends EventEmitter {
                             const state = sensor.state
                             return state;
                         });
-                    this.sensorInputServices.push(sensorInputService);
+                    this.sensorInputsServices.push(sensorInputService);
                     accessory.addService(sensorInputService);
                 }
             }
@@ -413,19 +412,7 @@ class Surrounds extends EventEmitter {
     async start() {
         try {
             //denon client
-            this.denon = new Denon({
-                host: this.host,
-                port: this.port,
-                generation: this.generation,
-                zone: this.zone,
-                inputs: this.inputs,
-                devInfoFile: this.devInfoFile,
-                inputsFile: this.inputsFile,
-                getInputsFromDevice: false,
-                getFavoritesFromDevice: false,
-                getQuickSmartSelectFromDevice: false,
-                logDebug: this.logDebug
-            })
+            this.denon = new Denon(this.device, this.inputs, this.devInfoFile, this.inputsFile)
                 .on('deviceInfo', (info) => {
                     this.emit('devInfo', `-------- ${this.name} --------`);
                     this.emit('devInfo', `Manufacturer: ${info.manufacturer}`);
@@ -464,7 +451,7 @@ class Surrounds extends EventEmitter {
                         const state = power ? sensor.reference === reference : false;
                         sensor.state = state;
                         const characteristicType = sensor.characteristicType;
-                        this.sensorInputServices?.[i]?.updateCharacteristic(characteristicType, state);
+                        this.sensorInputsServices?.[i]?.updateCharacteristic(characteristicType, state);
                     }
 
                     if (this.logInfo) {
@@ -488,12 +475,13 @@ class Surrounds extends EventEmitter {
 
             //connect to avr and check state
             const connect = await this.denon.connect();
-            if (!connect) {
-                return false;
-            }
+            if (!connect) return false;
 
             //prepare data for accessory
             await this.prepareDataForAccessory();
+
+            //set timers
+            this.timers = [{ name: 'connect', sampling: 60000 }, { name: 'checkState', sampling: this.refreshInterval }]
 
             //prepare accessory
             const accessory = await this.prepareAccessory();
