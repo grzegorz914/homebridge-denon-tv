@@ -39,7 +39,6 @@ class MainZone extends EventEmitter {
         this.logWarn = device.log?.warn || true;
         this.logDebug = device.log?.debug || false;
         this.infoButtonCommand = device.infoButtonCommand || 'MNINF';
-        this.refreshInterval = (device.refreshInterval ?? 5) * 1000;
         this.devInfoFile = devInfoFile;
         this.inputsFile = inputsFile;
         this.inputsNamesFile = inputsNamesFile;
@@ -81,10 +80,9 @@ class MainZone extends EventEmitter {
         this.sensorInputState = false;
     }
 
-    async startStopImpulseGenerator(state) {
+    async startStopImpulseGenerator(state, timers = []) {
         try {
             //start impulse generator 
-            const timers = state ? this.timers : [];
             await this.denon.impulseGenerator.state(state, timers)
             return true;
         } catch (error) {
@@ -141,23 +139,19 @@ class MainZone extends EventEmitter {
     async prepareDataForAccessory() {
         try {
             //read dev info from file
-            const savedInfo = await this.functions.readData(this.devInfoFile);
-            this.savedInfo = savedInfo.toString().trim() !== '' ? JSON.parse(savedInfo) : {};
+            this.savedInfo = await this.functions.readData(this.devInfoFile, true) ?? {};
             if (this.logDebug) this.emit('debug', `Read saved Info: ${JSON.stringify(this.savedInfo, null, 2)}`);
 
             //read inputs file
-            const savedInputs = await this.functions.readData(this.inputsFile);
-            this.savedInputs = savedInputs.toString().trim() !== '' ? JSON.parse(savedInputs) : [];
+            this.savedInputs = await this.functions.readData(this.inputsFile, true) ?? [];
             if (!this.logDebug) this.emit('debug', `Read saved Inputs: ${JSON.stringify(this.savedInputs, null, 2)}`);
 
             //read inputs names from file
-            const savedInputsNames = await this.functions.readData(this.inputsNamesFile);
-            this.savedInputsNames = savedInputsNames.toString().trim() !== '' ? JSON.parse(savedInputsNames) : {};
+            this.savedInputsNames = await this.functions.readData(this.inputsNamesFile, true) ?? {};
             if (this.logDebug) this.emit('debug', `Read saved Inputs Names: ${JSON.stringify(this.savedInputsNames, null, 2)}`);
 
             //read inputs visibility from file
-            const savedInputsTargetVisibility = await this.functions.readData(this.inputsTargetVisibilityFile);
-            this.savedInputsTargetVisibility = savedInputsTargetVisibility.toString().trim() !== '' ? JSON.parse(savedInputsTargetVisibility) : {};
+            this.savedInputsTargetVisibility = await this.functions.readData(this.inputsTargetVisibilityFile, true) ?? {};
             if (this.logDebug) this.emit('debug', `Read saved Inputs Target Visibility: ${JSON.stringify(this.savedInputsTargetVisibility, null, 2)}`);
 
             return true;
@@ -424,9 +418,7 @@ class MainZone extends EventEmitter {
                     return state;
                 })
                 .onSet(async (state) => {
-                    if (this.power == state) {
-                        return;
-                    }
+                    if (!!state === this.power) return;
 
                     try {
                         const powerState = state ? 'ON' : 'OFF';
@@ -1202,9 +1194,6 @@ class MainZone extends EventEmitter {
 
             //start external integrations
             if (this.restFul.enable || this.mqtt.enable) await this.externalIntegrations();
-
-            //set timers
-            this.timers = [{ name: 'connect', sampling: 60000 }, { name: 'checkState', sampling: this.refreshInterval }]
 
             //prepare accessory
             const accessory = await this.prepareAccessory();

@@ -80,6 +80,9 @@ class DenonPlatform {
 				}
 
 				try {
+					//refresh interval
+					const refreshInterval = (device.refreshInterval ?? 5) * 1000;
+
 					// create impulse generator
 					const impulseGenerator = new ImpulseGenerator()
 						.on('start', async () => {
@@ -108,8 +111,8 @@ class DenonPlatform {
 									api.publishExternalAccessories(PluginName, [accessory]);
 									if (logLevel.success) log.success(`Device: ${host} ${name}, Published as external accessory.`);
 
+									await zone.startStopImpulseGenerator(true, [{ name: 'connect', sampling: 60000 }, { name: 'checkState', sampling: refreshInterval }]);
 									await impulseGenerator.state(false);
-									await zone.startStopImpulseGenerator(true);
 								}
 							} catch (error) {
 								if (logLevel.error) log.error(`Device: ${host} ${name}, Start impulse generator error: ${error.message ?? error}, trying again.`);
@@ -120,7 +123,7 @@ class DenonPlatform {
 						});
 
 					// start impulse generator
-					impulseGenerator.state(true, [{ name: 'start', sampling: 60000 }]);
+					await impulseGenerator.state(true, [{ name: 'start', sampling: 120000 }]);
 				} catch (error) {
 					if (logLevel.error) log.error(`Device: ${host} ${name}, Did finish launching error: ${error.message ?? error}`);
 				}

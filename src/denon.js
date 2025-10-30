@@ -28,7 +28,7 @@ class Denon extends EventEmitter {
             timeout: 20000
         };
 
-        const httpsConfig = this.generation === 2 ? { httpsAgent: new HttpsAgent({ rejectUnauthorized: false, keepAlive: true }) } : {};
+        const httpsConfig = this.generation === 2 ? { httpsAgent: new HttpsAgent({ rejectUnauthorized: false, keepAlive: false }) } : {};
         this.axiosInstance = axios.create({
             ...commonConfig,
             ...httpsConfig,

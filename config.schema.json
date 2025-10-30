@@ -38,7 +38,7 @@
               "maximum": 2,
               "default": 0,
               "description": "Here select generation of Your device.",
-              "oneOf": [
+              "anyOf": [
                 {
                   "title": "2010 - 2012",
                   "enum": [
@@ -66,7 +66,7 @@
               "maximum": 4,
               "default": 0,
               "description": "Here select which Zone You want control.",
-              "oneOf": [
+              "anyOf": [
                 {
                   "title": "None/Disabled",
                   "enum": [
@@ -143,7 +143,7 @@
                   "maximum": 4,
                   "default": 0,
                   "description": "Here select display order of the inputs list.",
-                  "oneOf": [
+                  "anyOf": [
                     {
                       "title": "None",
                       "enum": [
@@ -192,7 +192,7 @@
                         "title": "Reference",
                         "type": "string",
                         "description": "Here select input.",
-                        "oneOf": [
+                        "anyOf": [
                           {
                             "title": "SOURCE (Only Z2/Z3)",
                             "enum": [
@@ -853,7 +853,7 @@
                   "maximum": 4,
                   "default": 0,
                   "description": "Here select display order of the inputs list.",
-                  "oneOf": [
+                  "anyOf": [
                     {
                       "title": "None",
                       "enum": [
@@ -902,7 +902,7 @@
                         "title": "Surround",
                         "type": "string",
                         "description": "Here select surround mode.",
-                        "oneOf": [
+                        "anyOf": [
                           {
                             "title": "MOVIE",
                             "enum": [
@@ -1064,7 +1064,7 @@
                     "maximum": 2,
                     "default": 0,
                     "description": "Here select characteristic type to be exposed in HomeKit app.",
-                    "oneOf": [
+                    "anyOf": [
                       {
                         "title": "None/Disabled",
                         "enum": [
@@ -1098,7 +1098,7 @@
                     "title": "Function",
                     "type": "string",
                     "description": "Here select function.",
-                    "oneOf": [
+                    "anyOf": [
                       {
                         "title": "MASTER POWER ON",
                         "enum": [
@@ -4354,7 +4354,7 @@
                     "maximum": 2,
                     "default": 0,
                     "description": "Here select characteristic type to be exposed in HomeKit app.",
-                    "oneOf": [
+                    "anyOf": [
                       {
                         "title": "None/Disabled",
                         "enum": [
@@ -4388,7 +4388,7 @@
                     "title": "Function",
                     "type": "string",
                     "description": "Here select function.",
-                    "oneOf": [
+                    "anyOf": [
                       {
                         "title": "Z2 HDMI OUT THROUGH",
                         "enum": [
@@ -5079,7 +5079,7 @@
                     "maximum": 2,
                     "default": 0,
                     "description": "Here select characteristic type to be exposed in HomeKit app.",
-                    "oneOf": [
+                    "anyOf": [
                       {
                         "title": "None/Disabled",
                         "enum": [
@@ -5113,7 +5113,7 @@
                     "title": "Function",
                     "type": "string",
                     "description": "Here select function.",
-                    "oneOf": [
+                    "anyOf": [
                       {
                         "title": "Z3 POWER ON",
                         "enum": [
@@ -5828,7 +5828,7 @@
                         "type": "integer",
                         "default": 0,
                         "description": "Here select characteristic type to be exposed in HomeKit app.",
-                        "oneOf": [
+                        "anyOf": [
                           {
                             "title": "None/Disabled",
                             "enum": [
@@ -5871,7 +5871,7 @@
                         "title": "Reference",
                         "type": "string",
                         "description": "Here select reference.",
-                        "oneOf": [
+                        "anyOf": [
                           {
                             "title": "SOURCE (Only Z2/Z3)",
                             "enum": [
@@ -6393,7 +6393,7 @@
                         "type": "integer",
                         "default": 0,
                         "description": "Here select characteristic type to be exposed in HomeKit app.",
-                        "oneOf": [
+                        "anyOf": [
                           {
                             "title": "None/Disabled",
                             "enum": [
@@ -6436,7 +6436,7 @@
                         "title": "Reference",
                         "type": "string",
                         "description": "Here select reference.",
-                        "oneOf": [
+                        "anyOf": [
                           {
                             "title": "MOVIE",
                             "enum": [
@@ -6602,7 +6602,7 @@
                   "maximum": 7,
                   "default": 0,
                   "description": "Here select which zone the power want control, this also working with power button in RC app.",
-                  "oneOf": [
+                  "anyOf": [
                     {
                       "title": "Main Zone",
                       "enum": [
@@ -6670,7 +6670,7 @@
                   "type": "integer",
                   "default": 0,
                   "description": "Here select what a extra volume/mute control type You want to use.",
-                  "oneOf": [
+                  "anyOf": [
                     {
                       "title": "None/Disabled",
                       "enum": [
@@ -6719,7 +6719,7 @@
                   "maximum": 7,
                   "default": 0,
                   "description": "Here select which zone the volume/mute want control.",
-                  "oneOf": [
+                  "anyOf": [
                     {
                       "title": "Main Zone",
                       "enum": [
@@ -6822,7 +6822,7 @@
               "type": "string",
               "default": "MNMEN ON",
               "description": "Here select the function of info button in RC.",
-              "oneOf": [
+              "anyOf": [
                 {
                   "title": "MENU",
                   "enum": [
