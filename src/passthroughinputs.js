@@ -91,21 +91,28 @@ class PassThroughInputs extends EventEmitter {
             };
 
             const sortFn = sortStrategies[this.inputsDisplayOrder];
-            if (!sortFn) return;
 
-            // Sort inputs in memory
-            this.inputsServices.sort(sortFn);
+            // Sort only if a valid function exists
+            if (sortFn) {
+                this.inputsServices.sort(sortFn);
+            }
 
-            // Debug dump
+            // Debug
             if (this.logDebug) {
-                const orderDump = this.inputsServices.map(svc => ({ name: svc.name, reference: svc.reference, identifier: svc.identifier, }));
+                const orderDump = this.inputsServices.map(svc => ({
+                    name: svc.name,
+                    reference: svc.reference,
+                    identifier: svc.identifier,
+                }));
                 this.emit('debug', `Inputs display order:\n${JSON.stringify(orderDump, null, 2)}`);
             }
 
-            // Update DisplayOrder characteristic (base64 encoded)
+            // Always update DisplayOrder characteristic, even for "none"
             const displayOrder = this.inputsServices.map(svc => svc.identifier);
             const encodedOrder = Encode(1, displayOrder).toString('base64');
             this.televisionService.updateCharacteristic(Characteristic.DisplayOrder, encodedOrder);
+
+            return;
         } catch (error) {
             throw new Error(`Display order error: ${error}`);
         }

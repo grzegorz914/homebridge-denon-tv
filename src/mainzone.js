@@ -270,21 +270,28 @@ class MainZone extends EventEmitter {
             };
 
             const sortFn = sortStrategies[this.inputsDisplayOrder];
-            if (!sortFn) return;
 
-            // Sort inputs in memory
-            this.inputsServices.sort(sortFn);
+            // Sort only if a valid function exists
+            if (sortFn) {
+                this.inputsServices.sort(sortFn);
+            }
 
-            // Debug dump
+            // Debug
             if (this.logDebug) {
-                const orderDump = this.inputsServices.map(svc => ({ name: svc.name, reference: svc.reference, identifier: svc.identifier, }));
+                const orderDump = this.inputsServices.map(svc => ({
+                    name: svc.name,
+                    reference: svc.reference,
+                    identifier: svc.identifier,
+                }));
                 this.emit('debug', `Inputs display order:\n${JSON.stringify(orderDump, null, 2)}`);
             }
 
-            // Update DisplayOrder characteristic (base64 encoded)
+            // Always update DisplayOrder characteristic, even for "none"
             const displayOrder = this.inputsServices.map(svc => svc.identifier);
             const encodedOrder = Encode(1, displayOrder).toString('base64');
             this.televisionService.updateCharacteristic(Characteristic.DisplayOrder, encodedOrder);
+
+            return;
         } catch (error) {
             throw new Error(`Display order error: ${error}`);
         }
@@ -1050,9 +1057,9 @@ class MainZone extends EventEmitter {
                                 const directSoundModeSurround = directSound ? directSound.surround : false;
                                 const command = directSound ? directSoundModeMode : reference.substring(1);
 
-                                const set = state ? await this.denon.send(command) : false;
-                                const set1 = state && directSound ? await new Promise(resolve => setTimeout(resolve, 75)) : false;
-                                const set2 = state && directSound ? await this.denon.send(directSoundModeSurround) : false;
+                                if (state) await this.denon.send(command);
+                                if (state && directSound) await new Promise(resolve => setTimeout(resolve, 75));
+                                if (state && directSound) await this.denon.send(directSoundModeSurround);
                                 if (this.logInfo && state) this.emit('info', `set Button Name: ${name}, Reference: ${command}`);
                             } catch (error) {
                                 if (this.logWarn) this.emit('warn', `set Button error: ${error}`);

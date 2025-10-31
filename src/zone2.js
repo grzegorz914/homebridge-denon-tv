@@ -121,7 +121,7 @@ class Zone2 extends EventEmitter {
                     const cmd = type === 'Mute' && commands[i] !== 'MU' ? `${commands[i]}MU` : commands[i];
                     await this.denon.send(`${cmd}${value}`);
                     const pauseTime = type === 'Power' && value === 'ON' && commandsCount > 1 && i === 0 ? 4000 : 75;
-                    const pause = i < commandsCount - 1 ? await new Promise(resolve => setTimeout(resolve, pauseTime)) : false;
+                    if (i < commandsCount - 1) await new Promise(resolve => setTimeout(resolve, pauseTime));
                 }
             } else {
                 if (this.logWarn) this.emit('warn', `Unknown control type: ${type}`);
@@ -268,18 +268,28 @@ class Zone2 extends EventEmitter {
             };
 
             const sortFn = sortStrategies[this.inputsDisplayOrder];
-            if (!sortFn) return;
 
-            // Debug dump
+            // Sort only if a valid function exists
+            if (sortFn) {
+                this.inputsServices.sort(sortFn);
+            }
+
+            // Debug
             if (this.logDebug) {
-                const orderDump = this.inputsServices.map(svc => ({ name: svc.name, reference: svc.reference, identifier: svc.identifier, }));
+                const orderDump = this.inputsServices.map(svc => ({
+                    name: svc.name,
+                    reference: svc.reference,
+                    identifier: svc.identifier,
+                }));
                 this.emit('debug', `Inputs display order:\n${JSON.stringify(orderDump, null, 2)}`);
             }
 
-            // Update DisplayOrder characteristic (base64 encoded)
+            // Always update DisplayOrder characteristic, even for "none"
             const displayOrder = this.inputsServices.map(svc => svc.identifier);
             const encodedOrder = Encode(1, displayOrder).toString('base64');
             this.televisionService.updateCharacteristic(Characteristic.DisplayOrder, encodedOrder);
+
+            return;
         } catch (error) {
             throw new Error(`Display order error: ${error}`);
         }
@@ -962,7 +972,7 @@ class Zone2 extends EventEmitter {
                         .onSet(async (state) => {
                             try {
                                 const command = `Z2${reference.substring(1)}`;
-                                const set = state ? await this.denon.send(command) : false;
+                                if (state) await this.denon.send(command);
                                 if (this.logInfo && state) this.emit('info', `set Button Name: ${name}, Reference: ${command}`);
                             } catch (error) {
                                 if (this.logWarn) this.emit('warn', `set Button error: ${error}`);
