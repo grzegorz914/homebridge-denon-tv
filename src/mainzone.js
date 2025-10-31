@@ -22,7 +22,6 @@ class MainZone extends EventEmitter {
         this.name = device.name;
         this.zone = device.zoneControl;
         this.inputsDisplayOrder = device.inputs?.displayOrder || 0;
-        this.inputs = device.inputs?.data || [];
         this.buttons = (device.buttons || []).filter(button => (button.displayType ?? 0) > 0);
         this.sensorPower = device.sensors?.power || false;
         this.sensorVolume = device.sensors?.volume || false;
@@ -1075,7 +1074,7 @@ class MainZone extends EventEmitter {
     async start() {
         try {
             //denon client
-            this.denon = new Denon(this.device, this.inputs, this.devInfoFile, this.inputsFile)
+            this.denon = new Denon(this.device, this.devInfoFile, this.inputsFile)
                 .on('deviceInfo', (info) => {
                     this.emit('devInfo', `-------- ${this.name} --------`);
                     this.emit('devInfo', `Manufacturer: ${info.manufacturer}`);

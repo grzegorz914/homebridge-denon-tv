@@ -19,7 +19,6 @@ class Surrounds extends EventEmitter {
         this.name = device.name;
         this.zone = device.zoneControl;
         this.inputsDisplayOrder = device.surrounds?.displayOrder || 0;
-        this.inputs = device.surrounds?.data || [];
         this.sensorInput = device.sensors?.surround || false;
         this.sensorInputs = (device.sensors?.surrounds || []).filter(sensor => (sensor.displayType ?? 0) > 0);
         this.logInfo = device.log?.info || false;
@@ -406,7 +405,7 @@ class Surrounds extends EventEmitter {
     async start() {
         try {
             //denon client
-            this.denon = new Denon(this.device, this.inputs, this.devInfoFile, this.inputsFile)
+            this.denon = new Denon(this.device, this.devInfoFile, this.inputsFile)
                 .on('deviceInfo', (info) => {
                     this.emit('devInfo', `-------- ${this.name} --------`);
                     this.emit('devInfo', `Manufacturer: ${info.manufacturer}`);

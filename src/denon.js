@@ -9,7 +9,7 @@ const INPUTS_CONVERSION_KEYS = Object.keys(InputConversion);
 const SOUND_MODES_CONVERSION_KEYS = Object.keys(SoundModeConversion);
 
 class Denon extends EventEmitter {
-    constructor(config, inputs, devInfoFile, inputsFile) {
+    constructor(config, devInfoFile, inputsFile) {
         super();
         this.host = config.host;
         this.generation = config.generation || 0;
@@ -17,7 +17,7 @@ class Denon extends EventEmitter {
         this.getInputsFromDevice = this.zone !== 3 ? (config.inputs?.getFromDevice || false) : false;
         this.getFavoritesFromDevice = this.zone < 3 && this.generation > 0 ? (config.inputs?.getFavoritesFromDevice || false) : false;
         this.getQuickSmartSelectFromDevice = this.zone < 3 && this.generation > 0 ? (config.inputs?.getQuickSmartSelectFromDevice || false) : false;
-        this.inputs = inputs;
+        this.inputs = device.inputs?.data || [];
         this.logDebug = config.log?.debug || false;
         this.devInfoFile = devInfoFile;
         this.inputsFile = inputsFile;

@@ -19,7 +19,6 @@ class PassThroughInputs extends EventEmitter {
         this.name = device.name;
         this.zone = device.zoneControl;
         this.inputsDisplayOrder = device.inputs?.displayOrder || 0;
-        this.inputs = device.inputs?.data || [];
         this.sensorInput = device.sensors?.input || false;
         this.sensorInputs = (device.sensors?.inputs || []).filter(sensor => (sensor.displayType ?? 0) > 0);
         this.infoButtonCommand = device.infoButtonCommand || 'MNINF';
@@ -406,7 +405,7 @@ class PassThroughInputs extends EventEmitter {
     async start() {
         try {
             //denon client
-            this.denon = new Denon(this.device, this.inputs, this.devInfoFile, this.inputsFile)
+            this.denon = new Denon(this.device, this.devInfoFile, this.inputsFile)
                 .on('deviceInfo', (info) => {
                     this.emit('devInfo', `-------- ${this.name} --------`);
                     this.emit('devInfo', `Manufacturer: ${info.manufacturer}`);
