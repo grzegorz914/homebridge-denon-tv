@@ -299,6 +299,8 @@ class Zone3 extends EventEmitter {
         try {
             if (!this.inputsServices) return;
 
+            let updated = false; // flaga, żeby wiedzieć, czy coś faktycznie się zmieniło
+
             for (const input of inputs) {
                 if (this.inputsServices.length >= 85 && !remove) continue;
 
@@ -315,7 +317,7 @@ class Zone3 extends EventEmitter {
                         if (this.logDebug) this.emit('debug', `Removing input: ${input.name}, reference: ${inputReference}`);
                         this.accessory.removeService(svc);
                         this.inputsServices = this.inputsServices.filter(s => s.reference !== inputReference);
-                        await this.displayOrder();
+                        updated = true;
                     }
                     continue;
                 }
@@ -329,6 +331,7 @@ class Zone3 extends EventEmitter {
                             .updateCharacteristic(Characteristic.Name, sanitizedName)
                             .updateCharacteristic(Characteristic.ConfiguredName, sanitizedName);
                         if (this.logDebug) this.emit('debug', `Updated Input: ${input.name}, reference: ${inputReference}`);
+                        updated = true;
                     }
                 } else {
                     const identifier = this.inputsServices.length + 1;
@@ -381,10 +384,13 @@ class Zone3 extends EventEmitter {
                     this.televisionService.addLinkedService(inputService);
 
                     if (this.logDebug) this.emit('debug', `Added Input: ${input.name}, reference: ${inputReference}`);
+                    updated = true;
                 }
             }
 
-            await this.displayOrder();
+            // Only one time run
+            if (updated) await this.displayOrder();
+
             return true;
         } catch (error) {
             throw new Error(`Add/Remove/Update input error: ${error}`);
