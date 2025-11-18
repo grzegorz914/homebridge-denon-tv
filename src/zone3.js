@@ -335,7 +335,7 @@ class Zone3 extends EventEmitter {
                     }
                 } else {
                     const identifier = this.inputsServices.length + 1;
-                    inputService = this.accessory.addService(Service.InputSource, sanitizedName, `Input ${identifier}`);
+                    inputService = this.accessory.addService(Service.InputSource, sanitizedName, `Input ${inputReference}`);
                     inputService.identifier = identifier;
                     inputService.reference = inputReference;
                     inputService.name = sanitizedName;
