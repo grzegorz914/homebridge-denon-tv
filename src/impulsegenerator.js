@@ -7,7 +7,7 @@ class ImpulseGenerator extends EventEmitter {
         this.timers = [];
     }
 
-    async state(state, timers = []) {
+    async state(state, timers = [], runOnStart = true) {
         // Stop current timers before new start
         if (this.timersState && state) {
             await this.state(false);
@@ -19,7 +19,7 @@ class ImpulseGenerator extends EventEmitter {
             for (const { name, sampling } of timers) {
                 if (!name || !sampling) continue;
 
-                this.emit(name);
+                if (runOnStart) this.emit(name);
 
                 const interval = setInterval(() => {
                     this.emit(name);

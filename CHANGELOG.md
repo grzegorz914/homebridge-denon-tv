@@ -19,6 +19,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Do not use Homebridge UI > v5.5.0 because of break config.json
 
+## [5.12.5] - (28.11.2025)
+
+## Changes
+
+- fix [#345](https://github.com/grzegorz914/homebridge-denon-tv/issues/345)
+- fix add inputs from device for pass through input zone
+- stability and performance improvements
+- bump dependencies
+- cleanup
+
 ## [5.12.3] - (08.11.2025)
 
 ## Changes

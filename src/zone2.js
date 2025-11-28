@@ -1,13 +1,13 @@
 import EventEmitter from 'events';
 import Mqtt from './mqtt.js';
 import RestFul from './restful.js';
-import Denon from './denon.js';
+import Zone from './zone.js';
 import Functions from './functions.js';
 import { PictureModesConversionToHomeKit, PictureModesDenonNumber } from './constants.js';
 let Accessory, Characteristic, Service, Categories, Encode, AccessoryUUID;
 
 class Zone2 extends EventEmitter {
-    constructor(api, device, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile) {
+    constructor(api, denon, denonInfo, device, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile) {
         super();
 
         Accessory = api.platformAccessory;
@@ -18,9 +18,11 @@ class Zone2 extends EventEmitter {
         AccessoryUUID = api.hap.uuid;
 
         //device configuration
+        this.denon = denon;
+        this.denonInfo = denonInfo;
         this.device = device;
         this.name = device.name;
-        this.zone = device.zoneControl;
+        this.zoneControl = device.zoneControl;
         this.inputsDisplayOrder = device.inputs?.displayOrder || 0;
         this.buttons = (device.buttonsZ2 || []).filter(button => (button.displayType ?? 0) > 0);
         this.sensorPower = device.sensors?.power || false;
@@ -51,7 +53,7 @@ class Zone2 extends EventEmitter {
 
         //sensors
         for (const sensor of this.sensorInputs) {
-            sensor.name = sensor.name || 'Sensor Input';
+            sensor.name = sensor.name;
             sensor.serviceType = [null, Service.MotionSensor, Service.OccupancySensor, Service.ContactSensor][sensor.displayType];
             sensor.characteristicType = [null, Characteristic.MotionDetected, Characteristic.OccupancyDetected, Characteristic.ContactSensorState][sensor.displayType];
             sensor.state = false;
@@ -59,7 +61,7 @@ class Zone2 extends EventEmitter {
 
         //buttons
         for (const button of this.buttons) {
-            button.name = button.name || 'Button';
+            button.name = button.name;
             button.serviceType = [null, Service.Outlet, Service.Switch][button.displayType];
             button.state = false;
         }
@@ -80,7 +82,7 @@ class Zone2 extends EventEmitter {
     async startStopImpulseGenerator(state, timers = []) {
         try {
             //start impulse generator 
-            await this.denon.impulseGenerator.state(state, timers)
+            await this.zone.impulseGenerator.state(state, timers)
             return true;
         } catch (error) {
             throw new Error(`Impulse generator start error: ${error}`);
@@ -105,7 +107,7 @@ class Zone2 extends EventEmitter {
                 7: ['PW']
             };
 
-            // Reuse volume control zones for better readability
+            // Reuse volume control zone for better readability
             const typeMap = {
                 'Power': zoneMap[this.powerControlZone],
                 'VolumeSelector': zoneMap[this.volumeControlZone],
@@ -119,7 +121,7 @@ class Zone2 extends EventEmitter {
                 const commandsCount = commands.length;
                 for (let i = 0; i < commandsCount; i++) {
                     const cmd = type === 'Mute' && commands[i] !== 'MU' ? `${commands[i]}MU` : commands[i];
-                    await this.denon.send(`${cmd}${value}`);
+                    await this.zone.send(`${cmd}${value}`);
                     const pauseTime = type === 'Power' && value === 'ON' && commandsCount > 1 && i === 0 ? 4000 : 75;
                     if (i < commandsCount - 1) await new Promise(resolve => setTimeout(resolve, pauseTime));
                 }
@@ -143,11 +145,11 @@ class Zone2 extends EventEmitter {
                     break;
                 case 'Input':
                     const input = `Z2${value}`;
-                    set = await this.denon.send(input);
+                    set = await this.zone.send(input);
                     break;
                 case 'Surround':
                     const surround = `MS${value}`;
-                    set = await this.denon.send(surround);
+                    set = await this.zone.send(surround);
                     break;
                 case 'Volume':
                     const volume = (value < 0 || value > 100) ? this.volume : (value < 10 ? `0${value}` : value);
@@ -158,7 +160,7 @@ class Zone2 extends EventEmitter {
                     set = await this.stateControl('Mute', mute);
                     break;
                 case 'RcControl':
-                    set = await this.denon.send(value);
+                    set = await this.zone.send(value);
                     break;
                 default:
                     this.emit('warn', `${integration}, received key: ${key}, value: ${value}`);
@@ -170,35 +172,11 @@ class Zone2 extends EventEmitter {
         }
     }
 
-    async prepareDataForAccessory() {
-        try {
-            //read dev info from file
-            this.savedInfo = await this.functions.readData(this.devInfoFile, true) ?? {};
-            if (this.logDebug) this.emit('debug', `Read saved Info: ${JSON.stringify(this.savedInfo, null, 2)}`);
-
-            //read inputs file
-            this.savedInputs = await this.functions.readData(this.inputsFile, true) ?? [];
-            if (!this.logDebug) this.emit('debug', `Read saved Inputs: ${JSON.stringify(this.savedInputs, null, 2)}`);
-
-            //read inputs names from file
-            this.savedInputsNames = await this.functions.readData(this.inputsNamesFile, true) ?? {};
-            if (this.logDebug) this.emit('debug', `Read saved Inputs Names: ${JSON.stringify(this.savedInputsNames, null, 2)}`);
-
-            //read inputs visibility from file
-            this.savedInputsTargetVisibility = await this.functions.readData(this.inputsTargetVisibilityFile, true) ?? {};
-            if (this.logDebug) this.emit('debug', `Read saved Inputs Target Visibility: ${JSON.stringify(this.savedInputsTargetVisibility, null, 2)}`);
-
-            return true;
-        } catch (error) {
-            throw new Error(`Prepare data for accessory error: ${error}`);
-        }
-    }
-
     async externalIntegrations() {
-        try {
-            //RESTFul server
-            const restFulEnabled = this.restFul.enable || false;
-            if (restFulEnabled) {
+        //RESTFul server
+        const restFulEnabled = this.restFul.enable || false;
+        if (restFulEnabled) {
+            try {
                 this.restFul1 = new RestFul({
                     port: this.restFul.port || 3000,
                     logWarn: this.logWarn,
@@ -213,16 +191,20 @@ class Zone2 extends EventEmitter {
                             await this.setOverExternalIntegration('RESTFul', key, value);
                         } catch (error) {
                             this.emit('warn', `RESTFul set error: ${error}`);
-                        }
+                        };
                     })
                     .on('debug', (debug) => this.emit('debug', debug))
                     .on('warn', (warn) => this.emit('warn', warn))
                     .on('error', (error) => this.emit('error', error));
-            }
+            } catch (error) {
+                this.emit('warn', `RESTFul integration start error: ${error}`);
+            };
+        }
 
-            //mqtt client
-            const mqttEnabled = this.mqtt.enable || false;
-            if (mqttEnabled) {
+        //mqtt client
+        const mqttEnabled = this.mqtt.enable || false;
+        if (mqttEnabled) {
+            try {
                 this.mqtt1 = new Mqtt({
                     host: this.mqtt.host,
                     port: this.mqtt.port || 1883,
@@ -245,17 +227,41 @@ class Zone2 extends EventEmitter {
                             await this.setOverExternalIntegration('MQTT', key, value);
                         } catch (error) {
                             this.emit('warn', `MQTT set error: ${error}`);
-                        };
+                        }
                     })
                     .on('debug', (debug) => this.emit('debug', debug))
                     .on('warn', (warn) => this.emit('warn', warn))
                     .on('error', (error) => this.emit('error', error));
+            } catch (error) {
+                this.emit('warn', `MQTT integration start error: ${error}`);
             };
+        }
+
+        return true;
+    }
+
+    async prepareDataForAccessory() {
+        try {
+            //read dev info from file
+            this.savedInfo = await this.functions.readData(this.devInfoFile, true) ?? {};
+            if (this.logDebug) this.emit('debug', `Read saved Info: ${JSON.stringify(this.savedInfo, null, 2)}`);
+
+            //read inputs file
+            this.savedInputs = await this.functions.readData(this.inputsFile, true) ?? [];
+            if (this.logDebug) this.emit('debug', `Read saved Inputs: ${JSON.stringify(this.savedInputs, null, 2)}`);
+
+            //read inputs names from file
+            this.savedInputsNames = await this.functions.readData(this.inputsNamesFile, true) ?? {};
+            if (this.logDebug) this.emit('debug', `Read saved Inputs Names: ${JSON.stringify(this.savedInputsNames, null, 2)}`);
+
+            //read inputs visibility from file
+            this.savedInputsTargetVisibility = await this.functions.readData(this.inputsTargetVisibilityFile, true) ?? {};
+            if (this.logDebug) this.emit('debug', `Read saved Inputs Target Visibility: ${JSON.stringify(this.savedInputsTargetVisibility, null, 2)}`);
 
             return true;
         } catch (error) {
-            this.emit('warn', `External integration start error: ${error}`);
-        };
+            throw new Error(`Prepare data for accessory error: ${error}`);
+        }
     }
 
     async displayOrder() {
@@ -403,7 +409,7 @@ class Zone2 extends EventEmitter {
             //accessory
             if (this.logDebug) this.emit('debug', `Prepare accessory`);
             const accessoryName = this.name;
-            const accessoryUUID = AccessoryUUID.generate(this.savedInfo.serialNumber + this.zone);
+            const accessoryUUID = AccessoryUUID.generate(this.savedInfo.serialNumber + this.zoneControl);
             const accessoryCategory = Categories.AUDIO_RECEIVER;
             const accessory = new Accessory(accessoryName, accessoryUUID, accessoryCategory);
             this.accessory = accessory;
@@ -472,7 +478,7 @@ class Zone2 extends EventEmitter {
                             return;
                         }
 
-                        await this.denon.send(`${zonePrefix}${reference}`);
+                        await this.zone.send(`${zonePrefix}${reference}`);
                         if (this.logInfo) this.emit('info', `set Input Name: ${name}, Reference: ${reference}`);
                     } catch (error) {
                         if (this.logWarn) this.emit('warn', `set Input error: ${error}`);
@@ -526,7 +532,7 @@ class Zone2 extends EventEmitter {
                                 break;
                         }
 
-                        await this.denon.send(command);
+                        await this.zone.send(command);
                         if (this.logInfo) this.emit('info', `set Remote Key: ${command}`);
                     } catch (error) {
                         if (this.logWarn) this.emit('warn', `set Remote Key error: ${error}`);
@@ -919,7 +925,7 @@ class Zone2 extends EventEmitter {
                     const sensor = this.sensorInputs[i];
 
                     //get sensor name		
-                    const name = sensor.name;
+                    const name = sensor.name || `Sensor ${i}`;
 
                     //get sensor name prefix
                     const namePrefix = sensor.namePrefix;
@@ -955,7 +961,7 @@ class Zone2 extends EventEmitter {
                     const button = this.buttons[i];
 
                     //get button name
-                    const name = button.name;
+                    const name = button.name || `Button ${i}`;
 
                     //get button reference
                     const reference = button.reference;
@@ -978,7 +984,7 @@ class Zone2 extends EventEmitter {
                         .onSet(async (state) => {
                             try {
                                 const command = `Z2${reference.substring(1)}`;
-                                if (state) await this.denon.send(command);
+                                if (state) await this.zone.send(command);
                                 if (this.logInfo && state) this.emit('info', `set Button Name: ${name}, Reference: ${command}`);
                             } catch (error) {
                                 if (this.logWarn) this.emit('warn', `set Button error: ${error}`);
@@ -1000,7 +1006,7 @@ class Zone2 extends EventEmitter {
     async start() {
         try {
             //denon client
-            this.denon = new Denon(this.device, this.devInfoFile, this.inputsFile)
+            this.zone = new Zone(this.denon, this.device, this.inputsFile)
                 .on('deviceInfo', (info) => {
                     this.emit('devInfo', `-------- ${this.name} --------`);
                     this.emit('devInfo', `Manufacturer: ${info.manufacturer}`);
@@ -1108,7 +1114,7 @@ class Zone2 extends EventEmitter {
                 });
 
             //connect to avr and check state
-            const connect = await this.denon.connect();
+            const connect = await this.zone.connect(this.denonInfo);
             if (!connect) return false;
 
             //prepare data for accessory

@@ -11,6 +11,7 @@
     "properties": {
       "devices": {
         "type": "array",
+        "title": "Devices",
         "items": {
           "type": "object",
           "title": "Device",

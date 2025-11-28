@@ -1,10 +1,10 @@
 import EventEmitter from 'events';
-import Denon from './denon.js';
+import Zone from './zone.js';
 import Functions from './functions.js';
 let Accessory, Characteristic, Service, Categories, Encode, AccessoryUUID;
 
 class Surrounds extends EventEmitter {
-    constructor(api, device, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile) {
+    constructor(api, denon, denonInfo, device, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile) {
         super();
 
         Accessory = api.platformAccessory;
@@ -15,9 +15,11 @@ class Surrounds extends EventEmitter {
         AccessoryUUID = api.hap.uuid;
 
         //device configuration
+        this.denon = denon;
+        this.denonInfo = denonInfo;
         this.device = device;
         this.name = device.name;
-        this.zone = device.zoneControl;
+        this.zoneControl = device.zoneControl;
         this.inputsDisplayOrder = device.surrounds?.displayOrder || 0;
         this.sensorInput = device.sensors?.surround || false;
         this.sensorInputs = (device.sensors?.surrounds || []).filter(sensor => (sensor.displayType ?? 0) > 0);
@@ -32,7 +34,7 @@ class Surrounds extends EventEmitter {
 
         //sensors
         for (const sensor of this.sensorInputs) {
-            sensor.name = sensor.name || 'Sensor Input';
+            sensor.name = sensor.name;
             sensor.serviceType = [null, Service.MotionSensor, Service.OccupancySensor, Service.ContactSensor][sensor.displayType];
             sensor.characteristicType = [null, Characteristic.MotionDetected, Characteristic.OccupancyDetected, Characteristic.ContactSensorState][sensor.displayType];
             sensor.state = false;
@@ -50,7 +52,7 @@ class Surrounds extends EventEmitter {
     async startStopImpulseGenerator(state, timers = []) {
         try {
             //start impulse generator 
-            await this.denon.impulseGenerator.state(state, timers)
+            await this.zone.impulseGenerator.state(state, timers)
             return true;
         } catch (error) {
             throw new Error(`Impulse generator start error: ${error}`);
@@ -65,7 +67,7 @@ class Surrounds extends EventEmitter {
 
             //read inputs file
             this.savedInputs = await this.functions.readData(this.inputsFile, true) ?? [];
-            if (!this.logDebug) this.emit('debug', `Read saved Inputs: ${JSON.stringify(this.savedInputs, null, 2)}`);
+            if (this.logDebug) this.emit('debug', `Read saved Inputs: ${JSON.stringify(this.savedInputs, null, 2)}`);
 
             //read inputs names from file
             this.savedInputsNames = await this.functions.readData(this.inputsNamesFile, true) ?? {};
@@ -226,7 +228,7 @@ class Surrounds extends EventEmitter {
             //accessory
             if (this.logDebug) this.emit('debug', `Prepare accessory`);
             const accessoryName = this.name;
-            const accessoryUUID = AccessoryUUID.generate(this.savedInfo.serialNumber + this.zone);
+            const accessoryUUID = AccessoryUUID.generate(this.savedInfo.serialNumber + this.zoneControl);
             const accessoryCategory = Categories.AUDIO_RECEIVER;
             const accessory = new Accessory(accessoryName, accessoryUUID, accessoryCategory);
             this.accessory = accessory;
@@ -253,7 +255,7 @@ class Surrounds extends EventEmitter {
                 .onSet(async (state) => {
                     try {
                         //const powerState = this.masterPower ? (state ? 'PWON' : 'PWSTANDBY') : (state ? 'ZMON' : 'ZMOFF');
-                        //await this.denon.send(powerState);
+                        //await this.zone.send(powerState);
                         //if (this.logInfo) this.emit('info', `set Power: ${powerState}`);
                     } catch (error) {
                         if (this.logWarn) this.emit('warn', `set Power error: ${error}`);
@@ -293,7 +295,7 @@ class Surrounds extends EventEmitter {
                             return;
                         }
 
-                        await this.denon.send(`${zonePrefix}${reference}`);
+                        await this.zone.send(`${zonePrefix}${reference}`);
                         if (this.logInfo) this.emit('info', `set Input Name: ${name}, Reference: ${reference}`);
                     } catch (error) {
                         if (this.logWarn) this.emit('warn', `set Surround error: ${error}`);
@@ -347,7 +349,7 @@ class Surrounds extends EventEmitter {
                                 break;
                         }
 
-                        await this.denon.send(command);
+                        await this.zone.send(command);
                         if (this.logInfo) this.emit('info', `set Remote Key: ${command}`);
                     } catch (error) {
                         if (this.logWarn) this.emit('warn', `set Remote Key error: ${error}`);
@@ -383,7 +385,7 @@ class Surrounds extends EventEmitter {
                     const sensor = this.sensorInputs[i];
 
                     //get sensor name		
-                    const name = sensor.name;
+                    const name = sensor.name || `Sensor ${i}`;
 
                     //get sensor name prefix
                     const namePrefix = sensor.namePrefix;
@@ -418,7 +420,7 @@ class Surrounds extends EventEmitter {
     async start() {
         try {
             //denon client
-            this.denon = new Denon(this.device, this.devInfoFile, this.inputsFile)
+            this.zone = new Zone(this.denon, this.device, this.inputsFile)
                 .on('deviceInfo', (info) => {
                     this.emit('devInfo', `-------- ${this.name} --------`);
                     this.emit('devInfo', `Manufacturer: ${info.manufacturer}`);
@@ -480,7 +482,7 @@ class Surrounds extends EventEmitter {
                 });
 
             //connect to avr and check state
-            const connect = await this.denon.connect();
+            const connect = await this.zone.connect(this.denonInfo);
             if (!connect) return false;
 
             //prepare data for accessory
