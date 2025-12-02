@@ -64,7 +64,7 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 | `host` | Here set the `Hostname` or `Address IP` of AVR. |
 | `port` | Here set the API communication port, if `8080` is not working try to use port `80` which some receivers use alternatively. |
 | `generation` | Here choose generation of Your device, old `0 - 2010 - 2012`, middle `1 - 2013 - 2022`, new `2 - 2023 and newer`. |
-| `zoneControl` | Here choose which zone will be controlled by this section `-1 - None/Disabled`,`0 - Main Zone`, `1 - Zone 2`, `2 - Zone 3`, `3 - Surrounds`, `4 - Pass Through Inputs`. |
+| `zoneControl` | Here choose which zone will be controlled by this section, create same zone multiple times for same AVR is not possible `-1 - None/Disabled`,`0 - Main Zone`, `1 - Zone 2`, `2 - Zone 3`, `3 - Surrounds`, `4 - Pass Through Inputs`. |
 | `inputs{}` | Inputs object. |
 | `inputs.getFromDevice` | If enabled, `Inputs` will be loaded direct from device. |
 | `inputs.getFavoritesFromDevice` | If enabled, `Favorites` will be loaded to the inputs list if exist. |
