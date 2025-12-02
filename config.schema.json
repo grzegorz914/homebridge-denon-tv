@@ -6717,7 +6717,7 @@
                   "title": "Zone",
                   "type": "integer",
                   "minimum": 0,
-                  "maximum": 7,
+                  "maximum": 6,
                   "default": 0,
                   "description": "Here select which zone the volume/mute want control.",
                   "anyOf": [
@@ -6761,12 +6761,6 @@
                       "title": "Main Zone + Z2/Z3",
                       "enum": [
                         6
-                      ]
-                    },
-                    {
-                      "title": "Master Volume",
-                      "enum": [
-                        7
                       ]
                     }
                   ],
