@@ -1,7 +1,7 @@
 {
   "displayName": "Denon TV",
   "name": "homebridge-denon-tv",
-  "version": "5.12.5",
+  "version": "5.12.6",
   "description": "Homebridge plugin to control Denon/Marantz AV Receivers.",
   "license": "MIT",
   "author": "grzegorz914",
@@ -37,7 +37,7 @@
     "async-mqtt": "^2.6.3",
     "axios": "^1.13.2",
     "fast-xml-parser": "^5.3.2",
-    "express": "^5.1.0"
+    "express": "^5.2.1"
   },
   "keywords": [
     "homebridge",

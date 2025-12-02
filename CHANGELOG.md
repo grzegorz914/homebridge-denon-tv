@@ -19,6 +19,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Do not use Homebridge UI > v5.5.0 because of break config.json
 
+## [5.12.6] - (02.12.2025)
+
+## Changes
+
+- prevent to start zone if same zone created multiple times for same AVR
+- stability and performance improvements
+- bump dependencies (express)
+- cleanup
+
 ## [5.12.5] - (28.11.2025)
 
 ## Changes

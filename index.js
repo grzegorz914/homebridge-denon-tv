@@ -17,9 +17,9 @@ class DenonPlatform {
 		}
 
 		this.accessories = [];
-		this.hosts = [];
-		this.denon = null;
-		this.denonInfo = null;
+		this.denons = new Map();      // key: host, value: Denon instance
+		this.denonInfos = new Map();  // key: host, value: connection info
+		this.devices = new Map();     // key: `${host}:${zoneControl}`, value: { host, zoneControl }
 
 		const prefDir = join(api.user.storagePath(), 'denonTv');
 		try {
@@ -39,6 +39,15 @@ class DenonPlatform {
 					log.warn(`Invalid config for device. Name: ${name || 'missing'}, Host: ${host || 'missing'}, Port: ${port || 'missing'}`);
 					continue;
 				}
+
+				const key = `${host}:${zoneControl}`;
+				if (this.devices.has(key)) {
+					log.warn(`This zone: ${zoneControl}, for: ${name} ${host} already exists. You cannot create the same zone multiple times for the same AVR`);
+					continue;
+				}
+
+				this.devices.set(key, { host, zoneControl });
+
 
 				//refresh interval
 				const refreshInterval = (device.refreshInterval ?? 5) * 1000;
@@ -91,12 +100,11 @@ class DenonPlatform {
 					const impulseGenerator = new ImpulseGenerator()
 						.on('start', async () => {
 							try {
-								let denon = this.denon;
-								let denonInfo = this.denonInfo;
-								const isNewHost = !this.hosts.includes(host);
-								if (isNewHost) {
-									this.hosts.push(host);
+								let denon = this.denons.get(host);
+								let denonInfo = this.denonInfos.get(host);
 
+								const isNewHost = !denon;
+								if (isNewHost) {
 									denon = new Denon(device, files.devInfo)
 										.on('success', msg => log.success(`Device: ${host}, ${msg}`))
 										.on('info', msg => log.info(`Device: ${host}, ${msg}`))
@@ -105,15 +113,21 @@ class DenonPlatform {
 										.on('error', msg => log.error(`Device: ${host}, ${msg}`));
 
 									denonInfo = await denon.connect();
-									if(!denonInfo) return;
+									if (!denonInfo) return;
 
-									this.denon = denon;
-									this.denonInfo = denonInfo;
+									this.denons.set(host, denon);
+									this.denonInfos.set(host, denonInfo);
 
-									//start denon impulse generator
+									// start denon-level impulse generator
 									await denon.impulseGenerator.state(true, [{ name: 'connect', sampling: 90000 }], false);
 								}
 
+								if (!denon || !denonInfo) {
+									if (logLevel.warn) log.warn(`Device: ${host} ${name}, no AVR data received`);
+									return;
+								}
+
+								// create zone instance
 								let zone;
 								switch (zoneControl) {
 									case 0: zone = new MainZone(api, denon, denonInfo, device, files.devInfo, files.inputs, files.inputsNames, files.inputsVisibility); break;
@@ -126,23 +140,24 @@ class DenonPlatform {
 										return;
 								}
 
-								zone.on('devInfo', (msg) => log.info(msg))
-									.on('success', (msg) => log.success(`Device: ${host} ${name}, ${msg}`))
-									.on('info', (msg) => log.info(`Device: ${host} ${name}, ${msg}`))
-									.on('debug', (msg) => log.info(`Device: ${host} ${name}, debug: ${msg}`))
-									.on('warn', (msg) => log.warn(`Device: ${host} ${name}, ${msg}`))
-									.on('error', (msg) => log.error(`Device: ${host} ${name}, ${msg}`));
+								zone
+									.on('devInfo', msg => log.info(msg))
+									.on('success', msg => log.success(`Device: ${host} ${name}, ${msg}`))
+									.on('info', msg => log.info(`Device: ${host} ${name}, ${msg}`))
+									.on('debug', msg => log.info(`Device: ${host} ${name}, debug: ${msg}`))
+									.on('warn', msg => log.warn(`Device: ${host} ${name}, ${msg}`))
+									.on('error', msg => log.error(`Device: ${host} ${name}, ${msg}`));
 
 								const accessory = await zone.start();
 								if (accessory) {
 									api.publishExternalAccessories(PluginName, [accessory]);
 									if (logLevel.success) log.success(`Device: ${host} ${name}, Published as external accessory.`);
 
-									//start impulse generator for zone
+									// start zone impulse generator
 									await zone.startStopImpulseGenerator(true, [{ name: 'checkState', sampling: refreshInterval }]);
 								}
 
-								//stop start impulse generator
+								// stop master impulse generator
 								await impulseGenerator.state(false);
 							} catch (error) {
 								if (logLevel.error) log.error(`Device: ${host} ${name}, Start impulse generator error: ${error.message ?? error}, trying again.`);
