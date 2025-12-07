@@ -23,7 +23,7 @@ class Denon extends EventEmitter {
         };
 
         const httpsConfig = this.generation === 2 ? { httpsAgent: new HttpsAgent({ rejectUnauthorized: false, keepAlive: false }) } : {};
-        this.axiosInstance = axios.create({
+        this.client = axios.create({
             ...commonConfig,
             ...httpsConfig,
         });
@@ -63,7 +63,7 @@ class Denon extends EventEmitter {
         try {
             // Fetch & parse device info
             const deviceInfoUrl = [ApiUrls.DeviceInfoGen0, ApiUrls.DeviceInfoGen1, ApiUrls.DeviceInfoGen2][this.generation];
-            const deviceInfo = await this.axiosInstance.get(deviceInfoUrl);
+            const deviceInfo = await this.client.get(deviceInfoUrl);
             const parseData = this.parseString.parse(deviceInfo.data);
 
             const generationMap = {

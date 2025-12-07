@@ -1,5 +1,3 @@
-import axios from 'axios';
-import { Agent as HttpsAgent } from 'https';
 import EventEmitter from 'events';
 import ImpulseGenerator from './impulsegenerator.js';
 import Functions from './functions.js';
@@ -21,17 +19,7 @@ class Zone extends EventEmitter {
         this.logDebug = config.log?.debug || false;
         this.inputsFile = inputsFile;
 
-        const baseUrl = `http://${config.host}:${config.port}`;
-        const commonConfig = {
-            baseURL: baseUrl,
-            timeout: 20000
-        };
-
-        const httpsConfig = this.generation === 2 ? { httpsAgent: new HttpsAgent({ rejectUnauthorized: false, keepAlive: false }) } : {};
-        this.axiosInstance = axios.create({
-            ...commonConfig,
-            ...httpsConfig,
-        });
+        this.client = denon.client;
 
         const options = {
             ignoreAttributes: false,
@@ -169,7 +157,7 @@ class Zone extends EventEmitter {
 
     async getPictureMode() {
         try {
-            const { data: picData } = await this.axiosInstance.post(ApiUrls.AppCommand, BodyXml.GetPictureMode);
+            const { data: picData } = await this.client.post(ApiUrls.AppCommand, BodyXml.GetPictureMode);
             const parsed = this.parseString.parse(picData);
             if (this.logDebug) this.emit('debug', `Picture mode: ${JSON.stringify(parsed, null, 2)}`);
 
@@ -182,7 +170,7 @@ class Zone extends EventEmitter {
 
     async getAudysseyMode() {
         try {
-            const { data: audData } = await this.axiosInstance.post(ApiUrls.AppCommand, BodyXml.GetAudyssey);
+            const { data: audData } = await this.client.post(ApiUrls.AppCommand, BodyXml.GetAudyssey);
             const parsed = this.parseString.parse(audData);
             if (this.logDebug) this.emit('debug', `Audyssey mode: ${JSON.stringify(parsed, null, 2)}`);
 
@@ -195,7 +183,7 @@ class Zone extends EventEmitter {
 
     async getSoundMode() {
         try {
-            const { data: sndData } = await this.axiosInstance.post(ApiUrls.AppCommand, BodyXml.GetSurroundModeStatus);
+            const { data: sndData } = await this.client.post(ApiUrls.AppCommand, BodyXml.GetSurroundModeStatus);
             const parsed = this.parseString.parse(sndData);
             if (this.logDebug) this.emit('debug', `Sound mode: ${JSON.stringify(parsed, null, 2)}`);
 
@@ -211,7 +199,7 @@ class Zone extends EventEmitter {
         try {
             // Get zones status
             const zoneStateUrl = [ApiUrls.MainZoneStatusLite, ApiUrls.Zone2StatusLite, ApiUrls.Zone3StatusLite, ApiUrls.SoundModeStatus, ApiUrls.MainZoneStatusLite][this.zoneControl];
-            const { data } = await this.axiosInstance.get(zoneStateUrl);
+            const { data } = await this.client.get(zoneStateUrl);
             const devState = this.parseString.parse(data).item;
             if (this.logDebug) this.emit('debug', `State: ${JSON.stringify(devState, null, 2)}`);
 
@@ -330,7 +318,7 @@ class Zone extends EventEmitter {
     async send(command) {
         try {
             const path = `${ApiUrls.iPhoneDirect}${command}`;
-            await this.axiosInstance.get(path);
+            await this.client.get(path);
             if (this.logDebug) this.emit('debug', `Send path: ${path}`);
             return true;
         } catch (error) {
