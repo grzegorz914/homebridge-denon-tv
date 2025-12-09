@@ -1026,14 +1026,6 @@ class Zone3 extends EventEmitter {
                     mute = power ? mute : true;
                     const pictureModeHomeKit = PictureModesConversionToHomeKit[pictureMode] ?? this.pictureMode;
 
-                    this.inputIdentifier = inputIdentifier;
-                    this.power = power;
-                    this.reference = reference;
-                    this.volume = scaledVolume;
-                    this.mute = mute;
-                    this.volumeDisplay = volumeDisplay;
-                    this.pictureMode = pictureModeHomeKit;
-
                     this.televisionService
                         ?.updateCharacteristic(Characteristic.Active, power)
                         .updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier)
@@ -1058,9 +1050,10 @@ class Zone3 extends EventEmitter {
 
                     if (scaledVolume !== this.volume) {
                         for (let i = 0; i < 2; i++) {
-                            const state = power ? [true, false][i] : false;
-                            this.sensorVolumeService?.updateCharacteristic(Characteristic.ContactSensorState, state);
+                            const state = power ? (i === 0 ? true : false) : false;
                             this.sensorVolumeState = state;
+                            this.sensorVolumeService?.updateCharacteristic(Characteristic.ContactSensorState, state);
+                            await new Promise(resolve => setTimeout(resolve, 500));
                         }
                     }
 
@@ -1068,9 +1061,10 @@ class Zone3 extends EventEmitter {
 
                     if (reference !== this.reference) {
                         for (let i = 0; i < 2; i++) {
-                            const state = power ? [true, false][i] : false;
-                            this.sensorInputService?.updateCharacteristic(Characteristic.ContactSensorState, state);
+                            const state = power ? (i === 0 ? true : false) : false;
                             this.sensorInputState = state;
+                            this.sensorInputService?.updateCharacteristic(Characteristic.ContactSensorState, state);
+                            await new Promise(resolve => setTimeout(resolve, 500));
                         }
                     }
 
@@ -1090,6 +1084,13 @@ class Zone3 extends EventEmitter {
                         this.buttonsServices?.[i]?.updateCharacteristic(Characteristic.On, state);
                     }
 
+                    this.inputIdentifier = inputIdentifier;
+                    this.power = power;
+                    this.reference = reference;
+                    this.volume = scaledVolume;
+                    this.mute = mute;
+                    this.volumeDisplay = volumeDisplay;
+                    this.pictureMode = pictureModeHomeKit;
                     if (this.logInfo) {
                         const name = input ? input.name : reference;
                         this.emit('info', `Power: ${power ? 'ON' : 'OFF'}`);

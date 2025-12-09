@@ -436,9 +436,6 @@ class PassThroughInputs extends EventEmitter {
                 .on('stateChanged', async (power, reference) => {
                     const input = this.inputsServices?.find(input => input.reference === reference);
                     const inputIdentifier = input ? input.identifier : this.inputIdentifier;
-                    this.inputIdentifier = inputIdentifier;
-                    this.power = power;
-                    this.reference = reference;
 
                     this.televisionService
                         ?.updateCharacteristic(Characteristic.Active, power)
@@ -446,9 +443,10 @@ class PassThroughInputs extends EventEmitter {
 
                     if (reference !== this.reference) {
                         for (let i = 0; i < 2; i++) {
-                            const state = power ? [true, false][i] : false;
+                            const state = power ? (i === 0 ? true : false) : false;
                             this.sensorInputService?.updateCharacteristic(Characteristic.ContactSensorState, state);
                             this.sensorInputState = state;
+                            await new Promise(resolve => setTimeout(resolve, 500));
                         }
                     }
 
@@ -460,6 +458,9 @@ class PassThroughInputs extends EventEmitter {
                         this.sensorInputsServices?.[i]?.updateCharacteristic(characteristicType, state);
                     }
 
+                    this.inputIdentifier = inputIdentifier;
+                    this.power = power;
+                    this.reference = reference;
                     if (this.logInfo) {
                         const name = input ? input.name : reference;
                         this.emit('info', `Power: ${power ? 'ON' : 'OFF'}`);
