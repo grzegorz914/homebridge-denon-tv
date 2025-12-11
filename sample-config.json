@@ -54,20 +54,17 @@
                             "namePrefix": false
                         }
                     ],
-                    "sensors": {
-                        "power": false,
-                        "volume": false,
-                        "mute": false,
-                        "input": false,
-                        "inputs": [
-                            {
-                                "name": "Tuner Sat",
-                                "reference": "CBL/SAT",
-                                "displayType": 0,
-                                "namePrefix": false
-                            }
-                        ]
-                    },
+                    "sensors": [
+                        {
+                            "displayType": 0,
+                            "mode": 0,
+                            "name": "",
+                            "reference": "",
+                            "pulse": false,
+                            "namePrefix": false,
+                            "level": 0
+                        }
+                    ],
                     "power": {
                         "zone": 0
                     },
@@ -134,20 +131,17 @@
                             "displayType": 0
                         }
                     ],
-                    "sensors": {
-                        "power": false,
-                        "volume": false,
-                        "mute": false,
-                        "input": false,
-                        "inputs": [
-                            {
-                                "name": "Tuner Sat",
-                                "reference": "CBL/SAT",
-                                "displayType": 0,
-                                "namePrefix": false
-                            }
-                        ]
-                    },
+                    "sensors": [
+                        {
+                            "displayType": 0,
+                            "mode": 0,
+                            "name": "",
+                            "reference": "",
+                            "pulse": false,
+                            "namePrefix": false,
+                            "level": 0
+                        }
+                    ],
                     "power": {
                         "zone": 0
                     },
@@ -200,20 +194,17 @@
                             }
                         ]
                     },
-                    "sensors": {
-                        "power": false,
-                        "volume": false,
-                        "mute": false,
-                        "input": false,
-                        "surrounds": [
-                            {
-                                "name": "Stereo",
-                                "reference": "STEREO",
-                                "displayType": 0,
-                                "namePrefix": false
-                            }
-                        ]
-                    },
+                    "sensors": [
+                        {
+                            "displayType": 0,
+                            "mode": 0,
+                            "name": "",
+                            "referenceSurround": "",
+                            "pulse": false,
+                            "namePrefix": false,
+                            "level": 0
+                        }
+                    ],
                     "infoButtonCommand": "MNINF",
                     "refreshInterval": 5,
                     "log": {

@@ -21,8 +21,7 @@ class Surrounds extends EventEmitter {
         this.name = device.name;
         this.zoneControl = device.zoneControl;
         this.inputsDisplayOrder = device.surrounds?.displayOrder || 0;
-        this.sensorInput = device.sensors?.surround || false;
-        this.sensorInputs = (device.sensors?.surrounds || []).filter(sensor => (sensor.displayType ?? 0) > 0);
+        this.sensors = (device.sensors || []).filter(sensor => (sensor.displayType ?? 0) > 0 && sensor.mode >= 0);
         this.logInfo = device.log?.info || false;
         this.logWarn = device.log?.warn || true;
         this.logDebug = device.log?.debug || false;
@@ -33,8 +32,7 @@ class Surrounds extends EventEmitter {
         this.inputsTargetVisibilityFile = inputsTargetVisibilityFile;
 
         //sensors
-        for (const sensor of this.sensorInputs) {
-            sensor.name = sensor.name;
+        for (const sensor of this.sensors) {
             sensor.serviceType = [null, Service.MotionSensor, Service.OccupancySensor, Service.ContactSensor][sensor.displayType];
             sensor.characteristicType = [null, Characteristic.MotionDetected, Characteristic.OccupancyDetected, Characteristic.ContactSensorState][sensor.displayType];
             sensor.state = false;
@@ -45,6 +43,9 @@ class Surrounds extends EventEmitter {
         this.inputIdentifier = 1;
         this.power = false;
         this.reference = '';
+        this.volume = 0;
+        this.volumeDisplay = false;
+        this.mute = false;
         this.mediaState = false;
         this.sensorInputState = false;
     };
@@ -361,28 +362,14 @@ class Surrounds extends EventEmitter {
             this.inputsServices = [];
             await this.addRemoveOrUpdateInput(this.savedInputs, false);
 
-            //prepare sonsor input service
-            if (this.sensorInput) {
-                if (this.logDebug) this.emit('debug', `Prepare input sensor service`);
-                this.sensorInputService = accessory.addService(Service.ContactSensor, `${this.sZoneName} Input Sensor`, `Input Sensor`);
-                this.sensorInputService.addOptionalCharacteristic(Characteristic.ConfiguredName);
-                this.sensorInputService.setCharacteristic(Characteristic.ConfiguredName, `${accessoryName} Input Sensor`);
-                this.sensorInputService.getCharacteristic(Characteristic.ContactSensorState)
-                    .onGet(async () => {
-                        const state = this.sensorInputState;
-                        return state;
-                    });
-            }
-
-            //prepare sonsor inputs service
-            const possibleSensorInputsCount = 99 - this.accessory.services.length;
-            const maxSensorInputsCount = this.sensorInputs.length >= possibleSensorInputsCount ? possibleSensorInputsCount : this.sensorInputs.length;
-            if (maxSensorInputsCount > 0) {
+            //prepare sonsor service
+            const possibleSensorCount = 99 - this.accessory.services.length;
+            const maxSensorCount = this.sensors.length >= possibleSensorCount ? possibleSensorCount : this.sensors.length;
+            if (maxSensorCount > 0) {
+                this.sensorServices = [];
                 if (this.logDebug) this.emit('debug', `Prepare inputs sensors services`);
-                this.sensorInputsServices = [];
-                for (let i = 0; i < maxSensorInputsCount; i++) {
-                    //get sensor
-                    const sensor = this.sensorInputs[i];
+                for (let i = 0; i < maxSensorCount; i++) {
+                    const sensor = this.sensors[i];
 
                     //get sensor name		
                     const name = sensor.name || `Sensor ${i}`;
@@ -393,20 +380,20 @@ class Surrounds extends EventEmitter {
                     //get service type
                     const serviceType = sensor.serviceType;
 
-                    //get service type
+                    //get characteristic type
                     const characteristicType = sensor.characteristicType;
 
                     const serviceName = namePrefix ? `${accessoryName} ${name}` : name;
-                    const sensorInputService = new serviceType(serviceName, `Sensor ${i}`);
-                    sensorInputService.addOptionalCharacteristic(Characteristic.ConfiguredName);
-                    sensorInputService.setCharacteristic(Characteristic.ConfiguredName, serviceName);
-                    sensorInputService.getCharacteristic(characteristicType)
+                    const sensorService = new serviceType(serviceName, `Sensor ${i}`);
+                    sensorService.addOptionalCharacteristic(Characteristic.ConfiguredName);
+                    sensorService.setCharacteristic(Characteristic.ConfiguredName, serviceName);
+                    sensorService.getCharacteristic(characteristicType)
                         .onGet(async () => {
-                            const state = sensor.state
+                            const state = sensor.state;
                             return state;
                         });
-                    this.sensorInputsServices.push(sensorInputService);
-                    accessory.addService(sensorInputService);
+                    this.sensorServices.push(sensorService);
+                    accessory.addService(sensorService);
                 }
             }
 
@@ -433,35 +420,81 @@ class Surrounds extends EventEmitter {
                 .on('addRemoveOrUpdateInput', async (inputs, remove) => {
                     await this.addRemoveOrUpdateInput(inputs, remove);
                 })
-                .on('stateChanged', async (power, reference) => {
+                .on('stateChanged', async (power, reference, volume, volumeDisplay, mute) => {
                     const input = this.inputsServices?.find(input => input.reference === reference);
                     const inputIdentifier = input ? input.identifier : this.inputIdentifier;
+                    const scaledVolume = await this.functions.scaleValue(volume, -80, 18, 0, 100);
+                    mute = power ? mute : true;
 
                     this.televisionService
                         ?.updateCharacteristic(Characteristic.Active, power ? 1 : 0)
                         .updateCharacteristic(Characteristic.ActiveIdentifier, inputIdentifier);
 
 
-                    if (reference !== this.reference) {
-                        for (let i = 0; i < 2; i++) {
-                            const state = power ? (i === 0 ? true : false) : false;
-                            this.sensorInputService?.updateCharacteristic(Characteristic.ContactSensorState, state);
-                            this.sensorInputState = state;
-                            await new Promise(resolve => setTimeout(resolve, 500));
-                        }
-                    }
+                    // sensors
+                    const currentStateModeMap = {
+                        0: reference,
+                        1: power,
+                        2: scaledVolume,
+                        3: mute,
+                    };
 
-                    for (let i = 0; i < this.sensorInputs.length; i++) {
-                        const sensor = this.sensorInputs[i];
-                        const state = power ? sensor.reference === reference : false;
-                        sensor.state = state;
+                    const previousStateModeMap = {
+                        0: this.reference,
+                        1: this.power,
+                        2: this.volume,
+                        3: this.mute,
+                    };
+
+                    for (let i = 0; i < this.sensors.length; i++) {
+                        let state = false;
+
+                        const sensor = this.sensors[i];
+                        const currentValue = currentStateModeMap[sensor.mode];
+                        const previousValue = previousStateModeMap[sensor.mode];
+                        const pulse = sensor.pulse;
+                        const reference = sensor.referenceSurround;
+                        const level = sensor.level;
                         const characteristicType = sensor.characteristicType;
-                        this.sensorInputsServices?.[i]?.updateCharacteristic(characteristicType, state);
+
+                        // modes >= 4 are independent from main power
+                        const isActiveMode = power;
+                        if (pulse && currentValue !== previousValue) {
+                            for (let step = 0; step < 2; step++) {
+                                state = isActiveMode ? (step === 0) : false;
+                                sensor.state = state;
+                                this.sensorServices?.[i]?.updateCharacteristic(characteristicType, state);
+                                await new Promise(resolve => setTimeout(resolve, 500));
+                            }
+                        } else {
+                            if (isActiveMode) {
+                                switch (sensor.mode) {
+                                    case 0: // reference mode
+                                        state = currentValue === reference;
+                                        break;
+                                    case 2: // volume mode
+                                        state = currentValue === level;
+                                        break;
+                                    case 1: // power
+                                    case 3: // mute
+                                        state = currentValue === true;
+                                        break;
+                                    default:
+                                        state = false;
+                                }
+                            }
+
+                            sensor.state = state;
+                            this.sensorServices?.[i]?.updateCharacteristic(characteristicType, state);
+                        }
                     }
 
                     this.inputIdentifier = inputIdentifier;
                     this.power = power;
                     this.reference = reference;
+                    this.volume = scaledVolume;
+                    this.mute = mute;
+                    this.volumeDisplay = volumeDisplay;
                     if (this.logInfo) {
                         const name = input ? input.name : reference;
                         this.emit('info', `Power: ${power ? 'ON' : 'OFF'}`);

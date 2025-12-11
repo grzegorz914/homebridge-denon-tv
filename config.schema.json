@@ -5778,818 +5778,761 @@
               }
             },
             "sensors": {
-              "title": "Sensors",
-              "type": "object",
-              "properties": {
-                "power": {
-                  "title": "Power",
-                  "type": "boolean",
-                  "default": false,
-                  "description": "This expose Power as a Contact Sensor, fired if power ON.",
-                  "condition": {
-                    "functionBody": "return model.devices[arrayIndices].zoneControl <= 2;"
-                  }
-                },
-                "volume": {
-                  "title": "Volume",
-                  "type": "boolean",
-                  "default": false,
-                  "description": "This expose Volume as a Contact Sensor, fired on every Volume change.",
-                  "condition": {
-                    "functionBody": "return model.devices[arrayIndices].zoneControl <= 2;"
-                  }
-                },
-                "mute": {
-                  "title": "Mute",
-                  "type": "boolean",
-                  "default": false,
-                  "description": "This expose Mute as a Contact Sensor, fired if Mmute ON.",
-                  "condition": {
-                    "functionBody": "return model.devices[arrayIndices].zoneControl <= 2;"
-                  }
-                },
-                "input": {
-                  "title": "Input",
-                  "type": "boolean",
-                  "default": false,
-                  "description": "This expose Input as a Contact Sensor, fired on every Input change.",
-                  "condition": {
-                    "functionBody": "return model.devices[arrayIndices].zoneControl !== 3;"
-                  }
-                },
-                "inputs": {
-                  "type": "array",
-                  "items": {
-                    "title": "Input",
-                    "type": "object",
-                    "description": "Here create sensors based on reference, fired if switch to it.",
-                    "properties": {
-                      "displayType": {
-                        "title": "Display Type",
-                        "type": "integer",
-                        "default": 0,
-                        "description": "Here select characteristic type to be exposed in HomeKit app.",
-                        "anyOf": [
-                          {
-                            "title": "None/Disabled",
-                            "enum": [
-                              0
-                            ]
-                          },
-                          {
-                            "title": "Motion Sensor",
-                            "enum": [
-                              1
-                            ]
-                          },
-                          {
-                            "title": "Occupancy Sensor",
-                            "enum": [
-                              2
-                            ]
-                          },
-                          {
-                            "title": "Contact Sensor",
-                            "enum": [
-                              3
-                            ]
-                          }
-                        ],
-                        "condition": {
-                          "functionBody": "return model.devices[arrayIndices].zoneControl !== 3;"
-                        }
+              "type": "array",
+              "items": {
+                "title": "Sensors",
+                "type": "object",
+                "properties": {
+                  "displayType": {
+                    "title": "Display Type",
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 3,
+                    "default": 0,
+                    "anyOf": [
+                      {
+                        "title": "None/Disabled",
+                        "enum": [
+                          0
+                        ]
                       },
-                      "name": {
-                        "title": "Name",
-                        "type": "string",
-                        "placeholder": "Name",
-                        "description": "Here set Your own name.",
-                        "condition": {
-                          "functionBody": "return model.devices[arrayIndices[0]].sensors.inputs[arrayIndices[1]].displayType > 0;"
-                        }
+                      {
+                        "title": "Motion Sensor",
+                        "enum": [
+                          1
+                        ]
                       },
-                      "reference": {
-                        "title": "Reference",
-                        "type": "string",
-                        "description": "Here select reference.",
-                        "anyOf": [
-                          {
-                            "title": "SOURCE (Only Z2/Z3)",
-                            "enum": [
-                              "SOURCE"
-                            ]
-                          },
-                          {
-                            "title": "PHONO",
-                            "enum": [
-                              "PHONO"
-                            ]
-                          },
-                          {
-                            "title": "CD",
-                            "enum": [
-                              "CD"
-                            ]
-                          },
-                          {
-                            "title": "DVD",
-                            "enum": [
-                              "DVD"
-                            ]
-                          },
-                          {
-                            "title": "BLU-RAY",
-                            "enum": [
-                              "BD"
-                            ]
-                          },
-                          {
-                            "title": "TV AUDIO",
-                            "enum": [
-                              "TV"
-                            ]
-                          },
-                          {
-                            "title": "SAT/CBL",
-                            "enum": [
-                              "SAT/CBL"
-                            ]
-                          },
-                          {
-                            "title": "MEDIA PLAYER",
-                            "enum": [
-                              "MPLAY"
-                            ]
-                          },
-                          {
-                            "title": "GAME",
-                            "enum": [
-                              "GAME"
-                            ]
-                          },
-                          {
-                            "title": "GAME 2",
-                            "enum": [
-                              "GAME2"
-                            ]
-                          },
-                          {
-                            "title": "TUNER",
-                            "enum": [
-                              "TUNER"
-                            ]
-                          },
-                          {
-                            "title": "AUX",
-                            "enum": [
-                              "AUX"
-                            ]
-                          },
-                          {
-                            "title": "AUX 1",
-                            "enum": [
-                              "AUX1"
-                            ]
-                          },
-                          {
-                            "title": "AUX 2",
-                            "enum": [
-                              "AUX2"
-                            ]
-                          },
-                          {
-                            "title": "AUX 3",
-                            "enum": [
-                              "AUX3"
-                            ]
-                          },
-                          {
-                            "title": "AUX 4",
-                            "enum": [
-                              "AUX4"
-                            ]
-                          },
-                          {
-                            "title": "AUX 5",
-                            "enum": [
-                              "AUX5"
-                            ]
-                          },
-                          {
-                            "title": "AUX 6",
-                            "enum": [
-                              "AUX6"
-                            ]
-                          },
-                          {
-                            "title": "AUX 7",
-                            "enum": [
-                              "AUX7"
-                            ]
-                          },
-                          {
-                            "title": "AUX A (Marantz Only)",
-                            "enum": [
-                              "AUXA"
-                            ]
-                          },
-                          {
-                            "title": "AUX B (Marantz Only)",
-                            "enum": [
-                              "AUXB"
-                            ]
-                          },
-                          {
-                            "title": "AUX C (Marantz Only)",
-                            "enum": [
-                              "AUXC"
-                            ]
-                          },
-                          {
-                            "title": "M-XPORT (Marantz Only)",
-                            "enum": [
-                              "M-XPORT"
-                            ]
-                          },
-                          {
-                            "title": "V.AUX",
-                            "enum": [
-                              "V.AUX"
-                            ]
-                          },
-                          {
-                            "title": "DVR",
-                            "enum": [
-                              "DVR"
-                            ]
-                          },
-                          {
-                            "title": "DOCK",
-                            "enum": [
-                              "DOCK"
-                            ]
-                          },
-                          {
-                            "title": "NET/USB",
-                            "enum": [
-                              "NET/USB"
-                            ]
-                          },
-                          {
-                            "title": "USB/IPOD",
-                            "enum": [
-                              "USB/IPOD"
-                            ]
-                          },
-                          {
-                            "title": "CDR",
-                            "enum": [
-                              "CDR"
-                            ]
-                          },
-                          {
-                            "title": "VCR",
-                            "enum": [
-                              "VCR"
-                            ]
-                          },
-                          {
-                            "title": "M-XPORT",
-                            "enum": [
-                              "M-XPORT"
-                            ]
-                          },
-                          {
-                            "title": "HDP",
-                            "enum": [
-                              "HDP"
-                            ]
-                          },
-                          {
-                            "title": "NETWORK/AIRPLAY/HEOS",
-                            "enum": [
-                              "NET"
-                            ]
-                          },
-                          {
-                            "title": "BLUETOOTH",
-                            "enum": [
-                              "BT"
-                            ]
-                          },
-                          {
-                            "title": "8K",
-                            "enum": [
-                              "8K"
-                            ]
-                          },
-                          {
-                            "title": "iRADIO",
-                            "enum": [
-                              "IRADIO"
-                            ]
-                          },
-                          {
-                            "title": "MEDIA SERVER",
-                            "enum": [
-                              "SERVER"
-                            ]
-                          },
-                          {
-                            "title": "SPOTIFY",
-                            "enum": [
-                              "SPOTIFY"
-                            ]
-                          },
-                          {
-                            "title": "FLICKR",
-                            "enum": [
-                              "FLICKR"
-                            ]
-                          },
-                          {
-                            "title": "HD RADIO (NA Only)",
-                            "enum": [
-                              "HDRADIO"
-                            ]
-                          },
-                          {
-                            "title": "SIRIUS (NA Only)",
-                            "enum": [
-                              "SIRIUS"
-                            ]
-                          },
-                          {
-                            "title": "SIRIUSXM (NA Only)",
-                            "enum": [
-                              "SIRIUSXM"
-                            ]
-                          },
-                          {
-                            "title": "RHAPSODY (NA Only)",
-                            "enum": [
-                              "RHAPSODY"
-                            ]
-                          },
-                          {
-                            "title": "PANDORA (NA Only)",
-                            "enum": [
-                              "PANDORA"
-                            ]
-                          },
-                          {
-                            "title": "NAPSTER (EU and NA Only)",
-                            "enum": [
-                              "NAPSTER"
-                            ]
-                          },
-                          {
-                            "title": "LAST.FM (EU Only)",
-                            "enum": [
-                              "LASTFM"
-                            ]
-                          },
-                          {
-                            "title": "USB START PLAYBACK",
-                            "enum": [
-                              "USB"
-                            ]
-                          },
-                          {
-                            "title": "IPOD START PLAYBACK",
-                            "enum": [
-                              "IPD"
-                            ]
-                          },
-                          {
-                            "title": "iRADIO START PLAYBACK",
-                            "enum": [
-                              "IRP"
-                            ]
-                          },
-                          {
-                            "title": "FAVORITES START PLAYBACK",
-                            "enum": [
-                              "FVP"
-                            ]
-                          },
-                          {
-                            "title": "ONE TOUCH START PLAYBACK",
-                            "enum": [
-                              "OTP"
-                            ]
-                          },
-                          {
-                            "title": "FAVORITES",
-                            "enum": [
-                              "FAVORITES"
-                            ]
-                          },
-                          {
-                            "title": "FAVORITE 1",
-                            "enum": [
-                              "FAVORITE1"
-                            ]
-                          },
-                          {
-                            "title": "FAVORITE 2",
-                            "enum": [
-                              "FAVORITE2"
-                            ]
-                          },
-                          {
-                            "title": "FAVORITE 3",
-                            "enum": [
-                              "FAVORITE3"
-                            ]
-                          },
-                          {
-                            "title": "FAVORITE 4",
-                            "enum": [
-                              "FAVORITE4"
-                            ]
-                          },
-                          {
-                            "title": "FAVORITE MEMORY 1",
-                            "enum": [
-                              "FAVORITE1 MEMORY"
-                            ]
-                          },
-                          {
-                            "title": "FAVORITE MEMORY 2",
-                            "enum": [
-                              "FAVORITE2 MEMORY"
-                            ]
-                          },
-                          {
-                            "title": "FAVORITE MEMORY 3",
-                            "enum": [
-                              "FAVORITE3 MEMORY"
-                            ]
-                          },
-                          {
-                            "title": "FAVORITE MEMORY 4",
-                            "enum": [
-                              "FAVORITE4 MEMORY"
-                            ]
-                          },
-                          {
-                            "title": "QUICK SELECT 1",
-                            "enum": [
-                              "QUICK1"
-                            ]
-                          },
-                          {
-                            "title": "QUICK SELECT 2",
-                            "enum": [
-                              "QUICK2"
-                            ]
-                          },
-                          {
-                            "title": "QUICK SELECT 3",
-                            "enum": [
-                              "QUICK3"
-                            ]
-                          },
-                          {
-                            "title": "QUICK SELECT 4",
-                            "enum": [
-                              "QUICK4"
-                            ]
-                          },
-                          {
-                            "title": "QUICK SELECT 5",
-                            "enum": [
-                              "QUICK5"
-                            ]
-                          },
-                          {
-                            "title": "QUICK SELECT MEMORY 1",
-                            "enum": [
-                              "QUICK1 MEMORY"
-                            ]
-                          },
-                          {
-                            "title": "QUICK SELECT MEMORY 2",
-                            "enum": [
-                              "QUICK2 MEMORY"
-                            ]
-                          },
-                          {
-                            "title": "QUICK SELECT MEMORY 3",
-                            "enum": [
-                              "QUICK3 MEMORY"
-                            ]
-                          },
-                          {
-                            "title": "QUICK SELECT MEMORY 4",
-                            "enum": [
-                              "QUICK4 MEMORY"
-                            ]
-                          },
-                          {
-                            "title": "QUICK SELECT MEMORY 5",
-                            "enum": [
-                              "QUICK5 MEMORY"
-                            ]
-                          },
-                          {
-                            "title": "SMART SELECT 1",
-                            "enum": [
-                              "SMART1"
-                            ]
-                          },
-                          {
-                            "title": "SMART SELECT 2",
-                            "enum": [
-                              "SMART2"
-                            ]
-                          },
-                          {
-                            "title": "SMART SELECT 3",
-                            "enum": [
-                              "SMART3"
-                            ]
-                          },
-                          {
-                            "title": "SMART SELECT 4",
-                            "enum": [
-                              "SMART4"
-                            ]
-                          },
-                          {
-                            "title": "SMART SELECT 5",
-                            "enum": [
-                              "SMART5"
-                            ]
-                          },
-                          {
-                            "title": "SMART SELECT MEMORY 1",
-                            "enum": [
-                              "SMART1 MEMORY"
-                            ]
-                          },
-                          {
-                            "title": "SMART SELECT MEMORY 2",
-                            "enum": [
-                              "SMART2 MEMORY"
-                            ]
-                          },
-                          {
-                            "title": "SMART SELECT MEMORY 3",
-                            "enum": [
-                              "SMART3 MEMORY"
-                            ]
-                          },
-                          {
-                            "title": "SMART SELECTMEMORY 4",
-                            "enum": [
-                              "SMART4 MEMORY"
-                            ]
-                          },
-                          {
-                            "title": "SMART SELECTMEMORY 5",
-                            "enum": [
-                              "SMART5 MEMORY"
-                            ]
-                          }
-                        ],
-                        "condition": {
-                          "functionBody": "return model.devices[arrayIndices[0]].sensors.inputs[arrayIndices[1]].displayType > 0;"
-                        }
+                      {
+                        "title": "Occupancy Sensor",
+                        "enum": [
+                          2
+                        ]
                       },
-                      "namePrefix": {
-                        "title": "Prefix",
-                        "type": "boolean",
-                        "default": false,
-                        "description": "Here enable/disable the accessory name as a prefix for sensor name.",
-                        "condition": {
-                          "functionBody": "return model.devices[arrayIndices[0]].sensors.inputs[arrayIndices[1]].displayType > 0;"
-                        }
+                      {
+                        "title": "Contact Sensor",
+                        "enum": [
+                          3
+                        ]
                       }
-                    },
-                    "required": [
-                      "displayType"
-                    ]
-                  }
-                },
-                "surround": {
-                  "title": "Surround",
-                  "type": "boolean",
-                  "default": false,
-                  "description": "This expose Surround as a Contact Sensor, fired on every Surround change.",
-                  "condition": {
-                    "functionBody": "return model.devices[arrayIndices].zoneControl === 3;"
-                  }
-                },
-                "surrounds": {
-                  "type": "array",
-                  "items": {
-                    "title": "Surround",
-                    "type": "object",
-                    "description": "Here create sensors based on reference, fired if switch to it.",
-                    "properties": {
-                      "displayType": {
-                        "title": "Type",
-                        "type": "integer",
-                        "default": 0,
-                        "description": "Here select characteristic type to be exposed in HomeKit app.",
-                        "anyOf": [
-                          {
-                            "title": "None/Disabled",
-                            "enum": [
-                              0
-                            ]
-                          },
-                          {
-                            "title": "Motion Sensor",
-                            "enum": [
-                              1
-                            ]
-                          },
-                          {
-                            "title": "Occupancy Sensor",
-                            "enum": [
-                              2
-                            ]
-                          },
-                          {
-                            "title": "Contact Sensor",
-                            "enum": [
-                              3
-                            ]
-                          }
-                        ],
-                        "condition": {
-                          "functionBody": "return model.devices[arrayIndices].zoneControl === 3;"
-                        }
+                    ],
+                    "description": "Here select sensor type to be exposed in HomeKit app.",
+                    "condition": {
+                      "functionBody": "return model.devices[arrayIndices[0]].zoneControl <= 3;"
+                    }
+                  },
+                  "mode": {
+                    "title": "Mode",
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 3,
+                    "default": 0,
+                    "anyOf": [
+                      {
+                        "title": "Input/Surround",
+                        "enum": [
+                          0
+                        ]
                       },
-                      "name": {
-                        "title": "Name",
-                        "type": "string",
-                        "placeholder": "Name",
-                        "description": "Here set Your own name.",
-                        "condition": {
-                          "functionBody": "return model.devices[arrayIndices[0]].sensors.surrounds[arrayIndices[1]].displayType > 0;"
-                        }
+                      {
+                        "title": "Power",
+                        "enum": [
+                          1
+                        ]
                       },
-                      "reference": {
-                        "title": "Reference",
-                        "type": "string",
-                        "description": "Here select reference.",
-                        "anyOf": [
-                          {
-                            "title": "MOVIE",
-                            "enum": [
-                              "MOVIE"
-                            ]
-                          },
-                          {
-                            "title": "MUSIC",
-                            "enum": [
-                              "MUSIC"
-                            ]
-                          },
-                          {
-                            "title": "GAME",
-                            "enum": [
-                              "GAME"
-                            ]
-                          },
-                          {
-                            "title": "DIRECT",
-                            "enum": [
-                              "DIRECT"
-                            ]
-                          },
-                          {
-                            "title": "PURE DIRECT",
-                            "enum": [
-                              "PURE DIRECT"
-                            ]
-                          },
-                          {
-                            "title": "STEREO",
-                            "enum": [
-                              "STEREO"
-                            ]
-                          },
-                          {
-                            "title": "DOLBY DIGITAL",
-                            "enum": [
-                              "DOLBY DIGITAL"
-                            ]
-                          },
-                          {
-                            "title": "DTS SURROUND",
-                            "enum": [
-                              "DTS SURROUND"
-                            ]
-                          },
-                          {
-                            "title": "AURO 3D",
-                            "enum": [
-                              "AURO3D"
-                            ]
-                          },
-                          {
-                            "title": "AURO 2D",
-                            "enum": [
-                              "AURO2DSURR"
-                            ]
-                          },
-                          {
-                            "title": "MCH STEREO",
-                            "enum": [
-                              "MCH STEREO"
-                            ]
-                          },
-                          {
-                            "title": "WIDE SCREEN",
-                            "enum": [
-                              "WIDE SCREEN"
-                            ]
-                          },
-                          {
-                            "title": "SUPER STADIUM",
-                            "enum": [
-                              "SUPER STADIUM"
-                            ]
-                          },
-                          {
-                            "title": "ROCK ARENA",
-                            "enum": [
-                              "ROCK ARENA"
-                            ]
-                          },
-                          {
-                            "title": "JAZZ CLUB",
-                            "enum": [
-                              "JAZZ CLUB"
-                            ]
-                          },
-                          {
-                            "title": "CLASSIC CONCERT",
-                            "enum": [
-                              "CLASSIC CONCERT"
-                            ]
-                          },
-                          {
-                            "title": "MONO MOVIE",
-                            "enum": [
-                              "MONO MOVIE"
-                            ]
-                          },
-                          {
-                            "title": "MATRIX",
-                            "enum": [
-                              "MATRIX"
-                            ]
-                          },
-                          {
-                            "title": "VIDEO GAME",
-                            "enum": [
-                              "VIDEO GAME"
-                            ]
-                          },
-                          {
-                            "title": "VIRTUAL",
-                            "enum": [
-                              "VIRTUAL"
-                            ]
-                          },
-                          {
-                            "title": "NEURAL",
-                            "enum": [
-                              "NEURAL"
-                            ]
-                          },
-                          {
-                            "title": "STANDARD",
-                            "enum": [
-                              "STANDARD"
-                            ]
-                          }
-                        ],
-                        "condition": {
-                          "functionBody": "return model.devices[arrayIndices[0]].sensors.surrounds[arrayIndices[1]].displayType > 0;"
-                        }
+                      {
+                        "title": "Volume",
+                        "enum": [
+                          2
+                        ]
                       },
-                      "namePrefix": {
-                        "title": "Prefix",
-                        "type": "boolean",
-                        "default": false,
-                        "description": "Here enable/disable the accessory name as a prefix for sensor name.",
-                        "condition": {
-                          "functionBody": "return model.devices[arrayIndices[0]].sensors.surrounds[arrayIndices[1]].displayType > 0;"
-                        }
+                      {
+                        "title": "Mute",
+                        "enum": [
+                          3
+                        ]
                       }
-                    },
-                    "required": [
-                      "displayType"
-                    ]
+                    ],
+                    "description": "Here select the sensor mode.",
+                    "condition": {
+                      "functionBody": "return model.devices[arrayIndices[0]].zoneControl <= 3 && model.devices[arrayIndices[0]].sensors[arrayIndices[1]].displayType > 0;"
+                    }
+                  },
+                  "name": {
+                    "title": "Name",
+                    "type": "string",
+                    "placeholder": "Name",
+                    "description": "Here set Your own name.",
+                    "condition": {
+                      "functionBody": "return model.devices[arrayIndices[0]].zoneControl <= 3 && model.devices[arrayIndices[0]].sensors[arrayIndices[1]].displayType > 0;"
+                    }
+                  },
+                  "namePrefix": {
+                    "title": "Prefix",
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Here enable/disable the accessory name as a prefix for sensor name.",
+                    "condition": {
+                      "functionBody": "return model.devices[arrayIndices[0]].zoneControl <= 3 && model.devices[arrayIndices[0]].sensors[arrayIndices[1]].displayType > 0;"
+                    }
+                  },
+                  "pulse": {
+                    "title": "Pulse",
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Here enable/disable sensor pulse, sensor send pulse and fired on every value change.",
+                    "condition": {
+                      "functionBody": "return model.devices[arrayIndices[0]].zoneControl <= 3 && model.devices[arrayIndices[0]].sensors[arrayIndices[1]].displayType > 0;"
+                    }
+                  },
+                  "reference": {
+                    "title": "Reference",
+                    "type": "string",
+                    "description": "Here set the channel reference, fired if switch to this input.",
+                    "anyOf": [
+                      {
+                        "title": "SOURCE (Only Z2/Z3)",
+                        "enum": [
+                          "SOURCE"
+                        ]
+                      },
+                      {
+                        "title": "PHONO",
+                        "enum": [
+                          "PHONO"
+                        ]
+                      },
+                      {
+                        "title": "CD",
+                        "enum": [
+                          "CD"
+                        ]
+                      },
+                      {
+                        "title": "DVD",
+                        "enum": [
+                          "DVD"
+                        ]
+                      },
+                      {
+                        "title": "BLU-RAY",
+                        "enum": [
+                          "BD"
+                        ]
+                      },
+                      {
+                        "title": "TV AUDIO",
+                        "enum": [
+                          "TV"
+                        ]
+                      },
+                      {
+                        "title": "SAT/CBL",
+                        "enum": [
+                          "SAT/CBL"
+                        ]
+                      },
+                      {
+                        "title": "MEDIA PLAYER",
+                        "enum": [
+                          "MPLAY"
+                        ]
+                      },
+                      {
+                        "title": "GAME",
+                        "enum": [
+                          "GAME"
+                        ]
+                      },
+                      {
+                        "title": "GAME 2",
+                        "enum": [
+                          "GAME2"
+                        ]
+                      },
+                      {
+                        "title": "TUNER",
+                        "enum": [
+                          "TUNER"
+                        ]
+                      },
+                      {
+                        "title": "AUX",
+                        "enum": [
+                          "AUX"
+                        ]
+                      },
+                      {
+                        "title": "AUX 1",
+                        "enum": [
+                          "AUX1"
+                        ]
+                      },
+                      {
+                        "title": "AUX 2",
+                        "enum": [
+                          "AUX2"
+                        ]
+                      },
+                      {
+                        "title": "AUX 3",
+                        "enum": [
+                          "AUX3"
+                        ]
+                      },
+                      {
+                        "title": "AUX 4",
+                        "enum": [
+                          "AUX4"
+                        ]
+                      },
+                      {
+                        "title": "AUX 5",
+                        "enum": [
+                          "AUX5"
+                        ]
+                      },
+                      {
+                        "title": "AUX 6",
+                        "enum": [
+                          "AUX6"
+                        ]
+                      },
+                      {
+                        "title": "AUX 7",
+                        "enum": [
+                          "AUX7"
+                        ]
+                      },
+                      {
+                        "title": "AUX A (Marantz Only)",
+                        "enum": [
+                          "AUXA"
+                        ]
+                      },
+                      {
+                        "title": "AUX B (Marantz Only)",
+                        "enum": [
+                          "AUXB"
+                        ]
+                      },
+                      {
+                        "title": "AUX C (Marantz Only)",
+                        "enum": [
+                          "AUXC"
+                        ]
+                      },
+                      {
+                        "title": "M-XPORT (Marantz Only)",
+                        "enum": [
+                          "M-XPORT"
+                        ]
+                      },
+                      {
+                        "title": "V.AUX",
+                        "enum": [
+                          "V.AUX"
+                        ]
+                      },
+                      {
+                        "title": "DVR",
+                        "enum": [
+                          "DVR"
+                        ]
+                      },
+                      {
+                        "title": "DOCK",
+                        "enum": [
+                          "DOCK"
+                        ]
+                      },
+                      {
+                        "title": "NET/USB",
+                        "enum": [
+                          "NET/USB"
+                        ]
+                      },
+                      {
+                        "title": "USB/IPOD",
+                        "enum": [
+                          "USB/IPOD"
+                        ]
+                      },
+                      {
+                        "title": "CDR",
+                        "enum": [
+                          "CDR"
+                        ]
+                      },
+                      {
+                        "title": "VCR",
+                        "enum": [
+                          "VCR"
+                        ]
+                      },
+                      {
+                        "title": "M-XPORT",
+                        "enum": [
+                          "M-XPORT"
+                        ]
+                      },
+                      {
+                        "title": "HDP",
+                        "enum": [
+                          "HDP"
+                        ]
+                      },
+                      {
+                        "title": "NETWORK/AIRPLAY/HEOS",
+                        "enum": [
+                          "NET"
+                        ]
+                      },
+                      {
+                        "title": "BLUETOOTH",
+                        "enum": [
+                          "BT"
+                        ]
+                      },
+                      {
+                        "title": "8K",
+                        "enum": [
+                          "8K"
+                        ]
+                      },
+                      {
+                        "title": "iRADIO",
+                        "enum": [
+                          "IRADIO"
+                        ]
+                      },
+                      {
+                        "title": "MEDIA SERVER",
+                        "enum": [
+                          "SERVER"
+                        ]
+                      },
+                      {
+                        "title": "SPOTIFY",
+                        "enum": [
+                          "SPOTIFY"
+                        ]
+                      },
+                      {
+                        "title": "FLICKR",
+                        "enum": [
+                          "FLICKR"
+                        ]
+                      },
+                      {
+                        "title": "HD RADIO (NA Only)",
+                        "enum": [
+                          "HDRADIO"
+                        ]
+                      },
+                      {
+                        "title": "SIRIUS (NA Only)",
+                        "enum": [
+                          "SIRIUS"
+                        ]
+                      },
+                      {
+                        "title": "SIRIUSXM (NA Only)",
+                        "enum": [
+                          "SIRIUSXM"
+                        ]
+                      },
+                      {
+                        "title": "RHAPSODY (NA Only)",
+                        "enum": [
+                          "RHAPSODY"
+                        ]
+                      },
+                      {
+                        "title": "PANDORA (NA Only)",
+                        "enum": [
+                          "PANDORA"
+                        ]
+                      },
+                      {
+                        "title": "NAPSTER (EU and NA Only)",
+                        "enum": [
+                          "NAPSTER"
+                        ]
+                      },
+                      {
+                        "title": "LAST.FM (EU Only)",
+                        "enum": [
+                          "LASTFM"
+                        ]
+                      },
+                      {
+                        "title": "USB START PLAYBACK",
+                        "enum": [
+                          "USB"
+                        ]
+                      },
+                      {
+                        "title": "IPOD START PLAYBACK",
+                        "enum": [
+                          "IPD"
+                        ]
+                      },
+                      {
+                        "title": "iRADIO START PLAYBACK",
+                        "enum": [
+                          "IRP"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITES START PLAYBACK",
+                        "enum": [
+                          "FVP"
+                        ]
+                      },
+                      {
+                        "title": "ONE TOUCH START PLAYBACK",
+                        "enum": [
+                          "OTP"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITES",
+                        "enum": [
+                          "FAVORITES"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE 1",
+                        "enum": [
+                          "FAVORITE1"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE 2",
+                        "enum": [
+                          "FAVORITE2"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE 3",
+                        "enum": [
+                          "FAVORITE3"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE 4",
+                        "enum": [
+                          "FAVORITE4"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE MEMORY 1",
+                        "enum": [
+                          "FAVORITE1 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE MEMORY 2",
+                        "enum": [
+                          "FAVORITE2 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE MEMORY 3",
+                        "enum": [
+                          "FAVORITE3 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "FAVORITE MEMORY 4",
+                        "enum": [
+                          "FAVORITE4 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT 1",
+                        "enum": [
+                          "QUICK1"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT 2",
+                        "enum": [
+                          "QUICK2"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT 3",
+                        "enum": [
+                          "QUICK3"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT 4",
+                        "enum": [
+                          "QUICK4"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT 5",
+                        "enum": [
+                          "QUICK5"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT MEMORY 1",
+                        "enum": [
+                          "QUICK1 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT MEMORY 2",
+                        "enum": [
+                          "QUICK2 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT MEMORY 3",
+                        "enum": [
+                          "QUICK3 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT MEMORY 4",
+                        "enum": [
+                          "QUICK4 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "QUICK SELECT MEMORY 5",
+                        "enum": [
+                          "QUICK5 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "SMART SELECT 1",
+                        "enum": [
+                          "SMART1"
+                        ]
+                      },
+                      {
+                        "title": "SMART SELECT 2",
+                        "enum": [
+                          "SMART2"
+                        ]
+                      },
+                      {
+                        "title": "SMART SELECT 3",
+                        "enum": [
+                          "SMART3"
+                        ]
+                      },
+                      {
+                        "title": "SMART SELECT 4",
+                        "enum": [
+                          "SMART4"
+                        ]
+                      },
+                      {
+                        "title": "SMART SELECT 5",
+                        "enum": [
+                          "SMART5"
+                        ]
+                      },
+                      {
+                        "title": "SMART SELECT MEMORY 1",
+                        "enum": [
+                          "SMART1 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "SMART SELECT MEMORY 2",
+                        "enum": [
+                          "SMART2 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "SMART SELECT MEMORY 3",
+                        "enum": [
+                          "SMART3 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "SMART SELECTMEMORY 4",
+                        "enum": [
+                          "SMART4 MEMORY"
+                        ]
+                      },
+                      {
+                        "title": "SMART SELECTMEMORY 5",
+                        "enum": [
+                          "SMART5 MEMORY"
+                        ]
+                      }
+                    ],
+                    "condition": {
+                      "functionBody": "return model.devices[arrayIndices[0]].zoneControl <= 2 && model.devices[arrayIndices[0]].sensors[arrayIndices[1]].displayType > 0 && model.devices[arrayIndices[0]].sensors[arrayIndices[1]].pulse === false && model.devices[arrayIndices[0]].sensors[arrayIndices[1]].mode === 0;"
+                    }
+                  },
+                  "referenceSurround": {
+                    "title": "Reference",
+                    "type": "string",
+                    "description": "Here set the surround reference, fired if switch to this surround.",
+                    "anyOf": [
+                      {
+                        "title": "MOVIE",
+                        "enum": [
+                          "MOVIE"
+                        ]
+                      },
+                      {
+                        "title": "MUSIC",
+                        "enum": [
+                          "MUSIC"
+                        ]
+                      },
+                      {
+                        "title": "GAME",
+                        "enum": [
+                          "GAME"
+                        ]
+                      },
+                      {
+                        "title": "DIRECT",
+                        "enum": [
+                          "DIRECT"
+                        ]
+                      },
+                      {
+                        "title": "PURE DIRECT",
+                        "enum": [
+                          "PURE DIRECT"
+                        ]
+                      },
+                      {
+                        "title": "STEREO",
+                        "enum": [
+                          "STEREO"
+                        ]
+                      },
+                      {
+                        "title": "DOLBY DIGITAL",
+                        "enum": [
+                          "DOLBY DIGITAL"
+                        ]
+                      },
+                      {
+                        "title": "DTS SURROUND",
+                        "enum": [
+                          "DTS SURROUND"
+                        ]
+                      },
+                      {
+                        "title": "AURO 3D",
+                        "enum": [
+                          "AURO3D"
+                        ]
+                      },
+                      {
+                        "title": "AURO 2D",
+                        "enum": [
+                          "AURO2DSURR"
+                        ]
+                      },
+                      {
+                        "title": "MCH STEREO",
+                        "enum": [
+                          "MCH STEREO"
+                        ]
+                      },
+                      {
+                        "title": "WIDE SCREEN",
+                        "enum": [
+                          "WIDE SCREEN"
+                        ]
+                      },
+                      {
+                        "title": "SUPER STADIUM",
+                        "enum": [
+                          "SUPER STADIUM"
+                        ]
+                      },
+                      {
+                        "title": "ROCK ARENA",
+                        "enum": [
+                          "ROCK ARENA"
+                        ]
+                      },
+                      {
+                        "title": "JAZZ CLUB",
+                        "enum": [
+                          "JAZZ CLUB"
+                        ]
+                      },
+                      {
+                        "title": "CLASSIC CONCERT",
+                        "enum": [
+                          "CLASSIC CONCERT"
+                        ]
+                      },
+                      {
+                        "title": "MONO MOVIE",
+                        "enum": [
+                          "MONO MOVIE"
+                        ]
+                      },
+                      {
+                        "title": "MATRIX",
+                        "enum": [
+                          "MATRIX"
+                        ]
+                      },
+                      {
+                        "title": "VIDEO GAME",
+                        "enum": [
+                          "VIDEO GAME"
+                        ]
+                      },
+                      {
+                        "title": "VIRTUAL",
+                        "enum": [
+                          "VIRTUAL"
+                        ]
+                      },
+                      {
+                        "title": "NEURAL",
+                        "enum": [
+                          "NEURAL"
+                        ]
+                      },
+                      {
+                        "title": "STANDARD",
+                        "enum": [
+                          "STANDARD"
+                        ]
+                      }
+                    ],
+                    "condition": {
+                      "functionBody": "return model.devices[arrayIndices[0]].zoneControl === 3 && model.devices[arrayIndices[0]].sensors[arrayIndices[1]].displayType > 0 && model.devices[arrayIndices[0]].sensors[arrayIndices[1]].pulse === false && model.devices[arrayIndices[0]].sensors[arrayIndices[1]].mode === 0;"
+                    }
+                  },
+                  "level": {
+                    "title": "Level",
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 100,
+                    "multipleOf": 1,
+                    "default": 100,
+                    "description": "Here set the level between 0-100% at which the sensor fired.",
+                    "condition": {
+                      "functionBody": "return model.devices[arrayIndices[0]].zoneControl <= 2 && model.devices[arrayIndices[0]].sensors[arrayIndices[1]].displayType > 0 && model.devices[arrayIndices[0]].sensors[arrayIndices[1]].pulse === false && model.devices[arrayIndices[0]].sensors[arrayIndices[1]].mode === 2;"
+                    }
                   }
-                }
+                },
+                "required": [
+                  "displayType",
+                  "mode"
+                ]
               }
             },
             "power": {
@@ -6849,27 +6792,27 @@
                   "description": "This enable logging device info by every connections device to the network."
                 },
                 "success": {
-                  "title": "Log Success",
+                  "title": "Success",
                   "type": "boolean",
                   "default": true
                 },
                 "info": {
-                  "title": "Log Info",
+                  "title": "Info",
                   "type": "boolean",
                   "default": false
                 },
                 "warn": {
-                  "title": "Log Warn",
+                  "title": "Warn",
                   "type": "boolean",
                   "default": true
                 },
                 "error": {
-                  "title": "Log Error",
+                  "title": "Error",
                   "type": "boolean",
                   "default": true
                 },
                 "debug": {
-                  "title": "Log Debug",
+                  "title": "Debug",
                   "type": "boolean",
                   "default": false
                 }
@@ -7148,58 +7091,25 @@
                   }
                 },
                 {
-                  "key": "devices[].sensors",
+                  "key": "devices[]",
                   "title": "Sensors",
                   "items": [
-                    "devices[].sensors.power",
-                    "devices[].sensors.volume",
-                    "devices[].sensors.mute",
-                    "devices[].sensors.input",
                     {
                       "key": "devices[].sensors",
-                      "type": "section",
-                      "title": "Inputs",
-                      "expandable": true,
-                      "expanded": false,
+                      "type": "tabarray",
+                      "title": "{{ value.name || 'sensor' }}",
                       "items": [
-                        {
-                          "key": "devices[].sensors.inputs",
-                          "type": "tabarray",
-                          "title": "{{ value.name || 'sensor' }}",
-                          "items": [
-                            "devices[].sensors.inputs[].displayType",
-                            "devices[].sensors.inputs[].name",
-                            "devices[].sensors.inputs[].reference",
-                            "devices[].sensors.inputs[].namePrefix"
-                          ]
-                        }
+                        "devices[].sensors[].displayType",
+                        "devices[].sensors[].mode",
+                        "devices[].sensors[].name",
+                        "devices[].sensors[].namePrefix",
+                        "devices[].sensors[].pulse",
+                        "devices[].sensors[].reference",
+                        "devices[].sensors[].referenceSurround",
+                        "devices[].sensors[].level"
                       ],
                       "condition": {
-                        "functionBody": "return model.devices[arrayIndices].zoneControl !== 3;"
-                      }
-                    },
-                    "devices[].sensors.surround",
-                    {
-                      "key": "devices[].sensors",
-                      "type": "section",
-                      "title": "Surrounds",
-                      "expandable": true,
-                      "expanded": false,
-                      "items": [
-                        {
-                          "key": "devices[].sensors.surrounds",
-                          "type": "tabarray",
-                          "title": "{{ value.name || 'sensor' }}",
-                          "items": [
-                            "devices[].sensors.surrounds[].displayType",
-                            "devices[].sensors.surrounds[].name",
-                            "devices[].sensors.surrounds[].reference",
-                            "devices[].sensors.surrounds[].namePrefix"
-                          ]
-                        }
-                      ],
-                      "condition": {
-                        "functionBody": "return model.devices[arrayIndices].zoneControl === 3;"
+                        "functionBody": "return model.devices[arrayIndices].zoneControl <= 3;"
                       }
                     }
                   ]

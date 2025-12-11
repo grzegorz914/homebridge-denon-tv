@@ -25,11 +25,7 @@ class MainZone extends EventEmitter {
         this.zoneControl = device.zoneControl;
         this.inputsDisplayOrder = device.inputs?.displayOrder || 0;
         this.buttons = (device.buttons || []).filter(button => (button.displayType ?? 0) > 0);
-        this.sensorPower = device.sensors?.power || false;
-        this.sensorVolume = device.sensors?.volume || false;
-        this.sensorMute = device.sensors?.mute || false;
-        this.sensorInput = device.sensors?.input || false;
-        this.sensorInputs = (device.sensors?.inputs || []).filter(sensor => (sensor.displayType ?? 0) > 0);
+        this.sensors = (device.sensors || []).filter(sensor => (sensor.displayType ?? 0) > 0 && sensor.mode >= 0);
         this.powerControlZone = device.power?.zone || 0;
         this.volumeControl = device.volume?.displayType || 0;
         this.volumeControlZone = device.volume?.zone || 0;
@@ -52,8 +48,7 @@ class MainZone extends EventEmitter {
         this.mqttConnected = false;
 
         //sensors
-        for (const sensor of this.sensorInputs) {
-            sensor.name = sensor.name;
+        for (const sensor of this.sensors) {
             sensor.serviceType = [null, Service.MotionSensor, Service.OccupancySensor, Service.ContactSensor][sensor.displayType];
             sensor.characteristicType = [null, Characteristic.MotionDetected, Characteristic.OccupancyDetected, Characteristic.ContactSensorState][sensor.displayType];
             sensor.state = false;
@@ -61,7 +56,6 @@ class MainZone extends EventEmitter {
 
         //buttons
         for (const button of this.buttons) {
-            button.name = button.name;
             button.serviceType = [null, Service.Outlet, Service.Switch][button.displayType];
             button.state = false;
         }
@@ -946,88 +940,38 @@ class MainZone extends EventEmitter {
                 }
             }
 
-            //prepare sensor service
-            if (this.sensorPower) {
-                if (this.logDebug) this.emit('debug', `Prepare power sensor service`);
-                this.sensorPowerService = accessory.addService(Service.ContactSensor, `${this.sZoneName} Power Sensor`, `Power Sensor`);
-                this.sensorPowerService.addOptionalCharacteristic(Characteristic.ConfiguredName);
-                this.sensorPowerService.setCharacteristic(Characteristic.ConfiguredName, `${accessoryName} Power Sensor`);
-                this.sensorPowerService.getCharacteristic(Characteristic.ContactSensorState)
-                    .onGet(async () => {
-                        const state = this.power;
-                        return state;
-                    });
-            }
-
-            if (this.sensorVolume) {
-                if (this.logDebug) this.emit('debug', `Prepare volume sensor service`);
-                this.sensorVolumeService = accessory.addService(Service.ContactSensor, `${this.sZoneName} Volume Sensor`, `Volume Sensor`);
-                this.sensorVolumeService.addOptionalCharacteristic(Characteristic.ConfiguredName);
-                this.sensorVolumeService.setCharacteristic(Characteristic.ConfiguredName, `${accessoryName} Volume Sensor`);
-                this.sensorVolumeService.getCharacteristic(Characteristic.ContactSensorState)
-                    .onGet(async () => {
-                        const state = this.sensorVolumeState;
-                        return state;
-                    });
-            }
-
-            if (this.sensorMute) {
-                if (this.logDebug) this.emit('debug', `Prepare mute sensor service`);
-                this.sensorMuteService = accessory.addService(Service.ContactSensor, `${this.sZoneName} Mute Sensor`, `Mute Sensor`);
-                this.sensorMuteService.addOptionalCharacteristic(Characteristic.ConfiguredName);
-                this.sensorMuteService.setCharacteristic(Characteristic.ConfiguredName, `${accessoryName} Mute Sensor`);
-                this.sensorMuteService.getCharacteristic(Characteristic.ContactSensorState)
-                    .onGet(async () => {
-                        const state = this.mute;
-                        return state;
-                    });
-            }
-
-            if (this.sensorInput) {
-                if (this.logDebug) this.emit('debug', `Prepare input sensor service`);
-                this.sensorInputService = accessory.addService(Service.ContactSensor, `${this.sZoneName} Input Sensor`, `Input Sensor`);
-                this.sensorInputService.addOptionalCharacteristic(Characteristic.ConfiguredName);
-                this.sensorInputService.setCharacteristic(Characteristic.ConfiguredName, `${accessoryName} Input Sensor`);
-                this.sensorInputService.getCharacteristic(Characteristic.ContactSensorState)
-                    .onGet(async () => {
-                        const state = this.sensorInputState;
-                        return state;
-                    });
-            }
-
             //prepare sonsor service
-            const possibleSensorInputsCount = 99 - this.accessory.services.length;
-            const maxSensorInputsCount = this.sensorInputs.length >= possibleSensorInputsCount ? possibleSensorInputsCount : this.sensorInputs.length;
-            if (maxSensorInputsCount > 0) {
+            const possibleSensorCount = 99 - this.accessory.services.length;
+            const maxSensorCount = this.sensors.length >= possibleSensorCount ? possibleSensorCount : this.sensors.length;
+            if (maxSensorCount > 0) {
+                this.sensorServices = [];
                 if (this.logDebug) this.emit('debug', `Prepare inputs sensors services`);
-                this.sensorInputsServices = [];
-                for (let i = 0; i < maxSensorInputsCount; i++) {
-                    //get sensor
-                    const sensor = this.sensorInputs[i];
+                for (let i = 0; i < maxSensorCount; i++) {
+                    const sensor = this.sensors[i];
 
                     //get sensor name		
                     const name = sensor.name || `Sensor ${i}`;
 
                     //get sensor name prefix
-                    const namePrefix = sensor.namePrefix || false;
+                    const namePrefix = sensor.namePrefix;
 
                     //get service type
                     const serviceType = sensor.serviceType;
 
-                    //get service type
+                    //get characteristic type
                     const characteristicType = sensor.characteristicType;
 
                     const serviceName = namePrefix ? `${accessoryName} ${name}` : name;
-                    const sensorInputService = new serviceType(serviceName, `Sensor ${i}`);
-                    sensorInputService.addOptionalCharacteristic(Characteristic.ConfiguredName);
-                    sensorInputService.setCharacteristic(Characteristic.ConfiguredName, serviceName);
-                    sensorInputService.getCharacteristic(characteristicType)
+                    const sensorService = new serviceType(serviceName, `Sensor ${i}`);
+                    sensorService.addOptionalCharacteristic(Characteristic.ConfiguredName);
+                    sensorService.setCharacteristic(Characteristic.ConfiguredName, serviceName);
+                    sensorService.getCharacteristic(characteristicType)
                         .onGet(async () => {
-                            const state = sensor.state
+                            const state = sensor.state;
                             return state;
                         });
-                    this.sensorInputsServices.push(sensorInputService);
-                    accessory.addService(sensorInputService);
+                    this.sensorServices.push(sensorService);
+                    accessory.addService(sensorService);
                 }
             }
 
@@ -1136,34 +1080,62 @@ class MainZone extends EventEmitter {
                         ?.updateCharacteristic(Characteristic.RotationSpeed, scaledVolume)
                         .updateCharacteristic(Characteristic.On, muteV);
 
-                    //sensors
-                    this.sensorPowerService?.updateCharacteristic(Characteristic.ContactSensorState, power);
+                    // sensors
+                    const currentStateModeMap = {
+                        0: reference,
+                        1: power,
+                        2: scaledVolume,
+                        3: mute,
+                    };
 
-                    if (scaledVolume !== this.volume) {
-                        for (let i = 0; i < 2; i++) {
-                            const state = power ? (i === 0 ? true : false) : false;
-                            this.sensorVolumeState = state;
-                            this.sensorVolumeService?.updateCharacteristic(Characteristic.ContactSensorState, state);
-                            await new Promise(resolve => setTimeout(resolve, 500));
-                        }
-                    }
+                    const previousStateModeMap = {
+                        0: this.reference,
+                        1: this.power,
+                        2: this.volume,
+                        3: this.mute,
+                    };
 
-                    this.sensorMuteService?.updateCharacteristic(Characteristic.ContactSensorState, power ? mute : false);
+                    for (let i = 0; i < this.sensors.length; i++) {
+                        let state = false;
 
-                    if (reference !== this.reference) {
-                        for (let i = 0; i < 2; i++) {
-                            const state = power ? (i === 0 ? true : false) : false;
-                            this.sensorInputState = state;
-                            this.sensorInputService?.updateCharacteristic(Characteristic.ContactSensorState, state);
-                            await new Promise(resolve => setTimeout(resolve, 500));
-                        }
-                    }
-                    for (let i = 0; i < this.sensorInputs.length; i++) {
-                        const sensor = this.sensorInputs[i];
-                        const state = power ? sensor.reference === reference : false;
-                        sensor.state = state;
+                        const sensor = this.sensors[i];
+                        const currentValue = currentStateModeMap[sensor.mode];
+                        const previousValue = previousStateModeMap[sensor.mode];
+                        const pulse = sensor.pulse;
+                        const reference = sensor.reference;
+                        const level = sensor.level;
                         const characteristicType = sensor.characteristicType;
-                        this.sensorInputsServices?.[i]?.updateCharacteristic(characteristicType, state);
+
+                        // modes >= 4 are independent from main power
+                        const isActiveMode = power;
+                        if (pulse && currentValue !== previousValue) {
+                            for (let step = 0; step < 2; step++) {
+                                state = isActiveMode ? (step === 0) : false;
+                                sensor.state = state;
+                                this.sensorServices?.[i]?.updateCharacteristic(characteristicType, state);
+                                await new Promise(resolve => setTimeout(resolve, 500));
+                            }
+                        } else {
+                            if (isActiveMode) {
+                                switch (sensor.mode) {
+                                    case 0: // reference mode
+                                        state = currentValue === reference;
+                                        break;
+                                    case 2: // volume mode
+                                        state = currentValue === level;
+                                        break;
+                                    case 1: // power
+                                    case 3: // mute
+                                        state = currentValue === true;
+                                        break;
+                                    default:
+                                        state = false;
+                                }
+                            }
+
+                            sensor.state = state;
+                            this.sensorServices?.[i]?.updateCharacteristic(characteristicType, state);
+                        }
                     }
 
                     //buttons

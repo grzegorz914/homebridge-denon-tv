@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## NOTE
 
+- After update to 6.0.0 sensors need to be reconfigured!!!
 - after update to 5.11.x and above from previous versions the plugin need to be reconfigured first, in other case will crash!!!
 - after update to 5.6.x the power and volume control need to be configured again
 - after update to 5.5.x the volume control need to be configured again (removed from repo)
@@ -18,6 +19,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Warning
 
 - Do not use Homebridge UI > v5.5.0 because of break config.json
+
+## [6.0.0] - (11.12.2025)
+
+## Changes
+
+- after update to v6.0.0 sensors need to be reconfigured!!!
+- full refactor the sensor section code, now is possible to create multiple sensors of differrent types
+- config schema updated
+- redme updated
+- cleanup
 
 ## [5.12.10] - (09.12.2025)
 

@@ -92,21 +92,15 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 | `buttonsZ3[].reference` | Here choose function for this button. |
 | `buttonsZ3[].displayType` | Here choose characteristic type to be exposed in HomeKit app, possible `0 - None/Disabled`, `1 - Outlet`, `2 - Switch`. |
 | `buttonsZ3[].namePrefix` | Here enable/disable the accessory name as a prefix for button name. |
-| `sensors{}` | Sensors object. |
-| `sensors.power`| If enabled, then the Power will be exposed as a `Contact Sensor`, fired if power ON. |
-| `sensors.volume`| If enabled, then the Volume will be exposed as a `Contact Sensor`, fired on every Volume change. |
-| `sensors.mute`| If enabled, then the Mute will be exposed as a `Contact Sensor`, fired if Mmute ON. |
-| `sensors.input`| If enabled, then the Input will be exposed as a `Contact Sensor`, fired on every Input change. |
-| `sensors.inputs[]`| Sensor inputs array. |
-| `sensors.inputs[].name` | Here set own `Sensor Name`. |
-| `sensors.inputs[].reference` | Here choose `Input Reference`, sensor fired if switch to this reference. |
-| `sensors.inputs[].displayType` | Here choose characteristic type to be exposed in HomeKit app, `0 - None/Disabled`, `1 - Motion Sensor`, `2 - Occupancy Sensor`, `3 - Contact Sensor`. |
-| `sensors.inputs[].namePrefix` | Here enable/disable the accessory name as a prefix for sensor name. |
-| `sensors.surrounds`| Sensor surrounds array. |
-| `sensors.surrounds[].name` | Here set own `Sensor Name`. |
-| `sensors.surrounds[].reference` | Here choose `Sensor Reference`, sensor fired if switch to this reference. |
-| `sensors.surrounds[].displayType` | Here choose characteristic type to be exposed in HomeKit app, `0 - None/Disabled`, `1 - Motion Sensor`, `2 - Occupancy Sensor`, `3 - Contact Sensor`. |
-| `sensors.surrounds[].namePrefix` | Here enable/disable the accessory name as a prefix for sensor name. |
+| `sensors[]` | Sensor channels array. |
+| `sensors[].displayType` | Here select the sensor type to be exposed in HomeKit app, possible `0 - None/Disabled`, `1 - Motion Sensor`, `2 - Occupancy Sensor`, `3 - Contact Sensor`. |
+| `sensors[].mode` | Here select the sensor mode, possible `0 - Input/Surround`, `1 - Power`, `2 - Volume`, `3 - Mute`. |
+| `sensors[].name` | Here set own sensor `Name` which You want expose to the `Homebridge/HomeKit`. |
+| `sensors[].reference` | Here select `Input Reference`, sensor fired on switch to this input. |
+| `sensors[].referenceSurround` | Here select `Surround Reference`, sensor fired on switch to this surround. |
+| `sensors[].pulse` | Here enable/disable sensor pulse, sensor send pulse and fired on every value change.|
+| `sensors[].namePrefix` | Here enable/disable the accessory name as a prefix for sensor name.|
+| `sensors[].level` | Here set `Level` between `0-100`, sensor fired on this level. |
 | `power{}` | InpPoweruts object. |
 | `power.zone` | Here select which zone the power want control, `0 - Main Zone`, `1 - Zone 2`, `2 - Zone 3`, `3 - Zone 2/3`, `4 - Main Zone + Z2`, `5 - Main Zone + Z3`, `6 - Main Zone + Z2/Z3`, `7 - Master Power`, this also working with power button in RC app. |
 | `volume{}` | Volume object. |
