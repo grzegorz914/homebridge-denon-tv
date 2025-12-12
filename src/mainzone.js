@@ -25,7 +25,7 @@ class MainZone extends EventEmitter {
         this.zoneControl = device.zoneControl;
         this.inputsDisplayOrder = device.inputs?.displayOrder || 0;
         this.buttons = (device.buttons ?? []).filter(button => (button.displayType ?? 0) > 0);
-        this.sensors = (device.sensors ?? []).filter(sensor => (sensor.displayType ?? 0) > 0 && (sensor.mode ?? -1) >= 0);
+        this.sensors = Array.isArray(device.sensors) ? (device.sensors ?? []).filter(sensor => (sensor.displayType ?? 0) > 0 && (sensor.mode ?? -1) >= 0) : [];
         this.powerControlZone = device.power?.zone || 0;
         this.volumeControl = device.volume?.displayType || 0;
         this.volumeControlZone = device.volume?.zone || 0;

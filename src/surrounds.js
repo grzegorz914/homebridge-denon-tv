@@ -21,7 +21,7 @@ class Surrounds extends EventEmitter {
         this.name = device.name;
         this.zoneControl = device.zoneControl;
         this.inputsDisplayOrder = device.surrounds?.displayOrder || 0;
-        this.sensors = (device.sensors ?? []).filter(sensor => (sensor.displayType ?? 0) > 0 && (sensor.mode ?? -1) >= 0);
+        this.sensors = Array.isArray(device.sensors) ? (device.sensors ?? []).filter(sensor => (sensor.displayType ?? 0) > 0 && (sensor.mode ?? -1) >= 0) : [];
         this.logInfo = device.log?.info || false;
         this.logWarn = device.log?.warn || true;
         this.logDebug = device.log?.debug || false;
