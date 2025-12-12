@@ -396,13 +396,7 @@ class PassThroughInputs extends EventEmitter {
                 .on('info', (info) => this.emit('info', info))
                 .on('debug', (debug) => this.emit('debug', debug))
                 .on('warn', (warn) => this.emit('warn', warn))
-                .on('error', (error) => this.emit('error', error))
-                .on('restFul', (path, data) => {
-                    if (this.restFulConnected) this.restFul1.update(path, data);
-                })
-                .on('mqtt', (topic, message) => {
-                    if (this.mqttConnected) this.mqtt1.emit('publish', topic, message);
-                });
+                .on('error', (error) => this.emit('error', error));
 
             //connect to avr
             const connect = await this.zone.connect(this.denonInfo);

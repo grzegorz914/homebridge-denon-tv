@@ -31,12 +31,9 @@ class DenonPlatform {
 
 		api.on('didFinishLaunching', async () => {
 			for (const device of config.devices) {
-				const zoneControl = device.zoneControl ?? -1;
-				if (zoneControl === -1) continue;
-
-				const { name, host, port } = device;
-				if (!name || !host || !port) {
-					log.warn(`Invalid config for device. Name: ${name || 'missing'}, Host: ${host || 'missing'}, Port: ${port || 'missing'}`);
+				const { name, host, port, zoneControl } = device;
+				if (!name || !host || !port || zoneControl === -1) {
+					log.warn(`Device: ${host || 'host missing'},  ${name || 'name missing'}, ${port || 'port missing'}${zoneControl === -1 ? ', zone disabled' : ''} in config, will not be published in the Home app`);
 					continue;
 				}
 

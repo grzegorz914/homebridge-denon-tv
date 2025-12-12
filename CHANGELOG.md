@@ -20,6 +20,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Do not use Homebridge UI > v5.5.0 because of break config.json
 
+## [6.0.1] - (12.12.2025)
+
+## Changes
+
+- after update to v6.0.0 sensors need to be reconfigured!!!
+- fix [#372](https://github.com/grzegorz914/homebridge-denon-tv/issues/372)
+- config schema updated
+- redme updated
+- cleanup
+
 ## [6.0.0] - (11.12.2025)
 
 ## Changes

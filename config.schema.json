@@ -69,7 +69,7 @@
               "description": "Here select which Zone You want control.",
               "anyOf": [
                 {
-                  "title": "None/Disabled",
+                  "title": "None / Disabled",
                   "enum": [
                     -1
                   ]
@@ -1067,7 +1067,7 @@
                     "description": "Here select characteristic type to be exposed in HomeKit app.",
                     "anyOf": [
                       {
-                        "title": "None/Disabled",
+                        "title": "None / Disabled",
                         "enum": [
                           0
                         ]
@@ -4357,7 +4357,7 @@
                     "description": "Here select characteristic type to be exposed in HomeKit app.",
                     "anyOf": [
                       {
-                        "title": "None/Disabled",
+                        "title": "None / Disabled",
                         "enum": [
                           0
                         ]
@@ -5082,7 +5082,7 @@
                     "description": "Here select characteristic type to be exposed in HomeKit app.",
                     "anyOf": [
                       {
-                        "title": "None/Disabled",
+                        "title": "None / Disabled",
                         "enum": [
                           0
                         ]
@@ -5791,7 +5791,7 @@
                     "default": 0,
                     "anyOf": [
                       {
-                        "title": "None/Disabled",
+                        "title": "None / Disabled",
                         "enum": [
                           0
                         ]
@@ -5828,7 +5828,7 @@
                     "default": 0,
                     "anyOf": [
                       {
-                        "title": "Input/Surround",
+                        "title": "Input / Surround",
                         "enum": [
                           0
                         ]
@@ -5879,13 +5879,13 @@
                     "title": "Pulse",
                     "type": "boolean",
                     "default": false,
-                    "description": "Here enable/disable sensor pulse, sensor send pulse and fired on every value change.",
+                    "description": "Here enable/disable sensor pulse, sensor send pulse and fired on every value change of selected mode.",
                     "condition": {
                       "functionBody": "return model.devices[arrayIndices[0]].zoneControl <= 3 && model.devices[arrayIndices[0]].sensors[arrayIndices[1]].displayType > 0;"
                     }
                   },
                   "reference": {
-                    "title": "Reference",
+                    "title": "Input",
                     "type": "string",
                     "description": "Here set the channel reference, fired if switch to this input.",
                     "anyOf": [
@@ -6375,7 +6375,7 @@
                     }
                   },
                   "referenceSurround": {
-                    "title": "Reference",
+                    "title": "Surround",
                     "type": "string",
                     "description": "Here set the surround reference, fired if switch to this surround.",
                     "anyOf": [
@@ -6616,7 +6616,7 @@
                   "description": "Here select what a extra volume/mute control type You want to use.",
                   "anyOf": [
                     {
-                      "title": "None/Disabled",
+                      "title": "None / Disabled",
                       "enum": [
                         0
                       ]
@@ -6634,7 +6634,7 @@
                       ]
                     },
                     {
-                      "title": "TV Speaker",
+                      "title": "TV Speaker (HW buttons)",
                       "enum": [
                         3
                       ]

@@ -21,7 +21,7 @@ class Surrounds extends EventEmitter {
         this.name = device.name;
         this.zoneControl = device.zoneControl;
         this.inputsDisplayOrder = device.surrounds?.displayOrder || 0;
-        this.sensors = (device.sensors || []).filter(sensor => (sensor.displayType ?? 0) > 0 && sensor.mode >= 0);
+        this.sensors = (device.sensors ?? []).filter(sensor => (sensor.displayType ?? 0) > 0 && (sensor.mode ?? -1) >= 0);
         this.logInfo = device.log?.info || false;
         this.logWarn = device.log?.warn || true;
         this.logDebug = device.log?.debug || false;
@@ -506,13 +506,7 @@ class Surrounds extends EventEmitter {
                 .on('info', (info) => this.emit('info', info))
                 .on('debug', (debug) => this.emit('debug', debug))
                 .on('warn', (warn) => this.emit('warn', warn))
-                .on('error', (error) => this.emit('error', error))
-                .on('restFul', (path, data) => {
-                    if (this.restFulConnected) this.restFul1.update(path, data);
-                })
-                .on('mqtt', (topic, message) => {
-                    if (this.mqttConnected) this.mqtt1.emit('publish', topic, message);
-                });
+                .on('error', (error) => this.emit('error', error));
 
             //connect to avr and check state
             const connect = await this.zone.connect(this.denonInfo);

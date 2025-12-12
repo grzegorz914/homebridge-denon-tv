@@ -7,7 +7,7 @@ const INPUTS_CONVERSION_KEYS = Object.keys(InputConversion);
 const SOUND_MODES_CONVERSION_KEYS = Object.keys(SoundModeConversion);
 
 class Zone extends EventEmitter {
-    constructor(denon, config, inputsFile) {
+    constructor(denon, config, inputsFile, restFulEnabled, mqttEnabled) {
         super();
         this.host = config.host;
         this.generation = config.generation || 0;
@@ -18,8 +18,10 @@ class Zone extends EventEmitter {
         this.inputs = this.zoneControl === 3 ? (config.surrounds?.data || []) : (config.inputs?.data || []);
         this.logDebug = config.log?.debug || false;
         this.inputsFile = inputsFile;
-
         this.client = denon.client;
+
+        this.restFulEnabled = restFulEnabled;
+        this.mqttEnabled = mqttEnabled;
 
         const options = {
             ignoreAttributes: false,
@@ -226,19 +228,19 @@ class Zone extends EventEmitter {
 
             // REST & MQTT events
             if (this.zoneControl < 3) {
-                this.emit('restFul', 'state', devState);
-                this.emit('mqtt', 'State', devState);
+                if (this.restFulEnabled) this.emit('restFul', 'state', devState);
+                if (this.mqttEnabled) this.emit('mqtt', 'State', devState);
 
                 if (this.info.supportPictureMode && power) {
                     const payload = { 'Picture Mode': PictureModesDenonNumber[pictureMode] };
-                    this.emit('restFul', 'picture', payload);
-                    this.emit('mqtt', 'Picture', payload);
+                    if (this.restFulEnabled) this.emit('restFul', 'picture', payload);
+                    if (this.mqttEnabled) this.emit('mqtt', 'Picture', payload);
                 }
 
                 if (this.info.supportSoundMode && power) {
                     const payload = { 'Sound Mode': soundMode };
-                    this.emit('restFul', 'surround', payload);
-                    this.emit('mqtt', 'Surround', payload);
+                    if (this.restFulEnabled) this.emit('restFul', 'surround', payload);
+                    if (this.mqttEnabled) this.emit('mqtt', 'Surround', payload);
                 }
             }
 
@@ -305,8 +307,8 @@ class Zone extends EventEmitter {
 
             // REST & MQTT events
             if (this.zoneControl < 3) {
-                this.emit('restFul', 'info', devInfo);
-                this.emit('mqtt', 'Info', devInfo);
+                if (this.restFulEnabled) this.emit('restFul', 'info', devInfo);
+                if (this.mqttEnabled) this.emit('mqtt', 'Info', devInfo);
             }
 
             return true;

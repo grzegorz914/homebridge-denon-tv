@@ -98,8 +98,8 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 | `sensors[].name` | Here set sensor `Name` which You want expose to the `Homebridge/HomeKit`. |
 | `sensors[].reference` | Here choose `Input Reference`, sensor fired on switch to this input. |
 | `sensors[].referenceSurround` | Here choose `Surround Reference`, sensor fired on switch to this surround. |
-| `sensors[].pulse` | Here enable sensor pulse, sensor send pulse and fired on every value change.|
-| `sensors[].namePrefix` | Here enable the accessory name as a prefix for the sensor name.|
+| `sensors[].pulse` | Here enable sensor pulse, sensor send pulse and fired on every value change of selected mode. |
+| `sensors[].namePrefix` | Here enable the accessory name as a prefix for sensor name. |
 | `sensors[].level` | Here set `Level` between `0-100`, sensor fired on this level. |
 | `power{}` | Power object. |
 | `power.zone` | Here choose which zone the power want control, `0 - Main Zone`, `1 - Zone 2`, `2 - Zone 3`, `3 - Zone 2/3`, `4 - Main Zone + Z2`, `5 - Main Zone + Z3`, `6 - Main Zone + Z2/Z3`, `7 - Master Power`, this also working with power button in RC app. |
