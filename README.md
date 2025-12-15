@@ -14,7 +14,7 @@
 [![GitHub issues](https://img.shields.io/github/issues/grzegorz914/homebridge-denon-tv.svg)](https://github.com/grzegorz914/homebridge-denon-tv/issues)
 
 Homebridge plugin for Denon/Marantz AV Receivers series X/SR.
-Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz SR8012, SR6013, M-CR611, PM7000N.
+Tested Denon AVR-2112CI, AVR-3311CI, AVR-X4100W, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz SR8012, SR6013, M-CR611, PM7000N.
 
 </span>
 
@@ -23,8 +23,8 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 | Package | Installation | Role | Required |
 | --- | --- | --- | --- |
 | [Homebridge](https://github.com/homebridge/homebridge) | [Homebridge Wiki](https://github.com/homebridge/homebridge/wiki) | HomeKit Bridge | Required |
-| [Homebridge UI <= v5.5.0](https://github.com/homebridge/homebridge-config-ui-x) | [Homebridge UI Wiki](https://github.com/homebridge/homebridge-config-ui-x/wiki) | Homebridge Web User Interface | Recommended |
-| [Denon TV](https://www.npmjs.com/package/homebridge-denon-tv) | [Plug-In Wiki](https://github.com/grzegorz914/homebridge-denon-tv/wiki) | Homebridge Plug-In | Required |
+| [Homebridge UI <= v5.5.0](https://github.com/homebridge/homebridge-config-ui-x) | [Homebridge UI Wiki](https://github.com/homebridge/homebridge-config-ui-x/wiki) | Homebridge User Interface | Recommended |
+| [Denon TV](https://www.npmjs.com/package/homebridge-denon-tv) | [Plug-In Wiki](https://github.com/grzegorz914/homebridge-denon-tv/wiki) | Plug-In | Required |
 
 ## About The Plugin
 
@@ -69,11 +69,11 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 | `inputs.getFromDevice` | If enabled, `Inputs` will be loaded direct from device. |
 | `inputs.getFavoritesFromDevice` | If enabled, `Favorites` will be loaded to the inputs list if exist. |
 | `inputs.getQuickSmartSelectFromDevice` | If enabled, `Quick/Smart Select` will be loaded to the inputs list if exist. |
-| `inputs.displayOrder` | Here choose display order of the inputs list, `0 - None`, `1 - Ascending by Name`, `2 - Descending by Name`, `3 - Ascending by Reference`, `4 - Ascending by Reference`. |
+| `inputs.displayOrder` | Here choose display order of the inputs list, `0 - None`, `1 - Ascending by Name`, `2 - Descending by Name`, `3 - Ascending by Reference`, `4 - Descending by Reference`. |
 | `inputs.data[]` | Inputs array. |
 | `inputs.data[].name` | Here set `Input Name`. |
 | `inputs.data[].reference` | Choose from available inputs, the inputs that should be published to and appear in HomeKit app in the device tile as inputs list. |
-| `surrounds.displayOrder` | Here choose display order of the surrounds list, `0 - None`, `1 - Ascending by Name`, `2 - Descending by Name`, `3 - Ascending by Reference`, `4 - Ascending by Reference`. |
+| `surrounds.displayOrder` | Here choose display order of the surrounds list, `0 - None`, `1 - Ascending by Name`, `2 - Descending by Name`, `3 - Ascending by Reference`, `4 - Descending by Reference`. |
 | `surrounds.data[]` | Here create `Surrounds` which You want expose to the `Homebridge/HomeKit`. |
 | `surrounds.data[].name` | Here set `Surround Mode Name`. |
 | `surrounds.data[].reference` | Here choose `Surround Mode`, the mode that should be published to and appear in HomeKit app in the extra tile as Surrounds List. |
@@ -100,14 +100,14 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz
 | `sensors[].referenceSurround` | Here choose `Surround Reference`, sensor fired on switch to this surround. |
 | `sensors[].pulse` | Here enable sensor pulse, sensor send pulse and fired on every value change of selected mode. |
 | `sensors[].namePrefix` | Here enable the accessory name as a prefix for sensor name. |
-| `sensors[].level` | Here set `Level` between `0-100`, sensor fired on this level. |
+| `sensors[].level` | Here set `Level` between `0 - 100`, sensor fired on this level. |
 | `power{}` | Power object. |
 | `power.zone` | Here choose which zone the power want control, `0 - Main Zone`, `1 - Zone 2`, `2 - Zone 3`, `3 - Zone 2/3`, `4 - Main Zone + Z2`, `5 - Main Zone + Z3`, `6 - Main Zone + Z2/Z3`, `7 - Master Power`, this also working with power button in RC app. |
 | `volume{}` | Volume object. |
-| `volume.namePrefix` | Here enable accessory name as a prefix for volume control name. |
-| `volume.name` | Here set Your own volume/mute control name or leave empty. |
 | `volume.displayTtype` | Here choose what a additional volume control mode You want to use `0 - None/Disabled`, `1 - Lightbulb`, `2 - Fan`, `3 - TV Speaker`, `4 - TV Speaker / Lightbulb`, `5 - TV Speaker / Fan`.  |
-| `volume.zone` | Here choose which zone the volume/mute want control, `0 - Main Zone`, `1 - Zone 2`, `2 - Zone 3`, `3 - Zone 2/3`, `4 - Main Zone + Z2`, `5 - Main Zone + Z3`, `6 - Main Zone + Z2/Z3`, this also working with hardware buttons in RC app. |
+| `volume.zone` | Here choose which zone the volume/mute want control, `0 - Main Zone`, `1 - Zone 2`, `2 - Zone 3`, `3 - Zone 2/3`, `4 - Main Zone + Z2`, `5 - Main Zone + Z3`, `6 - Main Zone + Z2/Z3`, this also working with hardware
+| `volume.name` | Here set Your own volume/mute control name or leave empty. |
+| `volume.namePrefix` | Here enable accessory name as a prefix for volume control name. |buttons in RC app. |
 | `volume.max` | Here set the maximum possible volume to set, `0 - 100`. |
 | `infoButtonCommand` | Here choose the function for `I` button in RC app. |
 | `refreshInterval` | Here set the data refresh interval. |
