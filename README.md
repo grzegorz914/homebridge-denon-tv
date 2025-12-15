@@ -32,8 +32,7 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X4100W, AVR-X6300H, AVR-X2700H, AVC-X48
   * Multi Zone control.
   * Power ON/OFF control with short press the tile in HomeKit app.
   * Media control, need use RC app on iPhone/iPad.
-  * Speaker Volume and Mute control with hardware buttons, need use RC app on iPhone/iPad.
-  * Volume and Mute control with extra tile `lightbulb`/`fan` (slider).
+  * Volume and mute control with extra tile `Lightbulb`/`Fan` or `Hardware Buttons`, need use RC app on iPhone/iPad.
   * Inputs control using inputs whell or buttons.
   * All other functions control using buttons.
   * Surrounds/Pass Trough Inputs control as a [extra accessory tile](https://github.com/grzegorz914/homebridge-denon-tv?tab=readme-ov-file#extra-accessory-tile).
@@ -107,7 +106,7 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X4100W, AVR-X6300H, AVR-X2700H, AVC-X48
 | `volume.displayTtype` | Here choose what a additional volume control mode You want to use `0 - None/Disabled`, `1 - Lightbulb`, `2 - Fan`, `3 - TV Speaker`, `4 - TV Speaker / Lightbulb`, `5 - TV Speaker / Fan`.  |
 | `volume.zone` | Here choose which zone the volume/mute want control, `0 - Main Zone`, `1 - Zone 2`, `2 - Zone 3`, `3 - Zone 2/3`, `4 - Main Zone + Z2`, `5 - Main Zone + Z3`, `6 - Main Zone + Z2/Z3`, this also working with hardware
 | `volume.name` | Here set Your own volume/mute control name or leave empty. |
-| `volume.namePrefix` | Here enable accessory name as a prefix for volume control name. |buttons in RC app. |
+| `volume.namePrefix` | Here enable accessory name as a prefix for volume control name. |
 | `volume.max` | Here set the maximum possible volume to set, `0 - 100`. |
 | `infoButtonCommand` | Here choose the function for `I` button in RC app. |
 | `refreshInterval` | Here set the data refresh interval. |
@@ -122,7 +121,7 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X4100W, AVR-X6300H, AVR-X2700H, AVC-X48
 | `restFul.enable` | If enabled, RESTful server will start automatically and respond to any path request. |
 | `restFul.port` | Here set the listening `Port` for RESTful server. |
 | `mqtt{}` | MQTT object. |
-| `mqtt.enable` | If enabled, MQTT Broker will start automatically and publish all awailable PV data. |
+| `mqtt.enable` | If enabled, MQTT Broker will start automatically and publish all awailable data. |
 | `mqtt.host` | Here set the `IP Address` or `Hostname` for MQTT Broker. |
 | `mqtt.port` | Here set the `Port` for MQTT Broker, default 1883. |
 | `mqtt.clientId` | Here optional set the `Client Id` of MQTT Broker. |
