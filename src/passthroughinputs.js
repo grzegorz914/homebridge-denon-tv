@@ -35,7 +35,7 @@ class PassThroughInputs extends EventEmitter {
         this.inputIdentifier = 1;
         this.power = false;
         this.reference = '';
-        this.mediaState = false;
+        this.playState = false;
         this.sensorInputState = false;
     };
 
@@ -245,7 +245,7 @@ class PassThroughInputs extends EventEmitter {
                 .onSet(async (state) => {
                     try {
                         //const powerState = this.masterPower ? (state ? 'PWON' : 'PWSTANDBY') : (state ? 'ZMON' : 'ZMOFF');
-                        //await this.zone.send(powerState);
+                        //await this.denon.send(powerState);
                         //if (this.logInfo) this.emit('info', `set Power: ${powerState}`);
                     } catch (error) {
                         if (this.logWarn) this.emit('warn', `set Power error: ${error}`);
@@ -285,7 +285,7 @@ class PassThroughInputs extends EventEmitter {
                             return;
                         }
 
-                        await this.zone.send(`${zonePrefix}${reference}`);
+                        await this.denon.send(`${zonePrefix}${reference}`);
                         if (this.logInfo) this.emit('info', `set Input Name: ${name}, Reference: ${reference}`);
                     } catch (error) {
                         if (this.logWarn) this.emit('warn', `set Input error: ${error}`);
@@ -331,15 +331,15 @@ class PassThroughInputs extends EventEmitter {
                                 command = rcMedia ? 'MNRTN' : 'MNRTN';
                                 break;
                             case Characteristic.RemoteKey.PLAY_PAUSE:
-                                command = rcMedia ? (this.mediaState ? 'NS9B' : 'NS9A') : 'NS94';
-                                this.mediaState = !this.mediaState;
+                                command = rcMedia ? (this.playState ? 'NS9B' : 'NS9A') : 'NS94';
+                                this.playState = !this.playState;
                                 break;
                             case Characteristic.RemoteKey.INFORMATION:
                                 command = this.infoButtonCommand;
                                 break;
                         }
 
-                        await this.zone.send(command);
+                        await this.denon.send(command);
                         if (this.logInfo) this.emit('info', `set Remote Key: ${command}`);
                     } catch (error) {
                         if (this.logWarn) this.emit('warn', `set Remote Key error: ${error}`);
@@ -398,9 +398,9 @@ class PassThroughInputs extends EventEmitter {
                 .on('warn', (warn) => this.emit('warn', warn))
                 .on('error', (error) => this.emit('error', error));
 
-            //connect to avr
-            const connect = await this.zone.connect(this.denonInfo);
-            if (!connect) return false;
+            //checkInfo to avr
+            const checkInfo = await this.zone.checkInfo(this.denonInfo);
+            if (!checkInfo) return false;
 
             //prepare data for accessory
             await this.prepareDataForAccessory();

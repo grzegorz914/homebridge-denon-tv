@@ -7,16 +7,16 @@ const INPUTS_CONVERSION_KEYS = Object.keys(InputConversion);
 const SOUND_MODES_CONVERSION_KEYS = Object.keys(SoundModeConversion);
 
 class Zone extends EventEmitter {
-    constructor(denon, config, inputsFile, restFulEnabled, mqttEnabled) {
+    constructor(denon, device, inputsFile, restFulEnabled, mqttEnabled) {
         super();
-        this.host = config.host;
-        this.generation = config.generation || 0;
-        this.zoneControl = config.zoneControl;
-        this.getInputsFromDevice = this.zoneControl !== 3 && config.inputs?.getFromDevice || false;
-        this.getFavoritesFromDevice = this.zoneControl < 3 && this.generation > 0 && config.inputs?.getFavoritesFromDevice || false;
-        this.getQuickSmartSelectFromDevice = this.zoneControl < 3 && this.generation > 0 && config.inputs?.getQuickSmartSelectFromDevice || false;
-        this.inputs = this.zoneControl === 3 ? (config.surrounds?.data || []) : (config.inputs?.data || []);
-        this.logDebug = config.log?.debug || false;
+        this.host = device.host;
+        this.generation = device.generation || 0;
+        this.zoneControl = device.zoneControl;
+        this.getInputsFromDevice = this.zoneControl !== 3 && device.inputs?.getFromDevice || false;
+        this.getFavoritesFromDevice = this.zoneControl < 3 && this.generation > 0 && device.inputs?.getFavoritesFromDevice || false;
+        this.getQuickSmartSelectFromDevice = this.zoneControl < 3 && this.generation > 0 && device.inputs?.getQuickSmartSelectFromDevice || false;
+        this.inputs = this.zoneControl === 3 ? (device.surrounds?.data || []) : (device.inputs?.data || []);
+        this.logDebug = device.log?.debug || false;
         this.inputsFile = inputsFile;
         this.client = denon.client;
 
@@ -42,9 +42,9 @@ class Zone extends EventEmitter {
         this.audysseyMode = '';
         this.firstRun = true;
 
-        denon.on('deviceInfo', async (devInfo) => {
+        denon.on('denonInfo', async (denonInfo) => {
             try {
-                await this.connect(devInfo);
+                await this.checkInfo(denonInfo);
             } catch (error) {
                 this.emit('error', error);
             }
@@ -74,14 +74,14 @@ class Zone extends EventEmitter {
         }
     }
 
-    async prepareInputs(devInfo, generation, zoneControl, inputs, zoneCaps, getInputsFromDevice, getFavoritesFromDevice, getQuickSmartSelectFromDevice, supportFavorites, supportShortcuts, supportQuickSmartSelect) {
+    async prepareInputs(denonInfo, generation, zoneControl, inputs, zoneCaps, getInputsFromDevice, getFavoritesFromDevice, getQuickSmartSelectFromDevice, supportFavorites, supportShortcuts, supportQuickSmartSelect) {
         try {
             const tempInputs = [];
 
             // Add inputs from avr or config
             if (Array.isArray(inputs)) {
                 inputs.forEach((input, i) => {
-                    const inputNameOld = (getInputsFromDevice && generation === 0) ? (devInfo.RenameSource.value[i]?.trim() || inputs[i]) : `Input ${i}`;
+                    const inputNameOld = (getInputsFromDevice && generation === 0) ? (denonInfo.RenameSource.value[i]?.trim() || inputs[i]) : `Input ${i}`;
                     const inputName = getInputsFromDevice ? { 0: inputNameOld, 1: input.DefaultName, 2: input.DefaultName }[generation] : input.name;
                     const inputReference = getInputsFromDevice ? { 0: input, 1: input.FuncName, 2: input.FuncName }[generation] : input.reference;
 
@@ -103,7 +103,7 @@ class Zone extends EventEmitter {
 
             // Add favorites
             if (getFavoritesFromDevice && supportFavorites) {
-                const favorites = devInfo?.DeviceCapabilities?.Operation?.Favorites || [];
+                const favorites = denonInfo?.DeviceCapabilities?.Operation?.Favorites || [];
                 favorites.forEach(({ DispName, FuncName }) => {
                     if (DispName && FuncName) {
                         tempInputs.push({ name: DispName, reference: FuncName });
@@ -264,34 +264,34 @@ class Zone extends EventEmitter {
         }
     }
 
-    async connect(devInfo) {
+    async checkInfo(denonInfo) {
         try {
             // Capabilities
-            devInfo.info.supportPictureMode = this.zoneControl === 0 && devInfo.info.supportPictureMode;
-            devInfo.info.supportSoundMode = (this.zoneControl === 0 || this.zoneControl === 3) && devInfo.info.supportSoundMode;
-            devInfo.info.supportFavorites = this.zoneControl < 3 && devInfo.info.supportFavorites;
+            denonInfo.info.supportPictureMode = this.zoneControl === 0 && denonInfo.info.supportPictureMode;
+            denonInfo.info.supportSoundMode = (this.zoneControl === 0 || this.zoneControl === 3) && denonInfo.info.supportSoundMode;
+            denonInfo.info.supportFavorites = this.zoneControl < 3 && denonInfo.info.supportFavorites;
 
             // Zone capabilities
-            const keys = Object.keys(devInfo);
+            const keys = Object.keys(denonInfo);
             let zoneCaps = {};
             if (this.zoneControl !== 3 && keys.includes('DeviceZoneCapabilities')) {
-                const zones = Array.isArray(devInfo.DeviceZoneCapabilities) ? devInfo.DeviceZoneCapabilities : [devInfo.DeviceZoneCapabilities];
+                const zones = Array.isArray(denonInfo.DeviceZoneCapabilities) ? denonInfo.DeviceZoneCapabilities : [denonInfo.DeviceZoneCapabilities];
                 const zone = this.zoneControl === 4 ? 0 : this.zoneControl;
                 zoneCaps = zones[zone] || {};
             }
-            devInfo.info.supportShortcuts = zoneCaps.ShortcutControl?.Control === 1;
-            devInfo.info.supportQuickSelect = zoneCaps.Operation?.QuickSelect?.Control === 1;
-            devInfo.info.controlZone = ZoneName[this.zoneControl];
-            this.info = devInfo.info;
+            denonInfo.info.supportShortcuts = zoneCaps.ShortcutControl?.Control === 1;
+            denonInfo.info.supportQuickSelect = zoneCaps.Operation?.QuickSelect?.Control === 1;
+            denonInfo.info.controlZone = ZoneName[this.zoneControl];
+            this.info = denonInfo.info;
 
             //  Success event
             if (this.firstRun) {
-                this.emit('deviceInfo', devInfo.info);
+                this.emit('deviceInfo', denonInfo.info);
                 this.firstRun = false;
             }
 
             // Inputs
-            const inputsOldDevice = this.generation === 0 && devInfo.InputFuncList?.value ? devInfo.InputFuncList.value : [];
+            const inputsOldDevice = this.generation === 0 && denonInfo.InputFuncList?.value ? denonInfo.InputFuncList.value : [];
             const inputsNewDevice = zoneCaps.InputSource?.List?.Source || [];
 
             const inputsMap = {
@@ -300,31 +300,20 @@ class Zone extends EventEmitter {
                 2: inputsNewDevice
             };
             const inputs = this.getInputsFromDevice ? inputsMap[this.generation] : this.inputs;
-            const allInputs = await this.prepareInputs(devInfo, this.generation, this.zoneControl, inputs, zoneCaps, this.getInputsFromDevice, this.getFavoritesFromDevice, this.getQuickSmartSelectFromDevice, devInfo.info.supportFavorites, devInfo.info.supportShortcuts, devInfo.info.supportQuickSelect);
+            const allInputs = await this.prepareInputs(denonInfo, this.generation, this.zoneControl, inputs, zoneCaps, this.getInputsFromDevice, this.getFavoritesFromDevice, this.getQuickSmartSelectFromDevice, denonInfo.info.supportFavorites, denonInfo.info.supportShortcuts, denonInfo.info.supportQuickSelect);
 
             // Emit inputs
             this.emit('addRemoveOrUpdateInput', allInputs, false);
 
             // REST & MQTT events
             if (this.zoneControl < 3) {
-                if (this.restFulEnabled) this.emit('restFul', 'info', devInfo);
-                if (this.mqttEnabled) this.emit('mqtt', 'Info', devInfo);
+                if (this.restFulEnabled) this.emit('restFul', 'info', denonInfo);
+                if (this.mqttEnabled) this.emit('mqtt', 'Info', denonInfo);
             }
 
             return true;
         } catch (error) {
             throw new Error(`Zone connect error: ${error}`);
-        }
-    }
-
-    async send(command) {
-        try {
-            const path = `${ApiUrls.iPhoneDirect}${command}`;
-            await this.client.get(path);
-            if (this.logDebug) this.emit('debug', `Send path: ${path}`);
-            return true;
-        } catch (error) {
-            throw new Error(`Send data error: ${error}`);
         }
     }
 }

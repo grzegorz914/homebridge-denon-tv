@@ -23,8 +23,13 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X4100W, AVR-X6300H, AVR-X2700H, AVC-X48
 | Package | Installation | Role | Required |
 | --- | --- | --- | --- |
 | [Homebridge](https://github.com/homebridge/homebridge) | [Homebridge Wiki](https://github.com/homebridge/homebridge/wiki) | HomeKit Bridge | Required |
-| [Homebridge UI <= v5.5.0](https://github.com/homebridge/homebridge-config-ui-x) | [Homebridge UI Wiki](https://github.com/homebridge/homebridge-config-ui-x/wiki) | Homebridge User Interface | Recommended |
+| [Homebridge UI](https://github.com/homebridge/homebridge-config-ui-x) | [Homebridge UI Wiki](https://github.com/homebridge/homebridge-config-ui-x/wiki) | Homebridge User Interface | Recommended |
 | [Denon TV](https://www.npmjs.com/package/homebridge-denon-tv) | [Plug-In Wiki](https://github.com/grzegorz914/homebridge-denon-tv/wiki) | Plug-In | Required |
+
+## Warning
+
+* For plugin < v6.1.0 use Homebridge UI <= v5.5.0.
+* For plugin >= v6.1.0 use Homebridge UI >= v5.13.0.
 
 ## About The Plugin
 
@@ -50,7 +55,7 @@ Tested Denon AVR-2112CI, AVR-3311CI, AVR-X4100W, AVR-X6300H, AVR-X2700H, AVC-X48
 
 * First enable [Network Contorl Denon/Marantz](https://manuals.denon.com/avrx6300h/na/en/HJWMSYmehwmguq.php).
 * Run this plugin as a [Child Bridge](https://github.com/homebridge/homebridge/wiki/Child-Bridges) (Highly Recommended), this prevent crash Homebridge if plugin crashes.
-* Install and use [Homebridge UI <= v5.5.0](https://github.com/homebridge/homebridge-config-ui-x/wiki) to configure this plugin.
+* Install and use [Homebridge UI](https://github.com/homebridge/homebridge-config-ui-x/wiki) to configure this plugin.
 * The `sample-config.json` can be edited and used as an alternative.
 
 <p align="center">

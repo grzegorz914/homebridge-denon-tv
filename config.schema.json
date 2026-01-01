@@ -65,11 +65,11 @@
               "type": "integer",
               "minimum": -1,
               "maximum": 4,
-              "default": 0,
+              "default": -1,
               "description": "Here select which Zone You want control.",
               "anyOf": [
                 {
-                  "title": "None / Disabled",
+                  "title": "Disabled",
                   "enum": [
                     -1
                   ]
@@ -111,9 +111,8 @@
               "type": "object",
               "properties": {
                 "getFromDevice": {
-                  "title": "Load Inputs From Device",
+                  "title": "Load Inputs",
                   "type": "boolean",
-                  "default": false,
                   "description": "If enabled, all Inputs will be loaded direct from device.",
                   "condition": {
                     "functionBody": "return model.devices[arrayIndices].zoneControl !== 3;"
@@ -122,7 +121,6 @@
                 "getFavoritesFromDevice": {
                   "title": "Load Favorites",
                   "type": "boolean",
-                  "default": false,
                   "description": "If enabled, all Favorites will be loaded direct from device, only if exist.",
                   "condition": {
                     "functionBody": "return model.devices[arrayIndices].generation > 0 && model.devices[arrayIndices].zoneControl < 3;"
@@ -131,7 +129,6 @@
                 "getQuickSmartSelectFromDevice": {
                   "title": "Load Quick/Smart Select",
                   "type": "boolean",
-                  "default": false,
                   "description": "If enabled, all Quick/Smart Select will be loaded direct from device, only if exist.",
                   "condition": {
                     "functionBody": "return  model.devices[arrayIndices].generation > 0 && model.devices[arrayIndices].zoneControl < 3;"
@@ -142,11 +139,10 @@
                   "type": "integer",
                   "minimum": 0,
                   "maximum": 4,
-                  "default": 0,
                   "description": "Here select display order of the inputs list.",
                   "anyOf": [
                     {
-                      "title": "None",
+                      "title": "Disabled",
                       "enum": [
                         0
                       ]
@@ -819,13 +815,13 @@
                             ]
                           },
                           {
-                            "title": "SMART SELECTMEMORY 4",
+                            "title": "SMART SELECT MEMORY 4",
                             "enum": [
                               "SMART4 MEMORY"
                             ]
                           },
                           {
-                            "title": "SMART SELECTMEMORY 5",
+                            "title": "SMART SELECT MEMORY 5",
                             "enum": [
                               "SMART5 MEMORY"
                             ]
@@ -838,10 +834,7 @@
                     "functionBody": "return model.devices[arrayIndices].inputs.getFromDevice === false && model.devices[arrayIndices].zoneControl !== 3;"
                   }
                 }
-              },
-              "required": [
-                "displayOrder"
-              ]
+              }
             },
             "surrounds": {
               "title": "Surrounds",
@@ -852,11 +845,10 @@
                   "type": "integer",
                   "minimum": 0,
                   "maximum": 4,
-                  "default": 0,
-                  "description": "Here select display order of the inputs list.",
+                  "description": "Here select display order of the surrounds list.",
                   "anyOf": [
                     {
-                      "title": "None",
+                      "title": "Disabled",
                       "enum": [
                         0
                       ]
@@ -890,7 +882,7 @@
                 "data": {
                   "type": "array",
                   "items": {
-                    "title": "Surrounds",
+                    "title": "Surround",
                     "type": "object",
                     "properties": {
                       "name": {
@@ -1047,10 +1039,7 @@
                     }
                   }
                 }
-              },
-              "required": [
-                "displayOrder"
-              ]
+              }
             },
             "buttons": {
               "type": "array",
@@ -1063,11 +1052,10 @@
                     "type": "integer",
                     "minimum": 0,
                     "maximum": 2,
-                    "default": 0,
                     "description": "Here select characteristic type to be exposed in HomeKit app.",
                     "anyOf": [
                       {
-                        "title": "None / Disabled",
+                        "title": "Disabled",
                         "enum": [
                           0
                         ]
@@ -1090,10 +1078,7 @@
                     "title": "Name",
                     "type": "string",
                     "placeholder": "Button name",
-                    "description": "Here set Your own name.",
-                    "condition": {
-                      "functionBody": "return model.devices[arrayIndices[0]].buttons[arrayIndices[1]].displayType > 0;"
-                    }
+                    "description": "Here set Your own name."
                   },
                   "reference": {
                     "title": "Function",
@@ -4330,15 +4315,33 @@
                   "namePrefix": {
                     "title": "Prefix",
                     "type": "boolean",
-                    "default": false,
                     "description": "Here enable/disable the accessory name as a prefix for button name.",
                     "condition": {
                       "functionBody": "return model.devices[arrayIndices[0]].buttons[arrayIndices[1]].displayType > 0;"
                     }
                   }
                 },
-                "required": [
-                  "displayType"
+                "allOf": [
+                  {
+                    "if": {
+                      "required": [
+                        "displayType"
+                      ],
+                      "properties": {
+                        "displayType": {
+                          "enum": [
+                            1,
+                            2
+                          ]
+                        }
+                      }
+                    },
+                    "then": {
+                      "required": [
+                        "reference"
+                      ]
+                    }
+                  }
                 ]
               }
             },
@@ -4353,11 +4356,10 @@
                     "type": "integer",
                     "minimum": 0,
                     "maximum": 2,
-                    "default": 0,
                     "description": "Here select characteristic type to be exposed in HomeKit app.",
                     "anyOf": [
                       {
-                        "title": "None / Disabled",
+                        "title": "Disabled",
                         "enum": [
                           0
                         ]
@@ -5052,15 +5054,33 @@
                   "namePrefix": {
                     "title": "Prefix",
                     "type": "boolean",
-                    "default": false,
                     "description": "Here enable/disable the accessory name as a prefix for button name.",
                     "condition": {
                       "functionBody": "return model.devices[arrayIndices[0]].buttonsZ2[arrayIndices[1]].displayType > 0;"
                     }
                   }
                 },
-                "required": [
-                  "displayType"
+                "allOf": [
+                  {
+                    "if": {
+                      "required": [
+                        "displayType"
+                      ],
+                      "properties": {
+                        "displayType": {
+                          "enum": [
+                            1,
+                            2
+                          ]
+                        }
+                      }
+                    },
+                    "then": {
+                      "required": [
+                        "reference"
+                      ]
+                    }
+                  }
                 ]
               },
               "condition": {
@@ -5078,11 +5098,10 @@
                     "type": "integer",
                     "minimum": 0,
                     "maximum": 2,
-                    "default": 0,
                     "description": "Here select characteristic type to be exposed in HomeKit app.",
                     "anyOf": [
                       {
-                        "title": "None / Disabled",
+                        "title": "Disabled",
                         "enum": [
                           0
                         ]
@@ -5765,22 +5784,40 @@
                   "namePrefix": {
                     "title": "Prefix",
                     "type": "boolean",
-                    "default": false,
                     "description": "Here enable/disable the accessory name as a prefix for button name.",
                     "condition": {
                       "functionBody": "return model.devices[arrayIndices[0]].buttonsZ3[arrayIndices[1]].displayType > 0;"
                     }
                   }
                 },
-                "required": [
-                  "displayType"
+                "allOf": [
+                  {
+                    "if": {
+                      "required": [
+                        "displayType"
+                      ],
+                      "properties": {
+                        "displayType": {
+                          "enum": [
+                            1,
+                            2
+                          ]
+                        }
+                      }
+                    },
+                    "then": {
+                      "required": [
+                        "reference"
+                      ]
+                    }
+                  }
                 ]
               }
             },
             "sensors": {
               "type": "array",
               "items": {
-                "title": "Sensors",
+                "title": "Sensor",
                 "type": "object",
                 "properties": {
                   "displayType": {
@@ -5788,10 +5825,9 @@
                     "type": "integer",
                     "minimum": 0,
                     "maximum": 3,
-                    "default": 0,
                     "anyOf": [
                       {
-                        "title": "None / Disabled",
+                        "title": "Disabled",
                         "enum": [
                           0
                         ]
@@ -5820,12 +5856,20 @@
                       "functionBody": "return model.devices[arrayIndices[0]].zoneControl <= 3;"
                     }
                   },
+                  "name": {
+                    "title": "Name",
+                    "type": "string",
+                    "placeholder": "Name",
+                    "description": "Here set Your own name.",
+                    "condition": {
+                      "functionBody": "return model.devices[arrayIndices[0]].zoneControl <= 3;"
+                    }
+                  },
                   "mode": {
                     "title": "Mode",
                     "type": "integer",
                     "minimum": 0,
                     "maximum": 3,
-                    "default": 0,
                     "anyOf": [
                       {
                         "title": "Input / Surround",
@@ -5857,19 +5901,9 @@
                       "functionBody": "return model.devices[arrayIndices[0]].zoneControl <= 3 && model.devices[arrayIndices[0]].sensors[arrayIndices[1]].displayType > 0;"
                     }
                   },
-                  "name": {
-                    "title": "Name",
-                    "type": "string",
-                    "placeholder": "Name",
-                    "description": "Here set Your own name.",
-                    "condition": {
-                      "functionBody": "return model.devices[arrayIndices[0]].zoneControl <= 3 && model.devices[arrayIndices[0]].sensors[arrayIndices[1]].displayType > 0;"
-                    }
-                  },
                   "namePrefix": {
                     "title": "Prefix",
                     "type": "boolean",
-                    "default": false,
                     "description": "Here enable/disable the accessory name as a prefix for sensor name.",
                     "condition": {
                       "functionBody": "return model.devices[arrayIndices[0]].zoneControl <= 3 && model.devices[arrayIndices[0]].sensors[arrayIndices[1]].displayType > 0;"
@@ -5878,7 +5912,6 @@
                   "pulse": {
                     "title": "Pulse",
                     "type": "boolean",
-                    "default": false,
                     "description": "Here enable/disable sensor pulse, sensor send pulse and fired on every value change of selected mode.",
                     "condition": {
                       "functionBody": "return model.devices[arrayIndices[0]].zoneControl <= 3 && model.devices[arrayIndices[0]].sensors[arrayIndices[1]].displayType > 0;"
@@ -6522,16 +6555,105 @@
                     "minimum": 0,
                     "maximum": 100,
                     "multipleOf": 1,
-                    "default": 100,
                     "description": "Here set the level between 0-100% at which the sensor fired.",
                     "condition": {
                       "functionBody": "return model.devices[arrayIndices[0]].zoneControl <= 2 && model.devices[arrayIndices[0]].sensors[arrayIndices[1]].displayType > 0 && model.devices[arrayIndices[0]].sensors[arrayIndices[1]].pulse === false && model.devices[arrayIndices[0]].sensors[arrayIndices[1]].mode === 2;"
                     }
                   }
                 },
-                "required": [
-                  "displayType",
-                  "mode"
+                "allOf": [
+                  {
+                    "if": {
+                      "required": [
+                        "displayType"
+                      ],
+                      "properties": {
+                        "displayType": {
+                          "enum": [
+                            1,
+                            2,
+                            3
+                          ]
+                        }
+                      }
+                    },
+                    "then": {
+                      "required": [
+                        "mode"
+                      ]
+                    }
+                  },
+                  {
+                    "if": {
+                      "required": [
+                        "displayType",
+                        "mode",
+                        "pulse"
+                      ],
+                      "properties": {
+                        "displayType": {
+                          "enum": [
+                            1,
+                            2,
+                            3
+                          ]
+                        },
+                        "mode": {
+                          "enum": [
+                            0
+                          ]
+                        },
+                        "pulse": {
+                          "const": false
+                        }
+                      }
+                    },
+                    "then": {
+                      "oneOf": [
+                        {
+                          "required": [
+                            "reference"
+                          ]
+                        },
+                        {
+                          "required": [
+                            "referenceSurround"
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "if": {
+                      "required": [
+                        "displayType",
+                        "mode",
+                        "pulse"
+                      ],
+                      "properties": {
+                        "displayType": {
+                          "enum": [
+                            1,
+                            2,
+                            3
+                          ]
+                        },
+                        "mode": {
+                          "enum": [
+                            2
+                          ]
+                        },
+                        "pulse": {
+                          "const": false
+                        }
+                      }
+                    },
+                    "then": {
+                      "required": [
+                        "level"
+                      ]
+                    }
+                  }
                 ]
               }
             },
@@ -6544,7 +6666,6 @@
                   "type": "integer",
                   "minimum": 0,
                   "maximum": 7,
-                  "default": 0,
                   "description": "Here select which zone the power want control, this also working with power button in RC app.",
                   "anyOf": [
                     {
@@ -6600,10 +6721,7 @@
                     "functionBody": "return model.devices[arrayIndices].zoneControl <= 2;"
                   }
                 }
-              },
-              "required": [
-                "zone"
-              ]
+              }
             },
             "volume": {
               "title": "Volume",
@@ -6612,11 +6730,12 @@
                 "displayType": {
                   "title": "Display Type",
                   "type": "integer",
-                  "default": 0,
+                  "minimum": 0,
+                  "maximum": 5,
                   "description": "Here select what a extra volume/mute control type You want to use.",
                   "anyOf": [
                     {
-                      "title": "None / Disabled",
+                      "title": "Disabled",
                       "enum": [
                         0
                       ]
@@ -6661,7 +6780,6 @@
                   "type": "integer",
                   "minimum": 0,
                   "maximum": 6,
-                  "default": 0,
                   "description": "Here select which zone the volume/mute want control.",
                   "anyOf": [
                     {
@@ -6723,7 +6841,6 @@
                 "namePrefix": {
                   "title": "Prefix",
                   "type": "boolean",
-                  "default": false,
                   "description": "Here enable/disable the accessory name as a prefix for volume control name.",
                   "condition": {
                     "functionBody": "return model.devices[arrayIndices].volume.displayType > 0;"
@@ -6734,16 +6851,45 @@
                   "type": "integer",
                   "minimum": 0,
                   "maximum": 100,
-                  "default": 100,
                   "description": "Here set the max possible volume to set.",
                   "condition": {
                     "functionBody": "return model.devices[arrayIndices].volume.displayType > 0;"
                   }
                 }
               },
-              "required": [
-                "displayType",
-                "zone"
+              "allOf": [
+                {
+                  "if": {
+                    "required": [
+                      "displayType"
+                    ],
+                    "properties": {
+                      "displayType": {
+                        "enum": [
+                          1,
+                          2,
+                          3,
+                          4,
+                          5
+                        ]
+                      }
+                    }
+                  },
+                  "then": {
+                    "allOf": [
+                      {
+                        "required": [
+                          "zone"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "max"
+                        ]
+                      }
+                    ]
+                  }
+                }
               ]
             },
             "refreshInterval": {
@@ -6899,7 +7045,6 @@
                     "enable": {
                       "title": "Enable",
                       "type": "boolean",
-                      "default": false,
                       "description": "This enable authorization for MQTT Broker.",
                       "condition": {
                         "functionBody": "return model.devices[arrayIndices].mqtt.enable == true;"
@@ -6967,7 +7112,7 @@
             {
               "key": "devices[].inputs.data",
               "type": "tabarray",
-              "title": "{{ value.name || 'input' }}",
+              "title": "{{ value.name || 'Input' }}",
               "items": [
                 "devices[].inputs.data[].name",
                 "devices[].inputs.data[].reference"
@@ -6989,7 +7134,7 @@
             {
               "key": "devices[].surrounds.data",
               "type": "tabarray",
-              "title": "{{ value.name || 'surround' }}",
+              "title": "{{ value.name || 'Surround' }}",
               "items": [
                 "devices[].surrounds.data[].name",
                 "devices[].surrounds.data[].reference"
@@ -7010,7 +7155,7 @@
             {
               "key": "devices[].buttons",
               "type": "tabarray",
-              "title": "{{ value.name || 'button' }}",
+              "title": "{{ value.name || 'Button' }}",
               "items": [
                 "devices[].buttons[].displayType",
                 "devices[].buttons[].name",
@@ -7024,7 +7169,7 @@
             {
               "key": "devices[].buttonsZ2",
               "type": "tabarray",
-              "title": "{{ value.name || 'button' }}",
+              "title": "{{ value.name || 'Button' }}",
               "items": [
                 "devices[].buttonsZ2[].displayType",
                 "devices[].buttonsZ2[].name",
@@ -7038,7 +7183,7 @@
             {
               "key": "devices[].buttonsZ3",
               "type": "tabarray",
-              "title": "{{ value.name || 'button' }}",
+              "title": "{{ value.name || 'Button' }}",
               "items": [
                 "devices[].buttonsZ3[].displayType",
                 "devices[].buttonsZ3[].name",
@@ -7097,7 +7242,7 @@
                     {
                       "key": "devices[].sensors",
                       "type": "tabarray",
-                      "title": "{{ value.name || 'sensor' }}",
+                      "title": "{{ value.name || 'Sensor' }}",
                       "items": [
                         "devices[].sensors[].displayType",
                         "devices[].sensors[].mode",
@@ -7180,10 +7325,7 @@
                 }
               ]
             }
-          ],
-          "condition": {
-            "functionBody": "return model.devices[arrayIndices].zoneControl >= 0;"
-          }
+          ]
         }
       ]
     }

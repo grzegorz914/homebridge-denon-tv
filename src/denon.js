@@ -61,7 +61,7 @@ class Denon extends EventEmitter {
 
     async connect() {
         try {
-            // Fetch & parse device info
+            // Fetch & parse denon info
             const deviceInfoUrl = [ApiUrls.DeviceInfoGen0, ApiUrls.DeviceInfoGen1, ApiUrls.DeviceInfoGen2][this.generation];
             const deviceInfo = await this.client.get(deviceInfoUrl);
             const parseData = this.parseString.parse(deviceInfo.data);
@@ -71,39 +71,50 @@ class Denon extends EventEmitter {
                 1: parseData.Device_Info,
                 2: parseData.Device_Info
             };
-            const devInfo = generationMap[this.generation];
-            if (this.logDebug) this.emit('debug', `Connect data: ${JSON.stringify(devInfo, null, 2)}`);
+            const denonInfo = generationMap[this.generation];
+            if (this.logDebug) this.emit('debug', `Connect data: ${JSON.stringify(denonInfo, null, 2)}`);
 
             // Device info
-            devInfo.info = {
-                manufacturer: ManufacturerMap[devInfo.BrandCode ?? 2],
-                modelName: devInfo.ModelName || devInfo.FriendlyName?.value || 'AV Receiver',
-                serialNumber: devInfo.MacAddress?.toString() || `1234567654321${this.host}`,
-                firmwareRevision: devInfo.UpgradeVersion?.toString() || '00',
-                deviceZones: devInfo.DeviceZones ?? 1,
-                apiVersion: devInfo.CommApiVers || '000'
+            denonInfo.info = {
+                manufacturer: ManufacturerMap[denonInfo.BrandCode ?? 2],
+                modelName: denonInfo.ModelName || denonInfo.FriendlyName?.value || 'AV Receiver',
+                serialNumber: denonInfo.MacAddress?.toString() || `1234567654321${this.host}`,
+                firmwareRevision: denonInfo.UpgradeVersion?.toString() || '00',
+                deviceZones: denonInfo.DeviceZones ?? 1,
+                apiVersion: denonInfo.CommApiVers || '000'
             };
 
             // Capabilities
-            const caps = devInfo.DeviceCapabilities || {};
+            const caps = denonInfo.DeviceCapabilities || {};
             const setup = caps.Setup || {};
-            devInfo.info.supportPictureMode = setup.PictureMode?.Control === 1;
-            devInfo.info.supportSoundMode = setup.SoundMode?.Control === 1;
-            devInfo.info.supportFavorites = caps.Operation?.Favorites?.Control === 1;
+            denonInfo.info.supportPictureMode = setup.PictureMode?.Control === 1;
+            denonInfo.info.supportSoundMode = setup.SoundMode?.Control === 1;
+            denonInfo.info.supportFavorites = caps.Operation?.Favorites?.Control === 1;
 
             //  Success event
             if (this.firstRun) {
                 this.emit('success', `Connect Success`);
-                await this.functions.saveData(this.devInfoFile, devInfo.info);
+                await this.functions.saveData(this.devInfoFile, denonInfo.info);
                 this.firstRun = false;
             }
 
-            // Emit device info
-            this.emit('deviceInfo', devInfo);
+            // Emit denon info
+            this.emit('denonInfo', denonInfo);
 
-            return devInfo;
+            return denonInfo;
         } catch (error) {
             throw new Error(`Connect error: ${error}`);
+        }
+    }
+
+    async send(command) {
+        try {
+            const path = `${ApiUrls.iPhoneDirect}${command}`;
+            await this.client.get(path);
+            if (this.logDebug) this.emit('debug', `Send path: ${path}`);
+            return true;
+        } catch (error) {
+            throw new Error(`Send data error: ${error}`);
         }
     }
 }

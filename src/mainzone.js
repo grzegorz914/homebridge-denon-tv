@@ -68,7 +68,7 @@ class MainZone extends EventEmitter {
         this.volume = 0;
         this.volumeDisplay = false;
         this.mute = false;
-        this.mediaState = false;
+        this.playState = false;
         this.pictureMode = 0;
         this.brightness = 0;
         this.sensorVolumeState = false;
@@ -117,9 +117,9 @@ class MainZone extends EventEmitter {
                 const commandsCount = commands.length;
                 for (let i = 0; i < commandsCount; i++) {
                     const cmd = type === 'Mute' && commands[i] !== 'MU' ? `${commands[i]}MU` : commands[i];
-                    await this.zone.send(`${cmd}${value}`);
+                    await this.denon.send(`${cmd}${value}`);
                     const pauseTime = type === 'Power' && value === 'ON' && commandsCount > 1 && i === 0 ? 4000 : 75;
-                    const pause = i < commandsCount - 1 ? await new Promise(resolve => setTimeout(resolve, pauseTime)) : false;
+                    if (i < commandsCount - 1) await new Promise(resolve => setTimeout(resolve, pauseTime));
                 }
             } else {
                 if (this.logWarn) this.emit('warn', `Unknown control type: ${type}`);
@@ -141,11 +141,11 @@ class MainZone extends EventEmitter {
                     break;
                 case 'Input':
                     const input = `SI${value}`;
-                    set = await this.zone.send(input);
+                    set = await this.denon.send(input);
                     break;
                 case 'Surround':
                     const surround = `MS${value}`;
-                    set = await this.zone.send(surround);
+                    set = await this.denon.send(surround);
                     break;
                 case 'Volume':
                     const volume = (value < 0 || value > 100) ? this.volume : (value < 10 ? `0${value}` : value);
@@ -156,7 +156,7 @@ class MainZone extends EventEmitter {
                     set = await this.stateControl('Mute', mute);
                     break;
                 case 'RcControl':
-                    set = await this.zone.send(value);
+                    set = await this.denon.send(value);
                     break;
                 default:
                     this.emit('warn', `${integration}, received key: ${key}, value: ${value}`);
@@ -474,7 +474,7 @@ class MainZone extends EventEmitter {
                             return;
                         }
 
-                        await this.zone.send(`${zonePrefix}${reference}`);
+                        await this.denon.send(`${zonePrefix}${reference}`);
                         if (this.logInfo) this.emit('info', `set Input Name: ${name}, Reference: ${reference}`);
                     } catch (error) {
                         if (this.logWarn) this.emit('warn', `set Input error: ${error}`);
@@ -520,15 +520,15 @@ class MainZone extends EventEmitter {
                                 command = rcMedia ? 'MNRTN' : 'MNRTN';
                                 break;
                             case Characteristic.RemoteKey.PLAY_PAUSE:
-                                command = rcMedia ? (this.mediaState ? 'NS9B' : 'NS9A') : 'NS94';
-                                this.mediaState = !this.mediaState;
+                                command = rcMedia ? (this.playState ? 'NS9B' : 'NS9A') : 'NS94';
+                                this.playState = !this.playState;
                                 break;
                             case Characteristic.RemoteKey.INFORMATION:
                                 command = this.infoButtonCommand;
                                 break;
                         }
 
-                        await this.zone.send(command);
+                        await this.denon.send(command);
                         if (this.logInfo) this.emit('info', `set Remote Key: ${command}`);
                     } catch (error) {
                         if (this.logWarn) this.emit('warn', `set Remote Key error: ${error}`);
@@ -545,7 +545,7 @@ class MainZone extends EventEmitter {
                     try {
                         const newValue = (value / 100) * 12;
                         const brightness = `PVBR ${(newValue)}`;
-                        await this.zone.send(brightness);
+                        await this.denon.send(brightness);
                         if (this.logInfo) this.emit('info', `set Brightness: ${value}`);
                     } catch (error) {
                         if (this.logWarn) this.emit('warn', `set Brightness error: ${error}`);
@@ -587,7 +587,7 @@ class MainZone extends EventEmitter {
                                     break;
                             }
 
-                            await this.zone.send(command);
+                            await this.denon.send(command);
                             if (this.logInfo) this.emit('info', `set Picture Mode: ${PictureModesDenonString[command]}`);
                         } catch (error) {
                             if (this.logWarn) this.emit('warn', `set Picture Mode error: ${error}`);
@@ -607,7 +607,7 @@ class MainZone extends EventEmitter {
                                 break;
                         }
 
-                        await this.zone.send(command);
+                        await this.denon.send(command);
                         if (this.logInfo) this.emit('info', `set Power Mode Selection: ${command === 'MNOPT' ? 'SHOW' : 'HIDE'}`);
                     } catch (error) {
                         if (this.logWarn) this.emit('warn', `set Power Mode Selection error: ${error}`);
@@ -1013,9 +1013,9 @@ class MainZone extends EventEmitter {
                                 const directSoundModeSurround = directSound ? directSound.surround : false;
                                 const command = directSound ? directSoundModeMode : reference.substring(1);
 
-                                if (state) await this.zone.send(command);
+                                if (state) await this.denon.send(command);
                                 if (state && directSound) await new Promise(resolve => setTimeout(resolve, 75));
-                                if (state && directSound) await this.zone.send(directSoundModeSurround);
+                                if (state && directSound) await this.denon.send(directSoundModeSurround);
                                 if (this.logInfo && state) this.emit('info', `set Button Name: ${name}, Reference: ${command}`);
                             } catch (error) {
                                 if (this.logWarn) this.emit('warn', `set Button error: ${error}`);
@@ -1036,6 +1036,9 @@ class MainZone extends EventEmitter {
     //start
     async start() {
         try {
+            //start external integrations
+            if (this.restFul.enable || this.mqtt.enable) await this.externalIntegrations();
+
             //denon client
             this.zone = new Zone(this.denon, this.device, this.inputsFile, this.restFul.enable, this.mqtt.enable)
                 .on('deviceInfo', (info) => {
@@ -1176,15 +1179,12 @@ class MainZone extends EventEmitter {
                     if (this.mqttConnected) this.mqtt1.emit('publish', topic, message);
                 });
 
-            //connect to avr
-            const connect = await this.zone.connect(this.denonInfo);
-            if (!connect) return false;
+            //checkInfo to avr
+            const checkInfo = await this.zone.checkInfo(this.denonInfo);
+            if (!checkInfo) return false;
 
             //prepare data for accessory
             await this.prepareDataForAccessory();
-
-            //start external integrations
-            if (this.restFul.enable || this.mqtt.enable) await this.externalIntegrations();
 
             //prepare accessory
             const accessory = await this.prepareAccessory();
