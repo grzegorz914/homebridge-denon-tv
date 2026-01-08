@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Changes
 
-- fix [#373](https://github.com/grzegorz914/homebridge-denon-tv/issues/373)
+- fix disable log device info and success
 
 ## [6.1.0] - (01.01.2026)
 
