@@ -103,7 +103,7 @@ class DenonPlatform {
 								const isNewHost = !denon;
 								if (isNewHost) {
 									denon = new Denon(device, files.devInfo)
-										.on('success', msg => log.success(`Device: ${host}, ${msg}`))
+										.on('success', msg => logLevel.success && log.success(`Device: ${host}, ${msg}`))
 										.on('info', msg => log.info(`Device: ${host}, ${msg}`))
 										.on('debug', msg => log.info(`Device: ${host}, debug: ${msg}`))
 										.on('warn', msg => log.warn(`Device: ${host}, ${msg}`))
@@ -138,8 +138,8 @@ class DenonPlatform {
 								}
 
 								zone
-									.on('devInfo', msg => log.info(msg))
-									.on('success', msg => log.success(`Device: ${host} ${name}, ${msg}`))
+									.on('devInfo', msg => logLevel.devInfo && log.info(msg))
+									.on('success', msg => logLevel.success && log.success(`Device: ${host} ${name}, ${msg}`))
 									.on('info', msg => log.info(`Device: ${host} ${name}, ${msg}`))
 									.on('debug', msg => log.info(`Device: ${host} ${name}, debug: ${msg}`))
 									.on('warn', msg => log.warn(`Device: ${host} ${name}, ${msg}`))

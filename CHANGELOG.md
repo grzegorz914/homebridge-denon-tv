@@ -21,6 +21,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - For plugin < v6.1.0 use Homebridge UI <= v5.5.0
 - For plugin >= v6.1.0 use Homebridge UI >= v5.13.0
 
+## [6.1.1] - (08.01.2026)
+
+## Changes
+
+- fix [#373](https://github.com/grzegorz914/homebridge-denon-tv/issues/373)
+
 ## [6.1.0] - (01.01.2026)
 
 ## Changes
