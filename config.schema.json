@@ -6996,10 +6996,7 @@
                   "title": "Enable",
                   "type": "boolean",
                   "default": false,
-                  "description": "This enable MQTT client.",
-                  "condition": {
-                    "functionBody": "return model.devices[arrayIndices].zoneControl <= 2;"
-                  }
+                  "description": "This enable MQTT client."
                 },
                 "host": {
                   "title": "IP/Hostname",
@@ -7045,10 +7042,7 @@
                     "enable": {
                       "title": "Enable",
                       "type": "boolean",
-                      "description": "This enable authorization for MQTT Broker.",
-                      "condition": {
-                        "functionBody": "return model.devices[arrayIndices].mqtt.enable == true;"
-                      }
+                      "description": "This enable authorization for MQTT Broker."
                     },
                     "user": {
                       "title": "User",
@@ -7056,7 +7050,7 @@
                       "placeholder": "user",
                       "description": "Here set the user of MQTT Broker.",
                       "condition": {
-                        "functionBody": "return model.devices[arrayIndices].mqtt.auth.enable == true;"
+                        "functionBody": "return model.devices[arrayIndices].mqtt.auth.enable === true;"
                       }
                     },
                     "passwd": {
@@ -7064,14 +7058,35 @@
                       "type": "string",
                       "placeholder": "password",
                       "description": "Here set the password of MQTT Broker.",
+                      "format": "password",
                       "condition": {
-                        "functionBody": "return model.devices[arrayIndices].mqtt.auth.enable == true;"
+                        "functionBody": "return model.devices[arrayIndices].mqtt.auth.enable === true;"
                       }
                     }
                   },
                   "condition": {
                     "functionBody": "return model.devices[arrayIndices].zoneControl <= 2 && model.devices[arrayIndices].mqtt.enable == true;"
-                  }
+                  },
+                  "allOf": [
+                    {
+                      "if": {
+                        "required": [
+                          "enable"
+                        ],
+                        "properties": {
+                          "enable": {
+                            "const": true
+                          }
+                        }
+                      },
+                      "then": {
+                        "required": [
+                          "user",
+                          "passwd"
+                        ]
+                      }
+                    }
+                  ]
                 }
               }
             }
