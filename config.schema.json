@@ -23,8 +23,8 @@
             },
             "host": {
               "title": "IP/Hostname",
-              "type": "string",
-              "placeholder": "192.168.1.5",
+              "placeholder": "192.168.1.5 or denon.local",
+              "pattern": "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}|([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)(\\.([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?))*)$",
               "format": "hostname"
             },
             "port": {
@@ -7001,8 +7001,8 @@
                 "host": {
                   "title": "IP/Hostname",
                   "type": "string",
-                  "placeholder": "ip or hostname",
-                  "format": "hostname",
+                  "placeholder": "192.168.1.20 or mqtt.local",
+                  "pattern": "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}|([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)(\\.([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?))*)$",
                   "description": "Here set the IP/Hostname of MQTT Broker.",
                   "condition": {
                     "functionBody": "return model.devices[arrayIndices].zoneControl <= 2 && model.devices[arrayIndices].mqtt.enable == true;"
@@ -7088,7 +7088,26 @@
                     }
                   ]
                 }
-              }
+              },
+              "allOf": [
+                {
+                  "if": {
+                    "required": [
+                      "enable"
+                    ],
+                    "properties": {
+                      "enable": {
+                        "const": true
+                      }
+                    }
+                  },
+                  "then": {
+                    "required": [
+                      "host"
+                    ]
+                  }
+                }
+              ]
             }
           },
           "required": [
