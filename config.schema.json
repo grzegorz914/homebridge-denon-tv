@@ -23,9 +23,9 @@
             },
             "host": {
               "title": "IP/Hostname",
+              "type": "string",
               "placeholder": "192.168.1.5 or denon.local",
-              "pattern": "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}|([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)(\\.([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?))*)$",
-              "format": "hostname"
+              "pattern": "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}|([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)(\\.([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?))*)$"
             },
             "port": {
               "title": "Port",
@@ -7116,6 +7116,33 @@
             "port",
             "generation",
             "zoneControl"
+          ],
+          "allOf": [
+            {
+              "if": {
+                "required": [
+                  "zoneControl"
+                ],
+                "properties": {
+                  "zoneControl": {
+                    "enum": [
+                      0,
+                      1,
+                      2,
+                      3,
+                      4
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "host",
+                  "port",
+                  "generation"
+                ]
+              }
+            }
           ]
         }
       }
