@@ -45,7 +45,6 @@ class DenonPlatform {
 
 				this.devices.set(key, { host, zoneControl });
 
-
 				//refresh interval
 				const refreshInterval = (device.refreshInterval ?? 5) * 1000;
 

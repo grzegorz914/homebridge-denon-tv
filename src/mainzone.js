@@ -1036,8 +1036,6 @@ class MainZone extends EventEmitter {
     //start
     async start() {
         try {
-            //start external integrations
-            if (this.restFul.enable || this.mqtt.enable) await this.externalIntegrations();
 
             //denon client
             this.zone = new Zone(this.denon, this.device, this.inputsFile, this.restFul.enable, this.mqtt.enable)
@@ -1185,6 +1183,9 @@ class MainZone extends EventEmitter {
 
             //prepare data for accessory
             await this.prepareDataForAccessory();
+
+            //start external integrations
+            if (this.restFul.enable || this.mqtt.enable) await this.externalIntegrations();
 
             //prepare accessory
             const accessory = await this.prepareAccessory();
