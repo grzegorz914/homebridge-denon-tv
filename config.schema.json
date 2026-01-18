@@ -9,6 +9,11 @@
   "schema": {
     "type": "object",
     "properties": {
+      "name": {
+        "title": "Platform",
+        "type": "string",
+        "default": "Denon TV"
+      },
       "devices": {
         "type": "array",
         "title": "Devices",
