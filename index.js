@@ -107,15 +107,10 @@ class DenonPlatform {
 										.on('debug', msg => log.info(`Device: ${host}, debug: ${msg}`))
 										.on('warn', msg => log.warn(`Device: ${host}, ${msg}`))
 										.on('error', msg => log.error(`Device: ${host}, ${msg}`));
+									this.denons.set(host, denon);
 
 									denonInfo = await denon.connect();
-									if (!denonInfo) return;
-
-									this.denons.set(host, denon);
 									this.denonInfos.set(host, denonInfo);
-
-									// start denon-level impulse generator
-									await denon.impulseGenerator.state(true, [{ name: 'connect', sampling: 90000 }], false);
 								}
 
 								if (!denon || !denonInfo) {
@@ -136,8 +131,7 @@ class DenonPlatform {
 										return;
 								}
 
-								zone
-									.on('devInfo', msg => logLevel.devInfo && log.info(msg))
+								zone.on('devInfo', msg => logLevel.devInfo && log.info(msg))
 									.on('success', msg => logLevel.success && log.success(`Device: ${host} ${name}, ${msg}`))
 									.on('info', msg => log.info(`Device: ${host} ${name}, ${msg}`))
 									.on('debug', msg => log.info(`Device: ${host} ${name}, debug: ${msg}`))
@@ -145,16 +139,14 @@ class DenonPlatform {
 									.on('error', msg => log.error(`Device: ${host} ${name}, ${msg}`));
 
 								const accessory = await zone.start();
-								if (accessory) {
-									api.publishExternalAccessories(PluginName, [accessory]);
-									if (logLevel.success) log.success(`Device: ${host} ${name}, Published as external accessory.`);
+								if (!accessory) return;
 
-									// start zone impulse generator
-									await zone.startStopImpulseGenerator(true, [{ name: 'checkState', sampling: refreshInterval }]);
-								}
-
-								// stop master impulse generator
+								api.publishExternalAccessories(PluginName, [accessory]);
+								if (logLevel.success) log.success(`Device: ${host} ${name}, Published as external accessory.`);
 								await impulseGenerator.state(false);
+
+								// start denon-level impulse generator
+								if (isNewHost) await denon.impulseGenerator.state(true, [{ name: 'connect', sampling: 90000 }, { name: 'checkState', sampling: refreshInterval }], false);
 							} catch (error) {
 								if (logLevel.error) log.error(`Device: ${host} ${name}, Start impulse generator error: ${error.message ?? error}, trying again.`);
 							}
@@ -168,7 +160,7 @@ class DenonPlatform {
 				} catch (error) {
 					if (logLevel.error) log.error(`Device: ${host} ${name}, Did finish launching error: ${error.message ?? error}`);
 				}
-				await new Promise(r => setTimeout(r, 500));
+				await new Promise(r => setTimeout(r, 1000));
 			}
 		});
 	}

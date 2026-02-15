@@ -39,16 +39,6 @@ class PassThroughInputs extends EventEmitter {
         this.sensorInputState = false;
     };
 
-    async startStopImpulseGenerator(state, timers = []) {
-        try {
-            //start impulse generator 
-            await this.zone.impulseGenerator.state(state, timers)
-            return true;
-        } catch (error) {
-            throw new Error(`Impulse generator start error: ${error}`);
-        }
-    }
-
     async prepareDataForAccessory() {
         try {
             //read dev info from file

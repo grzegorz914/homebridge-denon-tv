@@ -73,16 +73,6 @@ class Zone2 extends EventEmitter {
         this.sensorInputState = false;
     }
 
-    async startStopImpulseGenerator(state, timers = []) {
-        try {
-            //start impulse generator 
-            await this.zone.impulseGenerator.state(state, timers)
-            return true;
-        } catch (error) {
-            throw new Error(`Impulse generator start error: ${error}`);
-        }
-    }
-
     async stateControl(type, value) {
         try {
             // Normalize value for Power type

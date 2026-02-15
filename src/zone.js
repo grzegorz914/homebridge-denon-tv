@@ -1,5 +1,4 @@
 import EventEmitter from 'events';
-import ImpulseGenerator from './impulsegenerator.js';
 import Functions from './functions.js';
 import { XMLParser, XMLBuilder, XMLValidator } from 'fast-xml-parser';
 import { ApiUrls, InputConversion, SoundModeConversion, BodyXml, PictureModesDenonNumber, InputMode, ZoneName, ZonePrefixMap } from './constants.js';
@@ -48,17 +47,13 @@ class Zone extends EventEmitter {
             } catch (error) {
                 this.emit('error', error);
             }
-        });
-
-        //lock flags
-        this.locks = false;
-        this.impulseGenerator = new ImpulseGenerator()
-            .on('checkState', () => this.handleWithLock(async () => {
+        }).on('checkState', async () => {
+            try {
                 await this.checkState();
-            }))
-            .on('state', (state) => {
-                this.emit(state ? 'success' : 'warn', `Impulse generator ${state ? 'started' : 'stopped'}`);
-            });
+            } catch (error) {
+                this.emit('error', error);
+            }
+        });
     }
 
     async handleWithLock(fn) {

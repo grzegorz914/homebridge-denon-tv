@@ -35,28 +35,33 @@ class Denon extends EventEmitter {
         };
         this.parseString = new XMLParser(options);
 
-        //lock flags
-        this.locks = false;
+        // execution queue (prevents race conditions and lost ticks)
+        this.executionQueue = Promise.resolve();
+        const runQueued = (task) => {
+            this.executionQueue = this.executionQueue
+                .then(() => task())
+                .catch((error) => {
+                    this.emit('error', error?.message ?? error);
+                });
+
+            return this.executionQueue;
+        };
+
         this.impulseGenerator = new ImpulseGenerator()
-            .on('connect', () => this.handleWithLock(async () => {
-                await this.connect();
-            }))
+            .on('connect', () =>
+                runQueued(async () => {
+                    await this.connect();
+                })
+            )
+            .on('checkState', () =>
+                runQueued(async () => {
+                    this.emit('checkState');
+                })
+            )
             .on('state', (state) => {
                 this.emit(state ? 'success' : 'warn', `Impulse generator ${state ? 'started' : 'stopped'}`);
             });
-    }
 
-    async handleWithLock(fn) {
-        if (this.locks) return;
-
-        this.locks = true;
-        try {
-            await fn();
-        } catch (error) {
-            this.emit('error', `Inpulse generator error: ${error}`);
-        } finally {
-            this.locks = false;
-        }
     }
 
     async connect() {
