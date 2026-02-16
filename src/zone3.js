@@ -1071,8 +1071,8 @@ class Zone3 extends EventEmitter {
                 .on('restFul', (path, data) => {
                     if (this.restFulConnected) this.restFul1.update(path, data);
                 })
-                .on('mqtt', (topic, message) => {
-                    if (this.mqttConnected) this.mqtt1.emit('publish', topic, message);
+                .on('mqtt', async (topic, message) => {
+                    if (this.mqttConnected) await this.mqtt1.publish(topic, message);
                 });
 
             //checkInfo to avr and check state

@@ -110,6 +110,7 @@ class DenonPlatform {
 									this.denons.set(host, denon);
 
 									denonInfo = await denon.connect();
+									if (!denonInfo) return;
 									this.denonInfos.set(host, denonInfo);
 								}
 
@@ -160,7 +161,7 @@ class DenonPlatform {
 				} catch (error) {
 					if (logLevel.error) log.error(`Device: ${host} ${name}, Did finish launching error: ${error.message ?? error}`);
 				}
-				await new Promise(r => setTimeout(r, 1000));
+				await new Promise(r => setTimeout(r, 500));
 			}
 		});
 	}
