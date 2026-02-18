@@ -16,6 +16,7 @@
 Homebridge plugin for Denon/Marantz AV Receivers series X/SR.
 Tested Denon AVR-2112CI, AVR-3311CI, AVR-X4100W, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz SR8012, SR6013, M-CR611, PM7000N.
 
+<a href="https://buycoffee.to/grzegorz914" target="_blank"><img src="https://buycoffee.to/static/img/share/share-button-primary.png" style="width: 234px; height: 61px" alt="Postaw mi kawę na buycoffee.to"></a>
 </span>
 
 ## Package Requirements
