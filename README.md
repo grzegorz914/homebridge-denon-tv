@@ -13,9 +13,6 @@
 [![GitHub pull requests](https://img.shields.io/github/issues-pr/grzegorz914/homebridge-denon-tv.svg)](https://github.com/grzegorz914/homebridge-denon-tv/pulls)
 [![GitHub issues](https://img.shields.io/github/issues/grzegorz914/homebridge-denon-tv.svg)](https://github.com/grzegorz914/homebridge-denon-tv/issues)
 
-Homebridge plugin for Denon/Marantz AV Receivers series X/SR.
-Tested Denon AVR-2112CI, AVR-3311CI, AVR-X4100W, AVR-X6300H, AVR-X2700H, AVC-X4800H, Marantz SR8012, SR6013, M-CR611, PM7000N.
-
 <a href="https://buycoffee.to/grzegorz914" target="_blank"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/main/graphics/buycoffee-button.png" style="width: 234px; height: 61px" alt="Supports My Work"></a><a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/main/graphics/QR_buycoffee.png" width="61"></a>
 
 </span>
