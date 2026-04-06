@@ -442,26 +442,40 @@ class Zone2 extends EventEmitter {
                             return;
                         }
 
-                        const { zonePrefix: zonePrefix, name: name, reference: reference } = input;
+                        const { zonePrefix, name, reference } = input;
 
                         if (!this.power) {
-                            // Schedule retry attempts without blocking Homebridge
-                            this.emit('debug', `AVR is off, deferring input switch to '${activeIdentifier}'`);
+                            if (this.logDebug) this.emit('debug', `AVR is off, deferring input switch to '${activeIdentifier}'`);
 
                             (async () => {
                                 for (let attempt = 0; attempt < 3; attempt++) {
                                     await new Promise(resolve => setTimeout(resolve, 4000));
-                                    if (this.power && this.inputIdentifier !== activeIdentifier) {
-                                        this.emit('debug', `AVR powered on, retrying input switch`);
-                                        this.televisionService.setCharacteristic(Characteristic.ActiveIdentifier, activeIdentifier);
-                                        break;
+
+                                    // if AVR on 
+                                    if (this.power) {
+
+                                        // if input didn't switch → retry command
+                                        if (this.inputIdentifier !== activeIdentifier) {
+                                            if (this.logDebug) this.emit('debug', `Retrying input switch (${attempt + 1}/3)`);
+                                            await this.denon.send(`${zonePrefix}${reference}`);
+                                        } else {
+                                            // ✔️ sukces
+                                            this.televisionService.updateCharacteristic(Characteristic.ActiveIdentifier, activeIdentifier);
+                                            if (this.logInfo) this.emit('info', `Input set successfully: ${name}`);
+                                            return;
+                                        }
                                     }
                                 }
-                            })();
+
+                                if (this.logWarn) this.emit('warn', `Failed to set input after retries: ${name}`);
+                            })().catch(err => {
+                                if (this.logWarn) this.emit('warn', `retry error: ${err}`);
+                            });
 
                             return;
                         }
 
+                        // AVR is ony
                         await this.denon.send(`${zonePrefix}${reference}`);
                         if (this.logInfo) this.emit('info', `set Input Name: ${name}, Reference: ${reference}`);
                     } catch (error) {

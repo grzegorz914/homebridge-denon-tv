@@ -99,6 +99,29 @@ class DenonPlatform {
 								let denon = this.denons.get(host);
 								let denonInfo = this.denonInfos.get(host);
 
+								// minimal health-check (tylko jeśli mamy już dane)
+								if (denon && denonInfo) {
+									try {
+										await denon.connect();
+									} catch (error) {
+										const msg = error?.message ?? '';
+
+										// only hard network error → recreate
+										if (msg.includes('ECONNREFUSED') || msg.includes('timeout')) {
+											if (logLevel.warn) log.warn(`Device: ${host}, connection lost - recreating instance`);
+
+											this.denons.delete(host);
+											this.denonInfos.delete(host);
+
+											denon = null;
+											denonInfo = null;
+										} else {
+											// soft error
+											if (logLevel.warn) log.warn(`Device: ${host}, temporary connect issue: ${msg}`);
+										}
+									}
+								}
+
 								const isNewHost = !denon;
 								if (isNewHost) {
 									denon = new Denon(device, files.devInfo)
@@ -107,10 +130,12 @@ class DenonPlatform {
 										.on('debug', msg => log.info(`Device: ${host}, debug: ${msg}`))
 										.on('warn', msg => log.warn(`Device: ${host}, ${msg}`))
 										.on('error', msg => log.error(`Device: ${host}, ${msg}`));
+
 									this.denons.set(host, denon);
 
 									denonInfo = await denon.connect();
 									if (!denonInfo) return;
+
 									this.denonInfos.set(host, denonInfo);
 								}
 
@@ -144,10 +169,20 @@ class DenonPlatform {
 
 								api.publishExternalAccessories(PluginName, [accessory]);
 								if (logLevel.success) log.success(`Device: ${host} ${name}, Published as external accessory.`);
+
 								await impulseGenerator.state(false);
 
 								// start denon-level impulse generator
-								if (isNewHost) await denon.impulseGenerator.state(true, [{ name: 'connect', sampling: 90000 }, { name: 'checkState', sampling: refreshInterval }], false);
+								if (isNewHost) {
+									await denon.impulseGenerator.state(
+										true,
+										[
+											{ name: 'connect', sampling: 90000 },
+											{ name: 'checkState', sampling: refreshInterval }
+										],
+										false
+									);
+								}
 							} catch (error) {
 								if (logLevel.error) log.error(`Device: ${host} ${name}, Start impulse generator error: ${error.message ?? error}, trying again.`);
 							}
