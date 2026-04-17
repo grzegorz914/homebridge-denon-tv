@@ -6897,15 +6897,6 @@
                 }
               ]
             },
-            "refreshInterval": {
-              "title": "Refresh interval (sec)",
-              "type": "number",
-              "default": 5,
-              "minimum": 0.5,
-              "maximum": 30,
-              "multipleOf": 0.5,
-              "description": "Here set the background data refresh interval."
-            },
             "infoButtonCommand": {
               "title": "Info Button",
               "type": "string",
@@ -7334,8 +7325,7 @@
                   "key": "devices[]",
                   "title": "Device",
                   "items": [
-                    "devices[].infoButtonCommand",
-                    "devices[].refreshInterval"
+                    "devices[].infoButtonCommand"
                   ]
                 },
                 {

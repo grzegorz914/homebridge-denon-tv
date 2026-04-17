@@ -17,9 +17,6 @@ class DenonPlatform {
 		}
 
 		this.accessories = [];
-		this.denons = new Map();      // key: host, value: Denon instance
-		this.denonInfos = new Map();  // key: host, value: connection info
-		this.devices = new Map();     // key: `${host}:${zoneControl}`, value: { host, zoneControl }
 
 		const prefDir = join(api.user.storagePath(), 'denonTv');
 		try {
@@ -29,177 +26,175 @@ class DenonPlatform {
 			return;
 		}
 
-		api.on('didFinishLaunching', async () => {
-			for (const device of config.devices) {
-				const { name, host, port, zoneControl } = device;
+		api.on('didFinishLaunching', () => {
+			// ===== GROUP ZONES BY HOST =====
+			const seenZones = [];
+			const deviceMap = {};
+
+			for (const zone of config.devices) {
+				const { name, host, port, zoneControl } = zone;
+
 				if (!name || !host || !port || zoneControl === -1) {
-					log.warn(`Device: ${host || 'host missing'},  ${name || 'name missing'}, ${port || 'port missing'}${zoneControl === -1 ? ', zone disabled' : ''} in config, will not be published in the Home app`);
+					log.warn(`Device: ${host || 'host missing'}, ${name || 'name missing'}, ${port || 'port missing'}${zoneControl === -1 ? ', zone disabled' : ''}`);
 					continue;
 				}
 
 				const key = `${host}:${zoneControl}`;
-				if (this.devices.has(key)) {
-					log.warn(`This zone: ${zoneControl}, for: ${name} ${host} already exists. You cannot create the same zone multiple times for the same AVR`);
+				if (seenZones.includes(key)) {
+					log.warn(`Duplicate zone ${zoneControl} for ${host}`);
 					continue;
 				}
 
-				this.devices.set(key, { host, zoneControl });
+				seenZones.push(key);
+				if (!deviceMap[host]) deviceMap[host] = { zones: [] };
+				deviceMap[host].zones.push(zone);
+			}
 
-				//refresh interval
-				const refreshInterval = (device.refreshInterval ?? 5) * 1000;
-
-				//log config
-				const logLevel = {
-					devInfo: device.log?.deviceInfo,
-					success: device.log?.success,
-					info: device.log?.info,
-					warn: device.log?.warn,
-					error: device.log?.error,
-					debug: device.log?.debug
-				};
-
-				if (logLevel.debug) {
-					log.info(`Device: ${host} ${name}, debug: Did finish launching.`);
-					const safeConfig = {
-						...device,
-						mqtt: {
-							auth: {
-								...device.mqtt?.auth,
-								passwd: 'removed',
-							}
-						},
-					};
-					log.info(`Device: ${host} ${name}, debug: Config: ${JSON.stringify(safeConfig, null, 2)}`);
-				}
-
-				const postFix = `${ZoneNameShort[zoneControl]}_${host.replace(/\./g, '')}`;
-				const files = {
-					devInfo: `${prefDir}/devInfo_${host.replace(/\./g, '')}`,
-					inputs: `${prefDir}/inputs_${postFix}`,
-					inputsNames: `${prefDir}/inputsNames_${postFix}`,
-					inputsVisibility: `${prefDir}/inputsTargetVisibility_${postFix}`,
-				};
-
-				try {
-					Object.values(files).forEach((file) => {
-						if (!existsSync(file)) {
-							writeFileSync(file, '');
-						}
-					});
-				} catch (error) {
-					if (logLevel.error) log.error(`Device: ${host} ${name}, Prepare files error: ${error.message ?? error}`);
-					continue;
-				}
-
-				try {
-					// create impulse generator
-					const impulseGenerator = new ImpulseGenerator()
-						.on('start', async () => {
-							try {
-								let denon = this.denons.get(host);
-								let denonInfo = this.denonInfos.get(host);
-
-								// minimal health-check (tylko jeśli mamy już dane)
-								if (denon && denonInfo) {
-									try {
-										await denon.connect();
-									} catch (error) {
-										const msg = error?.message ?? '';
-
-										// only hard network error → recreate
-										if (msg.includes('ECONNREFUSED') || msg.includes('timeout')) {
-											if (logLevel.warn) log.warn(`Device: ${host}, connection lost - recreating instance`);
-
-											this.denons.delete(host);
-											this.denonInfos.delete(host);
-
-											denon = null;
-											denonInfo = null;
-										} else {
-											// soft error
-											if (logLevel.warn) log.warn(`Device: ${host}, temporary connect issue: ${msg}`);
-										}
-									}
-								}
-
-								const isNewHost = !denon;
-								if (isNewHost) {
-									denon = new Denon(device, files.devInfo)
-										.on('success', msg => logLevel.success && log.success(`Device: ${host}, ${msg}`))
-										.on('info', msg => log.info(`Device: ${host}, ${msg}`))
-										.on('debug', msg => log.info(`Device: ${host}, debug: ${msg}`))
-										.on('warn', msg => log.warn(`Device: ${host}, ${msg}`))
-										.on('error', msg => log.error(`Device: ${host}, ${msg}`));
-
-									this.denons.set(host, denon);
-
-									denonInfo = await denon.connect();
-									if (!denonInfo) return;
-
-									this.denonInfos.set(host, denonInfo);
-								}
-
-								if (!denon || !denonInfo) {
-									if (logLevel.warn) log.warn(`Device: ${host} ${name}, no AVR data received`);
-									return;
-								}
-
-								// create zone instance
-								let zone;
-								switch (zoneControl) {
-									case 0: zone = new MainZone(api, denon, denonInfo, device, files.devInfo, files.inputs, files.inputsNames, files.inputsVisibility); break;
-									case 1: zone = new Zone2(api, denon, denonInfo, device, files.devInfo, files.inputs, files.inputsNames, files.inputsVisibility); break;
-									case 2: zone = new Zone3(api, denon, denonInfo, device, files.devInfo, files.inputs, files.inputsNames, files.inputsVisibility); break;
-									case 3: zone = new Surrounds(api, denon, denonInfo, device, files.devInfo, files.inputs, files.inputsNames, files.inputsVisibility); break;
-									case 4: zone = new PassThroughInputs(api, denon, denonInfo, device, files.devInfo, files.inputs, files.inputsNames, files.inputsVisibility); break;
-									default:
-										if (logLevel.warn) log.warn(`Device: ${host} ${name}, unknown zone: ${zoneControl}`);
-										return;
-								}
-
-								zone.on('devInfo', msg => logLevel.devInfo && log.info(msg))
-									.on('success', msg => logLevel.success && log.success(`Device: ${host} ${name}, ${msg}`))
-									.on('info', msg => log.info(`Device: ${host} ${name}, ${msg}`))
-									.on('debug', msg => log.info(`Device: ${host} ${name}, debug: ${msg}`))
-									.on('warn', msg => log.warn(`Device: ${host} ${name}, ${msg}`))
-									.on('error', msg => log.error(`Device: ${host} ${name}, ${msg}`));
-
-								const accessory = await zone.start();
-								if (!accessory) return;
-
-								api.publishExternalAccessories(PluginName, [accessory]);
-								if (logLevel.success) log.success(`Device: ${host} ${name}, Published as external accessory.`);
-
-								await impulseGenerator.state(false);
-
-								// start denon-level impulse generator
-								if (isNewHost) {
-									await denon.impulseGenerator.state(
-										true,
-										[
-											{ name: 'connect', sampling: 90000 },
-											{ name: 'checkState', sampling: refreshInterval }
-										],
-										false
-									);
-								}
-							} catch (error) {
-								if (logLevel.error) log.error(`Device: ${host} ${name}, Start impulse generator error: ${error.message ?? error}, trying again.`);
-							}
-						})
-						.on('state', (state) => {
-							if (logLevel.debug) log.info(`Device: ${host} ${name}, Start impulse generator ${state ? 'started' : 'stopped'}.`);
-						});
-
-					// start impulse generator
-					await impulseGenerator.state(true, [{ name: 'start', sampling: 120000 }]);
-				} catch (error) {
-					if (logLevel.error) log.error(`Device: ${host} ${name}, Did finish launching error: ${error.message ?? error}`);
-				}
-				await new Promise(r => setTimeout(r, 500));
+			// ===== LAUNCH EACH DEVICE =====
+			for (const host of Object.keys(deviceMap)) {
+				this.setupDevice(host, deviceMap[host].zones, prefDir, log, api);
 			}
 		});
 	}
+
+	// ── Per-device setup ──────────────────────────────────────────────────────
+
+	setupDevice(host, zones, prefDir, log, api) {
+		const devInfoFile = `${prefDir}/devInfo_${host.replace(/\./g, '')}`;
+
+		try {
+			if (!existsSync(devInfoFile)) writeFileSync(devInfoFile, '');
+		} catch (error) {
+			log.error(`Device: ${host}, info file init error: ${error.message ?? error}`);
+			return;
+		}
+
+		// Log level is driven by the first zone's config (device-wide setting)
+		const baseLogLevel = {
+			success: zones[0].log?.success,
+			info: zones[0].log?.info,
+			warn: zones[0].log?.warn,
+			error: zones[0].log?.error,
+			debug: zones[0].log?.debug,
+		};
+
+		// The startup impulse generator retries the full connect cycle every
+		// 120 s until it succeeds, then stops itself.
+		const impulseGenerator = new ImpulseGenerator()
+			.on('start', async () => {
+				try {
+					await this.startDevice(
+						host, zones, devInfoFile, prefDir,
+						baseLogLevel, log, api, impulseGenerator
+					);
+				} catch (error) {
+					if (baseLogLevel.error) log.error(`Device: ${host}, start error: ${error.message ?? error}`);
+				}
+			})
+			.on('state', (state) => {
+				if (baseLogLevel.debug) log.info(`Device: ${host}, impulse ${state ? 'started' : 'stopped'}`);
+			});
+
+		impulseGenerator.state(true, [{ name: 'start', sampling: 120_000 }]);
+	}
+
+	// ── Connect and launch all zones for one device ───────────────────────────
+
+	async startDevice(host, zones, devInfoFile, prefDir, baseLogLevel, log, api, impulseGenerator) {
+		const denon = new Denon(zones[0], devInfoFile)
+			.on('success', (msg) => baseLogLevel.success && log.success(`Device: ${host}, ${msg}`))
+			.on('info', (msg) => log.info(`Device: ${host}, ${msg}`))
+			.on('debug', (msg) => baseLogLevel.debug && log.info(`Device: ${host}, debug: ${msg}`))
+			.on('warn', (msg) => log.warn(`Device: ${host}, ${msg}`))
+			.on('error', (msg) => log.error(`Device: ${host}, ${msg}`));
+
+		const denonInfo = await denon.connect();
+		if (!denonInfo) {
+			log.warn(`Device: ${host}, no AVR data`);
+			return;
+		}
+
+		// Stop startup generator and hand off to the denon class generator
+		await impulseGenerator.state(false);
+		await denon.impulseGenerator.state(true, [
+			{ name: 'connect', sampling: 90_000 },
+			{ name: 'checkState', sampling: 5_000 },
+		], false);
+
+		// ===== REGISTER EACH ZONE =====
+		for (const zone of zones) {
+			await this.registerZone({ zone, host, denon, denonInfo, devInfoFile, prefDir, log, api });
+		}
+	}
+
+	// ── Register a single zone as a Homebridge accessory ─────────────────────
+
+	async registerZone({ zone, host, denon, denonInfo, devInfoFile, prefDir, log, api }) {
+		const { name, zoneControl } = zone;
+
+		const logLevel = {
+			devInfo: zone.log?.deviceInfo,
+			success: zone.log?.success,
+			info: zone.log?.info,
+			warn: zone.log?.warn,
+			error: zone.log?.error,
+			debug: zone.log?.debug,
+		};
+
+		if (logLevel.debug) {
+			const safeConfig = {
+				...zone,
+				mqtt: { auth: { ...zone.mqtt?.auth, passwd: 'removed' } },
+			};
+			log.info(`Device: ${host} ${name}, debug config: ${JSON.stringify(safeConfig, null, 2)}`);
+		}
+
+		const postFix = `${ZoneNameShort[zoneControl]}_${host.replace(/\./g, '')}`;
+		const zoneFiles = {
+			devInfo: devInfoFile,
+			inputs: `${prefDir}/inputs_${postFix}`,
+			inputsNames: `${prefDir}/inputsNames_${postFix}`,
+			inputsVisibility: `${prefDir}/inputsTargetVisibility_${postFix}`,
+		};
+
+		try {
+			Object.values(zoneFiles).forEach((file) => {
+				if (!existsSync(file)) writeFileSync(file, '');
+			});
+		} catch (error) {
+			if (logLevel.error) log.error(`Device: ${host} ${name}, file error: ${error.message ?? error}`);
+			return;
+		}
+
+		// Construct the zone instance — original constructor signatures preserved
+		let zoneInstance;
+		switch (zoneControl) {
+			case 0: zoneInstance = new MainZone(api, denon, denonInfo, zone, zoneFiles.devInfo, zoneFiles.inputs, zoneFiles.inputsNames, zoneFiles.inputsVisibility); break;
+			case 1: zoneInstance = new Zone2(api, denon, denonInfo, zone, zoneFiles.devInfo, zoneFiles.inputs, zoneFiles.inputsNames, zoneFiles.inputsVisibility); break;
+			case 2: zoneInstance = new Zone3(api, denon, denonInfo, zone, zoneFiles.devInfo, zoneFiles.inputs, zoneFiles.inputsNames, zoneFiles.inputsVisibility); break;
+			case 3: zoneInstance = new Surrounds(api, denon, denonInfo, zone, zoneFiles.devInfo, zoneFiles.inputs, zoneFiles.inputsNames, zoneFiles.inputsVisibility); break;
+			case 4: zoneInstance = new PassThroughInputs(api, denon, denonInfo, zone, zoneFiles.devInfo, zoneFiles.inputs, zoneFiles.inputsNames, zoneFiles.inputsVisibility); break;
+			default:
+				if (logLevel.warn) log.warn(`Device: ${host} ${name}, unknown zone: ${zoneControl}`);
+				return;
+		}
+
+		zoneInstance
+			.on('devInfo', (msg) => logLevel.devInfo && log.info(msg))
+			.on('success', (msg) => logLevel.success && log.success(`Device: ${host} ${name}, ${msg}`))
+			.on('info', (msg) => log.info(`Device: ${host} ${name}, ${msg}`))
+			.on('debug', (msg) => logLevel.debug && log.info(`Device: ${host} ${name}, debug: ${msg}`))
+			.on('warn', (msg) => log.warn(`Device: ${host} ${name}, ${msg}`))
+			.on('error', (msg) => log.error(`Device: ${host} ${name}, ${msg}`));
+
+		const accessory = await zoneInstance.start();
+		if (!accessory) return;
+
+		api.publishExternalAccessories(PluginName, [accessory]);
+		if (logLevel.success) log.success(`Device: ${host} ${name}, published`);
+	}
+
+	// ── Homebridge accessory cache ────────────────────────────────────────────
 
 	configureAccessory(accessory) {
 		this.accessories.push(accessory);
@@ -209,4 +204,3 @@ class DenonPlatform {
 export default (api) => {
 	api.registerPlatform(PluginName, PlatformName, DenonPlatform);
 };
-
