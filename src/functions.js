@@ -68,7 +68,7 @@ class Functions {
     }
 
     async scaleValue(value, inMin, inMax, outMin, outMax) {
-        const scaledValue = parseFloat((((Math.max(inMin, Math.min(inMax, value)) - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin).toFixed(0));
+        const scaledValue = Math.floor(((Math.max(inMin, Math.min(inMax, value)) - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin);
         return scaledValue;
     }
 }
