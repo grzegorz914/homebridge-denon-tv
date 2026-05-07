@@ -561,7 +561,7 @@ class Zone3 extends EventEmitter {
                             .onSet(async (value) => {
                                 try {
                                     value = value > this.volumeControlMax ? this.volumeControlMax : value;
-                                    let scaledValue = await this.functions.scaleValue(value, 0, 100, 0, 98);
+                                    let scaledValue = Math.min(Math.round(value), 98);
                                     scaledValue = scaledValue < 10 ? `0${scaledValue}` : scaledValue;
                                     await this.stateControl('Volume', scaledValue);
                                     if (this.logInfo) this.emit('info', `set Volume: ${value}`);
@@ -597,7 +597,7 @@ class Zone3 extends EventEmitter {
                             .onSet(async (value) => {
                                 try {
                                     value = value > this.volumeControlMax ? this.volumeControlMax : value;
-                                    let scaledValue = await this.functions.scaleValue(value, 0, 100, 0, 98);
+                                    let scaledValue = Math.min(Math.round(value), 98);
                                     scaledValue = scaledValue < 10 ? `0${scaledValue}` : scaledValue;
                                     await this.stateControl('Volume', scaledValue);
                                     if (this.logInfo) this.emit('info', `set Volume: ${value}`);
@@ -663,7 +663,7 @@ class Zone3 extends EventEmitter {
                             .onSet(async (value) => {
                                 try {
                                     value = value > this.volumeControlMax ? this.volumeControlMax : value;
-                                    let scaledValue = await this.functions.scaleValue(value, 0, 100, 0, 98);
+                                    let scaledValue = Math.min(Math.round(value), 98);
                                     scaledValue = scaledValue < 10 ? `0${scaledValue}` : scaledValue;
                                     await this.stateControl('Volume', scaledValue);
                                     if (this.logInfo) this.emit('info', `set Volume: ${value}`);
@@ -728,7 +728,7 @@ class Zone3 extends EventEmitter {
                             .onSet(async (value) => {
                                 try {
                                     value = value > this.volumeControlMax ? this.volumeControlMax : value;
-                                    let scaledValue = await this.functions.scaleValue(value, 0, 100, 0, 98);
+                                    let scaledValue = Math.min(Math.round(value), 98);
                                     scaledValue = scaledValue < 10 ? `0${scaledValue}` : scaledValue;
                                     await this.stateControl('Volume', scaledValue);
                                     if (this.logInfo) this.emit('info', `set Volume: ${value}`);
@@ -815,7 +815,7 @@ class Zone3 extends EventEmitter {
                             .onSet(async (value) => {
                                 try {
                                     value = value > this.volumeControlMax ? this.volumeControlMax : value;
-                                    let scaledValue = await this.functions.scaleValue(value, 0, 100, 0, 98);
+                                    let scaledValue = Math.min(Math.round(value), 98);
                                     scaledValue = scaledValue < 10 ? `0${scaledValue}` : scaledValue;
                                     await this.stateControl('Volume', scaledValue);
                                     if (this.logInfo) this.emit('info', `set Volume: ${value}`);
