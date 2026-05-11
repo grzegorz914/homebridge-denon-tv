@@ -1,6 +1,6 @@
 import EventEmitter from 'events';
 import Functions from './functions.js';
-import { XMLParser, XMLBuilder, XMLValidator } from 'fast-xml-parser';
+import { XMLParser } from 'fast-xml-parser';
 import { ApiUrls, InputConversion, SoundModeConversion, BodyXml, PictureModesDenonNumber, InputMode, ZoneName, ZonePrefixMap } from './constants.js';
 const INPUTS_CONVERSION_KEYS = Object.keys(InputConversion);
 const SOUND_MODES_CONVERSION_KEYS = Object.keys(SoundModeConversion);
@@ -63,7 +63,7 @@ class Zone extends EventEmitter {
         try {
             await fn();
         } catch (error) {
-            this.emit('error', `Inpulse generator error: ${error}`);
+            this.emit('error', `Impulse generator error: ${error}`);
         } finally {
             this.locks = false;
         }

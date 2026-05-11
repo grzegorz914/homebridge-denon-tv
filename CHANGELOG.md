@@ -21,6 +21,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - For plugin < v6.1.0 use Homebridge UI <= v5.5.0
 - For plugin >= v6.1.0 use Homebridge UI >= v5.13.0
 
+## [6.1.19] - (11.05.2026)
+
+### Fixed
+
+- Volume read: percentage displayed in HomeKit was always 1% too high due to `toFixed(0)` rounding; replaced with `Math.floor`
+- Volume write: setting volume from HomeKit sent a value 1 unit too low due to incorrect 0–100 → 0–98 scaling; now uses identity mapping capped at hardware max (98)
+- RemoteKey media mode detection always evaluated to false due to referencing non-existent property `this.inputReference`; corrected to `this.reference` in all zone classes
+- Picture brightness command sent a float value to the AVR; wrapped with `Math.round`
+- Stale `this.power` reads in `stateChanged` handler caused mute and button state to be calculated against the previous power state instead of the incoming one
+- `emitInfo1` in Zone 2/3: result of `this.emit(...)` was assigned to a `const` (dead assignment); replaced with a plain `if` statement
+- Removed unused `XMLBuilder` and `XMLValidator` imports from `zone.js` and `denon.js`
+- Removed duplicate `volumeServiceNameTv` variable in `mainzone.js`
+- Typo fixes: `Inpulse generator` → `Impulse generator`, `AVR is ony` → `AVR is on`, `sonsor service` → `sensor service`
+
 ## [6.1.14] - (06.04.2026)
 
 - fix [#381](https://github.com/grzegorz914/homebridge-denon-tv/issues/381)

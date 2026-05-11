@@ -3,7 +3,7 @@ import { Agent as HttpsAgent } from 'https';
 import EventEmitter from 'events';
 import ImpulseGenerator from './impulsegenerator.js';
 import Functions from './functions.js';
-import { XMLParser, XMLBuilder, XMLValidator } from 'fast-xml-parser';
+import { XMLParser } from 'fast-xml-parser';
 import { ApiUrls, ManufacturerMap } from './constants.js';
 
 class Denon extends EventEmitter {

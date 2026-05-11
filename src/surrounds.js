@@ -115,7 +115,7 @@ class Surrounds extends EventEmitter {
         try {
             if (!this.inputsServices) return;
 
-            let updated = false; // flaga, żeby wiedzieć, czy coś faktycznie się zmieniło
+            let updated = false;
 
             for (const input of inputs) {
                 if (this.inputsServices.length >= 85 && !remove) continue;
@@ -283,7 +283,7 @@ class Surrounds extends EventEmitter {
                                             if (this.logDebug) this.emit('debug', `Retrying input switch (${attempt + 1}/3)`);
                                             await this.denon.send(`${zonePrefix}${reference}`);
                                         } else {
-                                            // ✔️ sukces
+                                            // success
                                             this.televisionService.updateCharacteristic(Characteristic.ActiveIdentifier, activeIdentifier);
                                             if (this.logInfo) this.emit('info', `Input set successfully: ${name}`);
                                             return;
@@ -299,7 +299,7 @@ class Surrounds extends EventEmitter {
                             return;
                         }
 
-                        // AVR is ony
+                        // AVR is on
                         await this.denon.send(`${zonePrefix}${reference}`);
                         if (this.logInfo) this.emit('info', `set Input Name: ${name}, Reference: ${reference}`);
                     } catch (error) {
@@ -310,7 +310,7 @@ class Surrounds extends EventEmitter {
             this.televisionService.getCharacteristic(Characteristic.RemoteKey)
                 .onSet(async (command) => {
                     try {
-                        const rcMedia = this.inputReference === 'SPOTIFY' || this.inputReference === 'BT' || this.inputReference === 'USB/IPOD' || this.inputReference === 'NET' || this.inputReference === 'MPLAY';
+                        const rcMedia = this.reference === 'SPOTIFY' || this.reference === 'BT' || this.reference === 'USB/IPOD' || this.reference === 'NET' || this.reference === 'MPLAY';
                         switch (command) {
                             case Characteristic.RemoteKey.REWIND:
                                 command = rcMedia ? 'NS9E' : 'MN9E';
@@ -366,7 +366,7 @@ class Surrounds extends EventEmitter {
             this.inputsServices = [];
             await this.addRemoveOrUpdateInput(this.savedInputs, false);
 
-            //prepare sonsor service
+            //prepare sensor service
             const possibleSensorCount = 99 - this.accessory.services.length;
             const maxSensorCount = this.sensors.length >= possibleSensorCount ? possibleSensorCount : this.sensors.length;
             if (maxSensorCount > 0) {

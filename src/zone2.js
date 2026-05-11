@@ -289,7 +289,7 @@ class Zone2 extends EventEmitter {
         try {
             if (!this.inputsServices) return;
 
-            let updated = false; // flaga, żeby wiedzieć, czy coś faktycznie się zmieniło
+            let updated = false;
 
             for (const input of inputs) {
                 if (this.inputsServices.length >= 85 && !remove) continue;
@@ -459,7 +459,7 @@ class Zone2 extends EventEmitter {
                                             if (this.logDebug) this.emit('debug', `Retrying input switch (${attempt + 1}/3)`);
                                             await this.denon.send(`${zonePrefix}${reference}`);
                                         } else {
-                                            // ✔️ sukces
+                                            // success
                                             this.televisionService.updateCharacteristic(Characteristic.ActiveIdentifier, activeIdentifier);
                                             if (this.logInfo) this.emit('info', `Input set successfully: ${name}`);
                                             return;
@@ -475,7 +475,7 @@ class Zone2 extends EventEmitter {
                             return;
                         }
 
-                        // AVR is ony
+                        // AVR is on
                         await this.denon.send(`${zonePrefix}${reference}`);
                         if (this.logInfo) this.emit('info', `set Input Name: ${name}, Reference: ${reference}`);
                     } catch (error) {
@@ -486,7 +486,7 @@ class Zone2 extends EventEmitter {
             this.televisionService.getCharacteristic(Characteristic.RemoteKey)
                 .onSet(async (command) => {
                     try {
-                        const rcMedia = this.inputReference === 'SPOTIFY' || this.inputReference === 'BT' || this.inputReference === 'USB/IPOD' || this.inputReference === 'NET' || this.inputReference === 'MPLAY';
+                        const rcMedia = this.reference === 'SPOTIFY' || this.reference === 'BT' || this.reference === 'USB/IPOD' || this.reference === 'NET' || this.reference === 'MPLAY';
                         switch (command) {
                             case Characteristic.RemoteKey.REWIND:
                                 command = rcMedia ? 'NS9E' : 'MN9E';
@@ -545,7 +545,6 @@ class Zone2 extends EventEmitter {
             //Prepare volume service
             if (this.volumeControl > 0) {
                 const volumeServiceName = this.volumeControlNamePrefix ? `${accessoryName} ${this.volumeControlName}` : this.volumeControlName;
-                const volumeServiceNameTv = this.volumeControlNamePrefix ? `${accessoryName} ${this.volumeControlName}` : this.volumeControlName;
 
                 switch (this.volumeControl) {
                     case 1: //lightbulb
@@ -688,9 +687,9 @@ class Zone2 extends EventEmitter {
                         break;
                     case 4: // tv speaker + lightbulb
                         if (this.logDebug) this.emit('debug', `Prepare television speaker service`);
-                        this.volumeServiceTvSpeaker = accessory.addService(Service.TelevisionSpeaker, volumeServiceNameTv, 'TV Speaker');
+                        this.volumeServiceTvSpeaker = accessory.addService(Service.TelevisionSpeaker, volumeServiceName, 'TV Speaker');
                         this.volumeServiceTvSpeaker.addOptionalCharacteristic(Characteristic.ConfiguredName);
-                        this.volumeServiceTvSpeaker.setCharacteristic(Characteristic.ConfiguredName, volumeServiceNameTv);
+                        this.volumeServiceTvSpeaker.setCharacteristic(Characteristic.ConfiguredName, volumeServiceName);
                         this.volumeServiceTvSpeaker.getCharacteristic(Characteristic.Active)
                             .onGet(async () => {
                                 const state = this.power;
@@ -775,9 +774,9 @@ class Zone2 extends EventEmitter {
                         break;
                     case 5: // tv speaker + fan
                         if (this.logDebug) this.emit('debug', `Prepare television speaker service`);
-                        this.volumeServiceTvSpeaker = accessory.addService(Service.TelevisionSpeaker, volumeServiceNameTv, 'TV Speaker');
+                        this.volumeServiceTvSpeaker = accessory.addService(Service.TelevisionSpeaker, volumeServiceName, 'TV Speaker');
                         this.volumeServiceTvSpeaker.addOptionalCharacteristic(Characteristic.ConfiguredName);
-                        this.volumeServiceTvSpeaker.setCharacteristic(Characteristic.ConfiguredName, volumeServiceNameTv);
+                        this.volumeServiceTvSpeaker.setCharacteristic(Characteristic.ConfiguredName, volumeServiceName);
                         this.volumeServiceTvSpeaker.getCharacteristic(Characteristic.Active)
                             .onGet(async () => {
                                 const state = this.power;
@@ -863,7 +862,7 @@ class Zone2 extends EventEmitter {
                 }
             }
 
-            //prepare sonsor service
+            //prepare sensor service
             const possibleSensorCount = 99 - this.accessory.services.length;
             const maxSensorCount = this.sensors.length >= possibleSensorCount ? possibleSensorCount : this.sensors.length;
             if (maxSensorCount > 0) {
@@ -984,7 +983,7 @@ class Zone2 extends EventEmitter {
                         .updateCharacteristic(Characteristic.Volume, scaledVolume)
                         .updateCharacteristic(Characteristic.Mute, mute);
 
-                    const muteV = this.power ? !mute : false;
+                    const muteV = power ? !mute : false;
                     this.volumeServiceLightbulb
                         ?.updateCharacteristic(Characteristic.Brightness, scaledVolume)
                         .updateCharacteristic(Characteristic.On, muteV);
@@ -993,7 +992,6 @@ class Zone2 extends EventEmitter {
                         ?.updateCharacteristic(Characteristic.RotationSpeed, scaledVolume)
                         .updateCharacteristic(Characteristic.On, muteV);
 
-                    //sensors
                     // sensors
                     const currentStateModeMap = {
                         0: reference,
@@ -1055,7 +1053,7 @@ class Zone2 extends EventEmitter {
                     //buttons
                     for (let i = 0; i < this.buttons.length; i++) {
                         const button = this.buttons[i];
-                        const state = this.power ? button.reference === reference : false;
+                        const state = power ? button.reference === reference : false;
                         button.state = state;
                         this.buttonsServices?.[i]?.updateCharacteristic(Characteristic.On, state);
                     }
@@ -1074,7 +1072,7 @@ class Zone2 extends EventEmitter {
                         this.emit('info', `Reference: ${reference}`);
                         this.emit('info', `Mute: ${mute ? 'ON' : 'OFF'}`);
                         this.emit('info', `Volume: ${volumeDisplay !== 'Absolute' ? volume : scaledVolume}${volumeDisplay !== 'Absolute' ? 'dB' : '%'}`);
-                        const emitInfo1 = volumeDisplay === false ? false : this.emit('info', `Volume Display: ${volumeDisplay}`);
+                        if (volumeDisplay !== false) this.emit('info', `Volume Display: ${volumeDisplay}`);
                         this.emit('info', `Picture Mode: ${PictureModesDenonNumber[pictureMode]}`);
                     }
                 })
