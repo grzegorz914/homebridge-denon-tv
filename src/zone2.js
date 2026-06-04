@@ -1,13 +1,11 @@
 import EventEmitter from 'events';
-import Mqtt from './mqtt.js';
-import RestFul from './restful.js';
 import Zone from './zone.js';
 import Functions from './functions.js';
 import { PictureModesConversionToHomeKit, PictureModesDenonNumber } from './constants.js';
 let Accessory, Characteristic, Service, Categories, Encode, AccessoryUUID;
 
 class Zone2 extends EventEmitter {
-    constructor(api, denon, denonInfo, device, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile) {
+    constructor(api, denon, denonInfo, device, devInfoFile, inputsFile, inputsNamesFile, inputsTargetVisibilityFile, restFul1 = null, restFulConnected = false, mqtt1 = null, mqttConnected = false) {
         super();
 
         Accessory = api.platformAccessory;
@@ -43,9 +41,11 @@ class Zone2 extends EventEmitter {
 
         //external integration
         this.restFul = device.restFul || {};
-        this.restFulConnected = false;
+        this.restFul1 = restFul1;
+        this.restFulConnected = restFulConnected;
         this.mqtt = device.mqtt || {};
-        this.mqttConnected = false;
+        this.mqtt1 = mqtt1;
+        this.mqttConnected = mqttConnected;
 
         //sensors
         for (const sensor of this.sensors) {
@@ -154,74 +154,6 @@ class Zone2 extends EventEmitter {
         } catch (error) {
             throw new Error(`${integration} set key: ${key}, value: ${value}, error: ${error}`);
         }
-    }
-
-    async externalIntegrations() {
-        //RESTFul server
-        const restFulEnabled = this.restFul.enable || false;
-        if (restFulEnabled) {
-            try {
-                this.restFul1 = new RestFul({
-                    port: this.restFul.port || 3000,
-                    logWarn: this.logWarn,
-                    logDebug: this.logDebug
-                })
-                    .on('connected', (message) => {
-                        this.emit('success', message);
-                        this.restFulConnected = true;
-                    })
-                    .on('set', async (key, value) => {
-                        try {
-                            await this.setOverExternalIntegration('RESTFul', key, value);
-                        } catch (error) {
-                            this.emit('warn', `RESTFul set error: ${error}`);
-                        };
-                    })
-                    .on('debug', (debug) => this.emit('debug', debug))
-                    .on('warn', (warn) => this.emit('warn', warn))
-                    .on('error', (error) => this.emit('error', error));
-            } catch (error) {
-                this.emit('warn', `RESTFul integration start error: ${error}`);
-            };
-        }
-
-        //mqtt client
-        const mqttEnabled = this.mqtt.enable || false;
-        if (mqttEnabled) {
-            try {
-                this.mqtt1 = new Mqtt({
-                    host: this.mqtt.host,
-                    port: this.mqtt.port || 1883,
-                    clientId: this.mqtt.clientId ? `${this.savedInfo.manufacturer}_${this.mqtt.clientId}_${Math.random().toString(16).slice(3)}` : `${this.savedInfo.manufacturer}_${Math.random().toString(16).slice(3)}`,
-                    prefix: this.mqtt.prefix ? `${this.savedInfo.manufacturer}/${this.mqtt.prefix}/${this.name}` : `${this.savedInfo.manufacturer}/${this.name}`,
-                    user: this.mqtt.auth?.user,
-                    passwd: this.mqtt.auth?.passwd,
-                    logWarn: this.logWarn,
-                    logDebug: this.logDebug
-                })
-                    .on('connected', (message) => {
-                        this.emit('success', message);
-                        this.mqttConnected = true;
-                    })
-                    .on('subscribed', (message) => {
-                        this.emit('success', message);
-                    })
-                    .on('set', async (key, value) => {
-                        try {
-                            await this.setOverExternalIntegration('MQTT', key, value);
-                        } catch (error) {
-                            this.emit('warn', `MQTT set error: ${error}`);
-                        }
-                    })
-                    .on('debug', (debug) => this.emit('debug', debug))
-                    .on('warn', (warn) => this.emit('warn', warn))
-                    .on('error', (error) => this.emit('error', error));
-            } catch (error) {
-                this.emit('warn', `MQTT integration start error: ${error}`);
-            };
-        }
-
-        return true;
     }
 
     async prepareDataForAccessory() {
@@ -1094,9 +1026,6 @@ class Zone2 extends EventEmitter {
 
             //prepare data for accessory
             await this.prepareDataForAccessory();
-
-            //start external integrations
-            if (this.restFul.enable || this.mqtt.enable) await this.externalIntegrations();
 
             //prepare accessory
             const accessory = await this.prepareAccessory();
