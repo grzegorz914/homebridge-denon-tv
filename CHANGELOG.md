@@ -21,6 +21,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - For plugin < v6.1.0 use Homebridge UI <= v5.5.0
 - For plugin >= v6.1.0 use Homebridge UI >= v5.13.0
 
+## [6.1.22] - (20.08.2026)
+
+### Fixed
+
+- Regression from 6.1.21: forcing HTTPS for all generation 2 devices broke devices that serve their API over plain HTTP on generation 2 (e.g. Marantz/Denon Cinema series on port 80/8080) with `TLS wrong version number`; fixed by deriving the scheme from the configured port instead of `generation` alone — HTTPS is now only used when generation is 2 **and** port is 443, otherwise HTTP is used as before; fix [#390](https://github.com/grzegorz914/homebridge-denon-tv/issues/390)
+- fix [#390](https://github.com/grzegorz914/homebridge-denon-tv/issues/390)
+
 ## [6.1.21] - (20.08.2026)
 
 ### Fixed

@@ -16,14 +16,17 @@ class Denon extends EventEmitter {
         this.firstRun = true;
         this.functions = new Functions();
 
-        const protocol = this.generation === 2 ? 'https' : 'http';
+        // Some gen 2 (2023+) models front their API with HTTPS on port 443 (e.g. self-signed nginx),
+        // others still serve plain HTTP on 80/8080 (e.g. Cinema series) - use the port as the signal.
+        const useHttps = this.generation === 2 && Number(config.port) === 443;
+        const protocol = useHttps ? 'https' : 'http';
         const baseUrl = `${protocol}://${config.host}:${config.port}`;
         const commonConfig = {
             baseURL: baseUrl,
             timeout: 20000
         };
 
-        const httpsConfig = this.generation === 2 ? { httpsAgent: new HttpsAgent({ rejectUnauthorized: false, keepAlive: false }) } : {};
+        const httpsConfig = useHttps ? { httpsAgent: new HttpsAgent({ rejectUnauthorized: false, keepAlive: false }) } : {};
         this.client = axios.create({
             ...commonConfig,
             ...httpsConfig,
