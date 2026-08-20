@@ -16,7 +16,8 @@ class Denon extends EventEmitter {
         this.firstRun = true;
         this.functions = new Functions();
 
-        const baseUrl = `http://${config.host}:${config.port}`;
+        const protocol = this.generation === 2 ? 'https' : 'http';
+        const baseUrl = `${protocol}://${config.host}:${config.port}`;
         const commonConfig = {
             baseURL: baseUrl,
             timeout: 20000
@@ -108,17 +109,19 @@ class Denon extends EventEmitter {
 
             return denonInfo;
         } catch (error) {
+            if (this.logDebug) this.emit('debug', `Connect request: ${error.config?.method?.toUpperCase()} ${error.config?.baseURL}${error.config?.url}, response: ${error.response?.status} ${JSON.stringify(error.response?.data)}`);
             throw new Error(`Connect error: ${error}`);
         }
     }
 
     async send(command) {
+        const path = `${ApiUrls.iPhoneDirect}${command}`;
         try {
-            const path = `${ApiUrls.iPhoneDirect}${command}`;
             await this.client.get(path);
             if (this.logDebug) this.emit('debug', `Send path: ${path}`);
             return true;
         } catch (error) {
+            if (this.logDebug) this.emit('debug', `Send request: ${error.config?.method?.toUpperCase()} ${error.config?.baseURL}${error.config?.url}, response: ${error.response?.status} ${JSON.stringify(error.response?.data)}`);
             throw new Error(`Send data error: ${error}`);
         }
     }

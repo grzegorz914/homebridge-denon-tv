@@ -21,6 +21,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - For plugin < v6.1.0 use Homebridge UI <= v5.5.0
 - For plugin >= v6.1.0 use Homebridge UI >= v5.13.0
 
+## [6.1.21] - (20.08.2026)
+
+### Fixed
+
+- Generation 2 devices (2023+ models, e.g. Marantz Model 40n): connection always failed with `Request failed with status code 400`; root cause: `Denon`'s axios client built its `baseURL` with a hardcoded `http://` scheme regardless of `generation`, even though an HTTPS agent (`rejectUnauthorized: false`) was already being created for generation 2 — the agent was never actually used because the request was plain HTTP; on these devices port 443 is HTTPS-only, and nginx responds to a plaintext HTTP request on a TLS port with its own `400 Bad Request` error, which was reported by axios as a generic status-code failure; fixed by deriving the scheme (`https` for generation 2, `http` otherwise) so the existing HTTPS agent is actually used
+- Debug logging: `Connect error` / `Send data error` gave no indication of the failing request or the server's response; debug mode (when enabled) now also logs the request method/URL and the response status/body on failure
+- fix [#389](https://github.com/grzegorz914/homebridge-denon-tv/issues/389) and #[#387](https://github.com/grzegorz914/homebridge-denon-tv/issues/387)
+
 ## [6.1.20] - (04.06.2026)
 
 ### Fixed
