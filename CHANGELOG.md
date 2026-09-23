@@ -21,6 +21,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - For plugin < v6.1.0 use Homebridge UI <= v5.5.0
 - For plugin >= v6.1.0 use Homebridge UI >= v5.13.0
 
+## [6.2.1] - (23.09.2026)
+
+### Changes
+
+- fix: MQTT `Enable` was shown in the config UI for the Surrounds and Pass Through Inputs zones, which do not support MQTT
+- fix: RESTFul server and MQTT client are no longer started for the Surrounds and Pass Through Inputs zones when enabled in an old config
+
 ## [6.2.0] - (23.09.2026)
 
 ### Changes

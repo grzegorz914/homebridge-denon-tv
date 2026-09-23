@@ -182,7 +182,10 @@ class DenonPlatform {
 		const state = zoneStates.get(zone);
 		const manufacturer = denonInfo?.info?.manufacturer || 'denon';
 
-		if (!state.restFul1 && zone.restFul?.enable) {
+		// RESTFul and MQTT are used only by Main Zone, Zone 2 and Zone 3
+		const externalIntegrations = zone.zoneControl <= 2;
+
+		if (!state.restFul1 && externalIntegrations && zone.restFul?.enable) {
 			try {
 				await new Promise((resolve) => {
 					const timer = setTimeout(resolve, 5000);
@@ -214,7 +217,7 @@ class DenonPlatform {
 			}
 		}
 
-		if (!state.mqtt1 && zone.mqtt?.enable) {
+		if (!state.mqtt1 && externalIntegrations && zone.mqtt?.enable) {
 			try {
 				await new Promise((resolve) => {
 					const timer = setTimeout(resolve, 10000);

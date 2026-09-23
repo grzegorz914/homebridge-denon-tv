@@ -7007,7 +7007,10 @@
                   "title": "Enable",
                   "type": "boolean",
                   "default": false,
-                  "description": "This enable MQTT client."
+                  "description": "This enable MQTT client.",
+                  "condition": {
+                    "functionBody": "return model.devices[arrayIndices].zoneControl <= 2;"
+                  }
                 },
                 "host": {
                   "title": "IP/Hostname",
