@@ -42,7 +42,7 @@
   * Surrounds/Pass Trough Inputs control as a [extra accessory tile](https://github.com/grzegorz914/homebridge-denon-tv?tab=readme-ov-file#extra-accessory-tile).
 * Siri, some times need to create buttons/switches/sensors.
 * Automations, some times need to create buttons/switches/sensors.
-* External integrations, [RESTFul](https://github.com/grzegorz914/homebridge-denon-tv?tab=readme-ov-file#restful-integration), [MQTT](https://github.com/grzegorz914/homebridge-denon-tv?tab=readme-ov-file#mqtt-integration).
+* External integrations, [RESTFul](https://github.com/grzegorz914/homebridge-denon-tv?tab=readme-ov-file#restful-integration), [MQTT](https://github.com/grzegorz914/homebridge-denon-tv?tab=readme-ov-file#mqtt-integration), [HA Discovery](https://github.com/grzegorz914/homeassistant-mqtt-media-player).
 
 <p align="center">
   <a href="https://github.com/grzegorz914/homebridge-denon-tv"><img src="https://raw.githubusercontent.com/grzegorz914/homebridge-denon-tv/main/graphics/homekit.png" width="382"></a>
