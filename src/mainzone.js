@@ -1,7 +1,8 @@
 import EventEmitter from 'events';
 import Zone from './zone.js';
 import Functions from './functions.js';
-import { PictureModesConversionToHomeKit, PictureModesDenonNumber, PictureModesDenonString, DirectSoundMode } from './constants.js';
+import HaDiscovery from './hadiscovery.js';
+import { PictureModesConversionToHomeKit, PictureModesDenonNumber, PictureModesDenonString, DirectSoundMode, SoundModeConversion } from './constants.js';
 let Accessory, Characteristic, Service, Categories, Encode, AccessoryUUID;
 
 class MainZone extends EventEmitter {
@@ -314,6 +315,7 @@ class MainZone extends EventEmitter {
 
             // Only one time run
             if (updated) await this.displayOrder();
+            if (updated) this.haPublishConfig();
 
             return true;
         } catch (error) {
@@ -967,6 +969,66 @@ class MainZone extends EventEmitter {
         }
     }
 
+    //home assistant discovery
+    async setupHaDiscovery() {
+        if (!this.mqttConnected || !this.mqtt.haDiscovery) return;
+
+        try {
+            const soundMode = this.zoneControl === 0 && this.zone.info?.supportSoundMode;
+            this.ha = new HaDiscovery(this.mqtt1, {
+                objectId: `denon_${this.savedInfo.serialNumber}_zone${this.zoneControl}`,
+                name: this.name,
+                deviceClass: 'receiver',
+                device: {
+                    manufacturer: this.savedInfo.manufacturer,
+                    model: this.savedInfo.modelName,
+                    sw_version: this.savedInfo.firmwareRevision
+                },
+                commands: {
+                    power: { key: 'Power' },
+                    volume_set: { key: 'Volume', min: 0, max: 98 },
+                    mute: { key: 'Mute' },
+                    // Inputs are switched with the raw zone command, the same one HomeKit uses
+                    source: { key: 'RcControl' },
+                    ...(soundMode ? { sound_mode: { key: 'Surround' } } : {})
+                }
+            });
+            await this.haPublishConfig();
+        } catch (error) {
+            if (this.logWarn) this.emit('warn', `HA Discovery setup error: ${error}`);
+        }
+    }
+
+    async haPublishConfig() {
+        if (!this.ha) return;
+
+        try {
+            const sources = (this.inputsServices ?? []).map(input => ({ id: `${input.zonePrefix}${input.reference}`, name: input.name }));
+            const soundModes = this.ha.commands.sound_mode ? [...new Set(Object.values(SoundModeConversion))].map(mode => ({ id: mode, name: mode })) : [];
+            await this.ha.publishConfig({ sources, soundModes });
+            await this.haUpdateState();
+        } catch (error) {
+            if (this.logWarn) this.emit('warn', `HA Discovery publish error: ${error}`);
+        }
+    }
+
+    async haUpdateState() {
+        if (!this.ha) return;
+
+        try {
+            const input = this.inputsServices?.find(input => input.reference === this.reference);
+            await this.ha.updateState({
+                power: this.power,
+                volume: typeof this.volumeDb === 'number' ? Math.round(this.volumeDb + 80) : undefined,
+                muted: this.mute,
+                source: input ? `${input.zonePrefix}${input.reference}` : this.reference,
+                sound_mode: this.ha.commands.sound_mode ? this.zone.soundMode || undefined : undefined
+            });
+        } catch (error) {
+            if (this.logWarn) this.emit('warn', `HA Discovery state error: ${error}`);
+        }
+    }
+
     //start
     async start() {
         try {
@@ -1088,6 +1150,8 @@ class MainZone extends EventEmitter {
                     this.mute = mute;
                     this.volumeDisplay = volumeDisplay;
                     this.pictureMode = pictureModeHomeKit;
+                    this.volumeDb = volume;
+                    this.haUpdateState();
                     if (this.logInfo) {
                         const name = input ? input.name : reference;
                         this.emit('info', `Power: ${power ? 'ON' : 'OFF'}`);
@@ -1120,6 +1184,7 @@ class MainZone extends EventEmitter {
 
             //prepare accessory
             const accessory = await this.prepareAccessory();
+            this.setupHaDiscovery();
             return accessory;
         } catch (error) {
             throw new Error(`Start error: ${error}`);
