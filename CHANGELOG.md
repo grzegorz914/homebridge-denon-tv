@@ -21,6 +21,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - For plugin < v6.1.0 use Homebridge UI <= v5.5.0
 - For plugin >= v6.1.0 use Homebridge UI >= v5.13.0
 
+## [6.1.24] - (23.09.2026)
+
+### Added
+
+- optional RESTful access `Token`. When set, every request (GET and POST) must send the header `Authorization: Bearer <token>`, otherwise the server responds `401`. Leaving it empty keeps the previous behaviour, so existing configs keep working
+- readme update
+
 ## [6.1.22] - (20.08.2026)
 
 ### Fixed

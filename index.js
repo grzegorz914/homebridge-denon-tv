@@ -188,6 +188,7 @@ class DenonPlatform {
 					const timer = setTimeout(resolve, 5000);
 					state.restFul1 = new RestFul({
 						port: zone.restFul.port || 3000,
+						token: zone.restFul.token,
 						logWarn: logLevel.warn,
 						logDebug: logLevel.debug,
 					})
