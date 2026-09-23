@@ -168,6 +168,10 @@
 
 * Only for Main Zone, Zone 2, Zone 3
 * Subscribe data as a JSON Object `{Power: true}`
+* HA Discovery - if enabled, the device is published to Home Assistant as one media player (class `receiver`) with power, volume, mute, source selection and more. Main Zone, Zone 2 and Zone 3 are published as separate media players. Requires the [MQTT Universal Media Player](https://github.com/grzegorz914/homeassistant-mqtt-media-player) integration. Additional retained topics:
+  * `homeassistant/media_player/<id>/config` - discovery message.
+  * `HA State` - `{"power": true, "volume": 49, "muted": false, "source": "SITV", "sound_mode": "MOVIE"}`.
+  * `Availability` - `online`, `offline` (last will).
 
 | Method | Topic | Message | Type |
 | --- | --- | --- | --- |
