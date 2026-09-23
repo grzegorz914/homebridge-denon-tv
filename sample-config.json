@@ -87,7 +87,8 @@
                     },
                     "restFul": {
                         "enable": false,
-                        "port": 3000
+                        "port": 3000,
+                        "token": ""
                     },
                     "mqtt": {
                         "enable": false,
@@ -95,6 +96,7 @@
                         "port": 1883,
                         "clientId": "",
                         "prefix": "",
+                        "protocolVersion": 5,
                         "auth": {
                             "enable": false,
                             "user": "",
@@ -164,7 +166,8 @@
                     },
                     "restFul": {
                         "enable": false,
-                        "port": 3001
+                        "port": 3001,
+                        "token": ""
                     },
                     "mqtt": {
                         "enable": false,
@@ -172,6 +175,7 @@
                         "port": 1883,
                         "clientId": "",
                         "prefix": "",
+                        "protocolVersion": 5,
                         "auth": {
                             "enable": false,
                             "user": "",

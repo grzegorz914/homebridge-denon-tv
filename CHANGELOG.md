@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - fix: MQTT client had `protocolVersion: 5` hardcoded, so brokers that only support MQTT 3.1.1 (e.g. the ioBroker MQTT adapter) accepted the TCP connection, failed the handshake, and got disconnected every second forever, with nothing published and no error logged. Added a `Protocol Version` option (5.0 / 3.1.1) in the MQTT section, and a one-time warning if no successful connection is established within 30 seconds
 - readme update
+- sample config update
 
 ## [6.1.24] - (23.09.2026)
 
@@ -34,6 +35,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - optional RESTful access `Token`. When set, every request (GET and POST) must send the header `Authorization: Bearer <token>`, otherwise the server responds `401`. Leaving it empty keeps the previous behaviour, so existing configs keep working
 - readme update
+
+## [6.1.23] - (13.09.2026)
+
+### Changes
+
+- bump dependencies
 
 ## [6.1.22] - (20.08.2026)
 
