@@ -223,6 +223,7 @@ class DenonPlatform {
 						port: zone.mqtt.port || 1883,
 						clientId: zone.mqtt.clientId ? `${manufacturer}_${zone.mqtt.clientId}_${Math.random().toString(16).slice(3)}` : `${manufacturer}_${Math.random().toString(16).slice(3)}`,
 						prefix: zone.mqtt.prefix ? `${manufacturer}/${zone.mqtt.prefix}/${name}` : `${manufacturer}/${name}`,
+						protocolVersion: zone.mqtt.protocolVersion,
 						user: zone.mqtt.auth?.user,
 						passwd: zone.mqtt.auth?.passwd,
 						logWarn: logLevel.warn,
