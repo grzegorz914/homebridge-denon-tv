@@ -661,3 +661,32 @@ export const ZonePrefixMap = {
     3: 'MS',
     4: 'SI'
 };
+
+// Display names for the normalized sound modes (Home Assistant)
+export const SoundModeDisplayName = {
+    "AUTO": "Auto",
+    "MOVIE": "Movie",
+    "MUSIC": "Music",
+    "GAME": "Game",
+    "DIRECT": "Direct",
+    "PURE DIRECT": "Pure Direct",
+    "STEREO": "Stereo",
+    "MCH STEREO": "Multi Ch Stereo",
+    "DOLBY DIGITAL": "Dolby Digital",
+    "DTS SURROUND": "DTS Surround",
+    "AURO3D": "Auro-3D",
+    "AURO2DSURR": "Auro-2D Surround",
+    "WIDE SCREEN": "Wide Screen",
+    "SUPER STADIUM": "Super Stadium",
+    "ROCK ARENA": "Rock Arena",
+    "JAZZ CLUB": "Jazz Club",
+    "CLASSIC CONCERT": "Classic Concert",
+    "MONO MOVIE": "Mono Movie",
+    "MATRIX": "Matrix",
+    "VIDEO GAME": "Video Game",
+    "VIRTUAL": "Virtual",
+    "NEURAL": "Neural",
+    "STANDARD": "Standard",
+    "LEFT": "Left",
+    "RIGHT": "Right"
+};

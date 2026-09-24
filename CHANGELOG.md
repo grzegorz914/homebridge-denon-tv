@@ -21,6 +21,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - For plugin < v6.1.0 use Homebridge UI <= v5.5.0
 - For plugin >= v6.1.0 use Homebridge UI >= v5.13.0
 
+## [6.2.3] - (24.09.2026)
+
+### Changes
+
+- changed: HA Discovery, sound modes are shown with readable names (e.g. `Pure Direct`, `DTS Surround` instead of `PURE DIRECT`, `DTS SURROUND`). Commands are unchanged
+
 ## [6.2.2] - (24.09.2026)
 
 ### Changes

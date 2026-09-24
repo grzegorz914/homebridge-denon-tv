@@ -2,7 +2,7 @@ import EventEmitter from 'events';
 import Zone from './zone.js';
 import Functions from './functions.js';
 import HaDiscovery from './hadiscovery.js';
-import { PictureModesConversionToHomeKit, PictureModesDenonNumber, PictureModesDenonString, DirectSoundMode, SoundModeConversion } from './constants.js';
+import { PictureModesConversionToHomeKit, PictureModesDenonNumber, PictureModesDenonString, DirectSoundMode, SoundModeConversion, SoundModeDisplayName } from './constants.js';
 let Accessory, Characteristic, Service, Categories, Encode, AccessoryUUID;
 
 class MainZone extends EventEmitter {
@@ -1004,7 +1004,7 @@ class MainZone extends EventEmitter {
 
         try {
             const sources = (this.inputsServices ?? []).map(input => ({ id: `${input.zonePrefix}${input.reference}`, name: input.name }));
-            const soundModes = this.ha.commands.sound_mode ? [...new Set(Object.values(SoundModeConversion))].map(mode => ({ id: mode, name: mode })) : [];
+            const soundModes = this.ha.commands.sound_mode ? [...new Set(Object.values(SoundModeConversion))].map(mode => ({ id: mode, name: SoundModeDisplayName[mode] ?? mode })) : [];
             await this.ha.publishConfig({ sources, soundModes });
             await this.haUpdateState();
         } catch (error) {
