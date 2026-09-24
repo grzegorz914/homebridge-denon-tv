@@ -21,6 +21,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - For plugin < v6.1.0 use Homebridge UI <= v5.5.0
 - For plugin >= v6.1.0 use Homebridge UI >= v5.13.0
 
+## [6.2.4] - (24.09.2026)
+
+### Changes
+
+- fix: with more than one zone configured for the same receiver, every zone overwrote the shared receiver capabilities. The Main Zone lost sound mode and picture mode support (sound mode was no longer read, so Home Assistant did not show the current sound mode) and could report the name of another zone. Each zone now works on its own copy of the receiver capabilities
+
 ## [6.2.3] - (24.09.2026)
 
 ### Changes

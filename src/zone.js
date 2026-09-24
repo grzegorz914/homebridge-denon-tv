@@ -261,10 +261,15 @@ class Zone extends EventEmitter {
 
     async checkInfo(denonInfo) {
         try {
+            // All zones of one receiver share the same denonInfo object. Keep the receiver capabilities
+            // untouched and work on a copy per zone, otherwise every zone overwrites the flags of the others
+            const deviceInfo = denonInfo.deviceInfo ??= { ...denonInfo.info };
+            const info = { ...deviceInfo };
+
             // Capabilities
-            denonInfo.info.supportPictureMode = this.zoneControl === 0 && denonInfo.info.supportPictureMode;
-            denonInfo.info.supportSoundMode = (this.zoneControl === 0 || this.zoneControl === 3) && denonInfo.info.supportSoundMode;
-            denonInfo.info.supportFavorites = this.zoneControl < 3 && denonInfo.info.supportFavorites;
+            info.supportPictureMode = this.zoneControl === 0 && deviceInfo.supportPictureMode;
+            info.supportSoundMode = (this.zoneControl === 0 || this.zoneControl === 3) && deviceInfo.supportSoundMode;
+            info.supportFavorites = this.zoneControl < 3 && deviceInfo.supportFavorites;
 
             // Zone capabilities
             const keys = Object.keys(denonInfo);
@@ -274,14 +279,14 @@ class Zone extends EventEmitter {
                 const zone = this.zoneControl === 4 ? 0 : this.zoneControl;
                 zoneCaps = zones[zone] || {};
             }
-            denonInfo.info.supportShortcuts = zoneCaps.ShortcutControl?.Control === 1;
-            denonInfo.info.supportQuickSelect = zoneCaps.Operation?.QuickSelect?.Control === 1;
-            denonInfo.info.controlZone = ZoneName[this.zoneControl];
-            this.info = denonInfo.info;
+            info.supportShortcuts = zoneCaps.ShortcutControl?.Control === 1;
+            info.supportQuickSelect = zoneCaps.Operation?.QuickSelect?.Control === 1;
+            info.controlZone = ZoneName[this.zoneControl];
+            this.info = info;
 
             //  Success event
             if (this.firstRun) {
-                this.emit('deviceInfo', denonInfo.info);
+                this.emit('deviceInfo', info);
                 this.firstRun = false;
             }
 
@@ -295,7 +300,7 @@ class Zone extends EventEmitter {
                 2: inputsNewDevice
             };
             const inputs = this.getInputsFromDevice ? inputsMap[this.generation] : this.inputs;
-            const allInputs = await this.prepareInputs(denonInfo, this.generation, this.zoneControl, inputs, zoneCaps, this.getInputsFromDevice, this.getFavoritesFromDevice, this.getQuickSmartSelectFromDevice, denonInfo.info.supportFavorites, denonInfo.info.supportShortcuts, denonInfo.info.supportQuickSelect);
+            const allInputs = await this.prepareInputs(denonInfo, this.generation, this.zoneControl, inputs, zoneCaps, this.getInputsFromDevice, this.getFavoritesFromDevice, this.getQuickSmartSelectFromDevice, info.supportFavorites, info.supportShortcuts, info.supportQuickSelect);
 
             // Emit inputs
             this.emit('addRemoveOrUpdateInput', allInputs, false);
