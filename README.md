@@ -172,6 +172,7 @@
   * `homeassistant/media_player/<id>/config` - discovery message.
   * `HA State` - `{"power": true, "volume": 49, "muted": false, "source": "SITV", "sound_mode": "MOVIE"}`.
   * `Availability` - `online`, `offline` (last will).
+  * `HA Image` - PNG icon of the current input (TV, Blu-ray, game, tuner, Bluetooth and more), shown by Home Assistant as the source image. The receiver has no input icons, the plugin bundles icons from [Material Design Icons](https://pictogrammers.com/library/mdi/) (Apache 2.0).
 
 | Method | Topic | Message | Type |
 | --- | --- | --- | --- |

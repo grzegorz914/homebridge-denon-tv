@@ -2,6 +2,7 @@ import EventEmitter from 'events';
 import Zone from './zone.js';
 import Functions from './functions.js';
 import HaDiscovery from './hadiscovery.js';
+import InputIcons from './inputicons.js';
 import { PictureModesConversionToHomeKit, PictureModesDenonNumber, PictureModesDenonString, DirectSoundMode, SoundModeConversion, SoundModeDisplayName } from './constants.js';
 let Accessory, Characteristic, Service, Categories, Encode, AccessoryUUID;
 
@@ -980,6 +981,7 @@ class MainZone extends EventEmitter {
                 objectId: `denon_${this.savedInfo.serialNumber}_zone${this.zoneControl}`,
                 name: this.name,
                 deviceClass: 'receiver',
+                image: true,
                 device: {
                     manufacturer: this.savedInfo.manufacturer,
                     model: this.savedInfo.modelName,
@@ -1025,6 +1027,10 @@ class MainZone extends EventEmitter {
                 source: input ? `${input.zonePrefix}${input.reference}` : this.reference,
                 sound_mode: this.ha.commands.sound_mode ? this.zone.soundMode || undefined : undefined
             });
+
+            // Icon of the current input, bundled with the plugin
+            const reference = this.power ? this.reference || null : null;
+            this.ha.updateImage(reference, () => InputIcons.get(reference)).catch(() => { });
         } catch (error) {
             if (this.logWarn) this.emit('warn', `HA Discovery state error: ${error}`);
         }

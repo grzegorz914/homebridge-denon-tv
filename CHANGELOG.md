@@ -21,6 +21,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - For plugin < v6.1.0 use Homebridge UI <= v5.5.0
 - For plugin >= v6.1.0 use Homebridge UI >= v5.13.0
 
+## [6.3.0] - (25.09.2026)
+
+### Changes
+
+- added: Home Assistant discovery shows an icon of the current input (TV, Blu-ray, game, tuner, Bluetooth, Spotify, AUX, quick select and more) for Main Zone, Zone 2 and Zone 3. The receiver has no input icons, the plugin bundles icons from Material Design Icons (Apache 2.0), published on the `HA Image` topic
+
 ## [6.2.5] - (24.09.2026)
 
 ### Changes
