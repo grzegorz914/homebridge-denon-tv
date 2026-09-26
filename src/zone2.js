@@ -3,7 +3,7 @@ import Zone from './zone.js';
 import Functions from './functions.js';
 import HaDiscovery from './hadiscovery.js';
 import InputIcons from './inputicons.js';
-import { PictureModesConversionToHomeKit, PictureModesDenonNumber, SoundModeConversion, SoundModeDisplayName } from './constants.js';
+import { ApiUrls, PictureModesConversionToHomeKit, PictureModesDenonNumber, SoundModeConversion, SoundModeDisplayName } from './constants.js';
 let Accessory, Characteristic, Service, Categories, Encode, AccessoryUUID;
 
 class Zone2 extends EventEmitter {
@@ -129,6 +129,13 @@ class Zone2 extends EventEmitter {
                     const powerState = value ? 'ON' : 'OFF';
                     set = await this.stateControl('Power', powerState);
                     break;
+                case 'BrowseImage': {
+                    // Media browser icon of a source, the id is the zone prefix and the reference (SICD)
+                    const input = this.inputsServices?.find(i => `${i.zonePrefix}${i.reference}` === value?.id || i.reference === value?.id);
+                    await this.ha?.answerBrowseImage(value?.key, () => InputIcons.get(input?.reference ?? value?.id));
+                    set = true;
+                    break;
+                }
                 case 'Input':
                     const input = `Z2${value}`;
                     set = await this.denon.send(input);
@@ -892,6 +899,7 @@ class Zone2 extends EventEmitter {
         try {
             const soundMode = this.zoneControl === 0 && this.zone.info?.supportSoundMode;
             this.ha = new HaDiscovery(this.mqtt1, {
+                browseImages: true,
                 objectId: `denon_${this.savedInfo.serialNumber}_zone${this.zoneControl}`,
                 name: this.name,
                 deviceClass: 'receiver',
@@ -929,6 +937,14 @@ class Zone2 extends EventEmitter {
         }
     }
 
+    async fetchAlbumArt() {
+        const url = ApiUrls.NetAudioArt.replace('{time}', Date.now());
+        const { data } = await this.denon.client.get(url, { responseType: 'arraybuffer' });
+        const image = Buffer.from(data);
+        if (image.length < 100) throw new Error('No album art');
+        return image;
+    }
+
     async haUpdateState() {
         if (!this.ha) return;
 
@@ -939,12 +955,21 @@ class Zone2 extends EventEmitter {
                 volume: typeof this.volumeDb === 'number' ? Math.round(this.volumeDb + 80) : undefined,
                 muted: this.mute,
                 source: input ? `${input.zonePrefix}${input.reference}` : this.reference,
-                sound_mode: this.ha.commands.sound_mode ? this.zone.soundMode || undefined : undefined
+                sound_mode: this.ha.commands.sound_mode ? this.zone.soundMode || undefined : undefined,
+                // Now playing of network, Bluetooth, USB and tuner sources
+                media_title: this.nowPlaying?.title ?? '',
+                media_artist: this.nowPlaying?.artist ?? '',
+                media_album_name: this.nowPlaying?.album ?? '',
+                media_channel: this.nowPlaying?.station ?? ''
             });
 
             // Icon of the current input, bundled with the plugin
             const reference = this.power ? this.reference || null : null;
-            this.ha.updateImage(reference, () => InputIcons.get(reference)).catch(() => { });
+            // Album cover of the playing track, the input icon when the receiver has none
+            const art = this.power && this.nowPlaying?.art;
+            const key = art ? `art:${this.nowPlaying.title}|${this.nowPlaying.artist}|${this.nowPlaying.album}` : reference;
+            const fetchImage = art ? () => this.fetchAlbumArt().catch(() => InputIcons.get(reference)) : () => InputIcons.get(reference);
+            this.ha.updateImage(key, fetchImage).catch(() => { });
         } catch (error) {
             if (this.logWarn) this.emit('warn', `HA Discovery state error: ${error}`);
         }
@@ -966,6 +991,10 @@ class Zone2 extends EventEmitter {
                 })
                 .on('addRemoveOrUpdateInput', async (inputs, remove) => {
                     await this.addRemoveOrUpdateInput(inputs, remove);
+                })
+                .on('nowPlaying', async (nowPlaying) => {
+                    this.nowPlaying = nowPlaying;
+                    await this.haUpdateState();
                 })
                 .on('stateChanged', async (power, reference, volume, volumeDisplay, mute, pictureMode) => {
                     const input = this.inputsServices?.find(input => input.reference === reference);

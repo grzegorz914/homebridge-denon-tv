@@ -3,6 +3,9 @@ import Functions from './functions.js';
 import { XMLParser } from 'fast-xml-parser';
 import { ApiUrls, InputConversion, SoundModeConversion, BodyXml, PictureModesDenonNumber, InputMode, ZoneName, ZonePrefixMap } from './constants.js';
 const INPUTS_CONVERSION_KEYS = Object.keys(InputConversion);
+
+// Sources with now playing metadata in formNetAudio_StatusXml, the same list as the denonavr library (after conversion)
+const NetAudioSources = ['NET', 'NET/USB', 'SERVER', 'USB/IPOD', 'USB', 'IPD', 'BT', 'IRADIO', 'IRP', 'FAVORITES', 'FVP', 'SPOTIFY', 'SPOTIFYCONNECT', 'FLICKR'];
 const SOUND_MODES_CONVERSION_KEYS = Object.keys(SoundModeConversion);
 
 class Zone extends EventEmitter {
@@ -221,6 +224,16 @@ class Zone extends EventEmitter {
             // Reference ---
             const reference = [input, input, input, soundMode, input][this.zoneControl];
 
+            // Now playing of network, Bluetooth, USB and tuner sources, for the Home Assistant media card
+            if (this.zoneControl < 3) {
+                const nowPlaying = power ? await this.getNowPlaying(input) : null;
+                const nowPlayingJson = JSON.stringify(nowPlaying);
+                if (nowPlayingJson !== this.nowPlayingJson) {
+                    this.nowPlayingJson = nowPlayingJson;
+                    this.emit('nowPlaying', nowPlaying);
+                }
+            }
+
             // REST & MQTT events
             if (this.zoneControl < 3) {
                 if (this.restFulEnabled) this.emit('restFul', 'state', devState);
@@ -257,6 +270,41 @@ class Zone extends EventEmitter {
         } catch (error) {
             throw new Error(`Check state error: ${error}`);
         }
+    }
+
+    // Title, artist and album of network sources, station of the tuner. Read the same way as the Home Assistant
+    // denonavr library, receivers without these pages or sources without metadata give null
+    async getNowPlaying(input) {
+        const text = (value) => String((typeof value === 'object' ? value?.['#text'] : value) ?? '').trim();
+        try {
+            if (NetAudioSources.includes(input)) {
+                const { data } = await this.client.get(ApiUrls.NetAudioStatus);
+                const lines = [].concat(this.parseString.parse(data)?.item?.szLine?.value ?? []).map(text);
+                const nowPlaying = { title: lines[1] ?? '', artist: lines[2] ?? '', album: lines[4] ?? '', station: '', art: true };
+                return nowPlaying.title || nowPlaying.artist ? nowPlaying : null;
+            }
+            if (input === 'TUNER') {
+                const { data } = await this.client.get(ApiUrls.TunerStatus);
+                const item = this.parseString.parse(data)?.item ?? {};
+                const band = text(item.Band?.value);
+                const am = band.toUpperCase().startsWith('AM');
+                const rawFrequency = item.Frequency?.value;
+                // The parser turns 101.00 into 101, FM is shown with two decimals like on the receiver
+                const frequency = typeof rawFrequency === 'number' ? (am ? String(rawFrequency) : rawFrequency.toFixed(2)) : text(rawFrequency);
+                const unit = am ? 'kHz' : band ? 'MHz' : '';
+                const station = [band, frequency, frequency ? unit : ''].filter(Boolean).join(' ');
+                return station ? { title: '', artist: '', album: '', station, art: false } : null;
+            }
+            if (input === 'HDRADIO') {
+                const { data } = await this.client.get(ApiUrls.HdTunerStatus);
+                const item = this.parseString.parse(data)?.item ?? {};
+                const nowPlaying = { title: text(item.Title?.value), artist: text(item.Artist?.value), album: text(item.Album?.value), station: text(item.StationNameSh?.value), art: false };
+                return nowPlaying.title || nowPlaying.station ? nowPlaying : null;
+            }
+        } catch (error) {
+            if (this.logDebug) this.emit('debug', `Now playing error: ${error}`);
+        }
+        return null;
     }
 
     async checkInfo(denonInfo) {

@@ -170,8 +170,9 @@
 * Subscribe data as a JSON Object `{Power: true}`
 * HA Discovery - if enabled, the device is published to Home Assistant as one media player (class `receiver`) with power, volume, mute, source selection and more. Main Zone, Zone 2 and Zone 3 are published as separate media players. Requires the [MQTT Universal Media Player](https://github.com/grzegorz914/homeassistant-mqtt-media-player) integration. Additional retained topics:
   * `homeassistant/media_player/<id>/config` - discovery message.
-  * `HA State` - `{"power": true, "volume": 49, "muted": false, "source": "SITV", "sound_mode": "MOVIE"}`.
+  * `HA State` - `{"power": true, "volume": 49, "muted": false, "source": "SINET", "sound_mode": "MOVIE", "media_title": "Bohemian Rhapsody", "media_artist": "Queen", "media_album_name": "A Night at the Opera", "media_channel": ""}`.
   * `Availability` - `online`, `offline` (last will).
+  * Now playing - title, artist, album and cover of network, Bluetooth and USB sources (Spotify, internet radio, media server...) and the band and frequency of the tuner are shown in the media card, the media browser lists the sources (integration 0.5.0 or newer).
   * `HA Image` - PNG icon of the current input (TV, Blu-ray, game, tuner, Bluetooth and more), shown by Home Assistant as the source image. The receiver has no input icons, the plugin bundles icons from [Material Design Icons](https://pictogrammers.com/library/mdi/) (Apache 2.0).
 
 | Method | Topic | Message | Type |

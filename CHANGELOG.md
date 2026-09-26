@@ -21,6 +21,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - For plugin < v6.1.0 use Homebridge UI <= v5.5.0
 - For plugin >= v6.1.0 use Homebridge UI >= v5.13.0
 
+## [6.4.0] - (26.09.2026)
+
+### Changes
+
+- added: Home Assistant now playing, title, artist, album and cover of network, Bluetooth and USB sources (Spotify, internet radio, media server, favorites...) and band and frequency of the tuner, HD radio station and title, for Main Zone, Zone 2 and Zone 3. The cover replaces the input icon while a track with a cover plays
+- added: the Home Assistant media browser lists the sources with their input icons (MQTT Universal Media Player integration 0.5.0 or newer)
+- readme update
+
 ## [6.3.0] - (25.09.2026)
 
 ### Changes
