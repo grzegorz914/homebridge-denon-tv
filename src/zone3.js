@@ -136,8 +136,38 @@ class Zone3 extends EventEmitter {
                     set = true;
                     break;
                 }
+                case 'Shuffle':
+                    // Network sources, random on / off
+                    set = await this.denon.send(value ? 'NS9K' : 'NS9M');
+                    break;
+                case 'Repeat': {
+                    const repeat = { one: 'NS9H', all: 'NS9I', off: 'NS9J' }[value];
+                    set = repeat ? await this.denon.send(repeat) : false;
+                    break;
+                }
+                case 'Join': {
+                    // The zone follows the main zone input (SOURCE), leaving returns to the input it had before
+                    if (value) {
+                        if (this.reference !== 'SOURCE') this.joinPreviousInput = this.reference;
+                        if (!this.power) {
+                            await this.denon.send('Z3ON');
+                            await new Promise(resolve => setTimeout(resolve, 1000));
+                        }
+                        set = await this.denon.send('Z3SOURCE');
+                        break;
+                    }
+                    if (this.reference !== 'SOURCE') {
+                        set = true;
+                        break;
+                    }
+                    // After a restart the previous input is unknown, the first input of the zone is used
+                    const previous = this.joinPreviousInput || this.inputsServices?.find(input => input.reference !== 'SOURCE')?.reference;
+                    this.joinPreviousInput = null;
+                    set = previous ? await this.denon.send(`Z3${previous}`) : false;
+                    break;
+                }
                 case 'Input':
-                    const input = `Z2${value}`;
+                    const input = `Z3${value}`;
                     set = await this.denon.send(input);
                     break;
                 case 'Surround':
@@ -915,8 +945,14 @@ class Zone3 extends EventEmitter {
                     mute: { key: 'Mute' },
                     // Inputs are switched with the raw zone command, the same one HomeKit uses
                     source: { key: 'RcControl' },
-                    ...(soundMode ? { sound_mode: { key: 'Surround' } } : {})
-                }
+                    ...(soundMode ? { sound_mode: { key: 'Surround' } } : {}),
+                    shuffle: { key: 'Shuffle' },
+                    repeat: { key: 'Repeat' },
+                    // Joins the main zone in a Home Assistant group
+                    join: { key: 'Join' }
+                },
+                // The zones of the receiver are grouped in Home Assistant, the main zone leads
+                group: { id: `denon_${this.savedInfo.serialNumber}`, leader: this.zoneControl === 0 }
             });
             await this.haPublishConfig();
         } catch (error) {
@@ -960,7 +996,11 @@ class Zone3 extends EventEmitter {
                 media_title: this.nowPlaying?.title ?? '',
                 media_artist: this.nowPlaying?.artist ?? '',
                 media_album_name: this.nowPlaying?.album ?? '',
-                media_channel: this.nowPlaying?.station ?? ''
+                media_channel: this.nowPlaying?.station ?? '',
+                // Network sources only, null hides the controls on other inputs
+                shuffle: this.nowPlaying?.shuffle ?? null,
+                repeat: this.nowPlaying?.repeat ?? null,
+                joined: this.power && this.reference === 'SOURCE'
             });
 
             // Icon of the current input, bundled with the plugin

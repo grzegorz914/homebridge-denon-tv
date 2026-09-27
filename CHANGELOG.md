@@ -21,6 +21,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - For plugin < v6.1.0 use Homebridge UI <= v5.5.0
 - For plugin >= v6.1.0 use Homebridge UI >= v5.13.0
 
+## [6.5.0] - (27.09.2026)
+
+### Changes
+
+- added: Home Assistant grouping of the zones. Zone 2 and Zone 3 join the Main Zone (zone input SOURCE) with media_player.join or the group button of the media card, leaving the group returns the zone to the input it had before
+- added: Home Assistant shuffle and repeat of network sources, the controls are shown only while a network source plays
+- fixed: Zone 3 input selected from MQTT, RESTFul and Home Assistant was sent to Zone 2
+- the grouping, shuffle and repeat need the MQTT Universal Media Player integration 0.7.0 or newer
+
 ## [6.4.0] - (26.09.2026)
 
 ### Changes

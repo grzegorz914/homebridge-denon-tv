@@ -138,6 +138,15 @@ class MainZone extends EventEmitter {
                     set = true;
                     break;
                 }
+                case 'Shuffle':
+                    // Network sources, random on / off
+                    set = await this.denon.send(value ? 'NS9K' : 'NS9M');
+                    break;
+                case 'Repeat': {
+                    const repeat = { one: 'NS9H', all: 'NS9I', off: 'NS9J' }[value];
+                    set = repeat ? await this.denon.send(repeat) : false;
+                    break;
+                }
                 case 'Input':
                     const input = `SI${value}`;
                     set = await this.denon.send(input);
@@ -1001,8 +1010,12 @@ class MainZone extends EventEmitter {
                     mute: { key: 'Mute' },
                     // Inputs are switched with the raw zone command, the same one HomeKit uses
                     source: { key: 'RcControl' },
-                    ...(soundMode ? { sound_mode: { key: 'Surround' } } : {})
-                }
+                    ...(soundMode ? { sound_mode: { key: 'Surround' } } : {}),
+                    shuffle: { key: 'Shuffle' },
+                    repeat: { key: 'Repeat' }
+                },
+                // The zones of the receiver are grouped in Home Assistant, the main zone leads
+                group: { id: `denon_${this.savedInfo.serialNumber}`, leader: this.zoneControl === 0 }
             });
             await this.haPublishConfig();
         } catch (error) {
@@ -1046,7 +1059,10 @@ class MainZone extends EventEmitter {
                 media_title: this.nowPlaying?.title ?? '',
                 media_artist: this.nowPlaying?.artist ?? '',
                 media_album_name: this.nowPlaying?.album ?? '',
-                media_channel: this.nowPlaying?.station ?? ''
+                media_channel: this.nowPlaying?.station ?? '',
+                // Network sources only, null hides the controls on other inputs
+                shuffle: this.nowPlaying?.shuffle ?? null,
+                repeat: this.nowPlaying?.repeat ?? null
             });
 
             // Icon of the current input, bundled with the plugin

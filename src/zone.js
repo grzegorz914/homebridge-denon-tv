@@ -279,9 +279,17 @@ class Zone extends EventEmitter {
         try {
             if (NetAudioSources.includes(input)) {
                 const { data } = await this.client.get(ApiUrls.NetAudioStatus);
-                const lines = [].concat(this.parseString.parse(data)?.item?.szLine?.value ?? []).map(text);
-                const nowPlaying = { title: lines[1] ?? '', artist: lines[2] ?? '', album: lines[4] ?? '', station: '', art: true };
-                return nowPlaying.title || nowPlaying.artist ? nowPlaying : null;
+                const item = this.parseString.parse(data)?.item ?? {};
+                const lines = [].concat(item.szLine?.value ?? []).map(text);
+                // Random OFF / ON, repeat OFF / ONE / ALL, null when the receiver does not report them
+                const random = text(item.NetAudioRandom?.value).toUpperCase();
+                const repeat = text(item.NetAudioRepeat?.value).toUpperCase();
+                const shuffle = random ? random !== 'OFF' : null;
+                const repeatMode = repeat ? (repeat === 'OFF' ? 'off' : repeat.includes('ONE') ? 'one' : 'all') : null;
+                const title = lines[1] ?? '';
+                const artist = lines[2] ?? '';
+                if (!title && !artist && shuffle === null && repeatMode === null) return null;
+                return { title, artist, album: lines[4] ?? '', station: '', art: Boolean(title || artist), shuffle, repeat: repeatMode };
             }
             if (input === 'TUNER') {
                 const { data } = await this.client.get(ApiUrls.TunerStatus);
