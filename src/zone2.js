@@ -65,6 +65,7 @@ class Zone2 extends EventEmitter {
         //variable
         this.functions = new Functions();
         this.inputIdentifier = 1;
+        this.haInputs = new Map();
         this.power = false;
         this.reference = '';
         this.volume = 0;
@@ -131,7 +132,8 @@ class Zone2 extends EventEmitter {
                     break;
                 case 'BrowseImage': {
                     // Media browser icon of a source, the id is the zone prefix and the reference (SICD)
-                    const input = this.inputsServices?.find(i => `${i.zonePrefix}${i.reference}` === value?.id || i.reference === value?.id);
+                    const match = (i) => `${i.zonePrefix}${i.reference}` === value?.id || i.reference === value?.id;
+                    const input = this.inputsServices?.find(match) ?? [...this.haInputs.values()].find(match);
                     await this.ha?.answerBrowseImage(value?.key, () => InputIcons.get(input?.reference ?? value?.id));
                     set = true;
                     break;
@@ -270,6 +272,10 @@ class Zone2 extends EventEmitter {
                 const inputZonePrefix = input.zonePrefix;
                 const inputVisibility = this.savedInputsTargetVisibility[inputReference] ?? 0;
 
+                // Home Assistant gets all inputs, the HomeKit limit of 85 does not apply
+                if (remove) this.haInputs.delete(inputReference);
+                else this.haInputs.set(inputReference, { reference: inputReference, name: sanitizedName, zonePrefix: inputZonePrefix, mode: inputMode });
+
                 if (remove) {
                     const svc = this.inputsServices.find(s => s.reference === inputReference);
                     if (svc) {
@@ -352,7 +358,8 @@ class Zone2 extends EventEmitter {
 
             // Only one time run
             if (updated) await this.displayOrder();
-            if (updated) this.haPublishConfig();
+            // Home Assistant also gets the inputs over the HomeKit limit, publishConfig skips an unchanged config
+            this.haPublishConfig();
 
             return true;
         } catch (error) {
@@ -964,7 +971,7 @@ class Zone2 extends EventEmitter {
         if (!this.ha) return;
 
         try {
-            const sources = (this.inputsServices ?? []).map(input => ({ id: `${input.zonePrefix}${input.reference}`, name: input.name }));
+            const sources = [...this.haInputs.values()].map(input => ({ id: `${input.zonePrefix}${input.reference}`, name: input.name }));
             const soundModes = this.ha.commands.sound_mode ? [...new Set(Object.values(SoundModeConversion))].map(mode => ({ id: mode, name: SoundModeDisplayName[mode] ?? mode })) : [];
             await this.ha.publishConfig({ sources, soundModes });
             await this.haUpdateState();
@@ -985,7 +992,7 @@ class Zone2 extends EventEmitter {
         if (!this.ha) return;
 
         try {
-            const input = this.inputsServices?.find(input => input.reference === this.reference);
+            const input = this.inputsServices?.find(input => input.reference === this.reference) ?? this.haInputs.get(this.reference);
             await this.ha.updateState({
                 power: this.power,
                 volume: typeof this.volumeDb === 'number' ? Math.round(this.volumeDb + 80) : undefined,
