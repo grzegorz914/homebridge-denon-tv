@@ -20,6 +20,7 @@ class Heos extends EventEmitter {
         this.attempt = 0;
         this.state = null;
         this.progress = null;
+        this.nowPlaying = null;
     }
 
     start() {
@@ -67,6 +68,7 @@ class Heos extends EventEmitter {
         socket?.destroy();
         this.state = null;
         this.progress = null;
+        this.nowPlaying = null;
         this.update();
     }
 
@@ -104,7 +106,9 @@ class Heos extends EventEmitter {
                 const player = players.find(p => p.ip === this.host) ?? (players.length === 1 ? players[0] : null);
                 this.pid = player?.pid ?? null;
                 this.emit('debug', `HEOS player: ${player ? `${player.name}, pid: ${player.pid}` : 'not found'}`);
-                if (this.pid !== null) this.send(`player/get_play_state?pid=${this.pid}`);
+                if (this.pid === null) break;
+                this.send(`player/get_play_state?pid=${this.pid}`);
+                this.send(`player/get_now_playing_media?pid=${this.pid}`);
                 break;
             }
             case 'player/get_play_state':
@@ -115,6 +119,8 @@ class Heos extends EventEmitter {
                 break;
             case 'event/player_now_playing_progress': {
                 if (String(params.pid) !== String(this.pid)) break;
+                // First progress of a track in the log, the next ones come every second
+                if (!this.progress) this.emit('debug', `HEOS progress: ${heos.message}`);
                 // Milliseconds
                 const position = Number(params.cur_pos) / 1000;
                 const duration = Number(params.duration) / 1000;
@@ -129,7 +135,23 @@ class Heos extends EventEmitter {
                 // A new track, the progress of the old one no longer applies
                 this.progress = null;
                 this.update();
+                this.send(`player/get_now_playing_media?pid=${this.pid}`);
                 break;
+            case 'player/get_now_playing_media': {
+                if (String(params.pid) !== String(this.pid)) break;
+                // Song of music services, station of internet radio
+                const media = message.payload ?? {};
+                const text = (value) => String(value ?? '').trim();
+                this.nowPlaying = {
+                    title: text(media.song) || text(media.station),
+                    artist: text(media.artist),
+                    album: text(media.album),
+                    image: /^https?:\/\//.test(text(media.image_url)) ? text(media.image_url) : ''
+                };
+                this.emit('debug', `HEOS now playing: ${JSON.stringify(this.nowPlaying)}`);
+                this.update();
+                break;
+            }
             case 'event/players_changed':
                 this.send('player/get_players');
                 break;
@@ -137,7 +159,7 @@ class Heos extends EventEmitter {
     }
 
     update() {
-        const media = this.state ? { state: this.state, ...(this.progress ?? {}) } : null;
+        const media = this.state ? { state: this.state, ...(this.nowPlaying ?? {}), ...(this.progress ?? {}) } : null;
         // Progress events come every second, Home Assistant moves the bar itself, publish only when the state,
         // the track length or the position changes by more than the time passed (seek, new track)
         const last = this.published;
@@ -147,6 +169,10 @@ class Heos extends EventEmitter {
         const changed = !media || !last
             || media.state !== last.state
             || media.duration !== last.duration
+            || media.title !== last.title
+            || media.artist !== last.artist
+            || media.album !== last.album
+            || media.image !== last.image
             || (media.position === undefined) !== (last.position === undefined)
             || drift > 3;
         if (!changed || (!media && !last)) return;

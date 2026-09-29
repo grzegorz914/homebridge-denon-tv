@@ -1075,9 +1075,11 @@ class MainZone extends EventEmitter {
                 source: input ? `${input.zonePrefix}${input.reference}` : this.reference,
                 sound_mode: this.ha.commands.sound_mode ? this.zone.soundMode || undefined : undefined,
                 // Now playing of network, Bluetooth, USB and tuner sources
-                media_title: this.nowPlaying?.title ?? '',
-                media_artist: this.nowPlaying?.artist ?? '',
-                media_album_name: this.nowPlaying?.album ?? '',
+                // HEOS models block the web now playing (403), their song comes from HEOS
+                media_title: this.nowPlaying?.title || heos?.title || '',
+                media_artist: this.nowPlaying?.artist || heos?.artist || '',
+                media_album_name: this.nowPlaying?.album || heos?.album || '',
+                media_image_url: heos?.image || '',
                 media_channel: this.nowPlaying?.station ?? '',
                 // Network sources only, null hides the controls on other inputs
                 shuffle: this.nowPlaying?.shuffle ?? null,
@@ -1091,7 +1093,8 @@ class MainZone extends EventEmitter {
             const reference = this.power ? this.reference || null : null;
             // Album cover of the playing track, the input icon when the receiver has none
             const art = this.power && this.nowPlaying?.art;
-            const key = art ? `art:${this.nowPlaying.title}|${this.nowPlaying.artist}|${this.nowPlaying.album}` : reference;
+            // The HEOS cover is a url Home Assistant loads itself, the input icon must not cover it
+            const key = art ? `art:${this.nowPlaying.title}|${this.nowPlaying.artist}|${this.nowPlaying.album}` : heos?.image ? null : reference;
             const fetchImage = art ? () => this.fetchAlbumArt().catch(() => InputIcons.get(reference)) : () => InputIcons.get(reference);
             this.ha.updateImage(key, fetchImage).catch(() => { });
         } catch (error) {
