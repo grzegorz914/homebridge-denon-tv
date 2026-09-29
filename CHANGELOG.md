@@ -25,9 +25,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changes
 
-- added: Home Assistant progress bar with time and play state of network sources (Online Music, Spotify, internet radio...) of the Main Zone, from the HEOS interface of the receiver (port 1255), the same one the HEOS app uses. Receivers without HEOS keep showing the title without the progress bar
+- added: Home Assistant progress bar with time and play state of network sources (Online Music, Spotify, internet radio...) of the Main Zone, Zone 2 and Zone 3, from the HEOS interface of the receiver (port 1255), the same one the HEOS app uses. Receivers without HEOS keep showing the title without the progress bar
 - added: Home Assistant song, artist, album and cover of network sources from HEOS on receivers that block the web now playing (e.g. AVR-X6300H answers 403)
-- added: Home Assistant play, pause, stop, next, previous, shuffle and repeat for network sources. The Main Zone uses HEOS commands (HEOS receivers ignore the Denon NS9 commands), older receivers and Zone 2 and Zone 3 the NS9 commands
+- fixed: receivers blocking the web now playing (403) are no longer asked every few seconds, the debug log shows it once
+- added: Home Assistant play, pause, stop, next, previous, shuffle and repeat for network sources. HEOS receivers are controlled over HEOS (they ignore the Denon NS9 commands), older receivers with the NS9 commands. Main Zone, Zone 2 and Zone 3, also a zone that follows the main zone
 
 ## [6.5.1] - (28.09.2026)
 

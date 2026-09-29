@@ -1,5 +1,6 @@
 import EventEmitter from 'events';
-import Zone from './zone.js';
+import Zone, { NetAudioSources } from './zone.js';
+import Heos from './heos.js';
 import Functions from './functions.js';
 import HaDiscovery from './hadiscovery.js';
 import InputIcons from './inputicons.js';
@@ -138,11 +139,29 @@ class Zone2 extends EventEmitter {
                     set = true;
                     break;
                 }
+                case 'Playback': {
+                    // HEOS on HEOS receivers, the Denon NS9 commands on older ones
+                    if (this.heos?.control(value)) {
+                        set = true;
+                        break;
+                    }
+                    const command = { play: 'NS9A', pause: 'NS9B', stop: 'NS9C', next: 'NS9D', previous: 'NS9E' }[value];
+                    set = command ? await this.denon.send(command) : false;
+                    break;
+                }
                 case 'Shuffle':
                     // Network sources, random on / off
+                    if (this.heos?.setPlayMode({ shuffle: !!value })) {
+                        set = true;
+                        break;
+                    }
                     set = await this.denon.send(value ? 'NS9K' : 'NS9M');
                     break;
                 case 'Repeat': {
+                    if (this.heos?.setPlayMode({ repeat: value })) {
+                        set = true;
+                        break;
+                    }
                     const repeat = { one: 'NS9H', all: 'NS9I', off: 'NS9J' }[value];
                     set = repeat ? await this.denon.send(repeat) : false;
                     break;
@@ -954,11 +973,11 @@ class Zone2 extends EventEmitter {
                     source: { key: 'RcControl' },
                     ...(soundMode ? { sound_mode: { key: 'Surround' } } : {}),
                     // Network sources (Online Music, Spotify, media server...), Denon protocol NS9 commands
-                    play: { key: 'RcControl', value: 'NS9A' },
-                    pause: { key: 'RcControl', value: 'NS9B' },
-                    stop: { key: 'RcControl', value: 'NS9C' },
-                    next: { key: 'RcControl', value: 'NS9D' },
-                    previous: { key: 'RcControl', value: 'NS9E' },
+                    play: { key: 'Playback', value: 'play' },
+                    pause: { key: 'Playback', value: 'pause' },
+                    stop: { key: 'Playback', value: 'stop' },
+                    next: { key: 'Playback', value: 'next' },
+                    previous: { key: 'Playback', value: 'previous' },
                     shuffle: { key: 'Shuffle' },
                     repeat: { key: 'Repeat' },
                     // Joins the main zone in a Home Assistant group
@@ -968,6 +987,7 @@ class Zone2 extends EventEmitter {
                 group: { id: `denon_${this.savedInfo.serialNumber}`, leader: this.zoneControl === 0 }
             });
             await this.haPublishConfig();
+            if (this.power) this.heos?.start();
         } catch (error) {
             if (this.logWarn) this.emit('warn', `HA Discovery setup error: ${error}`);
         }
@@ -999,28 +1019,38 @@ class Zone2 extends EventEmitter {
 
         try {
             const input = this.inputsServices?.find(input => input.reference === this.reference) ?? this.haInputs.get(this.reference);
+            // Play state, song and progress bar of network sources from HEOS, also when the zone follows the main zone
+            const heos = this.power && (NetAudioSources.includes(this.reference) || this.reference === 'SOURCE') ? this.heosMedia : null;
+            const progress = heos?.duration > 0 && heos.position !== undefined;
             await this.ha.updateState({
                 power: this.power,
+                state: this.power ? heos?.state ?? 'on' : 'off',
                 volume: typeof this.volumeDb === 'number' ? Math.round(this.volumeDb + 80) : undefined,
                 muted: this.mute,
                 source: input ? `${input.zonePrefix}${input.reference}` : this.reference,
                 sound_mode: this.ha.commands.sound_mode ? this.zone.soundMode || undefined : undefined,
                 // Now playing of network, Bluetooth, USB and tuner sources
-                media_title: this.nowPlaying?.title ?? '',
-                media_artist: this.nowPlaying?.artist ?? '',
-                media_album_name: this.nowPlaying?.album ?? '',
+                // HEOS models block the web now playing (403), their song comes from HEOS
+                media_title: this.nowPlaying?.title || heos?.title || '',
+                media_artist: this.nowPlaying?.artist || heos?.artist || '',
+                media_album_name: this.nowPlaying?.album || heos?.album || '',
+                media_image_url: heos?.image || '',
                 media_channel: this.nowPlaying?.station ?? '',
                 // Network sources only, null hides the controls on other inputs
-                shuffle: this.nowPlaying?.shuffle ?? null,
-                repeat: this.nowPlaying?.repeat ?? null,
-                joined: this.power && this.reference === 'SOURCE'
+                shuffle: this.nowPlaying?.shuffle ?? heos?.shuffle ?? null,
+                repeat: this.nowPlaying?.repeat ?? heos?.repeat ?? null,
+                joined: this.power && this.reference === 'SOURCE',
+                media_duration: progress ? heos.duration : null,
+                media_position: progress ? heos.position : null,
+                media_position_updated_at: progress ? heos.positionAt : null
             });
 
             // Icon of the current input, bundled with the plugin
             const reference = this.power ? this.reference || null : null;
             // Album cover of the playing track, the input icon when the receiver has none
             const art = this.power && this.nowPlaying?.art;
-            const key = art ? `art:${this.nowPlaying.title}|${this.nowPlaying.artist}|${this.nowPlaying.album}` : reference;
+            // The HEOS cover is a url Home Assistant loads itself, the input icon must not cover it
+            const key = art ? `art:${this.nowPlaying.title}|${this.nowPlaying.artist}|${this.nowPlaying.album}` : heos?.image ? null : reference;
             const fetchImage = art ? () => this.fetchAlbumArt().catch(() => InputIcons.get(reference)) : () => InputIcons.get(reference);
             this.ha.updateImage(key, fetchImage).catch(() => { });
         } catch (error) {
@@ -1032,6 +1062,13 @@ class Zone2 extends EventEmitter {
     async start() {
         try {
             //denon client
+            this.heos = new Heos(this.device.host)
+                .on('media', async (media) => {
+                    this.heosMedia = media;
+                    await this.haUpdateState();
+                })
+                .on('debug', (message) => this.logDebug && this.emit('debug', message));
+
             this.zone = new Zone(this.denon, this.device, this.inputsFile, this.restFul.enable, this.mqtt.enable)
                 .on('deviceInfo', (info) => {
                     this.emit('devInfo', `-------- ${this.name} --------`);
@@ -1142,6 +1179,9 @@ class Zone2 extends EventEmitter {
                     }
 
                     this.inputIdentifier = inputIdentifier;
+                    // HEOS of the receiver, only while the zone is on and Home Assistant discovery is enabled
+                    if (this.ha && power) this.heos?.start();
+                    else this.heos?.stop();
                     this.power = power;
                     this.reference = reference;
                     this.volume = scaledVolume;

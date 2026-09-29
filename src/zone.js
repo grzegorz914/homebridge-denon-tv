@@ -277,7 +277,8 @@ class Zone extends EventEmitter {
     async getNowPlaying(input) {
         const text = (value) => String((typeof value === 'object' ? value?.['#text'] : value) ?? '').trim();
         try {
-            if (NetAudioSources.includes(input)) {
+            // HEOS receivers block this page (403), their now playing comes from HEOS
+            if (NetAudioSources.includes(input) && !this.netAudioBlocked) {
                 const { data } = await this.client.get(ApiUrls.NetAudioStatus);
                 const item = this.parseString.parse(data)?.item ?? {};
                 const lines = [].concat(item.szLine?.value ?? []).map(text);
@@ -310,6 +311,11 @@ class Zone extends EventEmitter {
                 return nowPlaying.title || nowPlaying.station ? nowPlaying : null;
             }
         } catch (error) {
+            if (error.response?.status === 403 && NetAudioSources.includes(input)) {
+                this.netAudioBlocked = true;
+                if (this.logDebug) this.emit('debug', 'Now playing of network sources not available over the web interface (403), HEOS is used');
+                return null;
+            }
             if (this.logDebug) this.emit('debug', `Now playing error: ${error}`);
         }
         return null;
