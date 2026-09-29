@@ -953,6 +953,12 @@ class Zone3 extends EventEmitter {
                     // Inputs are switched with the raw zone command, the same one HomeKit uses
                     source: { key: 'RcControl' },
                     ...(soundMode ? { sound_mode: { key: 'Surround' } } : {}),
+                    // Network sources (Online Music, Spotify, media server...), Denon protocol NS9 commands
+                    play: { key: 'RcControl', value: 'NS9A' },
+                    pause: { key: 'RcControl', value: 'NS9B' },
+                    stop: { key: 'RcControl', value: 'NS9C' },
+                    next: { key: 'RcControl', value: 'NS9D' },
+                    previous: { key: 'RcControl', value: 'NS9E' },
                     shuffle: { key: 'Shuffle' },
                     repeat: { key: 'Repeat' },
                     // Joins the main zone in a Home Assistant group

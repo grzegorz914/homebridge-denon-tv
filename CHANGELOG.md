@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changes
 
 - added: Home Assistant progress bar with time and play state of network sources (Online Music, Spotify, internet radio...) of the Main Zone, from the HEOS interface of the receiver (port 1255), the same one the HEOS app uses. Receivers without HEOS keep showing the title without the progress bar
+- added: Home Assistant play, pause, stop, next and previous for network sources (Denon NS9 commands), Main Zone, Zone 2 and Zone 3
 
 ## [6.5.1] - (28.09.2026)
 
