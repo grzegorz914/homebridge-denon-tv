@@ -21,6 +21,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - For plugin < v6.1.0 use Homebridge UI <= v5.5.0
 - For plugin >= v6.1.0 use Homebridge UI >= v5.13.0
 
+## [6.6.1] - (29.09.2026)
+
+### Changes
+
+- fixed: MQTT, when the broker was not running yet at the start of Homebridge the device never published over MQTT and the Home Assistant discovery was not set up until a restart. The device now starts publishing and sets up the discovery as soon as the broker comes online
+- fixed: Home Assistant discovery, the config and the state are published again after a restart of the broker, a broker without persistence loses the retained messages
+
 ## [6.6.0] - (29.09.2026)
 
 ### Changes
