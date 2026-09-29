@@ -1,5 +1,6 @@
 import EventEmitter from 'events';
-import Zone from './zone.js';
+import Zone, { NetAudioSources } from './zone.js';
+import Heos from './heos.js';
 import Functions from './functions.js';
 import HaDiscovery from './hadiscovery.js';
 import InputIcons from './inputicons.js';
@@ -1025,6 +1026,7 @@ class MainZone extends EventEmitter {
                 group: { id: `denon_${this.savedInfo.serialNumber}`, leader: this.zoneControl === 0 }
             });
             await this.haPublishConfig();
+            if (this.power) this.heos?.start();
         } catch (error) {
             if (this.logWarn) this.emit('warn', `HA Discovery setup error: ${error}`);
         }
@@ -1056,8 +1058,12 @@ class MainZone extends EventEmitter {
 
         try {
             const input = this.inputsServices?.find(input => input.reference === this.reference) ?? this.haInputs.get(this.reference);
+            // Play state and progress bar of network sources (Online Music...) from HEOS
+            const heos = this.power && NetAudioSources.includes(this.reference) ? this.heosMedia : null;
+            const progress = heos?.duration > 0 && heos.position !== undefined;
             await this.ha.updateState({
                 power: this.power,
+                state: this.power ? heos?.state ?? 'on' : 'off',
                 volume: typeof this.volumeDb === 'number' ? Math.round(this.volumeDb + 80) : undefined,
                 muted: this.mute,
                 source: input ? `${input.zonePrefix}${input.reference}` : this.reference,
@@ -1069,7 +1075,10 @@ class MainZone extends EventEmitter {
                 media_channel: this.nowPlaying?.station ?? '',
                 // Network sources only, null hides the controls on other inputs
                 shuffle: this.nowPlaying?.shuffle ?? null,
-                repeat: this.nowPlaying?.repeat ?? null
+                repeat: this.nowPlaying?.repeat ?? null,
+                media_duration: progress ? heos.duration : null,
+                media_position: progress ? heos.position : null,
+                media_position_updated_at: progress ? heos.positionAt : null
             });
 
             // Icon of the current input, bundled with the plugin
@@ -1089,6 +1098,13 @@ class MainZone extends EventEmitter {
         try {
 
             //denon client
+            this.heos = new Heos(this.device.host)
+                .on('media', async (media) => {
+                    this.heosMedia = media;
+                    await this.haUpdateState();
+                })
+                .on('debug', (message) => this.logDebug && this.emit('debug', message));
+
             this.zone = new Zone(this.denon, this.device, this.inputsFile, this.restFul.enable, this.mqtt.enable)
                 .on('deviceInfo', (info) => {
                     this.emit('devInfo', `-------- ${this.name} --------`);
@@ -1203,6 +1219,9 @@ class MainZone extends EventEmitter {
                     }
 
                     this.inputIdentifier = inputIdentifier;
+                    // HEOS of the receiver, only while it is on and Home Assistant discovery is enabled
+                    if (this.ha && power) this.heos?.start();
+                    else this.heos?.stop();
                     this.power = power;
                     this.reference = reference;
                     this.volume = scaledVolume;

@@ -21,6 +21,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - For plugin < v6.1.0 use Homebridge UI <= v5.5.0
 - For plugin >= v6.1.0 use Homebridge UI >= v5.13.0
 
+## [6.6.0] - (29.09.2026)
+
+### Changes
+
+- added: Home Assistant progress bar with time and play state of network sources (Online Music, Spotify, internet radio...) of the Main Zone, from the HEOS interface of the receiver (port 1255), the same one the HEOS app uses. Receivers without HEOS keep showing the title without the progress bar
+
 ## [6.5.1] - (28.09.2026)
 
 ### Changes

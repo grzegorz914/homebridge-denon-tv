@@ -5,7 +5,7 @@ import { ApiUrls, InputConversion, SoundModeConversion, BodyXml, PictureModesDen
 const INPUTS_CONVERSION_KEYS = Object.keys(InputConversion);
 
 // Sources with now playing metadata in formNetAudio_StatusXml, the same list as the denonavr library (after conversion)
-const NetAudioSources = ['NET', 'NET/USB', 'SERVER', 'USB/IPOD', 'USB', 'IPD', 'BT', 'IRADIO', 'IRP', 'FAVORITES', 'FVP', 'SPOTIFY', 'SPOTIFYCONNECT', 'FLICKR'];
+export const NetAudioSources = ['NET', 'NET/USB', 'SERVER', 'USB/IPOD', 'USB', 'IPD', 'BT', 'IRADIO', 'IRP', 'FAVORITES', 'FVP', 'SPOTIFY', 'SPOTIFYCONNECT', 'FLICKR'];
 const SOUND_MODES_CONVERSION_KEYS = Object.keys(SoundModeConversion);
 
 class Zone extends EventEmitter {
