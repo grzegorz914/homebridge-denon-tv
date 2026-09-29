@@ -141,11 +141,29 @@ class MainZone extends EventEmitter {
                     set = true;
                     break;
                 }
+                case 'Playback': {
+                    // HEOS on HEOS receivers, the Denon NS9 commands on older ones
+                    if (this.heos?.control(value)) {
+                        set = true;
+                        break;
+                    }
+                    const command = { play: 'NS9A', pause: 'NS9B', stop: 'NS9C', next: 'NS9D', previous: 'NS9E' }[value];
+                    set = command ? await this.denon.send(command) : false;
+                    break;
+                }
                 case 'Shuffle':
                     // Network sources, random on / off
+                    if (this.heos?.setPlayMode({ shuffle: !!value })) {
+                        set = true;
+                        break;
+                    }
                     set = await this.denon.send(value ? 'NS9K' : 'NS9M');
                     break;
                 case 'Repeat': {
+                    if (this.heos?.setPlayMode({ repeat: value })) {
+                        set = true;
+                        break;
+                    }
                     const repeat = { one: 'NS9H', all: 'NS9I', off: 'NS9J' }[value];
                     set = repeat ? await this.denon.send(repeat) : false;
                     break;
@@ -1020,11 +1038,11 @@ class MainZone extends EventEmitter {
                     source: { key: 'RcControl' },
                     ...(soundMode ? { sound_mode: { key: 'Surround' } } : {}),
                     // Network sources (Online Music, Spotify, media server...), Denon protocol NS9 commands
-                    play: { key: 'RcControl', value: 'NS9A' },
-                    pause: { key: 'RcControl', value: 'NS9B' },
-                    stop: { key: 'RcControl', value: 'NS9C' },
-                    next: { key: 'RcControl', value: 'NS9D' },
-                    previous: { key: 'RcControl', value: 'NS9E' },
+                    play: { key: 'Playback', value: 'play' },
+                    pause: { key: 'Playback', value: 'pause' },
+                    stop: { key: 'Playback', value: 'stop' },
+                    next: { key: 'Playback', value: 'next' },
+                    previous: { key: 'Playback', value: 'previous' },
                     shuffle: { key: 'Shuffle' },
                     repeat: { key: 'Repeat' }
                 },
@@ -1082,8 +1100,8 @@ class MainZone extends EventEmitter {
                 media_image_url: heos?.image || '',
                 media_channel: this.nowPlaying?.station ?? '',
                 // Network sources only, null hides the controls on other inputs
-                shuffle: this.nowPlaying?.shuffle ?? null,
-                repeat: this.nowPlaying?.repeat ?? null,
+                shuffle: this.nowPlaying?.shuffle ?? heos?.shuffle ?? null,
+                repeat: this.nowPlaying?.repeat ?? heos?.repeat ?? null,
                 media_duration: progress ? heos.duration : null,
                 media_position: progress ? heos.position : null,
                 media_position_updated_at: progress ? heos.positionAt : null

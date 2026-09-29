@@ -21,6 +21,38 @@ class Heos extends EventEmitter {
         this.state = null;
         this.progress = null;
         this.nowPlaying = null;
+        this.playMode = null;
+    }
+
+    // HEOS controls the player itself, network sources of HEOS receivers ignore the Denon NS9 commands
+    get ready() {
+        return !!this.socket && !this.socket.destroyed && this.pid !== null;
+    }
+
+    control(action) {
+        if (!this.ready) return false;
+        const pid = this.pid;
+        const commands = {
+            play: `player/set_play_state?pid=${pid}&state=play`,
+            pause: `player/set_play_state?pid=${pid}&state=pause`,
+            stop: `player/set_play_state?pid=${pid}&state=stop`,
+            next: `player/play_next?pid=${pid}`,
+            previous: `player/play_previous?pid=${pid}`
+        };
+        if (!commands[action]) return false;
+        this.send(commands[action]);
+        return true;
+    }
+
+    setPlayMode({ shuffle, repeat } = {}) {
+        if (!this.ready) return false;
+        const repeatModes = { off: 'off', all: 'on_all', one: 'on_one' };
+        const params = [];
+        if (repeat !== undefined && repeatModes[repeat]) params.push(`repeat=${repeatModes[repeat]}`);
+        if (shuffle !== undefined) params.push(`shuffle=${shuffle ? 'on' : 'off'}`);
+        if (params.length === 0) return false;
+        this.send(`player/set_play_mode?pid=${this.pid}&${params.join('&')}`);
+        return true;
     }
 
     start() {
@@ -69,6 +101,7 @@ class Heos extends EventEmitter {
         this.state = null;
         this.progress = null;
         this.nowPlaying = null;
+        this.playMode = null;
         this.update();
     }
 
@@ -109,6 +142,20 @@ class Heos extends EventEmitter {
                 if (this.pid === null) break;
                 this.send(`player/get_play_state?pid=${this.pid}`);
                 this.send(`player/get_now_playing_media?pid=${this.pid}`);
+                this.send(`player/get_play_mode?pid=${this.pid}`);
+                break;
+            }
+            case 'player/get_play_mode':
+            case 'player/set_play_mode':
+            case 'event/repeat_mode_changed':
+            case 'event/shuffle_mode_changed': {
+                if (String(params.pid) !== String(this.pid)) break;
+                const repeatModes = { off: 'off', on_all: 'all', on_one: 'one' };
+                this.playMode = {
+                    shuffle: params.shuffle !== undefined ? params.shuffle === 'on' : this.playMode?.shuffle ?? null,
+                    repeat: params.repeat !== undefined ? repeatModes[params.repeat] ?? null : this.playMode?.repeat ?? null
+                };
+                this.update();
                 break;
             }
             case 'player/get_play_state':
@@ -120,7 +167,8 @@ class Heos extends EventEmitter {
             case 'event/player_now_playing_progress': {
                 if (String(params.pid) !== String(this.pid)) break;
                 // First progress of a track in the log, the next ones come every second
-                if (!this.progress) this.emit('debug', `HEOS progress: ${heos.message}`);
+                if (!this.progressLogged) this.emit('debug', `HEOS progress: ${heos.message}`);
+                this.progressLogged = true;
                 // Milliseconds
                 const position = Number(params.cur_pos) / 1000;
                 const duration = Number(params.duration) / 1000;
@@ -134,6 +182,7 @@ class Heos extends EventEmitter {
                 if (String(params.pid) !== String(this.pid)) break;
                 // A new track, the progress of the old one no longer applies
                 this.progress = null;
+                this.progressLogged = false;
                 this.update();
                 this.send(`player/get_now_playing_media?pid=${this.pid}`);
                 break;
@@ -159,7 +208,7 @@ class Heos extends EventEmitter {
     }
 
     update() {
-        const media = this.state ? { state: this.state, ...(this.nowPlaying ?? {}), ...(this.progress ?? {}) } : null;
+        const media = this.state ? { state: this.state, ...(this.nowPlaying ?? {}), ...(this.playMode ?? {}), ...(this.progress ?? {}) } : null;
         // Progress events come every second, Home Assistant moves the bar itself, publish only when the state,
         // the track length or the position changes by more than the time passed (seek, new track)
         const last = this.published;
@@ -173,6 +222,8 @@ class Heos extends EventEmitter {
             || media.artist !== last.artist
             || media.album !== last.album
             || media.image !== last.image
+            || media.shuffle !== last.shuffle
+            || media.repeat !== last.repeat
             || (media.position === undefined) !== (last.position === undefined)
             || drift > 3;
         if (!changed || (!media && !last)) return;
