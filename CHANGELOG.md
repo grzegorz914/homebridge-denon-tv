@@ -21,6 +21,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - For plugin < v6.1.0 use Homebridge UI <= v5.5.0
 - For plugin >= v6.1.0 use Homebridge UI >= v5.13.0
 
+## [6.6.3] - (04.11.2026)
+
+### Changes
+
+- updated: dependencies, axios, express, fast-xml-parser and mqtt to the latest versions
+
 ## [6.6.2] - (29.10.2026)
 
 ### Changes
