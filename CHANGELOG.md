@@ -21,6 +21,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - For plugin < v6.1.0 use Homebridge UI <= v5.5.0
 - For plugin >= v6.1.0 use Homebridge UI >= v5.13.0
 
+## [6.6.4] - (12.11.2026)
+
+### Changes
+
+- fixed: the receiver stayed in the last state in the Home app after the power of the receiver was cut, a receiver that does not answer is now set to OFF and a single warning is logged, not an error every 5 seconds
+
 ## [6.6.3] - (04.11.2026)
 
 ### Changes

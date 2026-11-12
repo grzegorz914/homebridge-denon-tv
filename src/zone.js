@@ -8,6 +8,9 @@ const INPUTS_CONVERSION_KEYS = Object.keys(InputConversion);
 export const NetAudioSources = ['NET', 'NET/USB', 'SERVER', 'USB/IPOD', 'USB', 'IPD', 'BT', 'IRADIO', 'IRP', 'FAVORITES', 'FVP', 'SPOTIFY', 'SPOTIFYCONNECT', 'FLICKR'];
 const SOUND_MODES_CONVERSION_KEYS = Object.keys(SoundModeConversion);
 
+// Errors of a request that got no answer from the receiver, for example after the power of the receiver was cut
+const CONNECTION_ERROR_CODES = ['ECONNREFUSED', 'ECONNRESET', 'ECONNABORTED', 'ETIMEDOUT', 'EHOSTUNREACH', 'ENETUNREACH', 'ENETDOWN', 'ENOTFOUND', 'EAI_AGAIN', 'EPIPE'];
+
 class Zone extends EventEmitter {
     constructor(denon, device, inputsFile, restFulEnabled, mqttEnabled) {
         super();
@@ -43,6 +46,7 @@ class Zone extends EventEmitter {
         this.soundMode = '';
         this.audysseyMode = '';
         this.firstRun = true;
+        this.connectionLost = false;
 
         denon.on('denonInfo', async (denonInfo) => {
             try {
@@ -203,6 +207,11 @@ class Zone extends EventEmitter {
             const devState = this.parseString.parse(data).item;
             if (this.logDebug) this.emit('debug', `State: ${JSON.stringify(devState, null, 2)}`);
 
+            if (this.connectionLost) {
+                this.connectionLost = false;
+                this.emit('success', `Receiver is reachable again`);
+            }
+
             // Receiver status
             const power = devState.Power.value === 'ON';
             const inputRaw = devState.InputFuncSelect.value;
@@ -268,8 +277,28 @@ class Zone extends EventEmitter {
 
             return true;
         } catch (error) {
+            if (this.isConnectionError(error)) return this.setOffline(error);
             throw new Error(`Check state error: ${error}`);
         }
+    }
+
+    isConnectionError(error) {
+        if (error?.response) return false;
+        return CONNECTION_ERROR_CODES.includes(error?.code) || /timeout|socket hang up/i.test(error?.message ?? '');
+    }
+
+    // The receiver does not answer, for example after the power was cut, it is set to OFF so the Home app does not keep the last state
+    setOffline(error) {
+        if (this.connectionLost) return false;
+
+        this.connectionLost = true;
+        this.emit('warn', `Receiver is not reachable, set to OFF: ${error?.code ?? error?.message ?? error}`);
+
+        if (!this.power) return false;
+
+        this.power = false;
+        this.emit('stateChanged', this.power, this.reference, this.volume, this.volumeDisplay, this.mute, this.pictureMode);
+        return true;
     }
 
     // Title, artist and album of network sources, station of the tuner. Read the same way as the Home Assistant
