@@ -47,6 +47,7 @@ class Zone extends EventEmitter {
         this.audysseyMode = '';
         this.firstRun = true;
         this.connectionLost = false;
+        this.forceEmit = false;
 
         denon.on('denonInfo', async (denonInfo) => {
             try {
@@ -209,7 +210,9 @@ class Zone extends EventEmitter {
 
             if (this.connectionLost) {
                 this.connectionLost = false;
+                this.forceEmit = true;
                 this.emit('success', `Receiver is reachable again`);
+                this.emit('reachable', true);
             }
 
             // Receiver status
@@ -262,8 +265,9 @@ class Zone extends EventEmitter {
             }
 
             // Update only if value changed
-            if (power === this.power && reference === this.reference && volume === this.volume && volumeDisplay === this.volumeDisplay && mute === this.mute && pictureMode === this.pictureMode && soundMode === this.soundMode && audysseyMode === this.audysseyMode) return;
+            if (!this.forceEmit && power === this.power && reference === this.reference && volume === this.volume && volumeDisplay === this.volumeDisplay && mute === this.mute && pictureMode === this.pictureMode && soundMode === this.soundMode && audysseyMode === this.audysseyMode) return;
 
+            this.forceEmit = false;
             this.power = power;
             this.reference = reference;
             this.volume = volume;
@@ -288,18 +292,14 @@ class Zone extends EventEmitter {
         return !!error?.isAxiosError || CONNECTION_ERROR_CODES.includes(error?.code) || /timeout|socket hang up|EHOST|ENET/i.test(error?.message ?? '');
     }
 
-    // The receiver does not answer, for example after the power was cut, it is set to OFF so the Home app does not keep the last state
+    // The receiver does not answer, for example after the power was cut, the Home app shows the accessory as not responding
     setOffline(error) {
         if (this.connectionLost) return false;
 
         this.connectionLost = true;
-        this.emit('warn', `Receiver is not reachable, set to OFF: ${error?.code ?? error?.message ?? error}`);
-
-        if (!this.power) return false;
-
-        this.power = false;
-        this.emit('stateChanged', this.power, this.reference, this.volume, this.volumeDisplay, this.mute, this.pictureMode);
-        return true;
+        this.emit('warn', `Receiver is not reachable: ${error?.code ?? error?.message ?? error}`);
+        this.emit('reachable', false);
+        return false;
     }
 
     // Title, artist and album of network sources, station of the tuner. Read the same way as the Home Assistant

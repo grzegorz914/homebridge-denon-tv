@@ -1,6 +1,7 @@
 import EventEmitter from 'events';
 import Zone from './zone.js';
 import Functions from './functions.js';
+import { applyReachability } from './reachability.js';
 let Accessory, Characteristic, Service, Categories, Encode, AccessoryUUID;
 
 class Surrounds extends EventEmitter {
@@ -13,6 +14,8 @@ class Surrounds extends EventEmitter {
         Categories = api.hap.Categories;
         Encode = api.hap.encode;
         AccessoryUUID = api.hap.uuid;
+        this.hap = api.hap;
+        this.reachable = true;
 
         //device configuration
         this.denon = denon;
@@ -402,6 +405,8 @@ class Surrounds extends EventEmitter {
                 }
             }
 
+            applyReachability(accessory, this.hap, () => this.reachable);
+
             return accessory;
         } catch (error) {
             throw new Error(error)
@@ -413,6 +418,7 @@ class Surrounds extends EventEmitter {
         try {
             //denon client
             this.zone = new Zone(this.denon, this.device, this.inputsFile)
+                .on('reachable', (reachable) => { this.reachable = reachable; })
                 .on('deviceInfo', (info) => {
                     this.emit('devInfo', `-------- ${this.name} --------`);
                     this.emit('devInfo', `Manufacturer: ${info.manufacturer}`);

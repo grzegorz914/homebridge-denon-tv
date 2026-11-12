@@ -21,6 +21,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - For plugin < v6.1.0 use Homebridge UI <= v5.5.0
 - For plugin >= v6.1.0 use Homebridge UI >= v5.13.0
 
+## [6.7.0-beta.0] - (12.11.2026)
+
+### Changes
+
+- changed: a receiver that cannot be reached is shown as not responding in the Home app, the read of the accessory fails with a communication error, and not with the last state, the plugin does not change the state of the receiver, when the receiver answers again the accessory works again and its state is sent to the Home app
+
 ## [6.6.5] - (12.11.2026)
 
 ### Changes

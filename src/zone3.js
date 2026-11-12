@@ -2,6 +2,7 @@ import EventEmitter from 'events';
 import Zone, { NetAudioSources } from './zone.js';
 import Heos from './heos.js';
 import Functions from './functions.js';
+import { applyReachability } from './reachability.js';
 import HaDiscovery from './hadiscovery.js';
 import InputIcons from './inputicons.js';
 import { ApiUrls, PictureModesConversionToHomeKit, PictureModesDenonNumber, SoundModeConversion, SoundModeDisplayName } from './constants.js';
@@ -17,6 +18,8 @@ class Zone3 extends EventEmitter {
         Categories = api.hap.Categories;
         Encode = api.hap.encode;
         AccessoryUUID = api.hap.uuid;
+        this.hap = api.hap;
+        this.reachable = true;
 
         //device configuration
         this.denon = denon;
@@ -945,6 +948,8 @@ class Zone3 extends EventEmitter {
                 }
             }
 
+            applyReachability(accessory, this.hap, () => this.reachable);
+
             return accessory;
         } catch (error) {
             throw new Error(error)
@@ -1082,6 +1087,7 @@ class Zone3 extends EventEmitter {
                 .on('debug', (message) => this.logDebug && this.emit('debug', message));
 
             this.zone = new Zone(this.denon, this.device, this.inputsFile, this.restFul.enable, this.mqtt.enable)
+                .on('reachable', (reachable) => { this.reachable = reachable; })
                 .on('deviceInfo', (info) => {
                     this.emit('devInfo', `-------- ${this.name} --------`);
                     this.emit('devInfo', `Manufacturer: ${info.manufacturer}`);
