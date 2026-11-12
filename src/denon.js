@@ -3,6 +3,7 @@ import { Agent as HttpsAgent } from 'https';
 import EventEmitter from 'events';
 import ImpulseGenerator from './impulsegenerator.js';
 import Functions from './functions.js';
+import { isConnectionError } from './reachability.js';
 import { XMLParser } from 'fast-xml-parser';
 import { ApiUrls, ManufacturerMap } from './constants.js';
 
@@ -45,6 +46,8 @@ class Denon extends EventEmitter {
             this.executionQueue = this.executionQueue
                 .then(() => task())
                 .catch((error) => {
+                    // no answer from the receiver is not an error, the zones report it as not reachable
+                    if (isConnectionError(error)) return;
                     this.emit('error', error?.message ?? error);
                 });
 
@@ -113,7 +116,7 @@ class Denon extends EventEmitter {
             return denonInfo;
         } catch (error) {
             if (this.logDebug) this.emit('debug', `Connect request: ${error.config?.method?.toUpperCase()} ${error.config?.baseURL}${error.config?.url}, response: ${error.response?.status} ${JSON.stringify(error.response?.data)}`);
-            throw new Error(`Connect error: ${error}`);
+            throw new Error(`Connect error: ${error}`, { cause: error });
         }
     }
 

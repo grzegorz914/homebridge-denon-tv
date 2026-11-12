@@ -9,6 +9,7 @@ import PassThroughInputs from './src/passthroughinputs.js';
 import ImpulseGenerator from './src/impulsegenerator.js';
 import RestFul from './src/restful.js';
 import Mqtt from './src/mqtt.js';
+import { isConnectionError } from './src/reachability.js';
 import { PluginName, PlatformName, ZoneNameShort } from './src/constants.js';
 
 class DenonPlatform {
@@ -90,6 +91,7 @@ class DenonPlatform {
 
 		// The startup impulse generator retries the full connect cycle every
 		// 120 s until it succeeds, then stops itself.
+		let notReachable = false;
 		const impulseGenerator = new ImpulseGenerator()
 			.on('start', async () => {
 				try {
@@ -98,6 +100,14 @@ class DenonPlatform {
 						baseLogLevel, log, api, impulseGenerator, zoneStates
 					);
 				} catch (error) {
+					// no answer from the receiver is not an error, it is reported once as not reachable
+					if (isConnectionError(error)) {
+						if (!notReachable) {
+							notReachable = true;
+							if (baseLogLevel.warn) log.warn(`Device: ${host}, not reachable`);
+						}
+						return;
+					}
 					if (baseLogLevel.error) log.error(`Device: ${host}, start error: ${error.message ?? error}`);
 				}
 			})
@@ -276,12 +286,15 @@ class DenonPlatform {
 			.on('warn', (msg) => log.warn(`Device: ${host} ${name}, ${msg}`))
 			.on('error', (msg) => log.error(`Device: ${host} ${name}, ${msg}`));
 
-		const accessory = await zoneInstance.start();
-		if (!accessory) return;
+		// The accessory is not needed for RestFul and MQTT, they control the receiver also when it was not created
+		const started = await zoneInstance.start();
+		if (!started) return;
 
 		state.activeDevice = zoneInstance;
-		api.publishExternalAccessories(PluginName, [accessory]);
-		if (logLevel.success) log.success(`Device: ${host} ${name}, published`);
+		if (zoneInstance.accessory) {
+			api.publishExternalAccessories(PluginName, [zoneInstance.accessory]);
+			if (logLevel.success) log.success(`Device: ${host} ${name}, Published as external accessory.`);
+		}
 	}
 
 	// ── Homebridge accessory cache ────────────────────────────────────────────

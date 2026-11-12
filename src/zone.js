@@ -1,3 +1,4 @@
+import { isConnectionError } from './reachability.js';
 import EventEmitter from 'events';
 import Functions from './functions.js';
 import { XMLParser } from 'fast-xml-parser';
@@ -9,7 +10,6 @@ export const NetAudioSources = ['NET', 'NET/USB', 'SERVER', 'USB/IPOD', 'USB', '
 const SOUND_MODES_CONVERSION_KEYS = Object.keys(SoundModeConversion);
 
 // Errors of a request that got no answer from the receiver, for example after the power of the receiver was cut
-const CONNECTION_ERROR_CODES = ['ECONNREFUSED', 'ECONNRESET', 'ECONNABORTED', 'ETIMEDOUT', 'EHOSTUNREACH', 'EHOSTDOWN', 'ENETUNREACH', 'ENETDOWN', 'ENOTFOUND', 'EAI_AGAIN', 'EPIPE'];
 
 class Zone extends EventEmitter {
     constructor(denon, device, inputsFile, restFulEnabled, mqttEnabled) {
@@ -59,6 +59,8 @@ class Zone extends EventEmitter {
             try {
                 await this.checkState();
             } catch (error) {
+                // no answer from the receiver is not an error, it is reported once as not reachable
+                if (isConnectionError(error)) return this.setOffline(error.cause ?? error);
                 this.emit('error', error);
             }
         });
@@ -211,7 +213,7 @@ class Zone extends EventEmitter {
             if (this.connectionLost) {
                 this.connectionLost = false;
                 this.forceEmit = true;
-                this.emit('success', `Receiver is reachable again`);
+                this.emit('success', `reachable again`);
                 this.emit('reachable', true);
             }
 
@@ -281,15 +283,8 @@ class Zone extends EventEmitter {
 
             return true;
         } catch (error) {
-            if (this.isConnectionError(error)) return this.setOffline(error);
-            throw new Error(`Check state error: ${error}`);
+            throw new Error(`Check state error: ${error}`, { cause: error });
         }
-    }
-
-    isConnectionError(error) {
-        // any failed request without an HTTP answer means that the device cannot be reached, a parse error of an answer is not one of them
-        if (error?.response) return false;
-        return !!error?.isAxiosError || CONNECTION_ERROR_CODES.includes(error?.code) || /timeout|socket hang up|EHOST|ENET/i.test(error?.message ?? '');
     }
 
     // The receiver does not answer, for example after the power was cut, the Home app shows the accessory as not responding
@@ -297,7 +292,8 @@ class Zone extends EventEmitter {
         if (this.connectionLost) return false;
 
         this.connectionLost = true;
-        this.emit('warn', `Receiver is not reachable: ${error?.code ?? error?.message ?? error}`);
+        if (this.logDebug) this.emit('debug', `Not reachable, error: ${error?.code ?? error?.message ?? error}`);
+        this.emit('warn', `not reachable`);
         this.emit('reachable', false);
         return false;
     }

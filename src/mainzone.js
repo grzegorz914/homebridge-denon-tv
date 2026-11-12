@@ -1305,11 +1305,20 @@ class MainZone extends EventEmitter {
             //prepare data for accessory
             await this.prepareDataForAccessory();
 
-            //prepare accessory
-            const accessory = await this.prepareAccessory();
+            //MQTT and Home Assistant work on the receiver, they do not depend on the HomeKit accessory
             this.haReady = true;
             this.setupHaDiscovery();
-            return accessory;
+
+            //prepare accessory, when it is not possible the receiver is still controlled over MQTT and RESTFul
+            this.accessory = null;
+            try {
+                this.accessory = await this.prepareAccessory();
+            } catch (error) {
+                this.accessory = null;
+                this.emit('error', `HomeKit accessory not created: ${error}`);
+            }
+
+            return true;
         } catch (error) {
             throw new Error(`Start error: ${error}`);
         }

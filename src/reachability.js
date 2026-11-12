@@ -13,3 +13,15 @@ export const applyReachability = (accessory, hap, isReachable) => {
         }
     }
 };
+
+const CONNECTION_ERROR_CODES = ['ECONNREFUSED', 'ECONNRESET', 'ECONNABORTED', 'ETIMEDOUT', 'EHOSTUNREACH', 'EHOSTDOWN', 'ENETUNREACH', 'ENETDOWN', 'ENOTFOUND', 'EAI_AGAIN', 'EPIPE'];
+
+// Any failed request without an HTTP answer means that the device cannot be reached, a parse error of an answer is not one of them.
+// The error is checked together with its causes, because the plugin wraps the original error
+export const isConnectionError = (error) => {
+    for (let e = error; e; e = e.cause) {
+        if (e.response) return false;
+        if (e.isAxiosError || CONNECTION_ERROR_CODES.includes(e.code) || /timeout|socket hang up|EHOST|ENET/i.test(e.message ?? '')) return true;
+    }
+    return false;
+};
