@@ -55,6 +55,7 @@ class MainZone extends EventEmitter {
         // The broker may come online after the start or restart, the device then publishes again
         this.haReady = false;
         this.mqtt1?.on('online', () => this.mqttOnline().catch((error) => this.emit('warn', `MQTT online error: ${error}`)));
+        this.mqtt1?.on('offline', () => { this.mqttConnected = false; });
 
         //sensors
         for (const sensor of this.sensors) {

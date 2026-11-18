@@ -21,6 +21,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - For plugin < v6.1.0 use Homebridge UI <= v5.5.0
 - For plugin >= v6.1.0 use Homebridge UI >= v5.13.0
 
+## [6.7.2] - (18.11.2026)
+
+### Changes
+
+- fixed: the RESTFul server tries again every 10 seconds when its port cannot be opened at the start of the plugin, a server that starts later is used by the running device
+- fixed: MQTT does not queue the messages while the broker is not connected, the plugin stops to publish when the connection to the broker is lost and starts again after it is connected
+- updated: dependencies, axios and fast-xml-parser to the latest versions
+
 ## [6.7.1] - (12.11.2026)
 
 ### Changes

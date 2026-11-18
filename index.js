@@ -205,9 +205,11 @@ class DenonPlatform {
 						logWarn: logLevel.warn,
 						logDebug: logLevel.debug,
 					})
-						.once('connected', (msg) => {
+						.on('connected', (msg) => {
 							clearTimeout(timer);
 							state.restFulConnected = true;
+							// The server can start later than the plugin, when the port was busy, the running device uses it from then
+							if (state.activeDevice) state.activeDevice.restFulConnected = true;
 							if (logLevel.success) log.success(`Device: ${host} ${name}, ${msg}`);
 							resolve();
 						})
